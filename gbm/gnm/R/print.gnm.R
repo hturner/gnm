@@ -7,8 +7,8 @@ print.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...) {
     
     if (length(coef(x))) {
         cat("Coefficients:\n")
-        print.default(format(x$coefficients[!x$auxiliary], digits = digits), 
-            print.gap = 2, quote = FALSE)
+        print.default(format(coef(x), digits = digits), print.gap = 2,
+                      quote = FALSE)
     }
     else cat("No coefficients\n\n")
     cat("\nDeviance:           ", format(x$deviance, digits),

@@ -123,8 +123,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev[1]) + 2 * attr(VCOV, "rank"))
     
-    fit <- list(coefficients = if (length(modelTools$eliminate) == 0) theta
-                else theta[-modelTools$eliminate],
+    fit <- list(coefficients = theta,
+                eliminate = length(modelTools$eliminate),
                 predictors = eta,
                 fitted.values = mu,
                 deviance = dev[1],
@@ -137,6 +137,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 rank = attr(VCOV, "rank"))
     if (x) fit$x <- structure(X, assign = modelTools$termAssign)
     if (vcov) {
+        if (length(modelTools$eliminate))
+            constrain <- constrain[-modelTools$eliminate]
         VCOV[constrain, constrain] <- 0
         fit$vcov <- VCOV
     }

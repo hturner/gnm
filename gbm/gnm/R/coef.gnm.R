@@ -1,4 +1,6 @@
 coef.gnm <- function(object, ...) {
-  structure(object$coefficients, class = "coef.gnm",
-            auxiliary = object$auxiliary)
+    if (object$eliminate)
+        object$coefficients[-seq(object$eliminate)]
+    else   
+        object$coefficients
 }

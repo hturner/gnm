@@ -23,9 +23,8 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
     ans <- c(object[c("call", "terms", "family", "deviance", "aic",
                       "df.residual", "iter")],
              list(deviance.resid = residuals(object, type = "deviance"), 
-                  coefficients = coef(object), auxiliary = object$auxiliary,
-                  dispersion = dispersion, cov.unscaled = cov.unscaled,
-                  cov.scaled = cov.scaled))
+                  coefficients = coef(object), dispersion = dispersion,
+                  cov.unscaled = cov.unscaled, cov.scaled = cov.scaled))
     if (!is.null(object$original.call))
         ans$original.call <- object$original.call
     if (correlation & object$rank > 0) {

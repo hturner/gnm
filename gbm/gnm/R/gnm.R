@@ -97,7 +97,6 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         newCall$subset <- NULL
         result <- eval(newCall)
         result$original.call <- call
-        result$auxiliary[seq(nrow(Y))] <- TRUE
         return(result)
 }
 
@@ -163,8 +162,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                   terms = attr(modelTerms, "terms"),
                   na.action = attr(modelData, "na.action"),
                   xlevels = .getXlevels(attr(modelData, "terms"), modelData),
-                  y = y, offset = offset, control = control), fit,
-             list(auxiliary = rep(FALSE, length(coef(fit)))))
+                  y = y, offset = offset, control = control), fit)
 
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")

@@ -47,21 +47,23 @@
     start <- function (scale = 0.2) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
                            names = names(factorAssign))
-        for (i in seq(termTools)[!sapply(sapply(termTools, attr, "start"),
+        ind <- thetaClassIndex == "character"
+        theta[ind] <- 2 * scale + theta[ind]
+        ind <- thetaClassIndex == "Linear"
+        if (any(ind))
+            theta[ind] <- naToZero(glm.fit(termTools[[1]],
+                                           model.response(gnmData),
+                                           weights = weights, offset = offset,
+                                           family = family)$coefficients)
+        for (i in seq(termTools)[!sapply(lapply(termTools, function(x) x$start),
                                          is.null)]) {
             ind <- factorAssign == i
+            thetaClassIndex[ind] <- "plugInStart"
             if (is.function(termTools[[i]]$start))
                 theta[ind] <- termTools[[i]]$start(sum(ind))
             else
                 theta[ind] <- termTools[[i]]$start
         }
-        ind <- thetaClassIndex == "character"
-        theta[ind] <- 2 * scale + theta[ind]
-        ind <- thetaClassIndex == "Linear"
-        if (any(ind)) theta[ind] <-
-            naToZero(glm.fit(termTools[[1]], model.response(gnmData),
-                             weights = weights, offset = offset,
-                             family = family)$coefficients)
         theta
     }
 

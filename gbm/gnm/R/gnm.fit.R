@@ -9,7 +9,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta <- modelTools$start()
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
-            oneAtATime <- modelTools$classIndex != "Linear" & is.na(start)
+            oneAtATime <- {!modelTools$classIndex %in%
+                           c("Linear", "plugInStart") & is.na(start)}
             for (iter in seq(control$startit)[any(oneAtATime)]) {
                 for (i in seq(theta)[oneAtATime]) {
                     if (constrain[i]) break

@@ -13,14 +13,18 @@ A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
 \code{orig} (levels \code{1:7}) and \code{dest} (levels \code{1:7}).
 }
 \references{
-Yaish, M (1998). Opportunities, Little Change. Class Mobility in Israeli Society: 
+  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
+  Israeli Society: 
 1974-1991.  D.Phil. Thesis, Nuffield College, University of Oxford.
 }
 \examples{
 data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(educ), orig:dest), family = poisson, data = yaish)
+yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+    Mult(Exp(educ), orig:dest), family = poisson, data = yaish)
 ## Look at a table of model residuals
 residuals(yaish.unidiff)
 }
-\keyword{datasets}
+\author{David Firth}
+\keyword{ datasets }
+

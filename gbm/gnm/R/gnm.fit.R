@@ -6,6 +6,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
     repeat{
         if (is.null(start)) {
             theta <- modelTools$start()
+            theta[constrain] <- 0
             for (iter in seq(control$startit)) {
                 for (relevant in split(seq(length(theta)),
                                        modelTools$factorAssign)) {

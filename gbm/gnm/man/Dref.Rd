@@ -30,10 +30,10 @@ Dref(..., formula = ~ 1)
   A list with the components required of a \code{gnm} plug-in function:
   \item{labels}{a character vector of labels for the parameters in the
     diagonal reference term.}
-  \item{predictor} {a function that takes estimates of the parameters in the
+  \item{predictor}{a function that takes estimates of the parameters in the
     diagonal reference term and returns a matrix whose columns
     are the fitted additive components of this term.}
-  \item{localDesignFunction} {a function that takes the result of the
+  \item{localDesignFunction}{a function that takes the result of the
     predictor function and returns the local design
     matrix.}
 }

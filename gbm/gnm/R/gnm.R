@@ -23,7 +23,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                           parent.frame())
     else
         modelData <- eval(modelData, parent.frame())   
-    attr(modelTerms, "variables") <- attr(attr(modelData, "terms"), "variables")
+    attr(modelTerms, "variables") <- attr(attr(modelData, "terms"),
+                                          "variables")
     if (method == "model.frame") {
         attr(modelData, "terms") <- attr(modelTerms, "terms")
         return(modelData)

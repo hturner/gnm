@@ -5,7 +5,7 @@
   Set parameters to control the \code{gnm} fitting algorithm.  
 }
 \usage{
-gnm.control(epsilon = 1e-04, startit = 10, maxit = 500, trace = FALSE)
+gnm.control(epsilon = 1e-04, startit = 2, maxit = 500, trace = FALSE)
 }
 \arguments{
   \item{epsilon}{a positive numeric value specifying the tolerance level for

@@ -129,7 +129,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         if (vcov) fit$vcov <- NULL
     }
     else {
-        modelTools <- gnmTools(modelTerms, modelData, x, y, family, weights,
+        modelTools <- gnmTools(modelTerms, modelData, x, family, weights,
                                offset)
 
         if (method == "coef.names") return(names(modelTools$classIndex))

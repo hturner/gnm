@@ -1,11 +1,12 @@
 Dref <- function(..., formula = ~ 1) {
     labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
-    env <- parent.frame()
+    gnmData <- getModelFrame()
+    browser()
     
     # get design matrices for Dref factors
     designList <- lapply(labelList, function(x) {
-        M <- model.matrix(reformulate(x), data = env)
-        colnames(M) <- gsub(x, "", colnames(M))
+        M <- model.matrix(reformulate(x), data = gnmData)
+        colnames(M) <- with(gnmData, levels(as.factor(get(x))))
         M
     })
     global <- unique(unlist(lapply(designList, colnames)))
@@ -26,7 +27,8 @@ Dref <- function(..., formula = ~ 1) {
     # create index and labels for parameters
     factorIndex <- c(rep(seq(labelList), ncol(local)), rep(0, nGlobal))
     if (ncol(local) > 1)
-        labels <- c(unlist(paste(labelList, colnames(local))), global)
+        labels <- c(as.vector(sapply(labelList, paste, colnames(local),
+                                     sep = ".")), global)
     else
         labels <- c(labelList, global)
 

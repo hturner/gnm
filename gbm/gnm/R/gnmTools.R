@@ -1,5 +1,5 @@
 "gnmTools" <-
-    function(gnmTerms, gnmData, x, y, family, weights, offset)
+    function(gnmTerms, gnmData, x, family, weights, offset)
 {
     labelList <- attr(gnmTerms, "parsed.labels")
     prefixList <- attr(gnmTerms, "prefix.labels")
@@ -13,8 +13,7 @@
     termTools <- factorAssign <- labelList
     for (i in seq(labelList)) {
         if (inherits(labelList[[i]], "Nonlin")) {
-            termTools[[i]] <- eval(attr(labelList[[i]], "call"),
-                                   envir = gnmData)
+            termTools[[i]] <- eval(attr(labelList[[i]], "call"))
             factorAssign[[i]] <-
                 structure(rep(i, length(termTools[[i]]$labels)),
                           names = paste(prefixList[[i]], ".",
@@ -49,11 +48,12 @@
                            names = names(factorAssign))
         theta <- ifelse(theta < 0, theta - scale, theta + scale)
         ind <- thetaClassIndex == "Linear"
-        if (any(ind))
-            theta[ind] <- naToZero(glm.fit(termTools[[1]],
-                                           model.response(gnmData),
-                                           weights = weights, offset = offset,
-                                           family = family)$coefficients)
+        if (any(ind)) theta[ind] <-
+            suppressWarnings(naToZero(glm.fit(termTools[[1]],
+                                              model.response(gnmData),
+                                              weights = weights,
+                                              offset = offset,
+                                              family = family)$coefficients))
         for (i in seq(termTools)[!sapply(lapply(termTools, function(x) x$start),
                                          is.null)]) {
             ind <- factorAssign == i

@@ -30,8 +30,9 @@ gnmTerms <- function(formula)
     extraData <- lapply(labelList, attr, "extraData")
     extraData <- do.call("cbind", extraData[!sapply(extraData, is.null)])
 
-    response <- ifelse(attr(fullTerms, "response") < 1, "",
-                             as.character(attr(fullTerms, "variables")[2]))
+    if (attr(fullTerms, "response") < 1) response <- ""
+    else response <- evalq(attr(fullTerms, "variables")[[2]])
+    
     predictorOffset <- sapply((attr(fullTerms,
                                     "variables")[-1])[attr(fullTerms,
                                                            "offset")], deparse)

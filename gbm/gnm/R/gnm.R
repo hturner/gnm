@@ -67,13 +67,15 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                 "offset cannot be used with multinomial logit models") 
         if (!is.factor(y)) stop(
                 "multinomial response must be a factor")
-        y <- factor.incidence.matrix(y)
+        Y <- factor.incidence.matrix(y)
         resp.var.name <- names(modelData)[attr(attr(modelData, "terms"),
                                                "response")]
-        if (is.null(colnames(y))) colnames(y) <- 1:ncol(y)
-        .rowID <- factor(t(row(y)))
-        assign(resp.var.name, factor(rep(colnames(y), nrow(y))))
-        .counts <- as.vector(t(y))
+        if (is.null(colnames(Y))) colnames(Y) <- 1:ncol(Y)
+        .rowID <- factor(t(row(Y)))
+        assign(resp.var.name, factor(rep(colnames(Y), nrow(Y)),
+                                     levels = levels(y),
+                                     ordered = is.ordered(y)))
+        .counts <- as.vector(t(Y))
         modelData <- modelData[.rowID, , drop = FALSE]
         modelData$.rowID <- .rowID
         modelData[[resp.var.name]] <- get(resp.var.name)
@@ -83,7 +85,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         newCall$family <- as.name("poisson")
         newCall$data <- as.name("modelData")
         if (!is.null(call$weights))
-          newCall$weights <- rep(weights * rowSums(y), rep(ncol(y), nrow(y)))
+          newCall$weights <- rep(weights * rowSums(Y), rep(ncol(Y), nrow(Y)))
         if (!is.null(constrain)) {
             if (constrain == "pick") {
                 if (!require(tcltk))
@@ -92,19 +94,19 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                     stop("the relimp package from CRAN needs to be installed")
                 constrain <- is.element(names(modelTools$classIndex),
                                         pickFrom(names(modelTools$classIndex)
-                                                 [-seq(nrow(y))]))
+                                                 [-seq(nrow(Y))]))
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")
             }
             if (is.numeric(constrain))
-                newCall$constrain <- constrain + nrow(y)
+                newCall$constrain <- constrain + nrow(Y)
             else
-                newCall$constrain <- c(rep(FALSE, nrow(y)), constrain)
+                newCall$constrain <- c(rep(FALSE, nrow(Y)), constrain)
         }
         newCall$subset <- NULL
         result <- eval(newCall)
         result$original.call <- call
-        result$auxiliary[seq(nrow(y))] <- TRUE
+        result$auxiliary[seq(nrow(Y))] <- TRUE
         return(result)
 }
 

@@ -112,7 +112,7 @@
                 do.call("pprod", (factorList[(multIndex == multIndex[i]) &
                                    (seq(multIndex) != i)]))
         structure(do.call("cbind", productList),
-                  dimnames = list(NULL, colnames = names(factorAssign)))
+                  dimnames = list(NULL, names(factorAssign)))
     }
 
     toolList <- list(classIndex = thetaClassIndex, start = start,

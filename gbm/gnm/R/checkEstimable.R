@@ -1,5 +1,4 @@
-checkEstimable <- function(model, cmatrix, tolerance = 1e-14, verbose = TRUE){
-    if (verbose) cat("checking estimability...\n")
+checkEstimable <- function(model, cmatrix, tolerance = 1e-8){
     if (!inherits(model, "gnm")) stop("model not of class gnm")
         coefs <- coef(model)
     l <- length(coefs)
@@ -7,17 +6,13 @@ checkEstimable <- function(model, cmatrix, tolerance = 1e-14, verbose = TRUE){
     if (nrow(cmatrix) != l) stop(
           "cmatrix does not match coef(model)")
     Xt <- t(model.matrix(model))
-    test1 <- function(cvec){
-        result <- logical()
-        if (sd(cvec) < tolerance) {
-            is.na(result) <- TRUE
-            return(result)
-        }
-        cvec <- (cvec - mean(cvec))/sd(cvec)
-        temp <- lm(cvec ~ -1 + Xt)
-        rss <- sum(residuals(temp) ^ 2)
-        result <- rss < tolerance
-        return(result)
-    }
-    apply(cmatrix, 2, test1)
+    cmatrix <- scale(cmatrix)
+    resultNA <- apply(cmatrix,2, function(col) any(is.na(col)))
+    result <- logical(ncol(cmatrix))
+    is.na(result) <- resultNA
+    resids <- qr.resid(qr(Xt), cmatrix[, !resultNA, drop = FALSE]) 
+    rss <- apply(resids, 2, var)
+    result[!resultNA] <- rss < tolerance
+    names(result) <- colnames(cmatrix)
+    return(result)
 }

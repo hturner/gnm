@@ -8,7 +8,7 @@
   re-parameterization of the model.
 }
 \usage{
-checkEstimable(model, cmatrix, tolerance = 1e-14, verbose = TRUE)
+checkEstimable(model, cmatrix, tolerance = 1e-8)
 }
 \arguments{
   \item{model}{  a model object of class \code{\dQuote{gnm}} }
@@ -16,8 +16,7 @@ checkEstimable(model, cmatrix, tolerance = 1e-14, verbose = TRUE)
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
   \item{tolerance}{ numeric: a threshold value for detection of
-    collinearity.  }
-  \item{verbose}{ logical: should commentary be printed on progress? }
+    non-estimability.  }
 }
 \value{A logical vector of length equal to the number of parameter combinations
 tested; \code{NA} where a parameter combination is identically zero.}

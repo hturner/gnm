@@ -32,17 +32,25 @@ Dref <- function(..., formula = ~ 1) {
         labels <- c(labelList, global)
 
     predictor <- function(coef) {
-        pList <- list()
-        for (i in seq(labelList))
-            pList[[i]] <- drop(exp(local %*% coef[factorIndex == i])) *
-                designList[[i]]
-        predictor <- sapply(pList, "%*%", coef[factorIndex == 0])
-        structure(predictor, global = do.call("psum", pList))
+        browser()
+        # calculate constrained weights
+        W <- matrix(nrow = nrow(gnmData), ncol = length(designList))
+        for (i in seq(ncol(W)))
+            W[,i] <- drop(exp(local %*% coef[factorIndex == i]))
+        W <- W/rowSums(W)
+        gamma <- sapply(designList, "%*%", coef[factorIndex == 0])
+        predictor <- W * gamma
+        structure(predictor, W = W)
     }
 
     localDesignFunction <- function(predictor, ...) {
-        do.call("cbind", c(tapply(predictor, col(predictor), "*", local),
-                           list(attr(predictor, "global"))))
+        browser()
+        W <- attr(predictor, "W")
+        Dintercept <- predictor - W * rowSums(predictor)
+        do.call("cbind", c(tapply(Dintercept, col(Dintercept), "*", local),
+                           list(do.call("psum", (mapply("*", split(W, col(W)),
+                                                        designList,
+                                                        SIMPLIFY = FALSE))))))
     }
     
     list(labels = labels, predictor = predictor,

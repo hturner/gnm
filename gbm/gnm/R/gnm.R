@@ -66,7 +66,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         if (!is.null(call$offset)) stop(
                 "offset cannot be used with multinomial logit models") 
         if (!is.factor(y)) stop(
-                "multinomial response data must be factor or matrix")
+                "multinomial response must be a factor")
         y <- factor.incidence.matrix(y)
         resp.var.name <- names(modelData)[attr(attr(modelData, "terms"),
                                                "response")]

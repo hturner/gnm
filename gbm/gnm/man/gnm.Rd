@@ -5,7 +5,7 @@
   \code{gnm} fits generalised nonlinear models using an
   over-parameterised representation. \code{gnm} is able to fit models
   incorporating multiplicative interactions as standard and can fit other
-  types of nonlinear effects via ``plug-in'' functions (see details).
+  types of nonlinear effects via \dQuote{plug-in} functions (see details).
 }
 \usage{
 gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
@@ -16,11 +16,11 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   \item{formula}{ a symbolic description of the nonlinear predictor. }
   \item{constrain}{ either a list of indices, or a logical vector,
     indicating elements of the parameter vector to set to zero.}
-  \item{family}{ a description of the error distribution and link function
+  \item{family}{ a specification of the error distribution and link function
     to be used in the model. This can be a character string naming
     a family function; a family function, or the result of a call
-    to a family function. (See \code{family} for details of family
-    functions.)
+    to a family function. See \code{\link{family}},
+    \code{\link{wedderburn}} and \code{\link{multinomial}} for possibilities.
   }
   \item{data}{ an optional data frame containing the variables in the model.
     If not found in \code{data}, the variables are taken from
@@ -35,8 +35,10 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     \code{na.action} attribute of \code{data}; second, any
     \code{na.action} setting of \code{options}, and third,
     \code{na.fail}.}
-  \item{method}{ the method to be used: either \code{``gnm.fit''} to fit the
-    model, or \code{``model.frame''} to return the model frame.}
+  \item{method}{ the method to be used: either \code{"gnm.fit"} to fit the
+    model, \code{"coef"} to return a vector of names for the
+    coefficients in the model, or \code{"model.frame"} to return the
+    model frame. }
   \item{offset}{ this can be used to specify an a priori known component to
     be added to the predictor during fitting. \code{offset} terms
     can be included in the formula instead or as well, and if both
@@ -76,15 +78,15 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   \code{A} and \code{B}. The \pkg{gnm} package includes plug-in
   functions for multiplicative interactions with homogeneous effects
   (\code{MultHomog}) and diagonal reference terms (\code{Dref}). Users
-  may also define their own plug-in functions, see \code{Nonlin} for
-  details.
+  may also define their own plug-in functions, see \code{\link{Nonlin}}
+  for details.
 
   For contingency tables, the data may be provided as an object of class
-  \code{``table''} from which the frequencies will be extracted to use
+  \code{"table"} from which the frequencies will be extracted to use
   as the response. In this case, the response should be specified as
-  \code{Freq} in the model formula. The \code{``predictors''},
-  \code{``fitted.values''}, \code{``residuals''}, \code{``prior.weights''},
-  \code{``weights''}, \code{``y''} and \code{``offset''} components of
+  \code{Freq} in the model formula. The \code{"predictors"},
+  \code{"fitted.values"}, \code{"residuals"}, \code{"prior.weights"},
+  \code{"weights"}, \code{"y"} and \code{"offset"} components of
   the returned \code{gnm} fit will be tables with the same format as the
   data.
 
@@ -94,16 +96,20 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   of successes and failures, or as a vector of the proportions of
   successes.
 
+  For multinomial models, the \code{response} should be a factor with
+  more than two levels. The model is re-expressed as a poisson model and
+  \code{gnm} is re-called. See \code{\link{multinomial}} for an example.
+
   The \code{gnm} fitting process consists of two stages. In the start-up
-  iterations, parameters are updated one-term at a time.  In the main
-  iterations, all the parameters are updated in each iteration. See
-  \code{gnm.control} for more details.
+  iterations, nonlinear parameters are updated one parameter at a time.
+  In the main iterations, all the parameters are updated in each
+  iteration. See \code{gnm.control} for more details.
 
   By default, \code{gnm} uses an over-parameterized representation of
-  the model that is being fitted. This means that no identifiability
-  constraints are imposed; rather a random parameterization is
-  obtained. The order of the parameter estimates is determined by the
-  order of the terms in \code{formula}.
+  the model that is being fitted. Only minimal identifiability constraints
+  are imposed, so that in general a random parameterization is obtained.
+  The parameter estimates are ordered so that those for any linear terms
+  appear first.
   
   \code{getContrasts} may be used to obtain estimates of specified
   contrasts, if these contrasts are identifiable. In particular,
@@ -117,9 +123,9 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   re-fitting a \code{gnm} model with new constraints.
 }
 \value{
-  \code{gnm} returns an object of class \code{``gnm''}, which inherits
-  first from \code{``glm''} then \code{``lm''}, and is a list containing
-  the following components:     
+  If \code{method = "gnm.fit"}, \code{gnm} returns an object of class
+  \code{"gnm"}, which inherits first from \code{"glm"} then \code{"lm"},
+  and is a list containing the following components:     
   \item{ call } { the matched call. }
   \item{ formula }{ the formula supplied. }
   \item{ constrain }{ a logical vector, indicating any parameters that were
@@ -150,6 +156,8 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     from the last iteration. }
   \item{ df.residual }{ the residual degrees of freedom. }
   \item{ rank }{ the numeric rank of the fitted model. }
+  \item{ auxiliary }{ a logical vector indicating whether parameters are
+    auxiliary parameters in the re-expression of a multinomial model. }
   
   The list may also contain the components \code{model}, \code{x}, or
   \code{vcov}, if requested in the arguments to \code{gnm}.
@@ -158,6 +166,11 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   response, the weights returned by \code{prior.weights} are the total
   numbers of cases (factored by the supplied case weights) and the
   component \code{y} of the result is the proportion of successes.
+
+  For multinomial models, the \code{gnm} object will also contain an
+  \code{original.call} component with the original call to
+  \code{gnm}. All the other components will relate to the secondary call
+  to \code{gnm} which is returned in \code{call}. 
   
   The function \code{summary} may be used to obtain and print a summary
   of the results.

@@ -10,9 +10,9 @@ in the set, and estimated standard errors for those estimated differences.
 getContrasts(model, sets = NULL, nsets = 1, ...)
 }
 \arguments{
-  \item{model}{ a model object of class \code{\dQuote{gnm}} }
+  \item{model}{ a model object of class \code{"gnm"}}
   \item{sets}{ a vector of indices (if \code{nsets} is 1) or
-    a list (of length nsets) of such vectors }
+    a list (of length \code{nsets}) of such vectors }
   \item{nsets}{ the number of vectors of indices to use}
   \item{\dots}{ arguments to pass to other functions }
 }
@@ -31,7 +31,7 @@ getContrasts(model, sets = NULL, nsets = 1, ...)
   \code{estimate} and \code{se}
 }
 \author{ David Firth }
-\seealso{ \code{\link{se}}, \code{\link{gnmConstrain}} }
+\seealso{ \code{\link{se}} }
 \examples{
 data(yaish)
 set.seed(1)

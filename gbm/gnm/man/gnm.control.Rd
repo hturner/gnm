@@ -19,10 +19,10 @@ gnm.control(epsilon = 1e-04, startit = 2, maxit = 500, trace = FALSE)
 }
 \details{
   The \code{gnm} fitting algorithm consists of two stages.  In the start-up
-  iterations, parameters are updated one-term at a time.  In the main
-  iterations, all the parameters are updated in each iteration, until
-  convergence is reached or the number or iterations reaches
-  \code{maxit}.
+  iterations, nonlinear parameters are updated one parameter at a time.
+  In the main iterations, all the parameters are updated in each
+  iteration, until convergence is reached or the number or iterations
+  reaches \code{maxit}.
 
   Convergence is judged by comparing the squared components of the score vector
   with corresponding elements of the diagonal of the Fisher information

@@ -2,7 +2,7 @@
 \alias{multinomial}
 \title{ A dummy multinomial family function for use with gnm models only }
 \description{
-  A function which returns  \code{list(family = "multinomial"}
+  A function which returns  \code{list(family = "multinomial")}
 }
 \usage{
 multinomial()

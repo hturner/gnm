@@ -2,7 +2,8 @@ getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     if (is.null(sets)){
         require(tcltk)
         require(relimp)
-        sets <- pickFrom(names(coef(model)), nsets,...)
+        sets <- pickFrom(names(coef(model))[!model$auxiliary],
+                         nsets,...)
         if (length(sets) == 0) stop("no parameter set(s) specified")
     }
     coefs <- coef(model)
@@ -10,7 +11,7 @@ getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     if (!is.list(sets)) sets <- list(sets)
     nsets <- length(sets)
     sets <- lapply(sets, function(x){
-        if (is.numeric(x)) x <- names(coefs)[x]
+        if (is.numeric(x)) x <- (names(coefs)[!model$auxiliary])[x]
         list(coefs = x, contr = contr.sum(factor(x)))})
     cmatrix <- lapply(sets, function(x){
         temp <- matrix(0, l, length(x$coefs))

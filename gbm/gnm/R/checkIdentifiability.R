@@ -1,6 +1,6 @@
 checkIdentifiability <-
     function(model, cmatrix, tolerance = 1e-4, verbose = TRUE){
-    if (verbose) cat("ckecking identifiability...\n")
+    if (verbose) cat("checking identifiability...\n")
     if (!inherits(model, "gnm")) stop("model not of class gnm")
     coefs <- coef(model)
         l <- length(coefs)

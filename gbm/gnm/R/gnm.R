@@ -58,11 +58,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     }
     
     if (family$family == "binomial") {
-        if (NCOL(y) == 1) {
-            if (is.factor(y)) 
+        if (NCOL(y) == 1 & is.factor(y))
                 y <- y != levels(y)[1]
-            n <- rep.int(1, nObs)
-        }
         else if (NCOL(y) == 2) {
             n <- y[, 1] + y[, 2]
             y <- ifelse(n == 0, 0, y[, 1]/n)
@@ -76,17 +73,12 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         if (!is.factor(y)) stop(
                 "multinomial response data must be factor or matrix")
         y <- factor.incidence.matrix(y)
-        resp.var.name <- names(modelData)[
-                                          attr(attr(modelData, "terms"),
+        resp.var.name <- names(modelData)[attr(attr(modelData, "terms"),
                                                "response")]
-        n <- rep.int(1, nObs)
         if (is.null(colnames(y))) colnames(y) <- 1:ncol(y)
-        n <- rowSums(y)
         .rowID <- factor(t(row(y)))
         assign(resp.var.name, factor(rep(colnames(y), nrow(y))))
-        Weights <- rep(weights * n, rep(ncol(y), nrow(y)))
         .counts <- as.vector(t(y))
-        nObs <- length(.counts)
         modelData <- modelData[.rowID, , drop = FALSE]
         modelData$.rowID <- .rowID
         modelData[[resp.var.name]] <- get(resp.var.name)
@@ -95,10 +87,18 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                                           .counts ~ -1 + .rowID + .)
         newCall$family <- as.name("poisson")
         newCall$data <- as.name("modelData")
-        if (!is.null(call$weights)) newCall$weights <- as.name("Weights")
+        if (!is.null(call$weights))
+          newCall$weights <- rep(weights * rowSums(y), rep(ncol(y), nrow(y)))
+        if (!is.null(constrain)) {
+          if (is.list(constrain))
+            newCall$constrain <- lapply(constrain, "+", nrow(y))
+          else
+            newCall$constrain <- c(rep(FALSE, nrow(y)), constrain)
+        }
         newCall$subset <- NULL
         result <- eval(newCall)
         result$original.call <- call
+        result$auxiliary[seq(nrow(y))] <- TRUE
         return(result)
 }
 
@@ -123,11 +123,11 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     }
     else {
         modelTools <- gnmTools(modelTerms, modelData, x)
-    
+
         if (is.null(constrain))
-            constrain <- rep.int(FALSE, length(modelTools$factorAssign))
+          constrain <- rep.int(FALSE, length(modelTools$factorAssign))
         else if (is.list(constrain))
-            constrain <- ifelse(is.element(seq(modelTools$factorAssign),
+          constrain <- ifelse(is.element(seq(modelTools$factorAssign),
                                          constrain), TRUE, FALSE)
 
         fit <- gnm.fit(modelTools, y, constrain, family, weights,
@@ -138,8 +138,9 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                   family = family, prior.weights = weights,
                   terms = attr(modelTerms, "terms"),
                   na.action = attr(modelData, "na.action"),
-                  xlevels = .getXlevels(modelTerms, modelData),
-                  y = y, offset = offset, control = control), fit)
+                  xlevels = .getXlevels(modelTerms, modelData), y = y,
+                  offset = offset, control = control), fit,
+             list(auxiliary = rep(FALSE, length(coef(fit)))))
     
     if (!is.null(tableFormula)) {
         toTable <- c("predictors", "fitted.values", "residuals",

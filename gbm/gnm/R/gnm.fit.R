@@ -104,24 +104,26 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta <- theta + theChange 
             theta[constrain] <- 0
         }
-        if (status == "converged" | all(!is.na(start))) break
+        if (status %in% c("converged", "not.converged") | all(!is.na(start)))
+            break
         else {
             attempt <- attempt + 1
             if (attempt > 5) {
                 cat("Fit attempted 5 times without success: terminating.\n")
                 break
             }
-            cat("Bad parameterisation: restarting.\n")
+            cat(switch(status,
+                       "not.finite" =
+                       "Iterative weights are not all finite: restarting.\n",
+                       "no.deviance" =
+                       "Deviance is NaN: restarting. \n"))
+            #cat("Bad parameterisation: restarting.\n")
         }
     }
-    switch(status,
-           "not.finite" = stop(
-           "Fit unsuccessful: iterative weights are not all finite.\n"),
-           "no.deviance" = stop("Fit unsuccessful: deviance is NaN. \n"),
-           "not.converged" =
-            warning("Fitting algorithm has either not converged or converged\n",
-                    "to a non-solution of the likelihood equations.\n",
-                    "Re-start gnm with coefficients of returned model.\n"))
+    if (status == "not.converged")
+        warning("Fitting algorithm has either not converged or converged\n",
+                "to a non-solution of the likelihood equations.\n",
+                "Re-start gnm with coefficients of returned model.\n")
     theta[constrain] <- NA
     Info <- crossprod(X, WX)
     VCOV <- gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE)
@@ -135,7 +137,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 deviance = dev,
                 aic = modelAIC,
                 iter = iter,
-                conv = conv,
+                conv = status == "converged",
                 weights = w,
                 residuals = z,
                 df.residual = nObs - attr(VCOV, "rank"),

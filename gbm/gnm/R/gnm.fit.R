@@ -8,10 +8,11 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
 ##    Need to sort out how start and constrain arguments interact with
 ##    eliminate: the coef and vcov components of the object relate only
 ##    to non-eliminated parameters.
-    status <- "not.converged"
     attempt <- 1
     eliminateChecked <- length(eliminate) == 0
     repeat {
+        status <- "not.converged"
+        dev <- numeric(2)
         if (any(is.na(start))) {
             theta <- modelTools$start()
             theta[!is.na(start)] <- start[!is.na(start)]
@@ -80,10 +81,11 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 status <- "not.finite"
                 break
             }
-            dev <- sum(family$dev.resids(y, mu, weights))
+            dev[2] <- dev[1]
+            dev[1] <- sum(family$dev.resids(y, mu, weights))
             if (control$trace)
-                cat("Iteration", iter, ". Deviance = ", dev, "\n")
-            if (is.nan(dev)) {
+                cat("Iteration", iter, ". Deviance = ", dev[1], "\n")
+            if (is.nan(dev[1])) {
                 status <- "no.deviance"
                 break
             }
@@ -94,7 +96,11 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             if (all(abs(score) < control$epsilon*sqrt(diagInfo))){
                 status <- "converged"
                 break
-            }            
+            }
+            if (iter >1 & dev[1] - dev[2] < 1e-16) {
+                status <- "stuck"
+                break
+            }
             Z <- cbind(z, X)
             WZ <- w * Z
             ZWZ <- crossprod(Z, WZ)
@@ -108,15 +114,15 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             break
         else {
             attempt <- attempt + 1
+            cat(switch(status,
+                       "not.finite" = "Iterative weights are not all finite",
+                       "no.deviance" = "Deviance is NaN",
+                       "stuck" = "Iterations are not converging"))
             if (attempt > 5) {
-                cat("Fit attempted 5 times without success: terminating.\n")
+                cat(".\nFit attempted 5 times without success: terminating.\n")
                 break
             }
-            cat(switch(status,
-                       "not.finite" =
-                       "Iterative weights are not all finite: restarting.\n",
-                       "no.deviance" =
-                       "Deviance is NaN: restarting. \n"))
+            else cat(": restarting. \n")
             #cat("Bad parameterisation: restarting.\n")
         }
     }
@@ -128,13 +134,13 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
     Info <- crossprod(X, WX)
     VCOV <- gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
-                                            dev) + 2 * attr(VCOV, "rank"))
+                                            dev[1]) + 2 * attr(VCOV, "rank"))
     
     fit <- list(coefficients =
                 if (length(eliminate) == 0) theta else theta[-eliminate],
                 predictors = eta,
                 fitted.values = mu,
-                deviance = dev,
+                deviance = dev[1],
                 aic = modelAIC,
                 iter = iter,
                 conv = status == "converged",

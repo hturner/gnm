@@ -97,7 +97,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 status <- "converged"
                 break
             }
-            if (iter >1 & dev[1] - dev[2] < 1e-16) {
+            if (iter >1 & abs(diff(dev)) < 1e-16) {
                 status <- "stuck"
                 break
             }

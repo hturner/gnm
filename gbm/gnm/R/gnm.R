@@ -103,15 +103,14 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
 }
 
     if (is.empty.model(modelTerms)) {
-        if (!valideta(offset))
+        if (!family$valideta(offset))
             stop("Invalid predictor values in empty model")
         mu <- family$linkinv(offset)
-        if (!validmu(mu))
+        if (!family$validmu(mu))
             stop("Invalid fitted values in empty model")
-        dmu <- family$mu.eta(eta)
+        dmu <- family$mu.eta(offset)
         dev <- sum(family$dev.resids(y, mu, weights))
-        modelAIC <- family$aic(y, rep.int(1, nObs), mu, weights, dev) +
-        2 * attr(VCOV, "rank")
+        modelAIC <- family$aic(y, rep.int(1, nObs), mu, weights, dev)
         fit <- list(coefficients = numeric(0), predictors = offset,
                     fitted.values = mu, deviance = dev, aic = modelAIC,
                     iter = 0, conv = NULL,
@@ -138,8 +137,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                   family = family, prior.weights = weights,
                   terms = attr(modelTerms, "terms"),
                   na.action = attr(modelData, "na.action"),
-                  xlevels = .getXlevels(modelTerms, modelData), y = y,
-                  offset = offset, control = control), fit,
+                  xlevels = .getXlevels(attr(modelTerms, "terms"), modelData),
+                  y = y, offset = offset, control = control), fit,
              list(auxiliary = rep(FALSE, length(coef(fit)))))
     
     if (!is.null(tableFormula)) {

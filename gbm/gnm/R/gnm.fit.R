@@ -65,7 +65,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             dev <- sum(family$dev.resids(y, mu, weights))
             if (control$trace)
                 cat("Iteration", iter, ". Deviance = ", dev, "\n")
-            if (is.nan(dev)) print("need to restart here!")
+            if (is.nan(dev)) break
             z <- (y - mu)/dmu
             WX <- w * X
             score <- drop(crossprod(z, WX))
@@ -77,15 +77,17 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             Z <- cbind(z, X)
             WZ <- w * Z
             ZWZ <- crossprod(Z, WZ)
-            ZWZinv <- try(gInvSymm(ZWZ, eliminate = 1 + eliminate,
-                                   first.col.only = TRUE),
-                          silent = TRUE)
-            if (inherits(ZWZinv, "try-error")) break
+            ZWZinv <- gInvSymm(ZWZ, eliminate = 1 + eliminate,
+                                   first.col.only = TRUE)
+            #ZWZinv <- try(gInvSymm(ZWZ, eliminate = 1 + eliminate,
+#                                   first.col.only = TRUE),
+#                          silent = TRUE)
+            #if (inherits(ZWZinv, "try-error")) break
             theChange <- - (ZWZinv[, 1] / ZWZinv[1, 1])[-1] 
             theta <- theta + theChange 
             theta[constrain] <- 0
         }
-        if (!inherits(ZWZinv, "try-error") | all(!is.na(start))) break
+        if (conv | all(!is.na(start))) break
         else {
             attempt <- attempt + 1
             if (attempt > 5) {
@@ -96,20 +98,20 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
         }
     }
     if (!conv) {
-        if (!all(is.finite(Info)))
-            stop("Fit unsuccessful: values in information matrix are not ",
-                 "all finite.\n")
+        #if (!all(is.finite(Info)))
+#            stop("Fit unsuccessful: values in information matrix are not ",
+#                 "all finite.\n")
+        if (is.nan(dev))
+            stop("Fit unsuccessful: deviance is NaN")
         else
             warning("Fitting algorithm has either not converged or converged\n",
                     "to a non-solution of the likelihood equations.\n",
                     "Re-start gnm with coefficients of returned model.\n")
     }
     theta[constrain] <- NA
-    WX <- w * X
     Info <- crossprod(X, WX)
     VCOV <- try(gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE),
                 silent = TRUE)
-    dev <- sum(family$dev.resids(y, mu, weights))
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev) + 2 * attr(VCOV, "rank"))
     

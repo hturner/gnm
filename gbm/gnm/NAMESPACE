@@ -1,6 +1,6 @@
 export(checkEstimable, Diag, Dref, Exp,  getContrasts, gnm,
        gnm.control, MPinv, Mult, MultHomog, multinomial, Nonlin, se, Symm,
-       summary.gnm, wedderburn)
+       summary.gnm, term.predictors, wedderburn)
 
 import(MASS, stats)
 importFrom(gtools, combinations)

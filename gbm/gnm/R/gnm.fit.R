@@ -1,7 +1,10 @@
 gnm.fit <- function(modelTools, y, constrain, family = poisson(),
-                     weights = rep.int(1, length(y)),
-                     offset = rep.int(0, length(y)), nObs = length(y),
-                     start = NULL, control = gnm.control(...), x, vcov) {
+                    weights = rep.int(1, length(y)),
+                    offset = rep.int(0, length(y)), nObs = length(y),
+                    start = NULL,
+                    control = gnm.control(...), x, vcov,
+                    eliminate = numeric(0)) {
+    eliminate <- 1:101
     conv <- FALSE
     attempt <- 1
     repeat {
@@ -39,24 +42,31 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             mu <- family$linkinv(eta)
             dmu <- family$mu.eta(eta)
             vmu <- family$variance(mu)
-            W <- diag(weights*dmu*dmu/vmu)
-            WX <- crossprod(W, X)
-            Info <- crossprod(X, WX)
-            VCOV <- try(MPinv(Info, tol = 100*.Machine$double.eps),
-                        silent = TRUE)
-            if (inherits(VCOV, "try-error")) break
-            dev <- sum(family$dev.resids(y, mu, weights))
-            if (control$trace)
+            w <- weights * dmu * dmu / vmu
+            if (control$trace){
+                dev <- sum(family$dev.resids(y, mu, weights))
                 cat("Iteration", iter, ". Deviance = ", dev, "\n")
-            score <- drop(crossprod(weights*(y - mu)*dmu/vmu, X))
-            if (all(abs(score) < control$epsilon*sqrt(diag(Info)))){
+            }
+            z <- (y - mu)/dmu
+            WX <- w * X
+            score <- drop(crossprod(z, WX))
+            diagInfo <- colSums(X * WX)
+            if (all(abs(score) < control$epsilon*sqrt(diagInfo))){
                 conv <- TRUE
                 break
-            }
-            theta <- theta + drop(crossprod(VCOV, score))
+            }            
+            Z <- cbind(z, X)
+            WZ <- w * Z
+            ZWZ <- crossprod(Z, WZ)
+            ZWZinv <- try(gInvSymm(ZWZ, eliminate = 1 + eliminate,
+                                   first.col.only = TRUE),
+                          silent = TRUE)
+            if (inherits(ZWZinv, "try-error")) break
+            theChange <- - (ZWZinv[,1] / ZWZinv[1,1])[-1] 
+            theta <- theta + theChange 
             theta[constrain] <- 0
         }
-        if (!inherits(VCOV, "try-error") | all(!is.na(start))) break
+        if (!inherits(ZWZinv, "try-error") | all(!is.na(start))) break
         else {
             attempt <- attempt + 1
             if (attempt > 5) {
@@ -76,11 +86,24 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     "Re-start gnm with coefficients of returned model.\n")
     }
     theta[constrain] <- NA
+    WX <- w * X
+    Info <- crossprod(X, WX)
+    VCOV <- try(gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE),
+                silent = TRUE)
+    dev <- sum(family$dev.resids(y, mu, weights))
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev) + 2 * attr(VCOV, "rank"))
-    fit <- list(coefficients = theta, predictors = eta, fitted.values = mu,
-                deviance = dev, aic = modelAIC, iter = iter, conv = conv,
-                weights = diag(W), residuals = (y - mu)/dmu,
+    
+    fit <- list(coefficients =
+                if (length(eliminate) == 0) theta else theta[- eliminate],
+                predictors = eta,
+                fitted.values = mu,
+                deviance = dev,
+                aic = modelAIC,
+                iter = iter,
+                conv = conv,
+                weights = w,
+                residuals = z,
                 df.residual = nObs - attr(VCOV, "rank"),
                 rank = attr(VCOV, "rank"))
     if (x) fit$x <- structure(X, assign = modelTools$termAssign)

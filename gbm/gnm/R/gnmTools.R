@@ -43,22 +43,8 @@
     }
     
     classIndex <- sapply(labelList, class)
-    classIndex[setdiff(grep("Mult", multIndex), grep("Exp", classIndex))] <-
-        "MultNotExp"
-
-    #multiplicative <- factor(parameterGroup)
-   # levels(multiplicative) <- multIndex
-   # multiplicative <-
-       # is.element(multiplicative, multIndex[duplicated(multIndex)])
-
-    #theta <- 0.1 + rnorm(length(modelTools$multiplicative))/20
-      #  factorList <- modelTools$factorList(theta)
-      #  X <- modelTools$localDesignFunction(factorList)
-      #  suppressWarnings(theta[!modelTools$multiplicative] <-
-                #         naToZero(glm.fit(X[,!modelTools$multiplicative], y,
-                        #                  family = family, intercept =
-                       #                   attr(attr(modelData, "terms"),
-                         #                      "intercept") > 0)$coefficients))
+    classIndex[is.element(multIndex, multIndex[duplicated(multIndex)]) &
+               classIndex != "Exp"] <- "MultNotExp"
 
     start <- function (scale = 0.2) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,

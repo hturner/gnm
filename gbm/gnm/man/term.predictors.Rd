@@ -56,5 +56,5 @@ all.equal(as.numeric(rowSums(contrib)),
 as.numeric(gnmAB$predictors)) #TRUE
 }
 
-\keyword{ ~kwd1 }% at least one, from doc/KEYWORDS
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ models }
+\keyword{ regression }

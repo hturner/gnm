@@ -40,14 +40,19 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
                 }
-                theta[linear] <- 0
                 factorList <- modelTools$factorList(theta)
                 eta <- offset + modelTools$predictor(factorList)
-                z <- (y - mu)/dmu
+                mu <- family$linkinv(eta)
+                dmu <- family$mu.eta(eta)
+                vmu <- family$variance(mu)
                 w <- weights * dmu * dmu / vmu
+                theta[linear] <- 0
+                nonlinearFactorList <- modelTools$factorList(theta)
+                offsetNonlin <- offset +
+                    modelTools$predictor(nonlinearFactorList)
+                z <- eta - offsetNonlin + (y - mu)/dmu
                 theta[linear] <-
-                    suppressWarnings(naToZero(lm.wfit(X[,linear], z, w, offset =
-                                                      eta)$coefficients))
+                    suppressWarnings(naToZero(lm.wfit(X[,linear], z, w)$coef))
                 if (control$trace){
                     dev <- sum(family$dev.resids(y, mu, weights))
                     cat("Startup iteration", iter,

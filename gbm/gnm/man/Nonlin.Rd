@@ -67,10 +67,10 @@ Nonlin(functionCall, data = NULL)
 \seealso{\\code{\link{gnm}}, \code{\link{MultHomog}}, \code{\link{Dref}},
          \code{\link{Mult}}}
 \examples{
-data(Goodman)
-test <- gnm(counts ~ origin + destination + Diag(origin, destination) +
+data(occupational.status)
+test <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
             Nonlin(MultHomog(origin, destination)), family = poisson,
-            data = Goodman)
+            data = occupational.status)
 }
 \keyword{ models }
 \keyword{ regression }

@@ -1,5 +1,6 @@
-export(Diag, Dref, Exp, MPinv, Mult, MultHomog, Nonlin, Symm,
-       getContrasts, gnm, gnm.control, gnmConstrain, summary.gnm)
+export(Diag, Dref, Exp,  getContrasts, gnm, gnm.control, gnmConstrain,
+       MPinv, Mult, MultHomog, multinomial, Nonlin, Symm, summary.gnm,
+       wedderburn)
 
 import(stats)
 importFrom(gtools, combinations)

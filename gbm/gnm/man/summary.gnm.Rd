@@ -7,11 +7,11 @@
 }
 \usage{
 ##  S3 method for class 'gnm'
-\method{summary}{glm}(object, dispersion = NULL, correlation = FALSE, symbolic.cor =
+\method{summary}{gnm}(object, dispersion = NULL, correlation = FALSE, symbolic.cor =
 FALSE, ...)
 
 ## S3 method for class 'summary.gnm'
-\method{print}{glm}(x, digits = max(3, getOption("digits") - 3), symbolic.cor =
+\method{print}{summary.gnm}(x, digits = max(3, getOption("digits") - 3), symbolic.cor =
 x$symbolic.cor, ...)
 }
 \arguments{

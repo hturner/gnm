@@ -42,10 +42,10 @@ MultHomog(...)
   \code{\link{Mult}} for specifying multiplicative interactions in
   \code{gnm} formulae.}
 \examples{
-data(Goodman)
-test <- gnm(counts ~ origin + destination + Diag(origin, destination) +
+data(occupational.status)
+test <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
             Nonlin(MultHomog(origin, destination)), family = poisson,
-            data = Goodman)
+            data = occupational.status)
 }
 \keyword{ models }
 \keyword{ regression }

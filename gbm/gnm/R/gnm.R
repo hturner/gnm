@@ -7,10 +7,6 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     
     modelTerms <- gnmTerms(formula)
     
-    if (inherits(data, "table"))
-        tableFormula <- paste(names(dimnames(data)), collapse = "+")
-    else tableFormula <- NULL
-    
     modelData <- match.call(expand.dots = FALSE)
     argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
                     names(modelData), 0)
@@ -140,8 +136,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                   xlevels = .getXlevels(attr(modelData, "terms"), modelData),
                   y = y, offset = offset, control = control), fit,
              list(auxiliary = rep(FALSE, length(coef(fit)))))
-    
-    if (!is.null(tableFormula)) {
+
+    if (inherits(data, "table") & !is.empty.model(modelTerms)) {
         toTable <- c("predictors", "fitted.values", "residuals",
                      "prior.weights", "weights", "y", "offset")
         fit[toTable] <- lapply(toTable, function(x) {

@@ -74,8 +74,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
     if (x) fit$x <- structure(X, assign = modelTools$termAssign, dimnames =
                               list(NULL, names(modelTools$factorAssign)))
     if (vcov) {
-        VCOV[, constrain] <- 0
-        VCOV[constrain, ] <- 0
+        VCOV[constrain, constrain] <- 0
         fit$vcov <- structure(VCOV, dimnames =
                       c(rep.int(list(names(modelTools$factorAssign)), 2)))
     }

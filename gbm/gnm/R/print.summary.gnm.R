@@ -1,7 +1,11 @@
 print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
                                 symbolic.cor = x$symbolic.cor, ...) 
 {
-    cat("\nCall:\n", deparse(x$call), "\n\n", sep = "", fill = TRUE)
+    if (!is.null(x$original.call))
+      cat("\nCall:\n", deparse(x$original.call), "\n\n", sep = "",
+          fill = TRUE)
+    else
+      cat("\nCall:\n", deparse(x$call), "\n\n", sep = "", fill = TRUE)
     
     cat("Deviance Residuals: \n")
     if (x$df.residual > 5) {
@@ -13,7 +17,7 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     
     if (length(coef(x))) {
         cat("\nCoefficients:\n")
-        print.default(format(x$coefficients, digits = digits), print.gap = 2,
+        print.default(format(x$coefficients[!x$auxiliary], digits = digits), print.gap = 2,
                       quote = FALSE)
     }
     else cat("\nNo coefficients\n\n")
@@ -30,11 +34,13 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
         if (p > 1) {
             cat("\nCorrelation of Coefficients:\n")
             if (is.logical(symbolic.cor) && symbolic.cor) {
-                print(symnum(correl, abbr.col = NULL))
+                print(symnum(correl[!x$auxiliary, !x$auxiliary],
+                             abbr.col = NULL))
             }
             else {
-                correl <- format(round(correl, 2), nsmall = 2, 
-                  digits = digits)
+                correl <- format(round(correl[!x$auxiliary,
+                                              !x$auxiliary], 2), nsmall = 2, 
+                                 digits = digits)
                 correl[!lower.tri(correl)] <- ""
                 print(correl[-1, -p, drop = FALSE], quote = FALSE)
             }

@@ -16,15 +16,19 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
     if (!"vcov" %in% names(object)){
         start <- coef(object)
         cov.unscaled <- update(object, vcov = TRUE, start = start,
-                                  trace = FALSE)$vcov
+                               trace = FALSE)$vcov[!object$auxiliary,
+                                 !object$auxiliary]
     }
-    else cov.unscaled  <- object$vcov
+    else cov.unscaled  <- object$vcov[!object$auxiliary, !object$auxiliary]
     cov.scaled <- dispersion * cov.unscaled
     ans <- c(object[c("call", "terms", "family", "deviance", "aic",
                       "df.residual", "iter")],
              list(deviance.resid = residuals(object, type = "deviance"), 
-                  coefficients = coef(object), dispersion = dispersion,
-                  cov.unscaled = cov.unscaled, cov.scaled = cov.scaled))
+                  coefficients = coef(object), auxiliary = object$auxiliary,
+                  dispersion = dispersion, cov.unscaled = cov.unscaled,
+                  cov.scaled = cov.scaled))
+    if (!is.null(object$original.call))
+        ans$original.call <- object$original.call
     if (correlation & object$rank > 0) {
         dd <- sqrt(diag(cov.unscaled))
         ans$correlation <- cov.unscaled/outer(dd, dd)

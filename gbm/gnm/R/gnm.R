@@ -148,6 +148,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                 constrain <- ifelse(is.element(seq(modelTools$classIndex),
                                                constrain), TRUE, FALSE)
         }
+
+        if (is.null(start)) start <- rep.int(NA, length(modelTools$classIndex))
         
         fit <- gnm.fit(modelTools, y, constrain, family, weights,
                        offset, nObs = nObs, start = start,
@@ -161,13 +163,17 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                   y = y, offset = offset, control = control), fit,
              list(auxiliary = rep(FALSE, length(coef(fit)))))
 
+    asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
+             "weights", "y", "offset")
     if (inherits(data, "table") & !is.empty.model(modelTerms)) {
-        toTable <- c("predictors", "fitted.values", "residuals",
-                     "prior.weights", "weights", "y", "offset")
-        fit[toTable] <- lapply(toTable, function(x) {
-            as.table(tapply(fit[[x]],
+        fit[asY] <- lapply(fit[asY], function(x) {
+            as.table(tapply(x,
                             as.data.frame(data)[names(dimnames(data))], sum))})
     }
+    else
+        fit[asY] <- lapply(fit[asY],
+                           function(x, y) structure(x, names = names(y)), y)
+    
     if (model) {
         attr(modelData, "terms") <- attr(modelTerms, "terms")
         fit$model <- modelData

@@ -5,11 +5,13 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
     conv <- FALSE
     attempt <- 1
     repeat {
-        if (is.null(start)) {
+        if (any(is.na(start))) {
             theta <- modelTools$start()
+            theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
-            for (iter in seq(control$startit)) {
-                for (i in seq(theta)[modelTools$classIndex != "Linear"]) {
+            oneAtATime <- modelTools$classIndex != "Linear" & is.na(start)
+            for (iter in seq(control$startit)[any(oneAtATime)]) {
+                for (i in seq(theta)[oneAtATime]) {
                     if (constrain[i]) break
                     factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
@@ -27,7 +29,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                         ". Deviance = ", dev, "\n")    
             }
         }    
-        else theta <- ifelse(!constrain, start, 0)
+        else theta <- structure(ifelse(!constrain, start, 0),
+                                names = names(modelTools$classIndex))
         for (iter in seq(control$maxit)) {
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)

@@ -47,7 +47,13 @@ Dref(..., formula = ~ 1)
   
   Sobel, M. E. (1985), Social mobility and fertility revisited: Some
   new models for the analysis of the mobility effects hypothesis.  
-  \emph{American Sociological Review} \bold{50}, 699--712.}
+  \emph{American Sociological Review} \bold{50}, 699--712.
+
+  Van der Slik, F. W. P., De Graaf, N. D and Gerris, J. R. M. (2002)
+  Conformity to Parental Rules: Asymmetric Influences of Father's and
+  Mother's Levels of Education. \emph{European Sociological Review}
+  \bold{18(4)}, 489 -- 502. 
+}
 \author{ Heather Turner }
 \seealso{\code{\link{gnm}} and \code{\link{Nonlin}} for usage.
   
@@ -56,6 +62,7 @@ Dref(..., formula = ~ 1)
   \code{\link{Mult}} for specifying multiplicative interactions
   in \code{gnm} formulae.}
 \examples{
+## see conformity.Rd
     
 }
 \keyword{ models }

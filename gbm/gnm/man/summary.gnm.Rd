@@ -16,7 +16,7 @@ x$symbolic.cor, ...)
 }
 \arguments{
   \item{object}{ an object of class \code{``gnm''}. }
-  \item{x}{ an object of class \code{``summary.gnm''. }
+  \item{x}{ an object of class \code{``summary.gnm''}. }
   \item{dispersion}{ the dispersion parameter for the fitting family. By
   default it is obtained from \code{object}. }
   \item{correlation}{ logical: if \code{TRUE}, the correlation matrix of

@@ -145,7 +145,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         toTable <- c("predictors", "fitted.values", "residuals",
                      "prior.weights", "weights", "y", "offset")
         fit[toTable] <- lapply(toTable, function(x)
-                               xtabs(as.formula(paste(x, "~", tableFormula)),
+                               xtabs(reformulate(tableFormula, x),
                                      data = cbind(modelData, fit[toTable])))
     }
     if (model) {

@@ -29,17 +29,17 @@ Nonlin(functionCall, data = NULL)
     interactions with homogeneous effects (\code{MultHomog}) and diagonal
     reference terms (\code{Dref}).  Users may also define their own plug-in
     functions which should return a list with the following components:
-        \describe{\item{start} {(optional) either a vector of starting values
+        \describe{\item{start}{(optional) either a vector of starting values
                                 for the parameters or a function which takes the
                                 number of parameters and returns a vector of
                                 starting values.}
-                  \item{labels} {a character vector of labels for the
+                  \item{labels}{a character vector of labels for the
                                  parameters.}
-                  \item{predictor} {a function which takes a vector of parameter
+                  \item{predictor}{a function which takes a vector of parameter
                                     estimates and returns either a vector of
                                     fitted values or a matrix whose columns are
                                     additive components of the fitted values.}
-                  \item{localDesignFunction} {a function which takes the
+                  \item{localDesignFunction}{a function which takes the
                                               arguments \code{coef} (a vector of
                                               parameter estimates) and/or
                                               \code{predictor} (the result

@@ -141,7 +141,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     that a saturated model has deviance zero. }
   \item{ aic }{ Akaike's \emph{An Information Criterion}, minus twice the
     maximized log-likelihood plus twice the number of coefficients (so assuming
-    that the dispersion is known.}
+    that the dispersion is known).}
   \item{ iter }{ the number of main iterations.}
   \item{ conv }{ logical indicating whether the main iterations converged. }
   \item{ weights }{ the \emph{working} weights, that is, the weights used in
@@ -173,7 +173,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   not act as straight-forward accessor functions for \code{gnm} objects,
   but return the prior weights and deviance residuals respectively, as
   for \code{glm} objects.  
-  
+}  
 \author{ Heather Turner, David Firth }
 \seealso{
   \code{\link{formula}} for the symbolic language used to specify

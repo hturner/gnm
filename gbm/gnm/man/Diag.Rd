@@ -23,6 +23,7 @@ operates on k-level factors to produce a new factor having k+1 levels;
 if \code{binary = TRUE} is specified, the result is a coarser binary 
 variable equal to 1 where all of the input factors are equal and 0 
 otherwise.
+}
 \author{ David Firth }
 \seealso{ \code{\link{Symm}}}
 \examples{

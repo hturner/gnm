@@ -11,6 +11,7 @@
 \format{
 A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
 \code{orig} (levels \code{1:7}) and \code{dest} (levels \code{1:7}).
+}
 \references{
 Yaish, M (1998). Opportunities, Little Change. Class Mobility in Israeli Society: 
 1974-1991.  D.Phil. Thesis, Nuffield College, University of Oxford.

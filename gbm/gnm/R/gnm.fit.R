@@ -4,7 +4,10 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     start = NULL,
                     control = gnm.control(...), x, vcov,
                     eliminate = numeric(0)) {
-    eliminate <- 1:101
+##    eliminate <- 1:101 in the backpain example
+##    Need to sort out how start and constrain arguments interact with
+##    eliminate: the coef and vcov components of the object relate only
+##    to non-eliminated parameters.
     conv <- FALSE
     attempt <- 1
     repeat {
@@ -23,14 +26,17 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     X <- modelTools$localDesignFunction(theta, factorList)
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
-                    score <- crossprod(weights * (y - mu) * dmu / vmu, X[,i])
-                    gradient <- crossprod(weights*dmu*dmu/vmu, (X[,i])^2)
+                    w <- weights * dmu * dmu / vmu
+                    Xi <- X[,i]
+                    score <- crossprod((y - mu)/dmu, w * Xi)
+                    gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
                 }
-                dev <- sum(family$dev.resids(y, mu, weights))
-                if (control$trace)
+                if (control$trace){
+                    dev <- sum(family$dev.resids(y, mu, weights))
                     cat("Startup iteration", iter,
-                        ". Deviance = ", dev, "\n")    
+                        ". Deviance = ", dev, "\n")
+                }
             }
         }    
         else theta <- structure(ifelse(!constrain, start, 0),
@@ -47,6 +53,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 dev <- sum(family$dev.resids(y, mu, weights))
                 cat("Iteration", iter, ". Deviance = ", dev, "\n")
             }
+            if (is.nan(dev)) print("need to restart here!")
             z <- (y - mu)/dmu
             WX <- w * X
             score <- drop(crossprod(z, WX))
@@ -62,7 +69,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                                    first.col.only = TRUE),
                           silent = TRUE)
             if (inherits(ZWZinv, "try-error")) break
-            theChange <- - (ZWZinv[,1] / ZWZinv[1,1])[-1] 
+            theChange <- - (ZWZinv[, 1] / ZWZinv[1, 1])[-1] 
             theta <- theta + theChange 
             theta[constrain] <- 0
         }
@@ -95,7 +102,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                                             dev) + 2 * attr(VCOV, "rank"))
     
     fit <- list(coefficients =
-                if (length(eliminate) == 0) theta else theta[- eliminate],
+                if (length(eliminate) == 0) theta else theta[-eliminate],
                 predictors = eta,
                 fitted.values = mu,
                 deviance = dev,

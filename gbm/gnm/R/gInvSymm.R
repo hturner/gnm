@@ -24,13 +24,21 @@ gInvSymm <- function(mat, eliminate = numeric(0), first.col.only = FALSE,
     Qi <- MPinv(Qmat)
     rankQ <- attr(Qi, "rank")
     k <- length(T)
-    result <- matrix(NA, n, if (first.col.only) 1 else n)
-    cols.notElim <- if (first.col.only) 1 else !elim
+    result <- matrix(NA,
+                     if (non.elim.only) n - k else n,
+                     if (first.col.only) 1 else
+                         if (non.elim.only) n - k else n)
+    cols.notElim <- if (first.col.only) 1 else
+                        if (non.elim.only) 1:(n - k) else
+                           !elim
+    rows.notElim <- if (non.elim.only) 1:(n - k) else !elim
     if (first.col.only) Qi <- Qi[, 1, drop = FALSE]
-    result[!elim, cols.notElim] <- Qi
-    temp <- - crossprod(Qi, V.Ti)
-    result[elim, cols.notElim] <- t(temp)    
-    if (!first.col.only){
+    result[rows.notElim, cols.notElim] <- Qi
+    if (!non.elim.only){
+                         temp <- - crossprod(Qi, V.Ti)
+                         result[elim, cols.notElim] <- t(temp)
+                     }
+    if (!first.col.only && !non.elim.only){
         result[!elim, elim] <- temp
         temp <- crossprod(V.Ti, Qi) %*% V.Ti
         diag.indices <- k*(0:(k-1)) + 1:k
@@ -38,9 +46,12 @@ gInvSymm <- function(mat, eliminate = numeric(0), first.col.only = FALSE,
         result[elim, elim] <- temp
     }
     attr(result, "rank") <- rankQ + k
-    rownames(result) <- theNames <- colnames(mat)
+    theNames <- colnames(mat)
+    rownames(result) <- if (non.elim.only) theNames[!elim]
+                        else theNames
     colnames(result) <-
         if (first.col.only) theNames[!elim][1]
-        else theNames
+        else if (non.elim.only) theNames[!elim]
+             else theNames
     result
 }

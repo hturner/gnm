@@ -8,7 +8,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
 ##    Need to sort out how start and constrain arguments interact with
 ##    eliminate: the coef and vcov components of the object relate only
 ##    to non-eliminated parameters.
-    conv <- FALSE
+    status <- "not.converged"
     attempt <- 1
     eliminateChecked <- length(eliminate) == 0
     repeat {
@@ -20,7 +20,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             oneAtATime <- {!linear & modelTools$classIndex != "plugInStart" &
                            is.na (start)}
             for (iter in seq(length = control$startit * any(oneAtATime))) {
-                for (i in seq(theta)[oneAtATime]) {
+                for (i in rep(seq(theta)[oneAtATime], 2)) {
                     if (constrain[i]) break
                     factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
@@ -76,16 +76,23 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             dmu <- family$mu.eta(eta)
             vmu <- family$variance(mu)
             w <- weights * dmu * dmu / vmu
+            if (any(!is.finite(w))) {
+                status <- "not.finite"
+                break
+            }
             dev <- sum(family$dev.resids(y, mu, weights))
             if (control$trace)
                 cat("Iteration", iter, ". Deviance = ", dev, "\n")
-            if (is.nan(dev)) break
+            if (is.nan(dev)) {
+                status <- "no.deviance"
+                break
+            }
             z <- (y - mu)/dmu
             WX <- w * X
             score <- drop(crossprod(z, WX))
             diagInfo <- colSums(X * WX)
             if (all(abs(score) < control$epsilon*sqrt(diagInfo))){
-                conv <- TRUE
+                status <- "converged"
                 break
             }            
             Z <- cbind(z, X)
@@ -93,15 +100,11 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             ZWZ <- crossprod(Z, WZ)
             ZWZinv <- gInvSymm(ZWZ, eliminate = 1 + eliminate,
                                    first.col.only = TRUE)
-            #ZWZinv <- try(gInvSymm(ZWZ, eliminate = 1 + eliminate,
-#                                   first.col.only = TRUE),
-#                          silent = TRUE)
-            #if (inherits(ZWZinv, "try-error")) break
             theChange <- - (ZWZinv[, 1] / ZWZinv[1, 1])[-1] 
             theta <- theta + theChange 
             theta[constrain] <- 0
         }
-        if (conv | all(!is.na(start))) break
+        if (status == "converged" | all(!is.na(start))) break
         else {
             attempt <- attempt + 1
             if (attempt > 5) {
@@ -111,21 +114,17 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             cat("Bad parameterisation: restarting.\n")
         }
     }
-    if (!conv) {
-        #if (!all(is.finite(Info)))
-#            stop("Fit unsuccessful: values in information matrix are not ",
-#                 "all finite.\n")
-        if (is.nan(dev))
-            stop("Fit unsuccessful: deviance is NaN")
-        else
+    switch(status,
+           "not.finite" = stop(
+           "Fit unsuccessful: iterative weights are not all finite.\n"),
+           "no.deviance" = stop("Fit unsuccessful: deviance is NaN. \n"),
+           "not.converged" =
             warning("Fitting algorithm has either not converged or converged\n",
                     "to a non-solution of the likelihood equations.\n",
-                    "Re-start gnm with coefficients of returned model.\n")
-    }
+                    "Re-start gnm with coefficients of returned model.\n"))
     theta[constrain] <- NA
     Info <- crossprod(X, WX)
-    VCOV <- try(gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE),
-                silent = TRUE)
+    VCOV <- gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev) + 2 * attr(VCOV, "rank"))
     

@@ -1,7 +1,6 @@
 Dref <- function(..., formula = ~ 1) {
     labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
     gnmData <- getModelFrame()
-    browser()
     
     # get design matrices for Dref factors
     designList <- lapply(labelList, function(x) {

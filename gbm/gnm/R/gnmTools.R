@@ -14,20 +14,18 @@
     for (i in seq(labelList)) {
         if (inherits(labelList[[i]], "Nonlin")) {
             termTools[[i]] <- eval(attr(labelList[[i]], "call"),
-                                    envir = gnmData)
+                                   envir = gnmData)
             factorAssign[[i]] <-
                 structure(rep(i, length(termTools[[i]]$labels)),
                           names = paste(prefixList[[i]], ".",
                           termTools[[i]]$labels, sep = ""))
         }
         else {
-            termTools[[i]] <-
-                model.matrix(as.formula(paste("~ - 1 + ", labelList[[i]],
-                                              sep = "")), data = gnmData)
+            termTools[[i]] <- model.matrix(reformulate(labelList[[i]]),
+                                           data = gnmData)
             factorAssign[[i]] <- structure(rep(i, ncol(termTools[[i]])),
-                                             names = paste(prefixList[[i]],
-                                             colnames(termTools[[i]]),
-                                             sep = ""))
+                                           names = paste(prefixList[[i]],
+                                           colnames(termTools[[i]]), sep = ""))
         }
     }
 
@@ -43,8 +41,6 @@
     }
     
     classIndex <- sapply(labelList, class)
-    classIndex[is.element(multIndex, multIndex[duplicated(multIndex)]) &
-               classIndex != "Exp"] <- "MultNotExp"
 
     start <- function (scale = 0.2) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
@@ -57,15 +53,13 @@
             else
                 theta[ind] <- termTools[[i]]$start
         }
-        ind <- classIndex[factorAssign] == "MultNotExp"
-        theta[ind] <- 2 * scale + theta[ind]
         ind <- classIndex[factorAssign] == "character"
-        theta[ind] <- 0
-        lin <- model.matrix(reformulate(labelList[classIndex == "character"]),
-                            data = gnmData)
-        lin <- naToZero(glm.fit(lin, model.response(gnmData), weights = weights,
-                                offset = offset, family = family)$coefficients)
-        theta[names(lin)] <- lin
+        theta[ind] <- 2 * scale + theta[ind]
+        ind <- classIndex[factorAssign] == "Linear"
+        if (any(ind)) theta[ind] <-
+            naToZero(glm.fit(termTools[[1]], model.response(gnmData),
+                             weights = weights, offset = offset,
+                             family = family)$coefficients)
         theta
     }
 

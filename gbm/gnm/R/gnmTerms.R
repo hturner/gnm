@@ -4,10 +4,13 @@ gnmTerms <- function(formula)
     if (is.empty.model(fullTerms))
         return(structure(formula, terms = fullTerms))
 
-    labelList <- as.list(attr(fullTerms, "term.labels"))
-    if (attr(fullTerms, "intercept") == 1) labelList <- c("1", labelList)
-    for (i in grep("(Dref|Mult|Nonlin)[[:space:]]*\\(", unlist(labelList)))
-        labelList[[i]] <- eval(parse(text = labelList[[i]]))
+    labelList <- c(ifelse(attr(fullTerms, "intercept"), "1", "-1"),
+                   attr(fullTerms, "term.labels"))
+    nonlinear <- is.element(seq(labelList),
+                            grep("(Mult|Nonlin)[[:space:]]*\\(", labelList))
+    labelList <- c(list(structure(labelList[!nonlinear], class = "Linear")),
+                   lapply(labelList[nonlinear],
+                          function(term) eval(parse(text = term))))
     labelList <- prefixList <- unlistOneLevel(labelList)
     
     classIndex <- sapply(labelList, class)
@@ -15,8 +18,6 @@ gnmTerms <- function(formula)
     for (i in seq(labelList))
         prefixList[[i]] <-
             switch(classIndex[[i]],
-                   "Dref" = paste("Dref(", paste(labelList[[i]],
-                   collapse = ","),")", sep = ""),
                    "Mult" = paste("Mult", multNo[i], ".Factor",
                    seq(labelList[[i]]), ".", sep = ""),
                    "Nonlin" = deparse(attr(labelList[[i]], "call")),
@@ -34,11 +35,9 @@ gnmTerms <- function(formula)
                                     "variables")[-1])[attr(fullTerms,
                                                            "offset")], deparse)
     
-    structure(as.formula(paste(response, "~",
-                               paste(c(unlist(labelList), unlist(offsetList),
-                                       predictorOffset,
-                                       unlist(colnames(extraData))),
-                                       collapse = "+"))),
+    structure(reformulate(c(unlist(labelList), unlist(offsetList),
+                            predictorOffset, unlist(colnames(extraData))),
+                          response),
               terms = fullTerms,
               offset = offsetList,
               parsed.labels = labelList,

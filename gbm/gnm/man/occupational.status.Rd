@@ -19,6 +19,7 @@ Cross-Classifications having Ordered
 Categories. \emph{J. Am. Stat. Assoc.}, \bold{74(367)}, 537-552.
 }
 \examples{
+set.seed(1)
 data(occupational.status)
 
 ##  Fit a uniform association model separating diagonal effects

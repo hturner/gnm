@@ -186,7 +186,9 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   not act as straight-forward accessor functions for \code{gnm} objects,
   but return the prior weights and deviance residuals respectively, as
   for \code{glm} objects.  
-}  
+}
+\references{ Cautres, B, Heath, A F and Firth, D (1998).  Class, religion and vote in
+Britain and France.  \emph{La Lettre de la Maison Francaise} \bold{8}. }
 \author{ Heather Turner, David Firth }
 \seealso{
   \code{\link{formula}} for the symbolic language used to specify
@@ -209,6 +211,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
 \examples{
 ##  Analysis of a 4-way contingency table
 
+set.seed(1)
 data(cautres)
 print(cautres)
 
@@ -222,36 +225,39 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
 
 ##  Examine the multipliers of the class-vote log odds ratios
 
-coef(doubleUnidiff)[118:121]
-#  Mult2.Factor1.election1 Mult2.Factor1.election2 Mult2.Factor1.election3 
-#               -1.1899542              -0.5082191              -0.7405835 
-#  Mult2.Factor1.election4 
-#               -0.8281143
+coefs.of.interest <- grep("Mult2.*election", names(coef(doubleUnidiff)))
+coef(doubleUnidiff)[coefs.of.interest]
+##  Mult2.Factor1.election1 Mult2.Factor1.election2 
+##               -0.5724370               0.1092972 
+##  Mult2.Factor1.election3 Mult2.Factor1.election4 
+##               -0.1230682              -0.2105843
 
 ##  Re-parameterize by setting Mult2.Factor1.election4 to zero
 
-getContrasts(doubleUnidiff, 118:121)
-#                            estimate        se
-#  Mult2.Factor1.election1 -0.3618399 0.2534762
-#  Mult2.Factor1.election2  0.3198951 0.1320034
-#  Mult2.Factor1.election3  0.0875308 0.1446842
-#  Mult2.Factor1.election4  0.0000000 0.0000000
+getContrasts(doubleUnidiff, coefs.of.interest)
+##                            estimate        se
+##  Mult2.Factor1.election1 -0.3618399 0.2534762
+##  Mult2.Factor1.election2  0.3198951 0.1320034
+##  Mult2.Factor1.election3  0.0875308 0.1446842
+##  Mult2.Factor1.election4  0.0000000 0.0000000
 
 ##  Same thing but with election 1 as reference category:
 
-getContrasts(doubleUnidiff, 121:118)
-#                            estimate        se
-#  Mult2.Factor1.election4  0.3618399 0.2534746
-#  Mult2.Factor1.election3  0.4493707 0.2473524
-#  Mult2.Factor1.election2  0.6817351 0.2401645
-#  Mult2.Factor1.election1  0.0000000 0.0000000
+getContrasts(doubleUnidiff, rev(coefs.of.interest))
+##                            estimate        se
+##  Mult2.Factor1.election4  0.3618399 0.2534746
+##  Mult2.Factor1.election3  0.4493707 0.2473524
+##  Mult2.Factor1.election2  0.6817351 0.2401645
+##  Mult2.Factor1.election1  0.0000000 0.0000000
 
 ## Re-fit model with Mult2.Factor1.election1 set to zero
-doubleUnidiffConstrained <- update(doubleUnidiff, constrain = 118)
+
+doubleUnidiffConstrained <-
+    update(doubleUnidiff, constrain = coefs.of.interest[1])
 
 ##  Examine the multipliers of the class-vote log odds ratios
 
-coef(doubleUnidiffConstrained)[118:121]
+coef(doubleUnidiffConstrained)[coefs.of.interest]
 
 ## ...as using 'getContrasts' (to 4 d.p.).
 }

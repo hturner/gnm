@@ -11,7 +11,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta[constrain] <- 0
             oneAtATime <- {!modelTools$classIndex %in%
                            c("Linear", "plugInStart") & is.na(start)}
-            for (iter in seq(control$startit)[any(oneAtATime)]) {
+            for (iter in seq(length = control$startit * any(oneAtATime))) {
                 for (i in seq(theta)[oneAtATime]) {
                     if (constrain[i]) break
                     factorList <- modelTools$factorList(theta)

@@ -67,14 +67,14 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                 "offset cannot be used with multinomial logit models") 
         if (!is.factor(y)) stop(
                 "multinomial response must be a factor")
-        Y <- factor.incidence.matrix(y)
+        Y <- class.ind(y)
         resp.var.name <- names(modelData)[attr(attr(modelData, "terms"),
                                                "response")]
         if (is.null(colnames(Y))) colnames(Y) <- 1:ncol(Y)
         .rowID <- factor(t(row(Y)))
-        assign(resp.var.name, factor(rep(colnames(Y), nrow(Y)),
+        assign(resp.var.name, C(factor(rep(colnames(Y), nrow(Y)),
                                      levels = levels(y),
-                                     ordered = is.ordered(y)))
+                                     ordered = is.ordered(y)), treatment))
         .counts <- as.vector(t(Y))
         modelData <- modelData[.rowID, , drop = FALSE]
         modelData$.rowID <- .rowID

@@ -44,10 +44,18 @@ data(cautres)
 
 set.seed(1)
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
-    + Mult(Exp(election), religion:vote) + Mult(Exp(election), class:vote),
-    family = poisson, data = cautres, trace = TRUE, startit = 1)
+    + Mult(Exp(election - 1), religion:vote - 1) +
+    Mult(Exp(election - 1), class:vote - 1),
+    family = poisson, data = cautres, trace = TRUE)
 
-## ...struggles with only one start-up iteration!
+set.seed(1)
+doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
+    + Mult(Exp(election - 1), religion:vote - 1) +
+    Mult(Exp(election - 1), class:vote - 1),
+    family = poisson, data = cautres, trace = TRUE, startit = 10)
+
+## ...increasing 'startit' may not speed convergence of main iterations
+## as only nonlinear parameters are updated in the start-up iterations.
 }
 \keyword{ models }
 \keyword{ regression }

@@ -17,8 +17,9 @@ MultHomog(...)
 \details{
   Designed to work as a plug-in function for \code{gnm}, \code{MultHomog}
   produces the objects required to fit a multiplicative interaction in which
-  level effects are constrained to be equal across factors. It is assumed that
-  the factors have levels with the same names, in the same order.
+  level effects are constrained to be equal across factors. If the given
+  factors do not have exactly the same levels, the set of levels is taken to be
+  the union of the factor levels, sorted into increasing order.
   
   To specify a homogeneous multiplicative interaction in the formula argument
   to \code{gnm}, the symbolic wrapper \code{Nonlin} must be used, with a call
@@ -34,6 +35,10 @@ MultHomog(...)
     the parameters in the interaction and returns
     the local design matrix.}
 }
+\references{
+  Goodman, L. A. (1979) Simple Models for the Analysis of Association in
+  Cross-Classifications having Ordered
+  Categories. \emph{J. Am. Stat. Assoc.}, \bold{74(367)}, 537-552. }
 \author{ Heather Turner }
 \seealso{\code{\link{gnm}} and \code{\link{Nonlin}} for usage.
   
@@ -45,9 +50,9 @@ MultHomog(...)
 set.seed(1)
 data(occupational.status)
 gnm(Freq ~ origin + destination + Diag(origin, destination) +
-            Nonlin(MultHomog(-1 + origin, -1 + destination)), family = poisson,
+            Nonlin(MultHomog(origin, destination)), family = poisson,
             data = occupational.status)
-## Deviance is 32.65, 34 d.f.
+## Deviance is 32.56, 34 d.f.
 }
 \keyword{ models }
 \keyword{ regression }

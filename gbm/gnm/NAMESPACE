@@ -5,6 +5,7 @@ export(checkEstimable, Diag, Dref, Exp,  getContrasts, gnm,
 import(MASS, stats)
 importFrom(gtools, combinations)
 importFrom(graphics, plot)
+importFrom(nnet, class.ind)
 
 S3method(add1, gnm)
 S3method(addterm, gnm)

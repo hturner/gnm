@@ -11,7 +11,7 @@
 checkEstimable(model, cmatrix, tolerance = 1e-8)
 }
 \arguments{
-  \item{model}{  a model object of class \code{\dQuote{gnm}} }
+  \item{model}{  a model object of class \code{"gnm"} }
   \item{cmatrix}{  numeric: either a vector of length the same as
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
@@ -23,8 +23,7 @@ tested; \code{NA} where a parameter combination is identically zero.}
 \author{ David Firth }
 \seealso{
   \code{\link{se}},
-  \code{\link{getContrasts}},
-  \code{\link{gnmConstrain}}
+  \code{\link{getContrasts}}
 }
 \examples{
 data(yaish)

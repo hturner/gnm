@@ -3,11 +3,23 @@ MultHomog <- function(...){
     gnmData <- getModelFrame()
 
     designList <- lapply(labelList, function(x) {
-        model.matrix(reformulate(x), data = gnmData)
+        with(gnmData, class.ind(get(x)))
     })
 
-    # assume factors have same levels with same names
-    labels <- colnames(designList[[1]])
+    ## get labels for all levels
+    allLevels <- lapply(designList, colnames)
+    labels <- unique(unlist(allLevels))
+    nLevels <- length(labels)
+
+    ## expand design matrices if necessary
+    if (!all(mapply(identical, allLevels, list(labels)))) {
+        labels <- sort(labels)
+        M <- matrix(0, nrow = nrow(gnmData), ncol = nLevels,
+                    dimnames = list(NULL, labels))
+        designList <- lapply(designList, function(design, M) {
+            M[,colnames(design)] <- design
+            M}, M)
+    }
     
     predictor <- function(coef) {
         do.call("pprod", lapply(designList, "%*%", coef))

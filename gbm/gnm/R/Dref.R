@@ -4,16 +4,18 @@ Dref <- function(..., formula = ~ 1) {
     
     # get design matrices for Dref factors
     designList <- lapply(labelList, function(x) {
-        M <- model.matrix(reformulate(c(-1, x)), data = gnmData)
-        colnames(M) <- with(gnmData, levels(as.factor(eval(parse(text = x)))))
-        M
+        with(gnmData, class.ind(get(x)))
     })
-    global <- unique(unlist(lapply(designList, colnames)))
+
+    ## get labels for global parameters
+    allLevels <- lapply(designList, colnames)
+    global <- unique(unlist(allLevels))
     nGlobal <- length(global)
 
     ## pad out if necessary
-    if (!all(mapply(identical, sapply(designList, colnames), global))) {
-        M <- matrix(0, nrow = nrow(rowData), ncol = nGlobal,
+    if (!all(mapply(identical, allLevels, list(global)))) {
+        labels <- sort(labels)
+        M <- matrix(0, nrow = nrow(gnmData), ncol = nGlobal,
                     dimnames = list(NULL, global))
         designList <- lapply(designList, function(design, M) {
             M[,colnames(design)] <- design

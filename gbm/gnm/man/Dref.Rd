@@ -24,7 +24,11 @@ Dref(..., formula = ~ 1)
   By default, \code{Dref} will produce the objects required to fit a diagonal
   reference term involving the factors specified, with a constant weight for
   each factor. An alternative model for the weights may be specified via the
-  \code{formula} argument.  
+  \code{formula} argument.
+
+  If the given factors do not have exactly the same levels, the set of
+  levels in the diagonal reference term is taken to be the union of the
+  factor levels, sorted into increasing order.
 }
 \value{
   A list with the components required of a \code{gnm} plug-in function:

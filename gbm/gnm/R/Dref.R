@@ -3,9 +3,7 @@ Dref <- function(..., formula = ~ 1) {
     gnmData <- getModelFrame()
     
     # get design matrices for Dref factors
-    designList <- lapply(labelList, function(x) {
-        with(gnmData, class.ind(get(x)))
-    })
+    designList <- lapply(gnmData[, labelList], class.ind)
 
     ## get labels for global parameters
     allLevels <- lapply(designList, colnames)
@@ -26,7 +24,7 @@ Dref <- function(..., formula = ~ 1) {
     local <- model.matrix(formula, data = gnmData)
 
     # create index and labels for parameters
-    factorIndex <- c(rep(seq(labelList), ncol(local)), rep(0, nGlobal))
+    factorIndex <- c(rep(seq(labelList), each = ncol(local)), rep(0, nGlobal))
     if (ncol(local) > 1)
         labels <- c(as.vector(sapply(labelList, paste, colnames(local),
                                      sep = ".")), global)

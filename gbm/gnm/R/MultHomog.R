@@ -2,9 +2,7 @@ MultHomog <- function(...){
     labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
     gnmData <- getModelFrame()
 
-    designList <- lapply(labelList, function(x) {
-        with(gnmData, class.ind(get(x)))
-    })
+    designList <- lapply(gnmData[, labelList], class.ind)
 
     ## get labels for all levels
     allLevels <- lapply(designList, colnames)

@@ -207,8 +207,8 @@ print(cautres)
 ##  multipliers.
 
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
-    + Mult(Exp(election), religion:vote) + Mult(Exp(election), class:vote),
-    family = poisson, data = cautres)
+    + Mult(Exp(election - 1), religion:vote - 1) +
+    Mult(Exp(election - 1), class:vote - 1), family = poisson, data = cautres)
 
 ##  Examine the multipliers of the class-vote log odds ratios
 
@@ -235,6 +235,15 @@ getContrasts(doubleUnidiff, 121:118)
 #  Mult2.Factor1.election3  0.4493707 0.2473524
 #  Mult2.Factor1.election2  0.6817351 0.2401645
 #  Mult2.Factor1.election1  0.0000000 0.0000000
+
+## Re-fit model with Mult2.Factor1.election1 set to zero
+doubleUnidiffConstrained <- update(doubleUnidiff, constrain = 118)
+
+##  Examine the multipliers of the class-vote log odds ratios
+
+coef(doubleUnidiffConstrained)[118:121]
+
+## ...as above (to 4 d.p.).
 }
 \keyword{ models }
 \keyword{ regression }

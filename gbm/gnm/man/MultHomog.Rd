@@ -42,10 +42,12 @@ MultHomog(...)
   \code{\link{Mult}} for specifying multiplicative interactions in
   \code{gnm} formulae.}
 \examples{
+set.seed(1)
 data(occupational.status)
-test <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-            Nonlin(MultHomog(origin, destination)), family = poisson,
+gnm(Freq ~ origin + destination + Diag(origin, destination) +
+            Nonlin(MultHomog(-1 + origin, -1 + destination)), family = poisson,
             data = occupational.status)
+## Deviance is 32.65, 34 d.f.
 }
 \keyword{ models }
 \keyword{ regression }

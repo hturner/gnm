@@ -25,7 +25,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         attr(modelData, "terms") <- attr(modelTerms, "terms")
         return(modelData)
     }
-    else if (method != "gnm.fit")
+    else if (!method %in% c("gnm.fit", "coef.names"))
         warning("method = ", method, " is not supported. Using \"gnm.fit\".")
     
     y <- model.response(modelData, "numeric")
@@ -109,6 +109,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
 }
 
     if (is.empty.model(modelTerms)) {
+        if (method == "coef.names") return(numeric(0))
         if (!family$valideta(offset))
             stop("Invalid predictor values in empty model")
         mu <- family$linkinv(offset)
@@ -130,6 +131,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     else {
         modelTools <- gnmTools(modelTerms, modelData, x, y, family, weights,
                                offset)
+
+        if (method == "coef.names") return(names(modelTools$classIndex))
 
         if (is.null(constrain))
           constrain <- rep.int(FALSE, length(modelTools$classIndex))

@@ -4,11 +4,12 @@ gnmTerms <- function(formula)
     if (is.empty.model(fullTerms))
         return(structure(formula, terms = fullTerms))
 
-    labelList <- c(ifelse(attr(fullTerms, "intercept"), "1", "-1"),
-                   attr(fullTerms, "term.labels"))
+    labelList <- attr(fullTerms, "term.labels")
     nonlinear <- is.element(seq(labelList),
                             grep("(Mult|Nonlin)[[:space:]]*\\(", labelList))
-    labelList <- c(list(structure(labelList[!nonlinear], class = "Linear")),
+    labelList <- c(list(structure(c(-1[!attr(fullTerms, "intercept")],
+                                    labelList[!nonlinear]),
+                                  class = "Linear"))[any(!nonlinear)],
                    lapply(labelList[nonlinear],
                           function(term) eval(parse(text = term))))
     labelList <- prefixList <- unlistOneLevel(labelList)

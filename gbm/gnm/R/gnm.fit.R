@@ -9,14 +9,11 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta <- modelTools$start()
             theta[constrain] <- 0
             for (iter in seq(control$startit)) {
-                for (i in seq(theta)[modelTools$factorAssign != "Linear"]) {
+                for (i in seq(theta)[modelTools$classIndex != "Linear"]) {
                     if (constrain[i]) break
-                    parameterList <- unname(split(theta,
-                                                  modelTools$factorAssign))
-                    factorList <- modelTools$factorList(parameterList)
+                    factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
-                    X <- modelTools$localDesignFunction(parameterList,
-                                                        factorList)
+                    X <- modelTools$localDesignFunction(theta, factorList)
                     mu <- family$linkinv(eta)
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
@@ -28,10 +25,9 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
         }    
         else theta <- ifelse(!constrain, start, 0)
         for (iter in seq(control$maxit)) {
-            parameterList <- unname(split(theta, modelTools$factorAssign))
-            factorList <- modelTools$factorList(parameterList)
+            factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
-            X <- modelTools$localDesignFunction(parameterList, factorList)
+            X <- modelTools$localDesignFunction(theta, factorList)
             mu <- family$linkinv(eta)
             dmu <- family$mu.eta(eta)
             vmu <- family$variance(mu)
@@ -44,13 +40,13 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             dev <- sum(family$dev.resids(y, mu, weights))
             if (control$trace)
                 cat("Iteration", iter, ". Deviance = ", dev, "\n")
-            score <- as.vector(crossprod(weights*(y - mu)*dmu/vmu, X))
+            score <- drop(crossprod(weights*(y - mu)*dmu/vmu, X))
             if (all(abs(score) < control$epsilon*sqrt(diag(Info)))){
                 conv <- TRUE
                 break
             }
-            theta <- ifelse(!constrain,
-                        theta + drop(crossprod(VCOV, score)), 0)
+            theta <- theta + drop(crossprod(VCOV, score))
+            theta[constrain] <- 0
         }
         if (!inherits(VCOV, "try-error") | !is.null(start)) break
         else {
@@ -73,19 +69,15 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
     theta[constrain] <- NA
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev) + 2 * attr(VCOV, "rank"))
-    fit <- list(coefficients = structure(theta, names =
-                names(modelTools$factorAssign)), predictors = eta,
-                fitted.values = mu, deviance = dev, aic = modelAIC,
-                iter = iter,
-                conv = conv, weights = diag(W), residuals = (y - mu)/dmu,
+    fit <- list(coefficients = theta, predictors = eta, fitted.values = mu,
+                deviance = dev, aic = modelAIC, iter = iter, conv = conv,
+                weights = diag(W), residuals = (y - mu)/dmu,
                 df.residual = nObs - attr(VCOV, "rank"),
                 rank = attr(VCOV, "rank"))
-    if (x) fit$x <- structure(X, assign = modelTools$termAssign, dimnames =
-                              list(NULL, names(modelTools$factorAssign)))
+    if (x) fit$x <- structure(X, assign = modelTools$termAssign)
     if (vcov) {
         VCOV[constrain, constrain] <- 0
-        fit$vcov <- structure(VCOV, dimnames =
-                      c(rep.int(list(names(modelTools$factorAssign)), 2)))
+        fit$vcov <- VCOV
     }
     fit    
 }

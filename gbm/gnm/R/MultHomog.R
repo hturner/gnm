@@ -3,7 +3,7 @@ MultHomog <- function(...){
     env <- parent.frame()
 
     designList <- lapply(labelList, function(x) {
-        model.matrix(as.formula(paste("~ - 1 + ", x, sep = "")), data = env)
+        model.matrix(reformulate(x), data = env)
     })
 
     # assume factors have same levels with same names

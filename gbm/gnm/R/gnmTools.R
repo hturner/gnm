@@ -41,6 +41,8 @@
     }
     
     classIndex <- sapply(labelList, class)
+    thetaClassIndex <- structure(classIndex[factorAssign],
+                                names = names(factorAssign))
 
     start <- function (scale = 0.2) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
@@ -53,9 +55,9 @@
             else
                 theta[ind] <- termTools[[i]]$start
         }
-        ind <- classIndex[factorAssign] == "character"
+        ind <- thetaClassIndex == "character"
         theta[ind] <- 2 * scale + theta[ind]
-        ind <- classIndex[factorAssign] == "Linear"
+        ind <- thetaClassIndex == "Linear"
         if (any(ind)) theta[ind] <-
             naToZero(glm.fit(termTools[[1]], model.response(gnmData),
                              weights = weights, offset = offset,
@@ -63,8 +65,8 @@
         theta
     }
 
-    factorList <- function(parameterList) {
-        factorList <- parameterList
+    factorList <- function(theta) {
+        factorList <- parameterList <- unname(split(theta, factorAssign))
         for (i in seq(factorList)) {
             factorList[[i]] <-
                 switch(classIndex[[i]],
@@ -82,22 +84,24 @@
                                multIndex,
                                function(list) do.call("pprod", list))))
     
-    localDesignFunction <- function(parameterList, factorList) {
+    localDesignFunction <- function(theta, factorList) {
         derivativeList <- productList <- list()
         for (i in seq(termTools)) derivativeList[[i]] <- 
             switch(classIndex[[i]],
                    "Exp" = factorList[[i]] * termTools[[i]],
                    "Nonlin" = termTools[[i]]$localDesignFunction(
-                   coef = parameterList[[i]], predictor = factorList[[i]]),
+                   coef = theta[factorAssign == i],
+                   predictor = factorList[[i]]),
                    termTools[[i]])
         for (i in seq(derivativeList)) 
             productList[[i]] <- derivativeList[[i]] * 
                 do.call("pprod", (factorList[(multIndex == multIndex[i]) &
                                    (seq(multIndex) != i)]))
-        do.call("cbind", productList)
+        structure(do.call("cbind", productList),
+                  dimnames = list(NULL, colnames = names(factorAssign)))
     }
 
-    toolList <- list(factorAssign = factorAssign, start = start,
+    toolList <- list(classIndex = thetaClassIndex, start = start,
                      factorList = factorList, predictor = predictor,
                      localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign

@@ -90,8 +90,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                     stop("constrain = \"pick\", and tcltk not installed")
                 if (!require(relimp))
                     stop("the relimp package from CRAN needs to be installed")
-                constrain <- is.element(names(modelTools$factorAssign),
-                                        pickFrom(names(modelTools$factorAssign)
+                constrain <- is.element(names(modelTools$classIndex),
+                                        pickFrom(names(modelTools$classIndex)
                                                  [-seq(nrow(y))]))
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")
@@ -132,21 +132,20 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                                offset)
 
         if (is.null(constrain))
-          constrain <- rep.int(FALSE, length(modelTools$factorAssign))
+          constrain <- rep.int(FALSE, length(modelTools$classIndex))
         else {
             if (constrain == "pick") {
                 if (!require(tcltk))
                     stop("constrain = \"pick\", and tcltk not installed")
                 if (!require(relimp))
                     stop("the relimp package from CRAN needs to be installed")
-                constrain <- is.element(names(modelTools$factorAssign),
-                                        pickFrom(names(modelTools$
-                                                       factorAssign)))
+                constrain <- is.element(names(modelTools$classIndex),
+                                        pickFrom(names(modelTools$classIndex)))
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")
             }
             if (is.numeric(constrain))
-                constrain <- ifelse(is.element(seq(modelTools$factorAssign),
+                constrain <- ifelse(is.element(seq(modelTools$classIndex),
                                                constrain), TRUE, FALSE)
         }
         

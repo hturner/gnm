@@ -4,8 +4,7 @@ Dref <- function(..., formula = ~ 1) {
     
     # get design matrices for Dref factors
     designList <- lapply(labelList, function(x) {
-        M <- model.matrix(as.formula(paste("~ - 1 + ", x, sep = "")),
-                          data = env)
+        M <- model.matrix(reformulate(x), data = env)
         colnames(M) <- gsub(x, "", colnames(M))
         M
     })

@@ -56,13 +56,8 @@
         }
         theta <- unlist(theta)
         ind <- is.element(factorAssign, setdiff(grep("Mult", multIndex),
-                                                match("Exp", classIndex)))
+                                                grep("Exp", classIndex)))
         theta[ind] <- 2 * scale + theta[ind]
-        # could be expanded to all special terms (only relevant to Nonlin atm)
-        #specified <- lapply(labelList, attr, "start")
-        #ind <- !sapply(specified, is.null)
-        #theta[is.element(factorAssign, seq(labelList)[ind])] <-
-            #as.numeric(unlist(specified[ind]))
         theta
     }
 

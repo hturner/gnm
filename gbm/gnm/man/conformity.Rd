@@ -68,23 +68,23 @@ F <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)) + MFCM +
 
 \dontrun{
 ## equivalent models for fathers
-A <- gnm(FCFF ~ Nonlin(Dref(MOPLM, FOPLF)) + FFCF + AGEM + FRMF +
+A <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM)) + FFCF + AGEM + FRMF +
          MRMM + MWORK - 1, family = gaussian, data = slik)
 exp(coef(A)[6])/(exp(coef(A)[6]) + exp(coef(A)[7])) # as in Table 4
 
-B <- gnm(FCFF ~ Nonlin(Dref(MOPLMadj, FOPLFadj)) + FFCF
+B <- gnm(FCFF ~ Nonlin(Dref(FOPLFadj, MOPLMadj)) + FFCF
          + AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
 
-C <- gnm(FCFF ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + AGEM)) + FFCF +
+C <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + AGEM)) + FFCF +
          AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
 
-D <- gnm(FCFF ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MRMM)) + FFCF +
+D <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + MRMM)) + FFCF +
          AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
 
-E <- gnm(FCFF ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MWORK)) + FFCF +
+E <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + MWORK)) + FFCF +
          AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
 
-F <- gnm(FCFF ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + FFCF)) + FFCF +
+F <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + FFCF)) + FFCF +
          AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
 }
 }

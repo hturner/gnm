@@ -29,8 +29,8 @@
         }
     }
 
-    eliminate <- seq(sum(attr(termTools[[1]], "assign") == 1 &
-                     !is.null(eliminate)))
+    eliminate <- seq(sum(attr(termTools[[1]],
+                              "assign") == 1))[!is.null(eliminate)]
 
     factorAssign <- do.call("c", factorAssign)
 
@@ -39,9 +39,9 @@
     
     classID <- sapply(labelList, class)
     plugInStart <- !sapply(lapply(termTools, function(x) x$start), is.null)
-    classID <- classID
-    classID[plugInStart] <- "plugInStart"
-    classID <- structure(classID[factorAssign],
+    thetaClassID <- classID
+    thetaClassID[plugInStart] <- "plugInStart"
+    thetaClassID <- structure(thetaClassID[factorAssign],
                                 names = names(factorAssign))
     
     if (x | term.predictors) {
@@ -49,7 +49,7 @@
         if ("Linear" %in% classID) {
             linearAssign <- attr(termTools[[1]], "assign")
             termAssign <- termAssign + max(linearAssign) - 1
-            termAssign[classID == "Linear"] <- linearAssign
+            termAssign[thetaClassID == "Linear"] <- linearAssign
         }
     }
 
@@ -114,7 +114,7 @@
                   dimnames = list(NULL, names(factorAssign)))
     }
 
-    toolList <- list(eliminate = eliminate, classID = classID,
+    toolList <- list(eliminate = eliminate, classID = thetaClassID,
                      start = start, factorList = factorList,
                      predictor = predictor,
                      localDesignFunction = localDesignFunction)

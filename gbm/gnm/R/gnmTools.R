@@ -1,5 +1,6 @@
 "gnmTools" <-
-    function(gnmTerms, gnmData, x, family, weights, offset, term.predictors)
+    function(gnmTerms, gnmData, x, family, weights, offset, eliminate,
+             term.predictors)
 {
     labelList <- attr(gnmTerms, "parsed.labels")
     prefixList <- attr(gnmTerms, "prefix.labels")
@@ -28,24 +29,27 @@
         }
     }
 
+    eliminate <- seq(sum(attr(termTools[[1]], "assign") == 1 &
+                     !is.null(eliminate)))
+
     factorAssign <- do.call("c", factorAssign)
 
     multIndex <- gsub("\.Factor[0-9]+\.", "", unlist(prefixList))
     multIndex[multIndex == ""] <- seq(sum(multIndex == ""))
     
-    classIndex <- sapply(labelList, class)
+    classID <- sapply(labelList, class)
     plugInStart <- !sapply(lapply(termTools, function(x) x$start), is.null)
-    thetaClassIndex <- classIndex
-    thetaClassIndex[plugInStart] <- "plugInStart"
-    thetaClassIndex <- structure(thetaClassIndex[factorAssign],
+    classID <- classID
+    classID[plugInStart] <- "plugInStart"
+    classID <- structure(classID[factorAssign],
                                 names = names(factorAssign))
     
     if (x | term.predictors) {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
-        if ("Linear" %in% classIndex) {
+        if ("Linear" %in% classID) {
             linearAssign <- attr(termTools[[1]], "assign")
             termAssign <- termAssign + max(linearAssign) - 1
-            termAssign[thetaClassIndex == "Linear"] <- linearAssign
+            termAssign[classID == "Linear"] <- linearAssign
         }
     }
 
@@ -53,13 +57,6 @@
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
                            names = names(factorAssign))
         theta <- ifelse(theta < 0, theta - scale, theta + scale)
-        #ind <- thetaClassIndex == "Linear"
-#        if (any(ind)) theta[ind] <-
-#            suppressWarnings(naToZero(glm.fit(termTools[[1]],
-#                                              model.response(gnmData),
-#                                              weights = weights,
-#                                              offset = offset,
-#                                              family = family)$coefficients))
         for (i in seq(termTools)[plugInStart]) {
             ind <- factorAssign == i
             if (is.function(termTools[[i]]$start))
@@ -74,14 +71,14 @@
         factorList <- parameterList <- unname(split(theta, factorAssign))
         for (i in seq(factorList)) {
             factorList[[i]] <-
-                switch(classIndex[[i]],
+                switch(classID[[i]],
                        "Exp" = exp(drop(termTools[[i]] %*%
                        parameterList[[i]])),
                        "Nonlin" = termTools[[i]]$predictor(parameterList[[i]]),
                        drop(termTools[[i]] %*% parameterList[[i]]))
         }
         factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
-        if (term & classIndex[[1]] == "Linear")
+        if (term & classID[[1]] == "Linear")
             factorList[[1]] <- t(rowsum(t(termTools[[1]] %*%
                                           diag(parameterList[[1]])),
                                         linearAssign))
@@ -103,7 +100,7 @@
     localDesignFunction <- function(theta, factorList) {
         derivativeList <- productList <- list()
         for (i in seq(termTools)) derivativeList[[i]] <- 
-            switch(classIndex[[i]],
+            switch(classID[[i]],
                    "Exp" = factorList[[i]] * termTools[[i]],
                    "Nonlin" = termTools[[i]]$localDesignFunction(
                    coef = theta[factorAssign == i],
@@ -117,8 +114,9 @@
                   dimnames = list(NULL, names(factorAssign)))
     }
 
-    toolList <- list(classIndex = thetaClassIndex, start = start,
-                     factorList = factorList, predictor = predictor,
+    toolList <- list(eliminate = eliminate, classID = classID,
+                     start = start, factorList = factorList,
+                     predictor = predictor,
                      localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign
     toolList

@@ -1,11 +1,11 @@
-gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
-                subset, weights, na.action,  method = "gnm.fit", offset,
-                start = NULL, control = gnm.control(...), model = TRUE,
+gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
+                data = NULL, subset, weights, na.action,  method = "gnm.fit",
+                offset, start = NULL, control = gnm.control(...), model = TRUE,
                 x = FALSE, vcov = FALSE, term.predictors = FALSE, ...) {
     
     call <- match.call()
     
-    modelTerms <- gnmTerms(formula)
+    modelTerms <- gnmTerms(formula, eliminate)
     
     modelData <- match.call(expand.dots = FALSE)
     argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
@@ -21,6 +21,15 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         modelData <- eval(modelData, parent.frame())   
     attr(modelTerms, "variables") <- attr(attr(modelData, "terms"),
                                           "variables")
+
+    if (!is.null(eliminate)) {
+        eliminate <- attr(attr(modelTerms, "terms"), "term.labels")[1]
+        check <- try(modelData[, eliminate] <-
+                     as.factor(modelData[, eliminate]), silent = TRUE)
+        if (class(check) == "try-error")
+            stop("Eliminated term must coerce to a factor.")
+    }
+    
     if (method == "model.frame") {
         attr(modelData, "terms") <- attr(modelTerms, "terms")
         return(modelData)
@@ -68,41 +77,23 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         if (!is.factor(y)) stop(
                 "multinomial response must be a factor")
         Y <- class.ind(y)
-        resp.var.name <- names(modelData)[attr(attr(modelData, "terms"),
-                                               "response")]
         if (is.null(colnames(Y))) colnames(Y) <- 1:ncol(Y)
-        .rowID <- factor(t(row(Y)))
-        assign(resp.var.name, C(factor(rep(colnames(Y), nrow(Y)),
-                                     levels = levels(y),
-                                     ordered = is.ordered(y)), treatment))
         .counts <- as.vector(t(Y))
+        .rowID <- factor(t(row(Y)))
         modelData <- modelData[.rowID, , drop = FALSE]
         modelData$.rowID <- .rowID
-        modelData[[resp.var.name]] <- get(resp.var.name)
+        resp.var.name <- names(modelData)[attr(attr(modelData, "terms"),
+                                               "response")]
+        modelData[[resp.var.name]] <-
+            C(factor(rep(colnames(Y), nrow(Y)), levels = levels(y),
+                     ordered = is.ordered(y)), treatment)
         newCall <- call
-        newCall$formula <- update.formula(formula,
-                                          .counts ~ -1 + .rowID + .)
+        newCall$formula <- update.formula(formula, .counts ~ .)
+        newCall$eliminate <- ~ .rowID
         newCall$family <- as.name("poisson")
         newCall$data <- as.name("modelData")
         if (!is.null(call$weights))
           newCall$weights <- rep(weights * rowSums(Y), rep(ncol(Y), nrow(Y)))
-        if (!is.null(constrain)) {
-            if (constrain == "pick") {
-                if (!require(tcltk))
-                    stop("constrain = \"pick\", and tcltk not installed")
-                if (!require(relimp))
-                    stop("the relimp package from CRAN needs to be installed")
-                constrain <- is.element(names(modelTools$classIndex),
-                                        pickFrom(names(modelTools$classIndex)
-                                                 [-seq(nrow(Y))]))
-                if (all(!constrain))
-                    warning("no parameters were specified to constrain")
-            }
-            if (is.numeric(constrain))
-                newCall$constrain <- constrain + nrow(Y)
-            else
-                newCall$constrain <- c(rep(FALSE, nrow(Y)), constrain)
-        }
         newCall$subset <- NULL
         result <- eval(newCall)
         result$original.call <- call
@@ -132,29 +123,36 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     }
     else {
         modelTools <- gnmTools(modelTerms, modelData, x, family, weights,
-                               offset, term.predictors)
+                               offset, eliminate, term.predictors)
 
-        if (method == "coef.names") return(names(modelTools$classIndex))
+        if (method == "coef.names") return(names(modelTools$classID))
 
         if (is.null(constrain))
-          constrain <- rep.int(FALSE, length(modelTools$classIndex))
+          constrain <- rep.int(FALSE, length(modelTools$classID))
         else {
             if (constrain == "pick") {
                 if (!require(tcltk))
                     stop("constrain = \"pick\", and tcltk not installed")
                 if (!require(relimp))
                     stop("the relimp package from CRAN needs to be installed")
-                constrain <- is.element(names(modelTools$classIndex),
-                                        pickFrom(names(modelTools$classIndex)))
+                if (is.null(eliminate))
+                    choice <- names(modelTools$classID)
+                else
+                    choice <- names(modelTools$classID)[-modelTools$eliminate]
+                constrain <- is.element(choice, pickFrom(choice))
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")
             }
-            if (is.numeric(constrain))
-                constrain <- ifelse(is.element(seq(modelTools$classIndex),
-                                               constrain), TRUE, FALSE)
+            else if (is.numeric(constrain))
+                constrain <- ifelse(is.element(seq(modelTools$classID) -
+                                      length(modelTools$eliminate), constrain),
+                                    TRUE, FALSE)
+            else if (is.logical(constrain) & !is.null(eliminate))
+                constrain <- c(rep(FALSE, length(modelTools$eliminate)),
+                               constrain)
         }
 
-        if (is.null(start)) start <- rep.int(NA, length(modelTools$classIndex))
+        if (is.null(start)) start <- rep.int(NA, length(modelTools$classID))
         
         fit <- gnm.fit(modelTools, y, constrain, family, weights,
                        offset, nObs = nObs, start = start,

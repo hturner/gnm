@@ -85,10 +85,21 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         if (!is.null(call$weights))
           newCall$weights <- rep(weights * rowSums(y), rep(ncol(y), nrow(y)))
         if (!is.null(constrain)) {
-          if (is.numeric(constrain))
-            newCall$constrain <- constrain + nrow(y)
-          else
-            newCall$constrain <- c(rep(FALSE, nrow(y)), constrain)
+            if (constrain == "pick") {
+                if (!require(tcltk))
+                    stop("constrain = \"pick\", and tcltk not installed")
+                if (!require(relimp))
+                    stop("the relimp package from CRAN needs to be installed")
+                constrain <- is.element(names(modelTools$factorAssign),
+                                        pickFrom(names(modelTools$factorAssign)
+                                                 [-seq(nrow(y))]))
+                if (all(!constrain))
+                    warning("no parameters were specified to constrain")
+            }
+            if (is.numeric(constrain))
+                newCall$constrain <- constrain + nrow(y)
+            else
+                newCall$constrain <- c(rep(FALSE, nrow(y)), constrain)
         }
         newCall$subset <- NULL
         result <- eval(newCall)
@@ -121,13 +132,26 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
 
         if (is.null(constrain))
           constrain <- rep.int(FALSE, length(modelTools$factorAssign))
-        else if (is.numeric(constrain))
-          constrain <- ifelse(is.element(seq(modelTools$factorAssign),
-                                         constrain), TRUE, FALSE)
-
+        else {
+            if (constrain == "pick") {
+                if (!require(tcltk))
+                    stop("constrain = \"pick\", and tcltk not installed")
+                if (!require(relimp))
+                    stop("the relimp package from CRAN needs to be installed")
+                constrain <- is.element(names(modelTools$factorAssign),
+                                        pickFrom(names(modelTools$
+                                                       factorAssign)))
+                if (all(!constrain))
+                    warning("no parameters were specified to constrain")
+            }
+            if (is.numeric(constrain))
+                constrain <- ifelse(is.element(seq(modelTools$factorAssign),
+                                               constrain), TRUE, FALSE)
+        }
+        
         fit <- gnm.fit(modelTools, y, constrain, family, weights,
-                        offset, nObs = nObs, start = start,
-                        control = gnm.control(...), x, vcov)
+                       offset, nObs = nObs, start = start,
+                       control = gnm.control(...), x, vcov)
     }
     fit <- c(list(call = call, formula = formula, constrain = constrain,
                   family = family, prior.weights = weights,

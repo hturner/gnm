@@ -113,7 +113,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   If appropriate constraints are known in advance, or have been
   determined from a \code{gnm} fit, the model may be (re-)fitted using
   the \code{constrain} argument to specify which parameters should be
-  set to zero. \code{gnmConstrain} provides a convenient way of
+  set to zero. \code{update} provides a convenient way of
   re-fitting a \code{gnm} model with new constraints.
 }
 \value{
@@ -192,9 +192,6 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
 
   \code{\link{getContrasts}} to estimate (identifiable) contrasts from a
   \code{gnm} model.
-
-  \code{\link{gnmConstrain}} to re-fit a \code{gnm} model with specified
-  parameters constrained to zero.
 }
 \examples{
 ##  Analysis of a 4-way contingency table
@@ -243,7 +240,7 @@ doubleUnidiffConstrained <- update(doubleUnidiff, constrain = 118)
 
 coef(doubleUnidiffConstrained)[118:121]
 
-## ...as above (to 4 d.p.).
+## ...as using 'getContrasts' (to 4 d.p.).
 }
 \keyword{ models }
 \keyword{ regression }

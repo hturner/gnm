@@ -1,6 +1,6 @@
 \name{Nonlin}
 \alias{Nonlin}
-\title{Specify a Special Nonlinear Term in a \code{gnm} Formula}
+\title{Specify a Special Nonlinear Term in a Model Formula}
 \description{
 A symbolic wrapper, for use in the formula argument to \code{gnm}, to indicate a
 nonlinear term that requires special handling.  

@@ -1,6 +1,6 @@
 \name{Dref}
 \alias{Dref}
-\title{``Plug-in'' Function for \code{gnm} to Fit Diagonal Reference Terms}
+\title{``Plug-in'' Function to Fit Diagonal Reference Terms}
 \description{
   A function to provide the objects and functions required to fit a diagonal
   reference term in a generalized (non)-linear model using \code{gnm}.  

@@ -1,6 +1,6 @@
 \name{gnm.control}
 \alias{gnm.control}
-\title{Set Control Parameters for \code{gnm}}
+\title{Set Control Parameters for Model Fitting}
 \description{
   Set parameters to control the \code{gnm} fitting algorithm.  
 }

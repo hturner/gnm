@@ -1,7 +1,9 @@
 getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     if (is.null(sets)){
-        require(tcltk)
-        require(relimp)
+        if (!require(tcltk)) stop(
+               "no parameter set specified, and tcltk not installed")
+        if (!require(relimp)) stop(
+               "the relimp package from CRAN needs to be installed")
         sets <- pickFrom(names(coef(model))[!model$auxiliary],
                          nsets,...)
         if (length(sets) == 0) stop("no parameter set(s) specified")

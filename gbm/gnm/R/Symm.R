@@ -1,6 +1,9 @@
 Symm <- function(...){
-    require(gtools)
+    if (!require(gtools)) stop(
+                "the gtools package from CRAN needs to be installed")
     dots <- list(...)
+    if (any(diff(sapply(dots, length)) != 0)) stop(
+                "arguments to symm() must all have same length")
     dots <- lapply(dots, as.factor)
     Levels <- sort(unique(unlist(lapply(dots, levels))))
     facMatrix <- sapply(dots, as.character)

@@ -1,7 +1,7 @@
 \name{Multiplicative interaction}
 \alias{Mult}
 \alias{Exp}
-\title{Specify a multiplicative interaction in a \code{gnm} formula}
+\title{Specify a multiplicative interaction in a model formula}
 \description{
 \code{Mult} is a symbolic wrapper to indicate a multiplicative interaction in
 the formula argument to \code{gnm}.

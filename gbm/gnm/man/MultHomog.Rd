@@ -1,6 +1,6 @@
 \name{MultHomog}
 \alias{MultHomog}
-\title{``Plug-in'' Function for \code{gnm} to Fit Multiplicative Interactions
+\title{``Plug-in'' Function for to Fit Multiplicative Interactions
   with Homogeneous Effects}
 \description{
   A function to provide the objects and functions required to fit

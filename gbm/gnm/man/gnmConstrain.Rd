@@ -1,6 +1,6 @@
 \name{gnmConstrain}
 \alias{gnmConstrain}
-\title{ Re-run \code{gnm} Fit With Specified Constraints}
+\title{ Re-run a Model Fit With Specified Constraints}
 \description{
   Re-fit a generalized nonlinear model produced by \code{gnm},
   constraining specified parameters to zero.  

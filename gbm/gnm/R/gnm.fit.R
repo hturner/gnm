@@ -62,8 +62,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 "a non-solution of the likelihood equations.\n",
                 "Re-start gnm with coefficients of returned model.\n")
     theta[constrain] <- NA
-    modelAIC <- family$aic(y, rep.int(1, nObs), mu, weights, dev) +
-        2 * attr(VCOV, "rank")
+    modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
+                                            dev) + 2 * attr(VCOV, "rank"))
     fit <- list(coefficients = structure(theta, names =
                 names(modelTools$factorAssign)), predictors = eta,
                 fitted.values = mu, deviance = dev, aic = modelAIC,

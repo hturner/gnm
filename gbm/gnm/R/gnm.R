@@ -7,10 +7,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     
     modelTerms <- gnmTerms(formula)
     
-    if (inherits(data, "table")) {
+    if (inherits(data, "table"))
         tableFormula <- paste(names(dimnames(data)), collapse = "+")
-        data <- as.data.frame(data)
-    }
     else tableFormula <- NULL
     
     modelData <- match.call(expand.dots = FALSE)
@@ -110,7 +108,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
             stop("Invalid fitted values in empty model")
         dmu <- family$mu.eta(offset)
         dev <- sum(family$dev.resids(y, mu, weights))
-        modelAIC <- family$aic(y, rep.int(1, nObs), mu, weights, dev)
+        modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
+                                                weights, dev))
         fit <- list(coefficients = numeric(0), predictors = offset,
                     fitted.values = mu, deviance = dev, aic = modelAIC,
                     iter = 0, conv = NULL,
@@ -137,7 +136,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                   family = family, prior.weights = weights,
                   terms = attr(modelTerms, "terms"),
                   na.action = attr(modelData, "na.action"),
-                  xlevels = .getXlevels(attr(modelTerms, "terms"), modelData),
+                  xlevels = .getXlevels(attr(modelData, "terms"), modelData),
                   y = y, offset = offset, control = control), fit,
              list(auxiliary = rep(FALSE, length(coef(fit)))))
     
@@ -146,7 +145,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                      "prior.weights", "weights", "y", "offset")
         fit[toTable] <- lapply(toTable, function(x)
                                xtabs(reformulate(tableFormula, x),
-                                     data = cbind(modelData, fit[toTable])))
+                                     data = cbind(as.data.frame(data),
+                                     fit[toTable])))
     }
     if (model) {
         attr(modelData, "terms") <- attr(modelTerms, "terms")

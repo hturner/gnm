@@ -1,8 +1,10 @@
-plot.gnm <- function (x, which = 1:4, caption = c("Residuals vs Fitted", 
-    "Normal Q-Q plot", "Scale-Location plot", "Cook's distance plot"), 
-    panel = points, sub.caption = deparse(x$call), main = "", 
-    ask = prod(par("mfcol")) < length(which) && dev.interactive(), 
-    ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75) 
+plot.gnm <- function (x, y, which = 1:4,
+                      caption = c("Residuals vs Fitted", "Normal Q-Q plot",
+                      "Scale-Location plot", "Cook's distance plot"), 
+                      panel = points, sub.caption = deparse(x$call), main = "", 
+                      ask = prod(par("mfcol")) < length(which) &&
+                      dev.interactive(), ..., id.n = 3,
+                      labels.id = names(residuals(x)), cex.id = 0.75) 
 {
     if (!is.numeric(which) || any(which < 1) || any(which > 4)) 
         stop("`which' must be in 1:4")

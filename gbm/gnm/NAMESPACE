@@ -1,8 +1,9 @@
-export(Diag.R, Dref.Rm, Exp.R, MPinv.R, Mult.R, MultHomog.R, Nonlin.R, Symm.R,
-       getContrasts.R, gnm.R, gnm.control.R, gnmConstrain.R, summary.gnm.R)
+export(Diag, Dref, Exp, MPinv, Mult, MultHomog, Nonlin, Symm,
+       getContrasts, gnm, gnm.control, gnmConstrain, summary.gnm)
 
-importFrom(stats, reformulate, xtabs)
+import(stats)
 importFrom(gtools, combinations)
+importFrom(graphics, plot)
 
 S3method(print, gnm)
 S3method(print, summary.gnm)

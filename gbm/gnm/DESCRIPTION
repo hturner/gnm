@@ -6,6 +6,6 @@ Description: Functions to specify and fit generalized nonlinear models, includin
 Maintainer: Heather Turner <h.turner@warwick.ac.uk>
 License: GPL version 2 or later
 Depends: R (>= 2.0.0)
-Imports: stats, gtools
+Imports: stats, gtools, graphics
 Suggests: relimp
 

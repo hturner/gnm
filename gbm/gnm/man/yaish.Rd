@@ -18,7 +18,6 @@ Yaish, M (1998). Opportunities, Little Change. Class Mobility in Israeli Society
 }
 \examples{
 data(yaish)
-yaish.frame <- as.data.frame.table(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels
 yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(educ), orig:dest), family = poisson, data = yaish)
 ## Look at a table of model residuals

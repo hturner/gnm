@@ -24,16 +24,16 @@ Exp(factor)
 \details{
     The factors in a \code{Mult} term may be represented by any expression
     that evaluates to a vector. Offsets can be added to individual factors,
-    using \code{offset}. Factors can be constrained to be nonnegative through the
-    use of \code{Exp}.
+    using \code{offset}. Factors can be constrained to be nonnegative
+    through the use of \code{Exp}.
 }
 \value{
     \code{Mult} returns a list of objects of class ``Mult'', with one element
     for each multiplicative component. A ``Mult'' object is a list of deparsed
     expressions representing the factors in the multiplicative interaction.
 
-    \code{Exp} returns an object of class ``Exp'' which is a deparsed expression
-    representing the factor to be exponentiated.
+    \code{Exp} returns an object of class ``Exp'' which is a deparsed
+    expression representing the factor to be exponentiated.
 }
 \author{Heather Turner}
 \note{ These functions should only be used in formulae passed to \code{gnm}. }
@@ -44,7 +44,7 @@ Exp(factor)
 data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels
 yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
-                      Mult(Exp(educ), orig:dest),
+                      Mult(Exp(-1 + educ), orig:dest),
                       family = poisson, data = yaish)
 
 ## Using 'multiplicity' > 1

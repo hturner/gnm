@@ -13,7 +13,7 @@
   \describe{
     \item{\code{count}}{a numeric vector}
     \item{\code{SES}}{an ordered factor with levels \code{A} < \code{B} < \code{C} < \code{D} < \code{E} < \code{F}}
-    \item{\code{MHS}}{an ordered factor with levels \code{Well} < \code{Mild} < \code{Moderate} < \code{Impaired}}
+    \item{\code{MHS}}{an ordered factor with levels \code{well} < \code{mild} < \code{moderate} < \code{impaired}}
   }
 }
 \source{

@@ -10,6 +10,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
 ##    to non-eliminated parameters.
     conv <- FALSE
     attempt <- 1
+    eliminateChecked <- length(eliminate) == 0
     repeat {
         if (any(is.na(start))) {
             theta <- modelTools$start()
@@ -24,10 +25,16 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     eta <- offset + modelTools$predictor(factorList)
                     mu <- family$linkinv(eta)
                     X <- modelTools$localDesignFunction(theta, factorList)
+                    if (!eliminateChecked) {
+                        Xelim <- crossprod(X[, eliminate])
+                        if (any(abs(Xelim[lower.tri(Xelim)])) > 1e-15) stop(
+                "eliminated parameters must correspond to levels of a factor")
+                        eliminateChecked <- TRUE
+                    }
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
                     w <- weights * dmu * dmu / vmu
-                    Xi <- X[,i]
+                    Xi <- X[, i]
                     score <- crossprod((y - mu)/dmu, w * Xi)
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
@@ -45,6 +52,12 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
             X <- modelTools$localDesignFunction(theta, factorList)
+            if (!eliminateChecked) {
+                Xelim <- crossprod(X[, eliminate])
+                if (any(abs(Xelim[lower.tri(Xelim)])) > 1e-15) stop(
+                "eliminated parameters must correspond to levels of a factor")
+                eliminateChecked <- TRUE
+            }
             mu <- family$linkinv(eta)
             dmu <- family$mu.eta(eta)
             vmu <- family$variance(mu)

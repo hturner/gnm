@@ -28,17 +28,19 @@
   Variables. \emph{J. R. Statist. Soc. B}, \bold{46(1)}, 1-30.
 }
 \examples{
+set.seed(1)
 data(backpain)
 # Model progress by category only
 no.relationship <- gnm(pain ~ pain, family = "multinomial", data =
-backpain)
+   backpain)
 
 # Model progress assuming common dependence on prognostic variables
-one.dimensional <- gnm(pain ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1), family =
-"multinomial", data = backpain)
+one.dimensional <- gnm(pain ~ pain + Mult(pain - 1, x1 + x2 + x3), family =
+   "multinomial", data = backpain)
+# -- this model has deviance 303.1003, on 493 df
 
 # Model progress assuming group-specific dependence on prognostic variables
 three.dimensional <- gnm(pain ~ pain + pain:(x1 + x2 + x3), family =
-"multinomial", data = backpain)
+   "multinomial", data = backpain)
 }
 \keyword{datasets}

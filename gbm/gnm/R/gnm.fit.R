@@ -10,22 +10,25 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             for (iter in seq(control$startit)) {
                 for (relevant in split(seq(length(theta)),
                                        modelTools$factorAssign)) {
+                    constrained.here <- constrain[relevant]
+                    relevant <- relevant[!constrained.here]
+                    if (length(relevant) == 0) break
                     parameterList <- unname(split(theta,
                                                   modelTools$factorAssign))
                     factorList <- modelTools$factorList(parameterList)
                     eta <- offset + modelTools$predictor(factorList)
                     X <- modelTools$localDesignFunction(parameterList,
                                                         factorList)
+                    
                     mu <- family$linkinv(eta)
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
-                    score <- crossprod(weights*(y - mu)*dmu/vmu,
+                    score <- crossprod(weights * (y - mu) * dmu / vmu,
                                        X[,relevant])
                     gradient <- crossprod(weights*dmu*dmu/vmu,
                                           (X[,relevant])^2)
-                    theta[relevant] <- ifelse(!constrain[relevant],
-                                              as.vector(theta[relevant] +
-                                                 score/gradient), 0)
+                    theta[relevant] <-
+                        as.vector(theta[relevant] + score/gradient)
                 }
             }
         }    

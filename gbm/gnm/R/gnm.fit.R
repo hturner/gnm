@@ -16,8 +16,9 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta <- modelTools$start()
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
-            oneAtATime <- {!modelTools$classIndex %in%
-                           c("Linear", "plugInStart") & is.na(start)}
+            linear <- modelTools$classIndex == "Linear"
+            oneAtATime <- {!linear & modelTools$classIndex != "plugInStart" &
+                           is.na (start)}
             for (iter in seq(length = control$startit * any(oneAtATime))) {
                 for (i in seq(theta)[oneAtATime]) {
                     if (constrain[i]) break
@@ -39,6 +40,14 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
                 }
+                theta[linear] <- 0
+                factorList <- modelTools$factorList(theta)
+                eta <- offset + modelTools$predictor(factorList)
+                z <- (y - mu)/dmu
+                w <- weights * dmu * dmu / vmu
+                theta[linear] <-
+                    suppressWarnings(naToZero(lm.wfit(X[,linear], z, w, offset =
+                                                      eta)$coefficients))
                 if (control$trace){
                     dev <- sum(family$dev.resids(y, mu, weights))
                     cat("Startup iteration", iter,

@@ -1,5 +1,5 @@
-\name{checkIdentifiability}
-\alias{checkIdentifiability}
+\name{checkEstimable}
+\alias{checkEstimable}
 \title{ Check whether one or more parameter comninations in a gnm model
   is identified }
 \description{
@@ -8,21 +8,19 @@
   re-parameterization of the model.
 }
 \usage{
-checkIdentifiability(model, cmatrix, tolerance = 1e-04, verbose = TRUE)
+checkEstimable(model, cmatrix, tolerance = 1e-14, verbose = TRUE)
 }
 \arguments{
   \item{model}{  a model object of class \code{"gnm"} }
   \item{cmatrix}{  numeric: either a vector of length the same as
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
-  \item{tolerance}{ numeric: a threshold below which differences in
-    estimates are regarded as zero }
+  \item{tolerance}{ numeric: a threshold value for detection of
+    collinearity.  }
   \item{verbose}{ logical: should commentary be printed on progress? }
 }
-\value{
-A logical vector of length equal to the number of parameter combinations
-tested.  
-}
+\value{A logical vector of length equal to the number of parameter combinations
+tested; \code{NA} where a parameter combination is identically zero.}
 \author{ David Firth }
 \seealso{
   \code{\link{se}},
@@ -35,11 +33,11 @@ set.seed(1)
 yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(educ),
     orig:dest), family = poisson, data = yaish)
 educ4.pos <- grep("Mult1.Factor1.educ4", names(coef(yaish.unidiff)))
-checkIdentifiability(yaish.unidiff,
+checkEstimable(yaish.unidiff,
  c(rep(0, educ4.pos - 1), 1, -1,
    rep(0, length(coef(yaish.unidiff)) - educ4.pos - 1)))
 ## should be TRUE
-checkIdentifiability(yaish.unidiff,
+checkEstimable(yaish.unidiff,
  c(rep(0, educ4.pos - 1), 1, 0,
    rep(0, length(coef(yaish.unidiff)) - educ4.pos - 1)))
 ## should be FALSE -- only *differences* are identified here

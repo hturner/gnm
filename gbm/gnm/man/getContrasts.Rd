@@ -1,23 +1,19 @@
 \name{getContrasts}
 \alias{getContrasts}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{q}
+\title{ Estimated contrasts and standard errors}
 \description{
-q
+For each set in a specified list of sets of model parameters, computes the
+estimated simple contrasts (i.e., differences) with the last parameter
+in the set, and estimated standard errors for those estimated differences.  
 }
 \usage{
-getContrasts(model, sets = NULL, nsets = 1,
-             check.identifiability = TRUE, ...)
+getContrasts(model, sets = NULL, nsets = 1, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{ a model object of class \code{"gnm"} }
   \item{sets}{ a vector of indices (if \code{nsets} is 1) or
     a list (of length nsets) of such vectors }
   \item{nsets}{ the number of vectors of indices to use}
-  \item{check.identifiability}{logical: should
-    identifiability of
-    the chosen contrasts be checked first?}
   \item{\dots}{ arguments to pass to other functions }
 }
 \details{
@@ -26,8 +22,8 @@ getContrasts(model, sets = NULL, nsets = 1,
   of indices (model coefficients).
 
   For each set of coefficients selected, differences with the last
-  coefficient and their standard errors are computed.  By default
-  check is preformed first on the identifiability of all such
+  coefficient and their standard errors are computed.  
+  A check is performed first on the estimability of all such
   differences.
 }
 \value{

@@ -1,5 +1,4 @@
-getContrasts <- function(model, sets = NULL, nsets = 1,
-                         check.identifiability = TRUE, ...){
+getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     if (is.null(model$auxiliary)) model$auxiliary <-
         rep(FALSE, length(model$coef))
     if (is.null(sets)){
@@ -24,19 +23,14 @@ getContrasts <- function(model, sets = NULL, nsets = 1,
         temp[x$coefs, 1:(ncol(temp)-1)] <- x$contr
         colnames(temp) <- x$coefs
         temp})
-    all.contrasts <- matrix(NA, l, 0)
-    for (cmat in cmatrix){
-        all.contrasts <- cbind(all.contrasts, cmat)
-    }
-    if (check.identifiability) {
-        iden <- checkIdentifiability(model, all.contrasts)
-        if (any(!iden)){
-            print(iden)
-            cat("Error: some contrasts not identified in the model\n")
-            return(NULL)
-        }
-    }
     lapply(cmatrix, function(x){
-        se(model, x, check.identifiability = FALSE)
+        iden <- checkEstimable(model, x)
+        if (any(!na.omit(iden))) {
+            print(iden)
+            cat("Note: not all of the specified contrasts in this set are estimable\n")
+        }
+        not.unestimable <- iden | is.na(iden)
+        se(model, x[, not.unestimable, drop = FALSE],
+           check.estimability = FALSE)
     })
 }

@@ -5,20 +5,20 @@
   Computes approximate standard error for one or more linear
   combinations of the parameters in a \code{\link{gnm}} (generalized
     nonlinear model) object.  By default, a check is made first on the
-    identifiability of each specified combination.
+    estimability of each specified combination.
 }
 \usage{
-se(model, cmatrix, check.identifiability = TRUE, ...)
+se(model, cmatrix, check.estimability = TRUE, ...)
 }
 \arguments{
   \item{model}{  a model object of class \code{"gnm"}}
   \item{cmatrix}{ numeric: either a vector of length the same as
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
-  \item{check.identifiability}{ logical: should the identifiability of
+  \item{check.estimability}{ logical: should the estimability of
     all specified combinations be checked?}
   \item{\dots}{ possible further arguments for
-    \code{\link{checkIdentifiability}} }
+    \code{\link{checkEstimable}} }
 }
 \value{
 A data frame with two columns:

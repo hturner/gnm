@@ -31,11 +31,22 @@ and row names the same as the column names (if any) of \code{cmatrix}.
 \examples{
 data(yaish)
 set.seed(1)
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(educ),
+yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(-1 + educ),
     orig:dest), family = poisson, data = yaish)
-educ4.pos <- grep("Mult1.Factor1.educ4", names(coef(yaish.unidiff)))
-se(yaish.unidiff, c(rep(0, educ4.pos - 1), 1, -1,
-                    rep(0, length(coef(yaish.unidiff)) - educ4.pos - 1)))
+## Deviance is 208.3
+##
+## Get estimate and se for the contrast between educ4 and educ5 in the
+## UNIDIFF multiplier
+##
+educ4.pos <- grep("Mult.*educ4", names(coef(yaish.unidiff)))
+mycontrast <- rep(0, length(coef(yaish.unidiff)))
+mycontrast[educ4.pos] <- 1
+mycontrast[educ4.pos + 1] <- -1
+se(yaish.unidiff, mycontrast)
+##
+## Get all of the contrasts with educ5 in the UNIDIFF multipliers
+##
+getContrasts(yaish.unidiff, grep("Mult.*educ", names(coef(yaish.unidiff))))
 }
 \keyword{ models }
 \keyword{ regression }

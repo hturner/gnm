@@ -1,3 +1,3 @@
-print.vcov.gnm <- function(object) {
+print.vcov.gnm <- function(x, ...) {
   print.default(object[!attr(object, "auxiliary")])
 }

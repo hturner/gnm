@@ -1,0 +1,22 @@
+export(Diag.R, Dref.Rm, Exp.R, MPinv.R, Mult.R, MultHomog.R, Nonlin.R, Symm.R,
+       getContrasts.R, gnm.R, gnm.control.R, gnmConstrain.R, summary.gnm.R)
+
+importFrom(stats, reformulate, xtabs)
+importFrom(gtools, combinations)
+
+S3method(print, gnm)
+S3method(print, summary.gnm)
+S3method(print, coef.gnm)
+S3method(print, vcov.gnm)
+S3method(summary, gnm)
+S3method(coef, gnm)
+S3method(vcov, gnm)
+S3method(plot, gnm)
+S3method(hatvalues, gnm)
+S3method(update, gnm)
+S3method(model.matrix, gnm)
+S3method(model.frame, gnm)
+S3method(cooks.distance, gnm)
+S3method(labels, gnm)
+S3method(variable.names, gnm)
+S3method(rstandard, gnm)

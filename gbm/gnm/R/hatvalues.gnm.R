@@ -1,8 +1,8 @@
-hatvalues.gnm <- function(object) {
-    X <- model.matrix(object)
-    hat <- diag(X %*% summary(object)$cov.unscaled %*% t(X) %*%
-              diag(object$weights))
-    hat <- naresid(object$na.action, hat)
+hatvalues.gnm <- function(model, ...) {
+    X <- model.matrix(model)
+    hat <- diag(X %*% summary(model)$cov.unscaled %*% t(X) %*%
+              diag(model$weights))
+    hat <- naresid(model$na.action, hat)
     hat[is.na(hat)] <- 0
     hat
 }

@@ -17,8 +17,8 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     
     if (length(coef(x))) {
         cat("\nCoefficients:\n")
-        print.default(format(x$coefficients[!x$auxiliary], digits = digits), print.gap = 2,
-                      quote = FALSE)
+        print.default(format(x$coefficients[!x$auxiliary], digits = digits),
+                      print.gap = 2, quote = FALSE)
     }
     else cat("\nNo coefficients\n\n")
     

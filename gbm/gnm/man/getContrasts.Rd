@@ -6,34 +6,43 @@
 q
 }
 \usage{
-getContrasts(model, sets = NULL, nsets = 1, ...)
+getContrasts(model, sets = NULL, nsets = 1,
+             check.identifiability = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{model}{ q }
-  \item{sets}{q  }
-  \item{nsets}{ q }
-  \item{\dots}{ q }
+  \item{model}{ a model object of class \code{"gnm"} }
+  \item{sets}{ a vector of indices (if \code{nsets} is 1) or
+    a list (of length nsets) of such vectors }
+  \item{nsets}{ the number of vectors of indices to use}
+  \item{check.identifiability}{logical: should
+    identifiability of
+    the chosen contrasts be checked first?}
+  \item{\dots}{ arguments to pass to other functions }
 }
 \details{
+  The indices must all be in \code{1:length(coef(object))}.  If
+  \code{sets = NULL}, a Tk dialog is presented for the selection
+  of indices (model coefficients).
 
+  For each set of coefficients selected, differences with the last
+  coefficient and their standard errors are computed.  By default
+  check is preformed first on the identifiability of all such
+  differences.
 }
 \value{
-  \item{comp1 }{Description of 'comp1'}
-  \item{comp2 }{Description of 'comp2'}
+  A list (of length \code{nsets}) of data frames, each containing variables
+  \code{estimate} and \code{se}
 }
-\references{ q }
-\author{q }
-\note{q }
-
-
-\seealso{q }
+\author{ David Firth }
+\seealso{ \code{\link{se}}, \code{\link{gnmConstrain}} }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
+data(yaish)
+set.seed(1)
+yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(educ),
+    orig:dest), family = poisson, data = yaish)
+## Examine the education multipliers (differences on the log scale):
+getContrasts(yaish.unidiff, grep("Mult1.Factor1", names(coef(yaish.unidiff))))
 }
 \keyword{ models }
 \keyword{ regression }

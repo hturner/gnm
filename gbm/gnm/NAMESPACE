@@ -1,5 +1,6 @@
-export(Diag, Dref, Exp,  getContrasts, gnm, gnm.control, gnmConstrain,
-       MPinv, Mult, MultHomog, multinomial, Nonlin, Symm, summary.gnm,
+export(checkIdentifiability, Diag, Dref, Exp,  getContrasts, gnm,
+       gnm.control, gnmConstrain,
+       MPinv, Mult, MultHomog, multinomial, Nonlin, se, Symm, summary.gnm,
        wedderburn)
 
 import(stats)

@@ -14,10 +14,10 @@ MPinv(Xmat, tol = 100 * .Machine$double.eps)
   detecting zeroes among the singular values }
 }
 \value{
-  A matrix.
+  A numeric matrix.
 }
 \author{ David Firth }
-\note{ Similar to \code{\link{MASS:ginv}}, but without the facility
+\note{ Similar to \code{\link[MASS]{ginv}}, but without the facility
 to handle complex-valued matrices, and with a different default tolerance.
 \code{MPinv} also preserves row and column names where available, and 
 returns the rank of the matrix as an attribute of the result. }

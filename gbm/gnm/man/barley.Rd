@@ -11,8 +11,9 @@
   A data frame with 90 observations on the following 3 variables.
   \describe{
     \item{y}{the proportion of leaf affected (values in [0,1])}
-    \item{site}{a factor with levels \code{A} \code{B} \code{C} \code{D} \code{E} \code{F} \code{G} \code{H} \code{I}}
-    \item{variety}{a factor with levels \code{1:10}}
+    \item{site}{a factor with levels \code{A} \code{B} \code{C} \code{D}
+      \code{E} \code{F} \code{G} \code{H} \code{I}}
+    \item{variety}{a factor with levels \code{c(1:9, "X")}}
   }
 }
 \details{
@@ -46,14 +47,16 @@ print(sum((barley$y - fit)^2 / (fit * (1-fit))^2))
 barley.rank2 <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
     family = wedderburn, data = barley)
 barley.svd <- svd(matrix(barley.rank2$predictors, 10, 9))
-barley.A <- (barley.svd$v \%*\% diag(sqrt(barley.svd$d)))[, 1:2]
-barley.B <- (barley.svd$u \%*\% diag(sqrt(barley.svd$d)))[, 1:2]
+barley.A <- sweep(barley.svd$v, 2, sqrt(barley.svd$d), "*")[, 1:2]
+barley.B <- sweep(barley.svd$u, 2, sqrt(barley.svd$d), "*")[, 1:2]
 ##  These are essentially A and B as in Gabriel (1998, p694), from which
 ##  the biplot is made by
-plot(rbind(barley.A, barley.B), pch = c(LETTERS[1:9], as.character(1:9), "X"))
+plot(rbind(barley.A, barley.B),
+   pch = c(levels(barley$site), levels(barley$variety)))
 ##
 ##  Fit the double-additive model as in Gabriel (1998, p697)
-variety.binary <- factor(barley$variety \%in\% c(2,3,6), labels = c("Rest", "2,3,6"))
+variety.binary <- factor(match(barley$variety, c(2,3,6), nomatch = 0) > 0,
+    labels = c("Rest", "2,3,6"))
 barley.doubleAdditive <- gnm(y ~ variety + Mult(site, variety.binary),
     family = wedderburn, data = barley)
 }

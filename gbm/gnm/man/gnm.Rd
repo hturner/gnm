@@ -186,7 +186,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   and \code{\link{MultHomog}} for incorporating nonlinear terms in the
   \code{formula} argument to \code{gnm}.
 
-  \code{\link{glm.summaries}} and the generic functions
+  \code{\link{residuals.glm}} and the generic functions
   \code{\link{coef}}, \code{\link{fitted}}, etc. for extracting
   components from \code{gnm} objects.
 

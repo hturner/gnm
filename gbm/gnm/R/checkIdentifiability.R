@@ -4,6 +4,7 @@ checkIdentifiability <-
     if (!inherits(model, "gnm")) stop("model not of class gnm")
     coefs <- coef(model)
         l <- length(coefs)
+    cmatrix <- as.matrix(cmatrix)
     if (nrow(cmatrix) != l) stop(
           "cmatrix does not match coef(model)")
     estimates <- drop(crossprod(cmatrix, coefs))

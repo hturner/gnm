@@ -1,4 +1,7 @@
-getContrasts <- function(model, sets = NULL, nsets = 1, ...){
+getContrasts <- function(model, sets = NULL, nsets = 1,
+                         check.identifiability = TRUE, ...){
+    if (is.null(model$auxiliary)) model$auxiliary <-
+        rep(FALSE, length(model$coef))
     if (is.null(sets)){
         if (!require(tcltk)) stop(
                "no parameter set specified, and tcltk not installed")
@@ -25,11 +28,13 @@ getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     for (cmat in cmatrix){
         all.contrasts <- cbind(all.contrasts, cmat)
     }
-    iden <- checkIdentifiability(model, all.contrasts)
-    if (any(!iden)){
-        print(iden)
-        cat("Error: some contrasts not identified in the model\n")
-        return(NULL)
+    if (check.identifiability) {
+        iden <- checkIdentifiability(model, all.contrasts)
+        if (any(!iden)){
+            print(iden)
+            cat("Error: some contrasts not identified in the model\n")
+            return(NULL)
+        }
     }
     lapply(cmatrix, function(x){
         se(model, x, check.identifiability = FALSE)

@@ -24,7 +24,7 @@ data(occupational.status)
 ##  Fit a uniform association model separating diagonal effects
 Rscore <- scale(as.numeric(row(occupational.status)), scale = FALSE)
 Cscore <- scale(as.numeric(col(occupational.status)), scale = FALSE)
-Uniform <- glm(counts ~ origin + destination + Diag(origin, destination) + 
+Uniform <- glm(Freq ~ origin + destination + Diag(origin, destination) + 
 Rscore*Cscore, family = poisson, data = occupational.status)
 
 ##  Fit an association model with homogeneous row-column effects

@@ -1,3 +1,4 @@
 print.coef.gnm <- function(x, ...) {
-  print.default(object[!attr(object, "auxiliary")])
+if (!is.null(x$auxiliary)) print.default(x[!attr(x, "auxiliary")])
+  else print.default(x)
 }

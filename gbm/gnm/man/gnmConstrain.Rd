@@ -32,15 +32,15 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
     + Mult(Exp(election), religion:vote) + Mult(Exp(election), class:vote),
     family = poisson, data = cautres)
 
-##  Re-fit model with Mult2.Factor1.election4 set to zero
-doubleUnidiffConstrained <- gnmConstrain(doubleUnidiff, constrain = list(118))
+\dontrun{##  Re-fit model with Mult2.Factor1.election4 set to zero
+doubleUnidiffConstrained <- gnmConstrain(doubleUnidiff, constrain = 118)
 
 ##  Examine the multipliers of the class-vote log odds ratios
 
 coef(doubleUnidiffConstrained)[118:121]
 
 ## ...as using 'getContrasts' in example(gnm) (to 4 d.p.).
-
+}
 }
 \keyword{ models }
 \keyword{ regression }

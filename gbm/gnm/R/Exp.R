@@ -8,7 +8,7 @@ Exp <- function(factor){
                                      [[min(badCall[!is.na(badCall)])]][[1]]))
         stop(paste(culprit,
                    "has called Exp() from the gnm package.\n", culprit,
-                   "can only handle Exp terms",
+                   "can only handle Exp terms inside Mult()",
                    "as part of the formula of a gnm object."))
     }
     

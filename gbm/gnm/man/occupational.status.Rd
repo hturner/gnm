@@ -21,9 +21,11 @@ Categories. \emph{J. Am. Stat. Assoc.}, \bold{74(367)}, 537-552.
 \examples{
 data(occupational.status)
 
-## Fit a symmetric association model separating diagonal effects
-RC <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-Symm(origin, destination), family = poisson, data = occupational.status)
+##  Fit a uniform association model separating diagonal effects
+Rscore <- scale(as.numeric(row(occupational.status)), scale = FALSE)
+Cscore <- scale(as.numeric(col(occupational.status)), scale = FALSE)
+Uniform <- glm(counts ~ origin + destination + Diag(origin, destination) + 
+Rscore*Cscore, family = poisson, data = occupational.status)
 
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
@@ -33,6 +35,17 @@ data = occupational.status)
 ##  Fit an association model with separate row and column effects
 RC <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
 Mult(origin, destination), family = poisson, data = occupational.status,
-start = c(coef(RChomog), coef(RChomog)[MultHomogIndex]))
+start = c(coef(RChomog),
+coef(RChomog)[(length(coef(RChomog)) - 7):length(coef(RChomog))]))
+
+##  Partition row and column effects
+row.and.column.effects <- c(df = Uniform$df.res - RC$df.res,
+deviance = Uniform$dev - RC$dev)
+homogeneous.row.column.effects <- c(df = Uniform$df.res - RChomog$df.res,
+deviance = Uniform$dev - RChomog$dev)
+row.column.effects <- row.and.column.effects -
+homogeneous.row.column.effects
+rbind(homogeneous.row.column.effects, row.column.effects,
+row.and.column.effects)
 }
 \keyword{datasets}

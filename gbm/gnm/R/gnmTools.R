@@ -44,11 +44,10 @@
     thetaClassIndex <- structure(classIndex[factorAssign],
                                 names = names(factorAssign))
 
-    start <- function (scale = 0.2) {
+    start <- function (scale = 0.1) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
                            names = names(factorAssign))
-        ind <- thetaClassIndex == "character"
-        theta[ind] <- 2 * scale + theta[ind]
+        theta <- ifelse(theta < 0, theta - scale, theta + scale)
         ind <- thetaClassIndex == "Linear"
         if (any(ind))
             theta[ind] <- naToZero(glm.fit(termTools[[1]],

@@ -56,7 +56,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta <- theta + drop(crossprod(VCOV, score))
             theta[constrain] <- 0
         }
-        if (!inherits(VCOV, "try-error") | !is.null(start)) break
+        if (!inherits(VCOV, "try-error") | all(!is.na(start))) break
         else {
             attempt <- attempt + 1
             if (attempt > 5) {
@@ -67,8 +67,9 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
         }
     }
     if (!conv) {
-        if (!all(is.finite(theta)))
-            warning("Fit unsuccessful: coefficients are not all finite.\n")
+        if (!all(is.finite(Info)))
+            stop("Fit unsuccessful: values in information matrix are not ",
+                 "all finite.\n")
         else
             warning("Fitting algorithm has either not converged or converged\n",
                     "to a non-solution of the likelihood equations.\n",

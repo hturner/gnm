@@ -13,14 +13,18 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     if (constrain[i]) break
                     factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
-                    X <- modelTools$localDesignFunction(theta, factorList)
                     mu <- family$linkinv(eta)
+                    X <- modelTools$localDesignFunction(theta, factorList)
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
                     score <- crossprod(weights * (y - mu) * dmu / vmu, X[,i])
                     gradient <- crossprod(weights*dmu*dmu/vmu, (X[,i])^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
                 }
+                dev <- sum(family$dev.resids(y, mu, weights))
+                if (control$trace)
+                    cat("Startup iteration", iter,
+                        ". Deviance = ", dev, "\n")    
             }
         }    
         else theta <- ifelse(!constrain, start, 0)

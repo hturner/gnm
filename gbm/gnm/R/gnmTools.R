@@ -32,16 +32,18 @@
 
     multIndex <- gsub("\.Factor[0-9]+\.", "", unlist(prefixList))
     multIndex[multIndex == ""] <- seq(sum(multIndex == ""))
-
-    if (x) {
-        termAssign <- unclass(as.factor(multIndex))
-        termAssign <- termAssign[factorAssign] - attr(attr(gnmTerms, "terms"),
-                                                     "intercept")
-    }
     
     classIndex <- sapply(labelList, class)
     thetaClassIndex <- structure(classIndex[factorAssign],
                                 names = names(factorAssign))
+    if (x) {
+        termAssign <- unclass(as.factor(multIndex))[factorAssign]
+        if ("Linear" %in% classIndex) {
+            linearAssign <- attr(termTools[[1]], "assign")
+            termAssign <- termAssign + max(linearAssign) - 1
+            termAssign[thetaClassIndex == "Linear"] <- linearAssign
+        }
+    }
 
     start <- function (scale = 0.1) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,

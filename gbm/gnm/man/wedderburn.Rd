@@ -21,11 +21,12 @@ wedderburn(link = "logit")
 Gabriel, K R (1998).  Generalised bilinear regression.  \emph{Biometrika} 
 \bold{85}, 689--700.
 
-McCullagh, P and Nelder, J A (1989).  \emph{Generalized Linear Models} (2nd ed).  
-Chapman and Hall.
+McCullagh, P and Nelder, J A (1989).  \emph{Generalized Linear Models}
+(2nd ed).  Chapman and Hall.
 
-Wedderburn, R W M (1974).  Quasilikelihood functions, generalized linear models 
-and the Gauss-Newton method.  \emph{Biometrika} \bold{61}, 439--47.
+Wedderburn, R W M (1974).  Quasilikelihood functions, generalized
+linear models and the Gauss-Newton method.  \emph{Biometrika}
+\bold{61}, 439--47.
   
  }
 \author{ David Firth }

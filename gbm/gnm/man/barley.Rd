@@ -11,9 +11,8 @@
   A data frame with 90 observations on the following 3 variables.
   \describe{
     \item{y}{the proportion of leaf affected (values in [0,1])}
-    \item{site}{a factor with levels \code{A} \code{B} \code{C} \code{D}
-      \code{E} \code{F} \code{G} \code{H} \code{I}}
-    \item{variety}{a factor with levels \code{c(1:9, "X")}}
+    \item{site}{a factor with 9 levels \code{A} to \code{I}}
+    \item{variety}{a factor with 10 levels \code{c(1:9, "X")}}
   }
 }
 \details{
@@ -56,8 +55,11 @@ plot(rbind(barley.A, barley.B),
 ##
 ##  Fit the double-additive model as in Gabriel (1998, p697)
 variety.binary <- factor(match(barley$variety, c(2,3,6), nomatch = 0) > 0,
-    labels = c("Rest", "2,3,6"))
+    labels = c("rest", "2,3,6"))
 barley.doubleAdditive <- gnm(y ~ variety + Mult(site, variety.binary),
     family = wedderburn, data = barley)
+##  It is unclear why Gabriel's chi-squared statistics differ slightly
+##  from the ones produced in these fits.  Possibly Gabriel adjusted the
+##  data somehow prior to fitting?
 }
 \keyword{datasets}

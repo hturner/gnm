@@ -18,8 +18,31 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
             linear <- modelTools$classIndex == "Linear"
+            # update linear terms, offsetting any Nonlin/fixed
+            #factorList <- modelTools$factorList(theta)
+#            eta <- offset + modelTools$predictor(factorList)
+#            mu <- family$linkinv(eta)
+#            X <- modelTools$localDesignFunction(theta, factorList)
+#            if (!eliminateChecked) {
+#                Xelim <- crossprod(X[, eliminate])
+#                if (any(abs(Xelim[lower.tri(Xelim)])) > 1e-15) stop(
+#                "eliminated parameters must correspond to levels of a factor")
+#                eliminateChecked <- TRUE
+#            }
+#            dmu <- family$mu.eta(eta)
+#            vmu <- family$variance(mu)
+#            w <- weights * dmu * dmu / vmu
+#            freeLin <- linear & is.na(start)
+#            theta[freeLin] <- 0
+#            remainderFactorList <- modelTools$factorList(theta)
+#            offsetRemainder <- offset +
+#                modelTools$predictor(remainderFactorList)
+#            z <- eta - offsetRemainder + (y - mu)/dmu
+#            theta[freeLin] <-
+#                suppressWarnings(naToZero(lm.wfit(X[,freeLin], z, w)$coef))
+            # loop updating Nonlin and lin terms except ones provided
             oneAtATime <- {!linear & modelTools$classIndex != "plugInStart" &
-                           is.na (start)}
+                          is.na (start)}
             for (iter in seq(length = control$startit * any(oneAtATime))) {
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
                     if (constrain[i]) break
@@ -27,12 +50,6 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     eta <- offset + modelTools$predictor(factorList)
                     mu <- family$linkinv(eta)
                     X <- modelTools$localDesignFunction(theta, factorList)
-                    if (!eliminateChecked) {
-                        Xelim <- crossprod(X[, eliminate])
-                        if (any(abs(Xelim[lower.tri(Xelim)])) > 1e-15) stop(
-                "eliminated parameters must correspond to levels of a factor")
-                        eliminateChecked <- TRUE
-                    }
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
                     w <- weights * dmu * dmu / vmu
@@ -40,30 +57,38 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     score <- crossprod((y - mu)/dmu, w * Xi)
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
+                    if (!is.finite(theta[i])) {
+                        status <- "bad.param"
+                        break
+                    } 
                 }
-                factorList <- modelTools$factorList(theta)
-                eta <- offset + modelTools$predictor(factorList)
-                mu <- family$linkinv(eta)
-                dmu <- family$mu.eta(eta)
-                vmu <- family$variance(mu)
-                w <- weights * dmu * dmu / vmu
-                theta[linear] <- 0
-                nonlinearFactorList <- modelTools$factorList(theta)
-                offsetNonlin <- offset +
-                    modelTools$predictor(nonlinearFactorList)
-                z <- eta - offsetNonlin + (y - mu)/dmu
-                theta[linear] <-
-                    suppressWarnings(naToZero(lm.wfit(X[,linear], z, w)$coef))
+                if (status == "not.converged") {
+                    factorList <- modelTools$factorList(theta)
+                    eta <- offset + modelTools$predictor(factorList)
+                    mu <- family$linkinv(eta)
+                    dmu <- family$mu.eta(eta)
+                    vmu <- family$variance(mu)
+                    w <- weights * dmu * dmu / vmu
+                    theta[linear] <- 0
+                    nonlinearFactorList <- modelTools$factorList(theta)
+                    offsetNonlin <- offset +
+                        modelTools$predictor(nonlinearFactorList)
+                    z <- eta - offsetNonlin + (y - mu)/dmu
+                    theta[linear] <-
+                        suppressWarnings(naToZero(lm.wfit(X[,linear],
+                                                          z, w)$coef))
+                }
                 if (control$trace){
                     dev <- sum(family$dev.resids(y, mu, weights))
                     cat("Startup iteration", iter,
                         ". Deviance = ", dev, "\n")
                 }
+                if (status == "bad.param") break
             }
         }    
         else theta <- structure(ifelse(!constrain, start, 0),
                                 names = names(modelTools$classIndex))
-        for (iter in seq(control$maxit)) {
+        for (iter in seq(control$maxit)[status == "not.converged"]) {
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
             X <- modelTools$localDesignFunction(theta, factorList)
@@ -93,7 +118,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             WX <- w * X
             score <- drop(crossprod(z, WX))
             diagInfo <- colSums(X * WX)
-            if (all(abs(score) < control$epsilon*sqrt(diagInfo))){
+            if (all(abs(score) < control$epsilon*sqrt(diagInfo) |
+                    diagInfo < 1e-20)){
                 status <- "converged"
                 break
             }
@@ -115,6 +141,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
         else {
             attempt <- attempt + 1
             cat(switch(status,
+                       "bad.param" = "Bad parameterisation",
                        "not.finite" = "Iterative weights are not all finite",
                        "no.deviance" = "Deviance is NaN",
                        "stuck" = "Iterations are not converging"))
@@ -131,8 +158,9 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 "to a non-solution of the likelihood equations.\n",
                 "Re-start gnm with coefficients of returned model.\n")
     theta[constrain] <- NA
-    Info <- crossprod(X, WX)
-    VCOV <- gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE)
+    if (exists("WX")) Info <- crossprod(X, WX)
+    VCOV <- try(gInvSymm(Info, eliminate = eliminate, non.elim.only = TRUE),
+                silent = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev[1]) + 2 * attr(VCOV, "rank"))
     

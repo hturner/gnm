@@ -34,8 +34,12 @@
     multIndex[multIndex == ""] <- seq(sum(multIndex == ""))
     
     classIndex <- sapply(labelList, class)
-    thetaClassIndex <- structure(classIndex[factorAssign],
+    plugInStart <- !sapply(lapply(termTools, function(x) x$start), is.null)
+    thetaClassIndex <- classIndex
+    thetaClassIndex[plugInStart] <- "plugInStart"
+    thetaClassIndex <- structure(thetaClassIndex[factorAssign],
                                 names = names(factorAssign))
+    
     if (x | term.predictors) {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
         if ("Linear" %in% classIndex) {
@@ -49,17 +53,15 @@
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
                            names = names(factorAssign))
         theta <- ifelse(theta < 0, theta - scale, theta + scale)
-        ind <- thetaClassIndex == "Linear"
-        if (any(ind)) theta[ind] <-
-            suppressWarnings(naToZero(glm.fit(termTools[[1]],
-                                              model.response(gnmData),
-                                              weights = weights,
-                                              offset = offset,
-                                              family = family)$coefficients))
-        for (i in seq(termTools)[!sapply(lapply(termTools, function(x) x$start),
-                                         is.null)]) {
+        #ind <- thetaClassIndex == "Linear"
+#        if (any(ind)) theta[ind] <-
+#            suppressWarnings(naToZero(glm.fit(termTools[[1]],
+#                                              model.response(gnmData),
+#                                              weights = weights,
+#                                              offset = offset,
+#                                              family = family)$coefficients))
+        for (i in seq(termTools)[plugInStart]) {
             ind <- factorAssign == i
-            thetaClassIndex[ind] <- "plugInStart"
             if (is.function(termTools[[i]]$start))
                 theta[ind] <- termTools[[i]]$start(sum(ind))
             else

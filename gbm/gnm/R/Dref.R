@@ -32,7 +32,6 @@ Dref <- function(..., formula = ~ 1) {
         labels <- c(labelList, global)
 
     predictor <- function(coef) {
-        browser()
         # calculate constrained weights
         W <- matrix(nrow = nrow(gnmData), ncol = length(designList))
         for (i in seq(ncol(W)))
@@ -44,7 +43,6 @@ Dref <- function(..., formula = ~ 1) {
     }
 
     localDesignFunction <- function(predictor, ...) {
-        browser()
         W <- attr(predictor, "W")
         Dintercept <- predictor - W * rowSums(predictor)
         do.call("cbind", c(tapply(Dintercept, col(Dintercept), "*", local),
@@ -53,6 +51,6 @@ Dref <- function(..., formula = ~ 1) {
                                                         SIMPLIFY = FALSE))))))
     }
     
-    list(labels = labels, predictor = predictor,
-         localDesignFunction = localDesignFunction)
+    list(start = rep(0.5, length(labels)), labels = labels,
+         predictor = predictor, localDesignFunction = localDesignFunction)
 }

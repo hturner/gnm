@@ -1,9 +1,9 @@
 MultHomog <- function(...){
     labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
-    env <- parent.frame()
+    gnmData <- getModelFrame()
 
     designList <- lapply(labelList, function(x) {
-        model.matrix(reformulate(x), data = env)
+        model.matrix(reformulate(x), data = gnmData)
     })
 
     # assume factors have same levels with same names

@@ -10,8 +10,8 @@ Dref <- function(..., formula = ~ 1) {
     })
     global <- unique(unlist(lapply(designList, colnames)))
     nGlobal <- length(global)
-    rowData <- as.data.frame(row(designList[[1]]))
-    # pad out if necessary
+
+    ## pad out if necessary
     if (!all(mapply(identical, sapply(designList, colnames), global))) {
         M <- matrix(0, nrow = nrow(rowData), ncol = nGlobal,
                     dimnames = list(NULL, global))
@@ -21,7 +21,7 @@ Dref <- function(..., formula = ~ 1) {
     }
 
     # get design matrix for local structure
-    local <- model.matrix(formula, data = rowData, envir = env)
+    local <- model.matrix(formula, data = gnmData)
 
     # create index and labels for parameters
     factorIndex <- c(rep(seq(labelList), ncol(local)), rep(0, nGlobal))

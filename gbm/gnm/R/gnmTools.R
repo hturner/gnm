@@ -1,5 +1,5 @@
 "gnmTools" <-
-    function(gnmTerms, gnmData, x, family, weights, offset)
+    function(gnmTerms, gnmData, x, family, weights, offset, term.predictors)
 {
     labelList <- attr(gnmTerms, "parsed.labels")
     prefixList <- attr(gnmTerms, "prefix.labels")
@@ -36,7 +36,7 @@
     classIndex <- sapply(labelList, class)
     thetaClassIndex <- structure(classIndex[factorAssign],
                                 names = names(factorAssign))
-    if (x) {
+    if (x | term.predictors) {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
         if ("Linear" %in% classIndex) {
             linearAssign <- attr(termTools[[1]], "assign")
@@ -68,7 +68,7 @@
         theta
     }
 
-    factorList <- function(theta) {
+    factorList <- function(theta, term = FALSE) {
         factorList <- parameterList <- unname(split(theta, factorAssign))
         for (i in seq(factorList)) {
             factorList[[i]] <-
@@ -78,14 +78,25 @@
                        "Nonlin" = termTools[[i]]$predictor(parameterList[[i]]),
                        drop(termTools[[i]] %*% parameterList[[i]]))
         }
-        mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
+        factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
+        if (term & classIndex[[1]] == "Linear")
+            factorList[[1]] <- t(rowsum(t(termTools[[1]] %*%
+                                          diag(parameterList[[1]])),
+                                        linearAssign))
+        unlistOneLevel(factorList)
     }
     
-    predictor <- function(factorList)
-        rowSums(do.call("cbind",
-                        tapply(structure(factorList, class = "list"),
-                               multIndex,
-                               function(list) do.call("pprod", list))))
+    predictor <- function(factorList, term = FALSE) {
+        term.predictors <-
+            do.call("cbind", tapply(structure(factorList, class = "list"),
+                                    multIndex,
+                                    function(list) do.call("pprod", list)))
+        if (term) colnames(term.predictors) <-
+            c("(Intercept)"[linearAssign == 0], attr(attr(gnmTerms, "terms"),
+                            "term.labels"))
+        else term.predictors <- rowSums(term.predictors)
+        term.predictors
+    }
     
     localDesignFunction <- function(theta, factorList) {
         derivativeList <- productList <- list()

@@ -1,7 +1,7 @@
 gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
                 subset, weights, na.action,  method = "gnm.fit", offset,
                 start = NULL, control = gnm.control(...), model = TRUE,
-                x = FALSE, vcov = FALSE, ...) {
+                x = FALSE, vcov = FALSE, term.predictors = FALSE, ...) {
     
     call <- match.call()
     
@@ -132,7 +132,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     }
     else {
         modelTools <- gnmTools(modelTerms, modelData, x, family, weights,
-                               offset)
+                               offset, term.predictors)
 
         if (method == "coef.names") return(names(modelTools$classIndex))
 
@@ -158,7 +158,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         
         fit <- gnm.fit(modelTools, y, constrain, family, weights,
                        offset, nObs = nObs, start = start,
-                       control = gnm.control(...), x, vcov)
+                       control = gnm.control(...), x, vcov, term.predictors)
     }
     fit <- c(list(call = call, formula = formula, constrain = constrain,
                   family = family, prior.weights = weights,

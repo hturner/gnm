@@ -2,7 +2,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     weights = rep.int(1, length(y)),
                     offset = rep.int(0, length(y)), nObs = length(y),
                     start = NULL,
-                    control = gnm.control(...), x, vcov,
+                    control = gnm.control(...), x, vcov, term.predictors,
                     eliminate = numeric(0)) {
 ##    eliminate <- 1:101 in the backpain example
 ##    Need to sort out how start and constrain arguments interact with
@@ -62,10 +62,9 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             dmu <- family$mu.eta(eta)
             vmu <- family$variance(mu)
             w <- weights * dmu * dmu / vmu
-            if (control$trace){
-                dev <- sum(family$dev.resids(y, mu, weights))
+            dev <- sum(family$dev.resids(y, mu, weights))
+            if (control$trace)
                 cat("Iteration", iter, ". Deviance = ", dev, "\n")
-            }
             if (is.nan(dev)) print("need to restart here!")
             z <- (y - mu)/dmu
             WX <- w * X
@@ -130,6 +129,10 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
     if (vcov) {
         VCOV[constrain, constrain] <- 0
         fit$vcov <- VCOV
+    }
+    if (term.predictors) {
+        factorList <- modelTools$factorList(theta, term = TRUE)
+        fit$term.predictors <- modelTools$predictor(factorList, term = TRUE)
     }
     fit    
 }

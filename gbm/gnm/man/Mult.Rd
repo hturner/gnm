@@ -40,6 +40,7 @@ Exp(factor)
 \seealso{\code{\link{offset}}, \code{\link{gnm}}, \code{\link{Dref}},
          \code{\link{MultHomog}}}
 \examples{
+set.seed(1)
 ## Using 'Mult' with 'Exp' to constrain first factor
 data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels

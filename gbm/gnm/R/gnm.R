@@ -128,7 +128,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         if (vcov) fit$vcov <- NULL
     }
     else {
-        modelTools <- gnmTools(modelTerms, modelData, x)
+        modelTools <- gnmTools(modelTerms, modelData, x, y, family, weights,
+                               offset)
 
         if (is.null(constrain))
           constrain <- rep.int(FALSE, length(modelTools$factorAssign))

@@ -1,5 +1,5 @@
 "gnmTools" <-
-    function(gnmTerms, gnmData, x)
+    function(gnmTerms, gnmData, x, y, family, weights, offset)
 {
     labelList <- attr(gnmTerms, "parsed.labels")
     prefixList <- attr(gnmTerms, "prefix.labels")
@@ -43,21 +43,44 @@
     }
     
     classIndex <- sapply(labelList, class)
+    classIndex[setdiff(grep("Mult", multIndex), grep("Exp", classIndex))] <-
+        "MultNotExp"
+
+    #multiplicative <- factor(parameterGroup)
+   # levels(multiplicative) <- multIndex
+   # multiplicative <-
+       # is.element(multiplicative, multIndex[duplicated(multIndex)])
+
+    #theta <- 0.1 + rnorm(length(modelTools$multiplicative))/20
+      #  factorList <- modelTools$factorList(theta)
+      #  X <- modelTools$localDesignFunction(factorList)
+      #  suppressWarnings(theta[!modelTools$multiplicative] <-
+                #         naToZero(glm.fit(X[,!modelTools$multiplicative], y,
+                        #                  family = family, intercept =
+                       #                   attr(attr(modelData, "terms"),
+                         #                      "intercept") > 0)$coefficients))
 
     start <- function (scale = 0.2) {
-        theta <- list()
-        for (i in seq(termTools)) {
-            if (is.null(termTools[[i]]$start))
-                theta[[i]] <- runif(sum(factorAssign == i), -1, 1) * scale
-            else if (is.function(termTools[[i]]$start))
-                theta[[i]] <- termTools[[i]]$start(sum(factorAssign == i))
+        theta <- structure(runif(length(factorAssign), -1, 1) * scale,
+                           names = names(factorAssign))
+        for (i in seq(termTools)[!sapply(sapply(termTools, attr, "start"),
+                                         is.null)]) {
+            ind <- factorAssign == i
+            if (is.function(termTools[[i]]$start))
+                theta[ind] <- termTools[[i]]$start(sum(ind))
             else
-                theta[[i]] <- termTools[[i]]$start
+                theta[ind] <- termTools[[i]]$start
         }
-        theta <- unlist(theta)
-        ind <- is.element(factorAssign, setdiff(grep("Mult", multIndex),
-                                                grep("Exp", classIndex)))
+        ind <- classIndex[factorAssign] == "MultNotExp"
         theta[ind] <- 2 * scale + theta[ind]
+        ind <- classIndex[factorAssign] == "character"
+        parameterList <- unname(split(theta, factorAssign))
+        factorList <- factorList(parameterList)
+        X <- localDesignFunction(parameterList, factorList)
+        suppressWarnings(theta[ind] <-
+                         naToZero(glm.fit(X[,ind], y, weights = weights,
+                                          offset = offset,
+                                          family = family)$coefficients))
         theta
     }
 

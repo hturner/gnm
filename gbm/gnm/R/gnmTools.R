@@ -60,13 +60,12 @@
         ind <- classIndex[factorAssign] == "MultNotExp"
         theta[ind] <- 2 * scale + theta[ind]
         ind <- classIndex[factorAssign] == "character"
-        parameterList <- unname(split(theta, factorAssign))
-        factorList <- factorList(parameterList)
-        X <- localDesignFunction(parameterList, factorList)
-        suppressWarnings(theta[ind] <-
-                         naToZero(glm.fit(X[,ind], y, weights = weights,
-                                          offset = offset,
-                                          family = family)$coefficients))
+        theta[ind] <- 0
+        lin <- model.matrix(reformulate(labelList[classIndex == "character"]),
+                            data = gnmData)
+        lin <- naToZero(glm.fit(lin, model.response(gnmData), weights = weights,
+                                offset = offset, family = family)$coefficients)
+        theta[names(lin)] <- lin
         theta
     }
 

@@ -3,7 +3,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                      offset = rep.int(0, length(y)), nObs = length(y),
                      start = NULL, control = gnm.control(...), x, vcov) {
     conv <- FALSE
-    repeat{
+    attempt <- 1
+    repeat {
         if (is.null(start)) {
             theta <- modelTools$start()
             theta[constrain] <- 0
@@ -59,12 +60,23 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                         theta + drop(crossprod(VCOV, score)), 0)
         }
         if (!inherits(VCOV, "try-error") | !is.null(start)) break
-        else cat("Bad parameterisation, restarting.\n")
+        else {
+            attempt <- attempt + 1
+            if (attempt > 5) {
+                cat("Fit attempted 5 times without success: terminating.\n")
+                break
+            }
+            cat("Bad parameterisation: restarting.\n")
+        }
     }
-    if (!conv)
-        warning("Fitting algorithm has either not converged or converged to\n",
-                "a non-solution of the likelihood equations.\n",
-                "Re-start gnm with coefficients of returned model.\n")
+    if (!conv) {
+        if (!all(is.finite(theta)))
+            warning("Fit unsuccessful: coefficients are not all finite.\n")
+        else
+            warning("Fitting algorithm has either not converged or converged\n",
+                    "to a non-solution of the likelihood equations.\n",
+                    "Re-start gnm with coefficients of returned model.\n")
+    }
     theta[constrain] <- NA
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev) + 2 * attr(VCOV, "rank"))

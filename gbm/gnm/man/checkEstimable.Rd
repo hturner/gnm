@@ -11,7 +11,7 @@
 checkEstimable(model, cmatrix, tolerance = 1e-14, verbose = TRUE)
 }
 \arguments{
-  \item{model}{  a model object of class \code{"gnm"} }
+  \item{model}{  a model object of class \code{\dQuote{gnm}} }
   \item{cmatrix}{  numeric: either a vector of length the same as
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}

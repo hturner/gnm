@@ -26,7 +26,7 @@ gnmConstrain(model, constrain, start = coef(model), ...)
 ##  Following on from example(gnm)...
 
 data(cautres)
-
+set.seed(1)
 ##  Fit model as before
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
     + Mult(Exp(election), religion:vote) + Mult(Exp(election), class:vote),

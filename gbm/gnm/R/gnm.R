@@ -88,8 +88,8 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
         if (!is.null(call$weights))
           newCall$weights <- rep(weights * rowSums(y), rep(ncol(y), nrow(y)))
         if (!is.null(constrain)) {
-          if (is.list(constrain))
-            newCall$constrain <- lapply(constrain, "+", nrow(y))
+          if (is.numeric(constrain))
+            newCall$constrain <- constrain + nrow(y)
           else
             newCall$constrain <- c(rep(FALSE, nrow(y)), constrain)
         }
@@ -124,7 +124,7 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
 
         if (is.null(constrain))
           constrain <- rep.int(FALSE, length(modelTools$factorAssign))
-        else if (is.list(constrain))
+        else if (is.numeric(constrain))
           constrain <- ifelse(is.element(seq(modelTools$factorAssign),
                                          constrain), TRUE, FALSE)
 
@@ -143,10 +143,9 @@ gnm <- function(formula, constrain = NULL, family = gaussian, data = NULL,
     if (!is.null(tableFormula)) {
         toTable <- c("predictors", "fitted.values", "residuals",
                      "prior.weights", "weights", "y", "offset")
-        fit[toTable] <- lapply(toTable, function(x)
-                               xtabs(reformulate(tableFormula, x),
-                                     data = cbind(as.data.frame(data),
-                                     fit[toTable])))
+        fit[toTable] <- lapply(toTable, function(x) {
+            as.table(tapply(fit[[x]],
+                            as.data.frame(data)[names(dimnames(data))], sum))})
     }
     if (model) {
         attr(modelData, "terms") <- attr(modelTerms, "terms")

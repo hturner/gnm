@@ -46,14 +46,14 @@ print(sum((barley$y - fit)^2 / (fit * (1-fit))^2))
 barley.rank2 <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
     family = wedderburn, data = barley)
 barley.svd <- svd(matrix(barley.rank2$predictors, 10, 9))
-barley.A <- (barley.svd$v %*% diag(sqrt(barley.svd$d)))[, 1:2]
-barley.B <- (barley.svd$u %*% diag(sqrt(barley.svd$d)))[, 1:2]
+barley.A <- (barley.svd$v \%*\% diag(sqrt(barley.svd$d)))[, 1:2]
+barley.B <- (barley.svd$u \%*\% diag(sqrt(barley.svd$d)))[, 1:2]
 ##  These are essentially A and B as in Gabriel (1998, p694), from which
 ##  the biplot is made by
-plot(rbind(A, B), pch = c(LETTERS[1:9], as.character(1:9), "X"))
+plot(rbind(barley.A, barley.B), pch = c(LETTERS[1:9], as.character(1:9), "X"))
 ##
 ##  Fit the double-additive model as in Gabriel (1998, p697)
-variety.binary <- factor(barley$variety %in% c(2,3,6), labels = c("Rest", "2,3,6"))
+variety.binary <- factor(barley$variety \%in\% c(2,3,6), labels = c("Rest", "2,3,6"))
 barley.doubleAdditive <- gnm(y ~ variety + Mult(site, variety.binary),
     family = wedderburn, data = barley)
 }

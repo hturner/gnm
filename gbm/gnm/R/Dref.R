@@ -4,8 +4,8 @@ Dref <- function(..., formula = ~ 1) {
     
     # get design matrices for Dref factors
     designList <- lapply(labelList, function(x) {
-        M <- model.matrix(reformulate(x), data = gnmData)
-        colnames(M) <- with(gnmData, levels(as.factor(get(x))))
+        M <- model.matrix(reformulate(c(-1, x)), data = gnmData)
+        colnames(M) <- with(gnmData, levels(as.factor(eval(parse(text = x)))))
         M
     })
     global <- unique(unlist(lapply(designList, colnames)))

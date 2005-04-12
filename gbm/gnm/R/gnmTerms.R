@@ -1,8 +1,12 @@
 gnmTerms <- function(formula, eliminate)
 {
-    if (!is.null(eliminate))
-        formula <- update.formula(formula, substitute(~ -1 + eliminate + .,
-                              list(eliminate = eliminate[[2]])))
+    if (!is.null(eliminate)) {
+        tmp <- .Internal(update.formula(formula,
+                                        substitute(~ -1 + e + .,
+                                                   list(e = eliminate[[2]]))))
+        formula <- formula(terms.formula(tmp, simplify = TRUE,
+                                         keep.order = TRUE))
+    }
     fullTerms <- terms(formula, keep.order = TRUE)
     if (is.empty.model(fullTerms))
         return(structure(formula, terms = fullTerms))

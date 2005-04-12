@@ -6,12 +6,14 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     call <- match.call()
     
     modelTerms <- gnmTerms(formula, eliminate)
+    falseFormula <- as.call(as.list(modelTerms))
+    environment(falseFormula) <- environment(formula)
     
     modelData <- match.call(expand.dots = FALSE)
     argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
                     names(modelData), 0)
     modelData <- as.call(c(as.name("model.frame"),
-                           formula = as.call(as.list(modelTerms)),
+                           formula = falseFormula,
                            as.list(modelData)[argPos],
                            drop.unused.levels = TRUE))
     if (!is.null(attr(modelTerms, "extraData")))

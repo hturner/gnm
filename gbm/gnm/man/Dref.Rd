@@ -67,18 +67,18 @@ data(conformity)
 
 ## Models for mothers' conformity score
 A <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF)) + MFCM + AGEM + FRMF +
-         MRMM + MWORK - 1, family = gaussian, data = slik, trace = TRUE)
+         MRMM + MWORK - 1, family = gaussian, data = conformity, trace = TRUE)
 par <- coef(A)
 mother.educ <- exp(par[6])/(exp(par[6]) + exp(par[7]))
 
 ## equivalent models for fathers
 A <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM)) + FFCF + AGEM + FRMF +
-         MRMM + MWORK - 1, family = gaussian, data = slik)
+         MRMM + MWORK - 1, family = gaussian, data = conformity)
 par <- coef(A)
 father.educ <- exp(par[6])/(exp(par[6]) + exp(par[7]))
 
 F <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)) + MFCM +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 par <- coef(F)
 mother.educ.low.conflict <- exp(par[6])/(exp(par[6]) + exp(par[8]))
 mother.educ.high.conflict <- exp(par[6] + par[7])/(exp(par[6] + par[7]) +

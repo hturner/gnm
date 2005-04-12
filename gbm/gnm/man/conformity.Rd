@@ -30,7 +30,6 @@
   values below or equal to the mean were recoded as zero,
   values above the mean were recoded as one.
 }
-}
 \references{
   Van der Slik, F. W. P., De Graaf, N. D and Gerris, J. R. M. (2002)
   Conformity to Parental Rules: Asymmetric Influences of Father's and
@@ -42,50 +41,50 @@
 data(conformity)
 
 ## create factors required for status maximisation model
-status.max <- as.numeric(MOPLM) < as.numeric(FOPLF)
-MOPLMadj <- ifelse(status.max, FOPLF, MOPLM)
-FOPLFadj <- ifelse(status.max, MOPLM, FOPLF)
+status.max <- as.numeric(conformity$MOPLM) < as.numeric(conformity$FOPLF)
+MOPLMadj <- ifelse(status.max, conformity$FOPLF, conformity$MOPLM)
+FOPLFadj <- ifelse(status.max, conformity$MOPLM, conformity$FOPLF)
 
 ## Models for mothers' conformity score
 A <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF)) + MFCM + AGEM + FRMF +
-         MRMM + MWORK - 1, family = gaussian, data = slik, trace = TRUE)
+         MRMM + MWORK - 1, family = gaussian, data = conformity, trace = TRUE)
 exp(coef(A)[6])/(exp(coef(A)[6]) + exp(coef(A)[7])) # as in Table 4
 
 B <- gnm(MCFM ~ Nonlin(Dref(MOPLMadj, FOPLFadj)) + MFCM
-         + AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         + AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 C <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + AGEM)) + MFCM +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 D <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MRMM)) + MFCM +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 E <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MWORK)) + MFCM +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 F <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)) + MFCM +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 \dontrun{
 ## equivalent models for fathers
 A <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM)) + FFCF + AGEM + FRMF +
-         MRMM + MWORK - 1, family = gaussian, data = slik)
+         MRMM + MWORK - 1, family = gaussian, data = conformity)
 exp(coef(A)[6])/(exp(coef(A)[6]) + exp(coef(A)[7])) # as in Table 4
 
 B <- gnm(FCFF ~ Nonlin(Dref(FOPLFadj, MOPLMadj)) + FFCF
-         + AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         + AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 C <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + AGEM)) + FFCF +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 D <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + MRMM)) + FFCF +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 E <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + MWORK)) + FFCF +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 
 F <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM, formula = ~ 1 + FFCF)) + FFCF +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = slik)
+         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 }
 }
 \keyword{datasets}

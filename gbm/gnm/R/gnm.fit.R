@@ -18,9 +18,16 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID == "plugInStart"
             unspecifiedLin <- linear & !specified
-            specifiedNonlin <- !linear & specified
-            theta <- updateLinear(unspecifiedLin, specifiedNonlin, theta, y,
-                                  offset, weights, family, modelTools)
+            theta.offset <- theta
+            theta.offset[!specified] <- 0
+            factorList <- modelTools$factorList(theta.offset)
+            offsetSpecified <- offset + modelTools$predictor(factorList)
+            X <- modelTools$localDesignFunction(theta.offset, factorList)
+            theta[unspecifiedLin] <-
+                suppressWarnings(naToZero(glm.fit(X[, unspecifiedLin], y,
+                                                  weights = weights,
+                                                  offset = offsetSpecified,
+                                                  family = family)$coef))
             oneAtATime <- !linear & !specified
             for (iter in seq(length = control$startit * any(oneAtATime))) {
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
@@ -42,8 +49,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     } 
                 }
                 if (status == "not.converged") 
-                    theta <- updateLinear(linear, !linear, theta, y, offset,
-                                          weights, family, modelTools, X)
+                    theta <- updateLinear(linear, theta, y, offset, weights,
+                                          family, modelTools, X)
                 if (control$trace){
                     dev <- sum(family$dev.resids(y, mu, weights))
                     cat("Startup iteration", iter,

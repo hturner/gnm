@@ -123,11 +123,13 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     else {
         modelTools <- gnmTools(modelTerms, modelData, x, family, weights,
                                offset, eliminate, term.predictors)
+        nParam <- length(modelTools$classID)
+        nElim <- length(modelTools$eliminate)
 
         if (method == "coef.names") return(names(modelTools$classID))
 
         if (is.null(constrain))
-          constrain <- rep.int(FALSE, length(modelTools$classID))
+          constrain <- rep.int(FALSE, nParam)
         else {
             if (constrain == "pick") {
                 if (!require(tcltk))
@@ -144,14 +146,21 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
             }
             else if (is.numeric(constrain))
                 constrain <- ifelse(is.element(seq(modelTools$classID) -
-                                      length(modelTools$eliminate), constrain),
-                                    TRUE, FALSE)
+                                      nElim, constrain), TRUE, FALSE)
             else if (is.logical(constrain) & !is.null(eliminate))
-                constrain <- c(rep(FALSE, length(modelTools$eliminate)),
-                               constrain)
+                constrain <- c(rep(FALSE, nElim), constrain)
         }
 
-        if (is.null(start)) start <- rep.int(NA, length(modelTools$classID))
+        if (is.null(start))
+            start <- rep.int(NA, nParam)
+        else if (length(start) != nParam) {
+            if (!is.null(eliminate) & length(start) == (nParam - nElim))
+                start <- c(rep(NA, nElim), start)
+            else
+                stop("length(start) must either equal the no. of parameters\n",
+                     "or the no. of non-eliminated parameters.")
+        }
+            
         
         fit <- gnm.fit(modelTools, y, constrain, family, weights,
                        offset, nObs = nObs, start = start,

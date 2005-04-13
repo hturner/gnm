@@ -27,7 +27,7 @@ A data frame with two columns:
 and row names the same as the column names (if any) of \code{cmatrix}.
 }
 \author{ David Firth }
-\seealso{ \code{\link{getContrasts}}, \code{\link{gnmConstrain}} }
+\seealso{ \code{\link{getContrasts}}, \code{\link{checkEstimable}}}
 \examples{
 data(yaish)
 set.seed(1)

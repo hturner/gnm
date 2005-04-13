@@ -12,7 +12,7 @@ getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     if (!is.list(sets)) sets <- list(sets)
     nsets <- length(sets)
     sets <- lapply(sets, function(x){
-        if (is.numeric(x)) x <- (names(coefs)[!model$auxiliary])[x]
+        if (is.numeric(x)) x <- names(coefs)[x]
         list(coefs = x, contr = contr.sum(factor(x)))})
     cmatrix <- lapply(sets, function(x){
         temp <- matrix(0, l, length(x$coefs))

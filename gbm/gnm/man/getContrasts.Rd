@@ -35,7 +35,7 @@ getContrasts(model, sets = NULL, nsets = 1, ...)
 \examples{
 data(yaish)
 set.seed(1)
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(educ),
+yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(-1 + educ),
     orig:dest), family = poisson, data = yaish)
 ## Examine the education multipliers (differences on the log scale):
 getContrasts(yaish.unidiff, grep("Mult1.Factor1", names(coef(yaish.unidiff))))

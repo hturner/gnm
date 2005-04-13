@@ -1,13 +1,10 @@
 getContrasts <- function(model, sets = NULL, nsets = 1, ...){
-    if (is.null(model$auxiliary)) model$auxiliary <-
-        rep(FALSE, length(model$coef))
     if (is.null(sets)){
         if (!require(tcltk)) stop(
                "no parameter set specified, and tcltk not installed")
         if (!require(relimp)) stop(
                "the relimp package from CRAN needs to be installed")
-        sets <- pickFrom(names(coef(model))[!model$auxiliary],
-                         nsets,...)
+        sets <- pickFrom(names(coef(model)), nsets,...)
         if (length(sets) == 0) stop("no parameter set(s) specified")
     }
     coefs <- coef(model)
@@ -20,7 +17,7 @@ getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     cmatrix <- lapply(sets, function(x){
         temp <- matrix(0, l, length(x$coefs))
         rownames(temp) <- names(coefs)
-        temp[x$coefs, 1:(ncol(temp)-1)] <- x$contr
+        temp[x$coefs, 1:(ncol(temp) - 1)] <- x$contr
         colnames(temp) <- x$coefs
         temp})
     lapply(cmatrix, function(x){

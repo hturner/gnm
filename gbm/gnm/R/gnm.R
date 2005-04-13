@@ -25,11 +25,9 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                                           "variables")
 
     if (!is.null(eliminate)) {
-        eliminate <- attr(attr(modelTerms, "terms"), "term.labels")[1]
-        check <- try(modelData[, eliminate] <-
-                     as.factor(modelData[, eliminate]), silent = TRUE)
-        if (class(check) == "try-error")
-            stop("Eliminated term must coerce to a factor.")
+        if (!suppressWarnings(is.factor(with(modelData, eval(eliminate[[2]])))))
+            stop("'eliminate' formula must contain one term only,",
+                 " which must be a factor")
     }
     
     if (method == "model.frame") {

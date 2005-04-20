@@ -2,10 +2,12 @@ export(checkEstimable, Diag, Dref, Exp,  getContrasts, gnm,
        gnm.control, MPinv, Mult, MultHomog, multinomial, Nonlin, se, Symm,
        summary.gnm, term.predictors, wedderburn)
 
-import(MASS, stats)
+import(MASS, stats, tcltk)
 importFrom(gtools, combinations)
 importFrom(graphics, plot)
 importFrom(nnet, class.ind)
+importFrom(relimp, pickFrom)
+
 
 S3method(add1, gnm)
 S3method(addterm, gnm)
@@ -32,8 +34,6 @@ S3method(plot, gnm)
 S3method(predict, gnm)
 S3method(print, gnm)
 S3method(print, summary.gnm)
-S3method(print, coef.gnm)
-S3method(print, vcov.gnm)
 S3method(proj, gnm)
 S3method(residuals, gnm)
 S3method(rstandard, gnm)

@@ -1,9 +1,5 @@
 getContrasts <- function(model, sets = NULL, nsets = 1, ...){
     if (is.null(sets)){
-        if (!require(tcltk)) stop(
-               "no parameter set specified, and tcltk not installed")
-        if (!require(relimp)) stop(
-               "the relimp package from CRAN needs to be installed")
         sets <- pickFrom(names(coef(model)), nsets,...)
         if (length(sets) == 0) stop("no parameter set(s) specified")
     }
@@ -24,7 +20,8 @@ getContrasts <- function(model, sets = NULL, nsets = 1, ...){
         iden <- checkEstimable(model, x)
         if (any(!na.omit(iden))) {
             print(iden)
-            cat("Note: not all of the specified contrasts in this set are estimable\n")
+            cat("Note: not all of the specified contrasts in this set are",
+                "estimable\n")
         }
         not.unestimable <- iden | is.na(iden)
         se(model, x[, not.unestimable, drop = FALSE],

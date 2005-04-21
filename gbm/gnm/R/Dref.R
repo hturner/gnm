@@ -10,7 +10,18 @@ Dref <- function(..., formula = ~ 1) {
     global <- unique(unlist(allLevels))
     nGlobal <- length(global)
 
-    ## pad out if necessary
+    ## get design matrix for local structure
+    local <- model.matrix(formula, data = gnmData)
+
+    ## create index and labels for parameters
+    factorIndex <- c(rep(seq(labelList), each = ncol(local)), rep(0, nGlobal))
+    if (ncol(local) > 1)
+        labels <- c(as.vector(sapply(labelList, paste, colnames(local),
+                                     sep = ".")), global)
+    else
+        labels <- c(labelList, global)
+
+    ## pad out design matrices for Dref factors if necessary
     if (!all(mapply(identical, allLevels, list(global)))) {
         labels <- sort(labels)
         M <- matrix(0, nrow = nrow(gnmData), ncol = nGlobal,
@@ -19,17 +30,6 @@ Dref <- function(..., formula = ~ 1) {
             M[,colnames(design)] <- design
             M}, M)
     }
-
-    # get design matrix for local structure
-    local <- model.matrix(formula, data = gnmData)
-
-    # create index and labels for parameters
-    factorIndex <- c(rep(seq(labelList), each = ncol(local)), rep(0, nGlobal))
-    if (ncol(local) > 1)
-        labels <- c(as.vector(sapply(labelList, paste, colnames(local),
-                                     sep = ".")), global)
-    else
-        labels <- c(labelList, global)
 
     predictor <- function(coef) {
         # calculate constrained weights

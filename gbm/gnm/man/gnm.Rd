@@ -14,8 +14,8 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
-  \item{constrain}{ either a list of indices, or a logical vector,
-    indicating elements of the parameter vector to set to zero.}
+  \item{constrain}{ either a numeric vector of indices, or a logical vector,
+    indicating coefficients to set to zero.}
   \item{family}{ a specification of the error distribution and link function
     to be used in the model. This can be a character string naming
     a family function; a family function, or the result of a call
@@ -36,7 +36,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     \code{na.action} setting of \code{options}, and third,
     \code{na.fail}.}
   \item{method}{ the method to be used: either \code{"gnm.fit"} to fit the
-    model, \code{"coef"} to return a vector of names for the
+    model, \code{"coef"} to return a character vector of names for the
     coefficients in the model, or \code{"model.frame"} to return the
     model frame. }
   \item{offset}{ this can be used to specify an a priori known component to
@@ -44,14 +44,18 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     can be included in the formula instead or as well, and if both
     are specified their sum is used.}
   \item{start}{ a vector of starting values for the parameters in the
-    predictor. }
+    model; if a starting value is \code{NA}, the default starting value
+    will be used. } 
   \item{control}{ a list of parameters for controlling the fitting process. See
     \code{gnm.control} for details.}
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
   \item{x}{ logical: if \code{TRUE} the local design matrix from the last
     iteration is returned. }
   \item{vcov}{ logical: if \code{TRUE} the variance-covariance matrix of the
-    model parameters is returned. }
+    model coefficients is returned. }
+  \item{term.predictors}{ logical: if \code{TRUE}, a matrix is returned
+    with a column for each term in the model, containing the additive
+    contribution of that term to the predictor }
   \item{\dots}{ further arguments passed to or from other methods. }
 }
 \details{
@@ -101,9 +105,11 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   \code{gnm} is re-called. See \code{\link{multinomial}} for an example.
 
   The \code{gnm} fitting process consists of two stages. In the start-up
-  iterations, nonlinear parameters are updated one parameter at a time.
-  In the main iterations, all the parameters are updated in each
-  iteration. See \code{gnm.control} for more details.
+  iterations, any nonlinear parameters that are not specified by either the
+  \code{start} argument or a plug-in function are updated one parameter
+  at a time, then the linear parameters are jointly updated before the
+  next iteration. In the main iterations, all the parameters are jointly
+  updated. See \code{gnm.control} for more details.
 
   By default, \code{gnm} uses an over-parameterized representation of
   the model that is being fitted. Only minimal identifiability constraints
@@ -118,7 +124,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
 
   If appropriate constraints are known in advance, or have been
   determined from a \code{gnm} fit, the model may be (re-)fitted using
-  the \code{constrain} argument to specify which parameters should be
+  the \code{constrain} argument to specify which coefficients should be
   set to zero. \code{update} provides a convenient way of
   re-fitting a \code{gnm} model with new constraints.
 }
@@ -128,7 +134,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   and is a list containing the following components:     
   \item{ call } { the matched call. }
   \item{ formula }{ the formula supplied. }
-  \item{ constrain }{ a logical vector, indicating any parameters that were
+  \item{ constrain }{ a logical vector, indicating any coefficients that were
     constrained to zero in the fitting process. }
   \item{ family }{ the \code{family} object used. }
   \item{ prior.weights }{ the case weights initially supplied. }
@@ -139,6 +145,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   \item{ offset }{ the offset vector used. }
   \item{ control }{ the value of the \code{control} argument used. }
   \item{ coefficients }{ a named vector of coefficients. }
+  \item{ eliminate }{ the number of eliminated parameters. }
   \item{ predictors }{ the fitted values on the link scale. }
   \item{ fitted.values }{ the fitted mean values, obtained by transforming the
     predictors by the inverse of the link function. }
@@ -146,7 +153,7 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     log-likelihood. Where sensible, the constant is chosen so
     that a saturated model has deviance zero. }
   \item{ aic }{ Akaike's \emph{An Information Criterion}, minus twice the
-    maximized log-likelihood plus twice the number of coefficients (so assuming
+    maximized log-likelihood plus twice the number of parameters (so assuming
     that the dispersion is known).}
   \item{ iter }{ the number of main iterations.}
   \item{ conv }{ logical indicating whether the main iterations converged. }
@@ -156,11 +163,10 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     from the last iteration. }
   \item{ df.residual }{ the residual degrees of freedom. }
   \item{ rank }{ the numeric rank of the fitted model. }
-  \item{ auxiliary }{ a logical vector indicating whether parameters are
-    auxiliary parameters in the re-expression of a multinomial model. }
   
   The list may also contain the components \code{model}, \code{x}, or
-  \code{vcov}, if requested in the arguments to \code{gnm}.
+  \code{vcov}, \code{term.predictors} if requested in the arguments to
+  \code{gnm}. 
 
   If a binomial \code{gnm} model is specified by giving a two-column
   response, the weights returned by \code{prior.weights} are the total
@@ -178,9 +184,10 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   The generic functions \code{formula}, \code{family}, \code{terms},
   \code{coefficients}, \code{fitted.values}, \code{deviance},
   \code{extractAIC}, \code{weights}, \code{residuals},
-  \code{df.residual}, \code{model.frame}, \code{model.matrix} and
-  \code{vcov} maybe used to extract components from the object returned
-  by \code{gnm} or to construct the relevant objects where necessary.
+  \code{df.residual}, \code{model.frame}, \code{model.matrix},
+  \code{vcov} and \code{term.predictors} maybe used to extract
+  components from the object returned by \code{gnm} or to construct the
+  relevant objects where necessary. 
 
   Note that the generic functions \code{weights} and \code{residuals} do
   not act as straight-forward accessor functions for \code{gnm} objects,

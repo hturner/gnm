@@ -3,7 +3,7 @@
 \title{Specify a Special Nonlinear Term in a Model Formula}
 \description{
   A symbolic wrapper, for use in the formula argument to \code{gnm}, to
-  indicate anonlinear term that requires special handling.  
+  indicate a nonlinear term that requires special handling.  
 }
 \usage{
 Nonlin(functionCall, data = NULL)
@@ -48,12 +48,12 @@ Nonlin(functionCall, data = NULL)
         of the predictor function), and
         returns the local design matrix.}
     }
-    The plug-in function is evaluated in the environment of the model frame, so
-    variables from the model frame can be accessed within the plug-in function
-    using parent.frame() (see \code{MultHomog} or \code{Dref}).  
-
+    
     Any variables passed to unspecified arguments of the plug-in function will
     be automatically added to the model frame used in \code{gnm}.
+    This model frame can be accessed within a plug-in function
+    using \code{getModelFrame}.  
+    
     Any variables passed to specified arguments must be given in the
     \code{data} argument of \code{Nonlin}.  ALL the variables given in
     \code{data} will be added to the model frame.  
@@ -67,8 +67,8 @@ Nonlin(functionCall, data = NULL)
                    argument of \code{Nonlin}}
 }
 \author{Heather Turner}
-\seealso{\code{\link{gnm}}, \code{\link{MultHomog}}, \code{\link{Dref}},
-         \code{\link{Mult}}}
+\seealso{\code{\link{gnm}}, \code{getModelFrame},
+  \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{Mult}}}
 \examples{
 data(occupational.status)
 test <- gnm(Freq ~ origin + destination + Diag(origin, destination) +

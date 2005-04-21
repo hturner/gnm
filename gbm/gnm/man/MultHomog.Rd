@@ -11,8 +11,7 @@
 MultHomog(...)
 }
 \arguments{
-  \item{\dots}{a comma-separated list of two or more expressions representing
-    the factors in the interaction.}
+  \item{\dots}{a comma-separated list of two or more factors.}
 }
 \details{
   Designed to work as a plug-in function for \code{gnm}, \code{MultHomog}

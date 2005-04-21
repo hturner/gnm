@@ -19,14 +19,18 @@ gnm.control(epsilon = 1e-04, startit = 2, maxit = 500, trace = FALSE)
 }
 \details{
   The \code{gnm} fitting algorithm consists of two stages.  In the start-up
-  iterations, nonlinear parameters are updated one parameter at a time.
-  In the main iterations, all the parameters are updated in each
-  iteration, until convergence is reached or the number or iterations
-  reaches \code{maxit}.
+  iterations, any nonlinear parameters that are not specified by either the
+  \code{start} argument of \code{gnm} or a plug-in function are
+  updated one parameter at a time, then the linear parameters are
+  jointly updated before the next iteration. In the main iterations, all
+  the parameters are jointly updated, until convergence is reached or
+  the number or iterations reaches \code{maxit}.
 
   Convergence is judged by comparing the squared components of the score vector
   with corresponding elements of the diagonal of the Fisher information
-  matrix: if the ratios are all less than \code{epsilon^2}, iterations cease.
+  matrix. If, for all components of the score vector, the ratio is less
+  than \code{epsilon^2}, or the corresponding diagonal element of the
+  Fisher information matrix is less than 1e-20, iterations cease.
 }
 \value{
   A list with the arguments as components.
@@ -43,19 +47,20 @@ data(cautres)
 ##  multipliers.
 
 set.seed(1)
+system.time(
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
     + Mult(Exp(election - 1), religion:vote - 1) +
     Mult(Exp(election - 1), class:vote - 1),
-    family = poisson, data = cautres, trace = TRUE)
+    family = poisson, data = cautres, trace = TRUE))
 
+## repeat with 10 start-up iterations
 set.seed(1)
+system.time(
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
     + Mult(Exp(election - 1), religion:vote - 1) +
     Mult(Exp(election - 1), class:vote - 1),
-    family = poisson, data = cautres, trace = TRUE, startit = 10)
-
-## ...increasing 'startit' may not speed convergence of main iterations
-## as only nonlinear parameters are updated in the start-up iterations.
+    family = poisson, data = cautres, trace = TRUE, startit = 10))
+## ...at convergence by first main iteration, but much slower!
 }
 \keyword{ models }
 \keyword{ regression }

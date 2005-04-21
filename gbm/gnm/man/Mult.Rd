@@ -14,18 +14,20 @@ Mult(..., multiplicity = 1)
 Exp(factor)
 }
 \arguments{
-  \item{\dots}{a comma-separated list of two or more expressions representing
-               the factors in the interaction.}
+  \item{\dots}{a comma-separated list of two or more symbolic
+    expressions representing the factors in the interaction.}
   \item{multiplicity}{a positive integer specifying the number of
-                      multiplicative components to fit.}
-  \item{factor}{an expression representing a factor in a multiplicative
-                interaction.}
+    multiplicative components to fit.}
+  \item{factor}{a symbolic expression representing a factor in a
+    multiplicative interaction.}
 }
 \details{
-    The factors in a \code{Mult} term may be represented by any expression
-    that evaluates to a vector. Offsets can be added to individual factors,
-    using \code{offset}. Factors can be constrained to be nonnegative
-    through the use of \code{Exp}.
+    The factors in a \code{Mult} term are represented by symbolic
+    expressions that are interpreted in the same way as the right hand
+    side of a formula in an object of class \code{\dQuote{formula}}. In
+    particular, an intercept term is added by default. Offsets can be added to
+    individual factors, using \code{offset}. Factors can be constrained
+    to be nonnegative through the use of \code{Exp}.
 }
 \value{
     \code{Mult} returns a list of objects of class ``Mult'', with one element

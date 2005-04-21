@@ -1,4 +1,4 @@
-export(checkEstimable, Diag, Dref, Exp,  getContrasts, gnm,
+export(checkEstimable, Diag, Dref, Exp,  getContrasts, getModelFrame, gnm,
        gnm.control, MPinv, Mult, MultHomog, multinomial, Nonlin, se, Symm,
        summary.gnm, term.predictors, wedderburn)
 

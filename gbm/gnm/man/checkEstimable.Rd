@@ -19,7 +19,12 @@ checkEstimable(model, cmatrix, tolerance = 1e-8)
     non-estimability.  }
 }
 \value{A logical vector of length equal to the number of parameter combinations
-tested; \code{NA} where a parameter combination is identically zero.}
+  tested; \code{NA} where a parameter combination is identically zero.}
+\references{
+  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
+  Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
+  University of Oxford. 
+}
 \author{ David Firth }
 \seealso{
   \code{\link{se}},
@@ -28,16 +33,23 @@ tested; \code{NA} where a parameter combination is identically zero.}
 \examples{
 data(yaish)
 set.seed(1)
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(educ),
-    orig:dest), family = poisson, data = yaish)
+
+## Fit the "UNIDIFF" mobility model across education levels
+yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+                     Mult(Exp(educ), orig:dest), family = poisson,
+                     data = yaish)
+
+## Check whether Mult1.Factor1.educ4 - Mult1.Factor1.educ5 is estimable
 educ4.pos <- grep("Mult1.Factor1.educ4", names(coef(yaish.unidiff)))
 checkEstimable(yaish.unidiff,
- c(rep(0, educ4.pos - 1), 1, -1,
-   rep(0, length(coef(yaish.unidiff)) - educ4.pos - 1)))
+               c(rep(0, educ4.pos - 1), 1, -1,
+                 rep(0, length(coef(yaish.unidiff)) - educ4.pos - 1)))
 ## should be TRUE
+
+## Check whether Mult1.Factor1.educ4 is estimable
 checkEstimable(yaish.unidiff,
- c(rep(0, educ4.pos - 1), 1, 0,
-   rep(0, length(coef(yaish.unidiff)) - educ4.pos - 1)))
+               c(rep(0, educ4.pos - 1), 1, 0,
+                 rep(0, length(coef(yaish.unidiff)) - educ4.pos - 1)))
 ## should be FALSE -- only *differences* are identified here
 }
 \keyword{ models }

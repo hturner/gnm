@@ -30,13 +30,21 @@ getContrasts(model, sets = NULL, nsets = 1, ...)
   A list (of length \code{nsets}) of data frames, each containing variables
   \code{estimate} and \code{se}
 }
+\references{
+  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
+  Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
+  University of Oxford. 
+}
 \author{ David Firth }
 \seealso{ \code{\link{se}} }
 \examples{
 data(yaish)
 set.seed(1)
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(-1 + educ),
-    orig:dest), family = poisson, data = yaish)
+
+## Fit the "UNIDIFF" mobility model across education levels
+yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+                     Mult(Exp(-1 + educ), orig:dest), family = poisson,
+                     data = yaish)
 ## Examine the education multipliers (differences on the log scale):
 getContrasts(yaish.unidiff, grep("Mult1.Factor1", names(coef(yaish.unidiff))))
 }

@@ -39,6 +39,7 @@
 \examples{
 ### Examples from Van der Slik paper
 data(conformity)
+set.seed(1)
 
 ## create factors required for status maximisation model
 status.max <- as.numeric(conformity$MOPLM) < as.numeric(conformity$FOPLF)

@@ -11,7 +11,7 @@
 se(model, cmatrix, check.estimability = TRUE, ...)
 }
 \arguments{
-  \item{model}{  a model object of class \code{\dQuote{gnm}}}
+  \item{model}{  a model object of class \code{"gnm"}}
   \item{cmatrix}{ numeric: either a vector of length the same as
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
@@ -26,26 +26,32 @@ A data frame with two columns:
   \item{se }{Their estimated standard errors}
 and row names the same as the column names (if any) of \code{cmatrix}.
 }
+\references{
+  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
+  Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
+  University of Oxford. 
+}
 \author{ David Firth }
 \seealso{ \code{\link{getContrasts}}, \code{\link{checkEstimable}}}
 \examples{
 data(yaish)
 set.seed(1)
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest + Mult(Exp(-1 + educ),
-    orig:dest), family = poisson, data = yaish)
+
+## Fit the "UNIDIFF" mobility model across education levels
+yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+                     Mult(Exp(-1 + educ), orig:dest), family = poisson,
+                     data = yaish)
 ## Deviance is 208.3
-##
+
 ## Get estimate and se for the contrast between educ4 and educ5 in the
 ## UNIDIFF multiplier
-##
 educ4.pos <- grep("Mult.*educ4", names(coef(yaish.unidiff)))
 mycontrast <- rep(0, length(coef(yaish.unidiff)))
 mycontrast[educ4.pos] <- 1
 mycontrast[educ4.pos + 1] <- -1
 se(yaish.unidiff, mycontrast)
-##
+
 ## Get all of the contrasts with educ5 in the UNIDIFF multipliers
-##
 getContrasts(yaish.unidiff, grep("Mult.*educ", names(coef(yaish.unidiff))))
 }
 \keyword{ models }

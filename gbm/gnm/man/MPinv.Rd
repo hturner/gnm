@@ -22,12 +22,11 @@ to handle complex-valued matrices, and with a different default tolerance.
 \code{MPinv} also preserves row and column names where available, and 
 returns the rank of the matrix as an attribute of the result. }
 \examples{
-A <- matrix(c(
- 1, 1, 0,
- 1, 1, 0,
- 2, 3, 4), 3, 3)
+A <- matrix(c(1, 1, 0,
+              1, 1, 0,
+              2, 3, 4), 3, 3)
 B <- MPinv(A)
-B %*% A %*% B - B  ## essentially zero
-attr(B, "rank")    ## here 2
+B \%*\% A \%*\% B - B  # essentially zero
+attr(B, "rank")    # here 2
 }
 \keyword{ array }

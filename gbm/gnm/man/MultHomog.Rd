@@ -48,9 +48,11 @@ MultHomog(...)
 \examples{
 set.seed(1)
 data(occupational.status)
-gnm(Freq ~ origin + destination + Diag(origin, destination) +
-            Nonlin(MultHomog(origin, destination)), family = poisson,
-            data = occupational.status)
+
+##  Fit an association model with homogeneous row-column effects
+RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
+               Nonlin(MultHomog(origin, destination)), family = poisson,
+               data = occupational.status)
 ## Deviance is 32.56, 34 d.f.
 }
 \keyword{ models }

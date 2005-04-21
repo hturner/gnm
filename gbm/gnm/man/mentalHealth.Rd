@@ -30,19 +30,19 @@ T. A. C. (1978), \emph{Mental Health in the Metropolis: The Midtown
 \examples{
 set.seed(1)
 data(mentalHealth)
+
 ##  Goodman Row-Column association model fits well (deviance 3.57, df 8)
 mh.SES <- factor(mentalHealth$SES, ordered = FALSE)
 mh.MHS <- factor(mentalHealth$MHS, ordered = FALSE)
 mh.y <- mentalHealth$count
 mh.RC1model <- gnm(mh.y ~ mh.SES + mh.MHS +
-                          Mult(-1 + mh.SES, -1 + mh.MHS),
+                   Mult(-1 + mh.SES, -1 + mh.MHS),
                    family = poisson)
 ## Row scores are parameters coef(mh.RC1model)[10:15]
 ## Column scores are coef(mh.RC1model)[16:19]
 ## -- both unnormalized in this parameterization of the model
-##
+
 ## The scores can be normalized as in Agresti's eqn (9.15):
-##
 mh.rowProbs <- tapply(mh.y, mh.SES, sum) / sum(mh.y)
 mh.colProbs <- tapply(mh.y, mh.MHS, sum) / sum(mh.y)
 mh.rowScores <- coef(mh.RC1model)[10:15]

@@ -35,31 +35,31 @@ gnm.control(epsilon = 1e-04, startit = 2, maxit = 500, trace = FALSE)
 \value{
   A list with the arguments as components.
 }
+\references{ Cautres, B, Heath, A F and Firth, D (1998).  Class, religion and vote in
+Britain and France.  \emph{La Lettre de la Maison Francaise} \bold{8}. }
 \author{Heather Turner }
 \seealso{ \code{\link{gnm}} }
 \examples{
 ## A variation on example(gnm)...
-
 data(cautres)
+set.seed(1)
 
 ##  Fit a "double UNIDIFF" model with the religion-vote and class-vote
 ##  interactions both modulated by nonnegative election-specific
 ##  multipliers.
 
-set.seed(1)
-system.time(
-doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
-    + Mult(Exp(election - 1), religion:vote - 1) +
-    Mult(Exp(election - 1), class:vote - 1),
-    family = poisson, data = cautres, trace = TRUE))
+system.time(doubleUnidiff <-
+            gnm(Freq ~ election:vote + election:class:religion
+                + Mult(Exp(election - 1), religion:vote - 1) +
+                Mult(Exp(election - 1), class:vote - 1),
+                family = poisson, data = cautres, trace = TRUE))
 
 ## repeat with 10 start-up iterations
-set.seed(1)
-system.time(
-doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
-    + Mult(Exp(election - 1), religion:vote - 1) +
-    Mult(Exp(election - 1), class:vote - 1),
-    family = poisson, data = cautres, trace = TRUE, startit = 10))
+system.time(doubleUnidiff <-
+            gnm(Freq ~ election:vote + election:class:religion
+                + Mult(Exp(election - 1), religion:vote - 1) +
+                Mult(Exp(election - 1), class:vote - 1),
+                family = poisson, data = cautres, trace = TRUE, startit = 10))
 ## ...at convergence by first main iteration, but much slower!
 }
 \keyword{ models }

@@ -36,7 +36,9 @@ linear models and the Gauss-Newton method.  \emph{Biometrika}
 
 \seealso{ \code{\link{glm}}, \code{\link{family}} }
 \examples{
+set.seed(1)
 data(barley)  ##  data from Wedderburn (1974), see ?barley
+
 ##  Fit Wedderburn's logit model with variance proportional to the
 ##  square of mu(1-mu)
 barley.model <- glm(y ~ site + variety, family = wedderburn, data = barley)
@@ -44,21 +46,21 @@ fit <- fitted(barley.model)
 print(sum((barley$y - fit)^2 / (fit * (1-fit))^2))
 ##  Agrees with the chi-squared value reported in McCullagh and Nelder 
 ##  (1989, p331), which differs slightly from Wedderburn's reported value.
-##
+
 ##  Fit the biplot model as in Gabriel (1998, p694)
 barley.rank2 <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
-    family = wedderburn, data = barley)
+                    family = wedderburn, data = barley)
 barley.svd <- svd(matrix(barley.rank2$predictors, 10, 9))
 barley.A <- sweep(barley.svd$v, 2, sqrt(barley.svd$d), "*")[, 1:2]
 barley.B <- sweep(barley.svd$u, 2, sqrt(barley.svd$d), "*")[, 1:2]
 ##  These are essentially A and B as in Gabriel (1998, p694), from which
 ##  the biplot is made by
 plot(rbind(barley.A, barley.B), pch = c(LETTERS[1:9], as.character(1:9), "X"))
-##
+
 ##  Fit the double-additive model as in Gabriel (1998, p697)
 variety.binary <- factor(match(barley$variety, c(2,3,6), nomatch = 0) > 0,
-    labels = c("Rest", "2,3,6"))
+                         labels = c("Rest", "2,3,6"))
 barley.doubleAdditive <- gnm(y ~ variety + Mult(site, variety.binary),
-    family = wedderburn, data = barley)
+                             family = wedderburn, data = barley)
 }
 \keyword{ models }

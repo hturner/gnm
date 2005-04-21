@@ -15,8 +15,8 @@ FALSE, ...)
 x$symbolic.cor, ...)
 }
 \arguments{
-  \item{object}{ an object of class \code{``gnm''}. }
-  \item{x}{ an object of class \code{``summary.gnm''}. }
+  \item{object}{ an object of class \code{"gnm"}. }
+  \item{x}{ an object of class \code{"summary.gnm"}. }
   \item{dispersion}{ the dispersion parameter for the fitting family. By
   default it is obtained from \code{object}. }
   \item{correlation}{ logical: if \code{TRUE}, the correlation matrix of
@@ -39,17 +39,17 @@ x$symbolic.cor, ...)
   correlation = TRUE)$correlation} directly.
 }
 \value{
-  \code{summary.gnm} returns an object of class \code{``summary.gnm''},
+  \code{summary.gnm} returns an object of class \code{"summary.gnm"},
   which is a list with components
-  \item{call }{ the ``call'' component from object.  }
-  \item{terms }{ the ``terms'' component from object. }
-  \item{family }{ the ``family'' component from object. }
-  \item{deviance }{ the ``deviance'' component from object. }
-  \item{aic }{ the ``aic'' component from object. }
-  \item{df.residual }{ the ``df.residual'' component from object. }
-  \item{iter }{ the ``iter'' component from object. }
+  \item{call }{ the \code{"call"} component from object.  }
+  \item{terms }{ the \code{"terms"} component from object. }
+  \item{family }{ the \code{"family"} component from object. }
+  \item{deviance }{ the \code{"deviance"} component from object. }
+  \item{aic }{ the \code{"aic"} component from object. }
+  \item{df.residual }{ the \code{"df.residual"} component from object. }
+  \item{iter }{ the \code{"iter"} component from object. }
   \item{deviance.resid }{ the deviance residuals, see \code{residuals.glm}. }
-  \item{coefficients }{ the ``coefficients'' component from object.}
+  \item{coefficients }{ the \code{"coefficients"} component from object.}
   \item{dispersion }{ either the supplied argument or the estimated
     dispersion if the latter is \code{NULL}. }
   \item{cov.unscaled }{ the unscaled (\code{dispersion = 1}) estimated
@@ -60,21 +60,24 @@ x$symbolic.cor, ...)
   \item{symbolic.cor }{ (only if \code{correlation} is true) the value
     of the argument \code{symbolic.cor}. }
 }
+\references{
+  Cautres, B, Heath, A F and Firth, D (1998).  Class, religion and vote in
+  Britain and France.  \emph{La Lettre de la Maison Francaise} \bold{8}.
+}
 \author{ Heather Turner }
 \seealso{ \code{\link{gnm}}, \code{\link{summary}}}
 \examples{
 ##  Following on from example(gnm)
-
 data(cautres)
+set.seed(1)
 
 ##  Fit model as before
-
-doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
-    + Mult(Exp(election), religion:vote) + Mult(Exp(election), class:vote),
-    family = poisson, data = cautres)
+doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
+                     Mult(Exp(election), religion:vote) +
+                     Mult(Exp(election), class:vote), family = poisson,
+                     data = cautres)
 
 ## Summarize results
-
 summary(doubleUnidiff)
 }
 \keyword{ models }

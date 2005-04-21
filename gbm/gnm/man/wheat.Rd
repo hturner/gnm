@@ -55,29 +55,33 @@ trials.  \emph{Agronomy Journal} \bold{93}, 949--960.
 \examples{
 set.seed(1)
 data(wheat)
+
 ##  Scale yields to reproduce analyses reported in Vargas et al (2001)
 yield.scaled <- wheat$yield * sqrt(3/1000)
+
 ##  Reproduce (up to error caused by rounding) Table 1 of Vargas et al (2001)
 aov(yield.scaled ~ year*tillage*summerCrop*manure*N, data = wheat)
 treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
-    wheat$N, sep = ""))
+                          wheat$N, sep = ""))
 mainEffects <- glm(yield.scaled ~ year + treatment, family = gaussian,
-    data = wheat)
+                   data = wheat)
 bilinear1 <- gnm(yield.scaled ~ year + treatment + Mult(year, treatment),
-    family = gaussian, data = wheat)
+                 family = gaussian, data = wheat)
 anova(mainEffects, bilinear1)
 \dontrun{
-## The next two take a lot of iterations to converge...
-bilinear2 <- gnm(yield.scaled ~ year + treatment + Mult(year,
-    treatment, multiplicity = 2), family = gaussian, data = wheat)
-bilinear3 <- gnm(yield.scaled ~ year + treatment + Mult(year,
-    treatment, multiplicity = 3), family = gaussian, data = wheat)
-anova(mainEffects, bilinear1, bilinear2, bilinear3)
+    ## The next two take a lot of iterations to converge...
+    bilinear2 <- gnm(yield.scaled ~ year + treatment +
+                     Mult(year, treatment, multiplicity = 2),
+                     family = gaussian, data = wheat)
+    bilinear3 <- gnm(yield.scaled ~ year + treatment +
+                     Mult(year, treatment, multiplicity = 3),
+                     family = gaussian, data = wheat)
+    anova(mainEffects, bilinear1, bilinear2, bilinear3)
 }
-##
+
 ##  Examine the extent to which, say, mTF explains the first bilinear term
 bilinear1mTF <- gnm(yield.scaled ~ year + treatment + Mult(1 + mTF, treatment),
-    family = gaussian, data = wheat)
+                    family = gaussian, data = wheat)
 anova(mainEffects, bilinear1mTF, bilinear1)
 }
 \keyword{datasets}

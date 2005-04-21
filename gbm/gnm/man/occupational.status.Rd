@@ -26,16 +26,17 @@ data(occupational.status)
 Rscore <- scale(as.numeric(row(occupational.status)), scale = FALSE)
 Cscore <- scale(as.numeric(col(occupational.status)), scale = FALSE)
 Uniform <- glm(Freq ~ origin + destination + Diag(origin, destination) + 
-  Rscore:Cscore, family = poisson, data = occupational.status)
+               Rscore:Cscore, family = poisson, data = occupational.status)
 
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-  Nonlin(MultHomog(origin, destination)), family = poisson,
-  data = occupational.status)
+               Nonlin(MultHomog(origin, destination)), family = poisson,
+               data = occupational.status)
 
 ##  Fit an association model with separate row and column effects
 RC <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-  Mult(origin, destination), family = poisson, data = occupational.status)
+          Mult(origin, destination), family = poisson,
+          data = occupational.status)
 
 ##  Partition row and column effects
 row.and.column.effects <- c(df = Uniform$df.res - RC$df.res,
@@ -43,7 +44,7 @@ row.and.column.effects <- c(df = Uniform$df.res - RC$df.res,
 homogeneous.row.column.effects <- c(df = Uniform$df.res - RChomog$df.res,
                                     deviance = Uniform$dev - RChomog$dev)
 row.column.effects <- row.and.column.effects -
-                      homogeneous.row.column.effects
+    homogeneous.row.column.effects
 rbind(homogeneous.row.column.effects,
       row.column.effects,
       row.and.column.effects)

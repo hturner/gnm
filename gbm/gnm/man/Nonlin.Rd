@@ -9,7 +9,7 @@
 Nonlin(functionCall, data = NULL)
 }
 \arguments{
-  \item{functionCall}{a call to a ``plug-in'' function that provides the
+  \item{functionCall}{a call to a \dQuote{plug-in} function that provides the
     objects required to fit the special nonlinear term.}
   \item{data}{a data.frame containing any variables required by the plug-in
     function that are ONLY passed to specified arguments by
@@ -59,21 +59,29 @@ Nonlin(functionCall, data = NULL)
     \code{data} will be added to the model frame.  
 }
 \value{
-    An object of class ``Nonlin'' which is a list of deparsed expressions
+    An object of class \code{"Nonlin"} which is a list of deparsed expressions
     representing the variables passed to unspecified arguments of the plug-in
     function, with the attributes
   \item{call}{the call to make to the plug-in function}
   \item{extraData}{if supplied, the data frame passed to the \code{data}
                    argument of \code{Nonlin}}
+	       }
+\references{
+  Goodman, L. A. (1979) Simple Models for the Analysis of Association in
+  Cross-Classifications having Ordered
+  Categories. \emph{J. Am. Stat. Assoc.}, \bold{74(367)}, 537-552.
 }
 \author{Heather Turner}
 \seealso{\code{\link{gnm}}, \code{getModelFrame},
   \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{Mult}}}
 \examples{
+set.seed(1)
 data(occupational.status)
-test <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-            Nonlin(MultHomog(origin, destination)), family = poisson,
-            data = occupational.status)
+
+##  Fit an association model with homogeneous row-column effects
+RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
+               Nonlin(MultHomog(origin, destination)), family = poisson,
+               data = occupational.status)
 }
 \keyword{ models }
 \keyword{ regression }

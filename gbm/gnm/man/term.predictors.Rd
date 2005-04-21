@@ -46,14 +46,15 @@ A <- gl(4, 6)
 B <- gl(6, 1, 24)
 y <- cbind(rbinom(24, 10, 0.5), rep(10, 24))
 \dontrun{
-## Using 'gnm' package
-library(gnm)
+    ## Using 'gnm' package
+    library(gnm)
 }
+set.seed(1)
 gnmAB <- gnm(y ~ A + B + Mult(A - 1, B - 1), family = binomial)
 contrib <- term.predictors(gnmAB)
 contrib
 all.equal(as.numeric(rowSums(contrib)),
-as.numeric(gnmAB$predictors)) #TRUE
+          as.numeric(gnmAB$predictors)) #TRUE
 }
 
 \keyword{ models }

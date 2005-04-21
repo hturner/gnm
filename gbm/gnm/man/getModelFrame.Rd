@@ -24,19 +24,23 @@ trials.  \emph{Agronomy Journal} \bold{93}, 949--960.
 \examples{
 ## Create a dummy plug-in function
 dummy <- function(...) {
+    cat("Model frame:\n")
     print(getModelFrame()[1:5,])
-    stop("This is only a dummy function!")
+    stop("Not a valid plug-in function, model can not be estimated")
 }
-data(wheat)
+
 ##  Use data from Vargas et al (2001)
+set.seed(1)
+data(wheat)
 yield.scaled <- wheat$yield * sqrt(3/1000)
 treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
-    wheat$N, sep = ""))
+                          wheat$N, sep = ""))
+
 ##  Add dummy nonlinear term to main effects model - the dummy function
 ##  gets the model frame used by gnm and prints the first 5 rows
-mainEffects <- gnm(yield.scaled ~ year + treatment +
-    Nonlin(dummy(as.numeric(year), N, scale(MTD))),
-    family = gaussian, data = wheat)
+mainEffects <- try(gnm(yield.scaled ~ year + treatment +
+                       Nonlin(dummy(as.numeric(year), N, scale(MTD))),
+                       family = gaussian, data = wheat))
 }
 \keyword{ data }
 \keyword{ models }

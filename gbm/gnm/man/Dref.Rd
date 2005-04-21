@@ -64,6 +64,7 @@ Dref(..., formula = ~ 1)
 \examples{
 ### Examples from Van der Slik paper
 data(conformity)
+set.seed(1)
 
 ## Models for mothers' conformity score
 A <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF)) + MFCM + AGEM + FRMF +
@@ -81,8 +82,8 @@ F <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)) + MFCM +
          AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
 par <- coef(F)
 mother.educ.low.conflict <- exp(par[6])/(exp(par[6]) + exp(par[8]))
-mother.educ.high.conflict <- exp(par[6] + par[7])/(exp(par[6] + par[7]) +
-    exp(par[8] + par[9]))
+mother.educ.high.conflict <-
+    exp(par[6] + par[7])/(exp(par[6] + par[7]) + exp(par[8] + par[9]))
 }
 \keyword{ models }
 \keyword{ regression }

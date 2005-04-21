@@ -10,7 +10,8 @@
 \usage{
 gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     na.action, method = "gnm.fit", offset, start = NULL,
-    control = gnm.control(...), model = TRUE, x = FALSE, vcov = FALSE, ...)
+    control = gnm.control(...), model = TRUE, x = FALSE, vcov = FALSE,
+    term.predictors = FALSE, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -216,8 +217,7 @@ Britain and France.  \emph{La Lettre de la Maison Francaise} \bold{8}. }
   \code{gnm} model.
 }
 \examples{
-##  Analysis of a 4-way contingency table
-
+###  Analysis of a 4-way contingency table
 set.seed(1)
 data(cautres)
 print(cautres)
@@ -225,13 +225,11 @@ print(cautres)
 ##  Fit a "double UNIDIFF" model with the religion-vote and class-vote
 ##  interactions both modulated by nonnegative election-specific
 ##  multipliers.
-
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
     + Mult(Exp(election - 1), religion:vote - 1) +
     Mult(Exp(election - 1), class:vote - 1), family = poisson, data = cautres)
 
 ##  Examine the multipliers of the class-vote log odds ratios
-
 coefs.of.interest <- grep("Mult2.*election", names(coef(doubleUnidiff)))
 coef(doubleUnidiff)[coefs.of.interest]
 ##  Mult2.Factor1.election1 Mult2.Factor1.election2 
@@ -240,7 +238,6 @@ coef(doubleUnidiff)[coefs.of.interest]
 ##               -0.1230682              -0.2105843
 
 ##  Re-parameterize by setting Mult2.Factor1.election4 to zero
-
 getContrasts(doubleUnidiff, coefs.of.interest)
 ##                            estimate        se
 ##  Mult2.Factor1.election1 -0.3618399 0.2534762
@@ -249,7 +246,6 @@ getContrasts(doubleUnidiff, coefs.of.interest)
 ##  Mult2.Factor1.election4  0.0000000 0.0000000
 
 ##  Same thing but with election 1 as reference category:
-
 getContrasts(doubleUnidiff, rev(coefs.of.interest))
 ##                            estimate        se
 ##  Mult2.Factor1.election4  0.3618399 0.2534746
@@ -257,16 +253,13 @@ getContrasts(doubleUnidiff, rev(coefs.of.interest))
 ##  Mult2.Factor1.election2  0.6817351 0.2401645
 ##  Mult2.Factor1.election1  0.0000000 0.0000000
 
-## Re-fit model with Mult2.Factor1.election1 set to zero
-
+##  Re-fit model with Mult2.Factor1.election1 set to zero
 doubleUnidiffConstrained <-
     update(doubleUnidiff, constrain = coefs.of.interest[1])
 
 ##  Examine the multipliers of the class-vote log odds ratios
-
 coef(doubleUnidiffConstrained)[coefs.of.interest]
-
-## ...as using 'getContrasts' (to 4 d.p.).
+##  ...as using 'getContrasts' (to 4 d.p.).
 }
 \keyword{ models }
 \keyword{ regression }

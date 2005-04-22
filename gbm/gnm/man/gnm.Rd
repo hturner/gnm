@@ -8,13 +8,15 @@
   types of nonlinear effects via \dQuote{plug-in} functions (see details).
 }
 \usage{
-gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
-    na.action, method = "gnm.fit", offset, start = NULL,
-    control = gnm.control(...), model = TRUE, x = FALSE, vcov = FALSE,
-    term.predictors = FALSE, ...)
+gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
+    data = NULL, subset, weights, na.action, method = "gnm.fit", offset,
+    start = NULL, control = gnm.control(...), model = TRUE, x = FALSE,
+    vcov = FALSE, term.predictors = FALSE, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
+  \item{eliminate} { an optional formula consisting of a single factor
+    to be used instead of an intercept in the predictor. }
   \item{constrain}{ either a numeric vector of indices, or a logical vector,
     indicating coefficients to set to zero.}
   \item{family}{ a specification of the error distribution and link function
@@ -46,7 +48,8 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
     are specified their sum is used.}
   \item{start}{ a vector of starting values for the parameters in the
     model; if a starting value is \code{NA}, the default starting value
-    will be used. } 
+    will be used. Starting values need not be specified for eliminated
+    parameters. } 
   \item{control}{ a list of parameters for controlling the fitting process. See
     \code{gnm.control} for details.}
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
@@ -85,6 +88,15 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   (\code{MultHomog}) and diagonal reference terms (\code{Dref}). Users
   may also define their own plug-in functions, see \code{\link{Nonlin}}
   for details.
+
+  The \code{eliminate} argument may be used to specify a single factor
+  to be used instead of an intercept in the model of the predictor. This
+  feature is designed for such factors that are required in the model
+  but are not of direct interest. If the factor is specified using
+  \code{eliminate}, the effects of the factor will be estimated more
+  efficiently. At the end of the fitting process these parameters are
+  eliminated from the vector of coefficents. See
+  \code{\link{multinomial}} for an example. 
 
   For contingency tables, the data may be provided as an object of class
   \code{"table"} from which the frequencies will be extracted to use
@@ -126,8 +138,9 @@ gnm(formula, constrain = NULL, family = gaussian, data = NULL, subset, weights,
   If appropriate constraints are known in advance, or have been
   determined from a \code{gnm} fit, the model may be (re-)fitted using
   the \code{constrain} argument to specify which coefficients should be
-  set to zero. \code{update} provides a convenient way of
-  re-fitting a \code{gnm} model with new constraints.
+  set to zero. Constraints may only be applied to non-eliminated
+  parameters. \code{update} provides a convenient way of re-fitting a 
+  \code{gnm} model with new constraints.
 }
 \value{
   If \code{method = "gnm.fit"}, \code{gnm} returns an object of class

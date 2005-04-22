@@ -3,10 +3,6 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     offset = rep.int(0, length(y)), nObs = length(y),
                     start = NULL,
                     control = gnm.control(...), x, vcov, term.predictors) {
-##    eliminate <- 1:101 in the backpain example
-##    Need to sort out how start and constrain arguments interact with
-##    eliminate: the coef and vcov components of the object relate only
-##    to non-eliminated parameters.
     attempt <- 1
     repeat {
         status <- "not.converged"
@@ -17,7 +13,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             theta[constrain] <- 0
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID == "plugInStart"
-            unspecifiedLin <- linear & !specified
+            unspecifiedLin <- linear & !specified & !constrain
             theta.offset <- theta
             theta.offset[!specified] <- 0
             factorList <- modelTools$factorList(theta.offset)
@@ -28,10 +24,9 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                                                   weights = weights,
                                                   offset = offsetSpecified,
                                                   family = family)$coef))
-            oneAtATime <- !linear & !specified
+            oneAtATime <- !linear & !specified & !constrain
             for (iter in seq(length = control$startit * any(oneAtATime))) {
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
-                    if (constrain[i]) break
                     factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
                     mu <- family$linkinv(eta)
@@ -49,8 +44,8 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     } 
                 }
                 if (status == "not.converged") 
-                    theta <- updateLinear(linear, theta, y, offset, weights,
-                                          family, modelTools, X)
+                    theta <- updateLinear(linear & !constrain, theta, y, offset,
+                                          weights, family, modelTools, X)
                 if (control$trace){
                     dev <- sum(family$dev.resids(y, mu, weights))
                     cat("Startup iteration", iter,

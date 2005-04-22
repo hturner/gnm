@@ -40,7 +40,7 @@ logLik(no.relationship)
 
 ## Model progress assuming common dependence on prognostic variables
 one.dimensional <- gnm(pain ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1), family =
-                       "multinomial", data = backpain)
+                       "multinomial", data = backpain, startit = 3)
 logLik(one.dimensional)
 
 ## Model progress assuming group-specific dependence on prognostic variables

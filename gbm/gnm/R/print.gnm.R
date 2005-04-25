@@ -1,10 +1,5 @@
 print.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...) {
-    if (!is.null(x$original.call))
-      cat("\nCall:\n", deparse(x$original.call), "\n\n", sep = "",
-          fill = TRUE)
-    else
-      cat("\nCall:\n", deparse(x$call), "\n\n", sep = "", fill = TRUE)
-    
+    cat("\nCall:\n", deparse(x$call), "\n\n", sep = "", fill = TRUE)    
     if (length(coef(x))) {
         cat("Coefficients:\n")
         print.default(format(coef(x), digits = digits), print.gap = 2,

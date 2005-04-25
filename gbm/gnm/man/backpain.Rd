@@ -29,23 +29,52 @@
 }
 \examples{
 set.seed(1)
-data(backpain)
+data(backPain)
 
-### Fit logistic family models described in Table 5 of Anderson (1984)
+### Re-express as count data
+.incidence <- class.ind(backPain$pain)
+.counts <- as.vector(t(.incidence))
+.rowID <- factor(t(row(.incidence)))
+backPain <- backPain[.rowID, ]
+backPain$pain <- factor(rep(levels(backPain$pain), nrow(.incidence)),
+                        levels = levels(backPain$pain), ordered = TRUE)
 
-## Model progress by category only
-no.relationship <- gnm(pain ~ pain, family = "multinomial", data =
-                       backpain)
-logLik(no.relationship)
+### Fit models described in Table 5 of Anderson (1984)
 
-## Model progress assuming common dependence on prognostic variables
-one.dimensional <- gnm(pain ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1), family =
-                       "multinomial", data = backpain, startit = 3)
-logLik(one.dimensional)
+### Logistic family models
 
-## Model progress assuming group-specific dependence on prognostic variables
-three.dimensional <- gnm(pain ~ pain + pain:(x1 + x2 + x3), family =
-                         "multinomial", data = backpain)
-logLik(three.dimensional)
+noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
+                       family = "poisson", data = backPain)
+logLik(noRelationship)
+
+## stereotype model
+oneDimensional <- update(noRelationship,
+                         ~ . + Mult(pain - 1, x1 + x2 + x3 - 1),
+                         startit = 3)
+logLik(oneDimensional)
+
+threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
+logLik(threeDimensional)
+
+### Models to determine distinguishability in stereotype model
+pain2 <- backPain$pain
+
+levels(pain2)[2:3] <- paste(levels(pain2)[2:3], collapse = " | ")
+fiveGroups <- update(noRelationship,
+                      ~ . + Mult(as.ordered(pain2) - 1,
+                                 x1 + x2 + x3 - 1))
+logLik(fiveGroups)
+
+levels(pain2)[4:5] <- paste(levels(pain2)[4:5], collapse = " | ")
+fourGroups <- update(fiveGroups)
+logLik(fourGroups)
+
+levels(pain2)[2:3] <- paste(levels(pain2)[2:3], collapse = " | ")
+threeGroups <- update(fourGroups)
+logLik(threeGroups)
+
+### Grouped continuous model, aka proportional odds model
+sixCategories <- polr(pain ~ x1 + x2 + x3, data = backpain)
+-deviance(sixCategories)/2 # log-likelihood
 }
 \keyword{datasets}

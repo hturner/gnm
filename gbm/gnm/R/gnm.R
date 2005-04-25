@@ -1,7 +1,8 @@
 gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnm.fit",
-                offset, start = NULL, control = gnm.control(...), model = TRUE,
-                x = FALSE, vcov = FALSE, term.predictors = FALSE, ...) {
+                offset, start = NULL, control = gnm.control(...),
+                verbose = FALSE, model = TRUE, x = FALSE, vcov = FALSE,
+                term.predictors = FALSE, ...) {
     
     call <- match.call()
     
@@ -42,7 +43,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 
     weights <- model.weights(modelData)
     if (!is.null(weights) & any(weights < 0))
-        stop("Negative weights are not allowed")
+        stop("negative weights are not allowed")
     if (is.null(weights))
         weights <- rep.int(1, nObs)
     offset <- model.offset(modelData)
@@ -71,42 +72,13 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         }
     }
 
-    if (family$family == "multinomial") {
-        if (!is.null(call$offset)) stop(
-                "offset cannot be used with multinomial logit models") 
-        if (!is.factor(y)) stop(
-                "multinomial response must be a factor")
-        Y <- class.ind(y)
-        if (is.null(colnames(Y))) colnames(Y) <- 1:ncol(Y)
-        .counts <- as.vector(t(Y))
-        .rowID <- factor(t(row(Y)))
-        modelData <- modelData[.rowID, , drop = FALSE]
-        modelData$.rowID <- .rowID
-        resp.var.name <- names(modelData)[attr(attr(modelData, "terms"),
-                                               "response")]
-        modelData[[resp.var.name]] <-
-            C(factor(rep(colnames(Y), nrow(Y)), levels = levels(y),
-                     ordered = is.ordered(y)), treatment)
-        newCall <- call
-        newCall$formula <- update.formula(formula, .counts ~ .)
-        newCall$eliminate <- ~ .rowID
-        newCall$family <- as.name("poisson")
-        newCall$data <- as.name("modelData")
-        if (!is.null(call$weights))
-          newCall$weights <- rep(weights * rowSums(Y), rep(ncol(Y), nrow(Y)))
-        newCall$subset <- NULL
-        result <- eval(newCall)
-        result$original.call <- call
-        return(result)
-}
-
     if (is.empty.model(modelTerms)) {
         if (method == "coef.names") return(numeric(0))
         if (!family$valideta(offset))
-            stop("Invalid predictor values in empty model")
+            stop("invalid predictor values in empty model")
         mu <- family$linkinv(offset)
         if (!family$validmu(mu))
-            stop("Invalid fitted values in empty model")
+            stop("invalid fitted values in empty model")
         dmu <- family$mu.eta(offset)
         dev <- sum(family$dev.resids(y, mu, weights))
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
@@ -160,7 +132,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         
         fit <- gnm.fit(modelTools, y, constrain, family, weights,
                        offset, nObs = nObs, start = start,
-                       control = gnm.control(...), x, vcov, term.predictors)
+                       control = gnm.control(...), verbose, x, vcov,
+                       term.predictors)
     }
     fit <- c(list(call = call, formula = formula, constrain = constrain,
                   family = family, prior.weights = weights,

@@ -1,8 +1,8 @@
 gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     weights = rep.int(1, length(y)),
                     offset = rep.int(0, length(y)), nObs = length(y),
-                    start = NULL,
-                    control = gnm.control(...), x, vcov, term.predictors) {
+                    start, control = gnm.control(...), verbose = FALSE,
+                    x = FALSE, vcov = FALSE, term.predictors = FALSE) {
     attempt <- 1
     repeat {
         status <- "not.converged"
@@ -107,18 +107,15 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                        "not.finite" = "Iterative weights are not all finite",
                        "no.deviance" = "Deviance is NaN",
                        "stuck" = "Iterations are not converging"))
-            if (attempt > 5) {
-                cat(".\nFit attempted 5 times without success: terminating.\n")
-                break
-            }
-            else cat(": restarting. \n")
-            #cat("Bad parameterisation: restarting.\n")
+            if (attempt > 5)
+                stop("algorithm has failed: no model could be estimated")
+            else if (verbose = TRUE) cat(": restarting\n")
         }
     }
     if (status == "not.converged")
-        warning("Fitting algorithm has either not converged or converged\n",
-                "to a non-solution of the likelihood equations.\n",
-                "Re-start gnm with coefficients of returned model.\n")
+        warning("fitting algorithm has either not converged or converged\n",
+                "to a non-solution of the likelihood equations: re-start \n",
+                "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
     if (exists("WX")) Info <- crossprod(X, WX)
     VCOV <- try(gInvSymm(Info, eliminate = modelTools$eliminate,

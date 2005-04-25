@@ -10,8 +10,8 @@
 \usage{
 gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     data = NULL, subset, weights, na.action, method = "gnm.fit", offset,
-    start = NULL, control = gnm.control(...), model = TRUE, x = FALSE,
-    vcov = FALSE, term.predictors = FALSE, ...)
+    start = NULL, control = gnm.control(...), verbose = FALSE,
+    model = TRUE, x = FALSE, vcov = FALSE, term.predictors = FALSE, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -22,8 +22,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{family}{ a specification of the error distribution and link function
     to be used in the model. This can be a character string naming
     a family function; a family function, or the result of a call
-    to a family function. See \code{\link{family}},
-    \code{\link{wedderburn}} and \code{\link{multinomial}} for possibilities.
+    to a family function. See \code{\link{family}} and
+    \code{\link{wedderburn}} for possibilities. 
   }
   \item{data}{ an optional data frame containing the variables in the model.
     If not found in \code{data}, the variables are taken from
@@ -52,6 +52,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     parameters. } 
   \item{control}{ a list of parameters for controlling the fitting process. See
     \code{gnm.control} for details.}
+  \item{verbose} { logical: if \code{TRUE} a diagnostic error message is
+    printed if the algorithm restarts. }
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
   \item{x}{ logical: if \code{TRUE} the local design matrix from the last
     iteration is returned. }
@@ -95,8 +97,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   but are not of direct interest. If the factor is specified using
   \code{eliminate}, the effects of the factor will be estimated more
   efficiently. At the end of the fitting process these parameters are
-  eliminated from the vector of coefficents. See
-  \code{\link{multinomial}} for an example. 
+  eliminated from the vector of coefficents. See \code{\link{backpain}}
+  for an example.  
 
   For contingency tables, the data may be provided as an object of class
   \code{"table"} from which the frequencies will be extracted to use
@@ -112,10 +114,6 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   success, as a two-column matrix with the columns giving the numbers
   of successes and failures, or as a vector of the proportions of
   successes.
-
-  For multinomial models, the \code{response} should be a factor with
-  more than two levels. The model is re-expressed as a poisson model and
-  \code{gnm} is re-called. See \code{\link{multinomial}} for an example.
 
   The \code{gnm} fitting process consists of two stages. In the start-up
   iterations, any nonlinear parameters that are not specified by either the
@@ -143,8 +141,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{gnm} model with new constraints.
 }
 \value{
-  If \code{method = "gnm.fit"}, \code{gnm} returns an object of class
-  \code{"gnm"}, which inherits first from \code{"glm"} then \code{"lm"},
+  If \code{method = "gnm.fit"}, \code{gnm} returns \code{NULL} if the
+  algorithm has failed and an object of class \code{"gnm"} otherwise. A
+  \code{"gnm"} object inherits first from \code{"glm"} then \code{"lm"}
   and is a list containing the following components:     
   \item{ call } { the matched call. }
   \item{ formula }{ the formula supplied. }
@@ -186,11 +185,6 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   response, the weights returned by \code{prior.weights} are the total
   numbers of cases (factored by the supplied case weights) and the
   component \code{y} of the result is the proportion of successes.
-
-  For multinomial models, the \code{gnm} object will also contain an
-  \code{original.call} component with the original call to
-  \code{gnm}. All the other components will relate to the secondary call
-  to \code{gnm} which is returned in \code{call}. 
   
   The function \code{summary} may be used to obtain and print a summary
   of the results.

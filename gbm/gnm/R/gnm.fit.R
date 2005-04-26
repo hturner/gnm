@@ -109,7 +109,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                        "stuck" = "Iterations are not converging"))
             if (attempt > 5)
                 stop("algorithm has failed: no model could be estimated")
-            else if (verbose = TRUE) cat(": restarting\n")
+            else if (verbose == TRUE) cat(": restarting\n")
         }
     }
     if (status == "not.converged")

@@ -42,39 +42,46 @@ backPain$pain <- factor(rep(levels(backPain$pain), nrow(.incidence)),
 ### Fit models described in Table 5 of Anderson (1984)
 
 ### Logistic family models
-
 noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
-                       family = "poisson", data = backPain)
-logLik(noRelationship)
+                      family = "poisson", data = backPain)
 
 ## stereotype model
 oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain - 1, x1 + x2 + x3 - 1),
                          startit = 3)
-logLik(oneDimensional)
 
 threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
-logLik(threeDimensional)
 
 ### Models to determine distinguishability in stereotype model
 pain2 <- backPain$pain
 
 levels(pain2)[2:3] <- paste(levels(pain2)[2:3], collapse = " | ")
 fiveGroups <- update(noRelationship,
-                      ~ . + Mult(as.ordered(pain2) - 1,
-                                 x1 + x2 + x3 - 1))
-logLik(fiveGroups)
+                     ~ . + Mult(as.ordered(pain2) - 1,
+                                x1 + x2 + x3 - 1))
 
 levels(pain2)[4:5] <- paste(levels(pain2)[4:5], collapse = " | ")
 fourGroups <- update(fiveGroups)
-logLik(fourGroups)
 
 levels(pain2)[2:3] <- paste(levels(pain2)[2:3], collapse = " | ")
 threeGroups <- update(fourGroups)
-logLik(threeGroups)
 
 ### Grouped continuous model, aka proportional odds model
 sixCategories <- polr(pain ~ x1 + x2 + x3, data = backpain)
--deviance(sixCategories)/2 # log-likelihood
+
+### Obtain number of parameters and log-likelihoods for equivalent
+### multinomial models as presented in Anderson (1984)
+logLikMultinom <- function(model){
+    object <- get(model)
+    if (inherits(object, "gnm")) {
+        l <- logLik(object) + object$eliminate
+        c(nParameters = attr(l, "df") - object$eliminate, logLikelihood = l)
+    }
+    else
+        c(nParameters = object$edf, logLikelihood = -deviance(object)/2)
+}
+models <- c("threeDimensional", "oneDimensional", "noRelationship",
+            "fiveGroups", "fourGroups", "threeGroups", "sixCategories")
+t(sapply(models, logLikMultinom))
 }
 \keyword{datasets}

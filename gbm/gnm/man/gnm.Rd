@@ -76,8 +76,10 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   symbolic wrapper \code{Mult}; e.g. \code{Mult(A, B)} specifies a
   multiplicative interaction between factors \code{A} and
   \code{B}. The family of multiplicative interaction models include
-  row-column association models for contingency tables (REF),
-  log-multiplicative or UNIDIFF models (REF), and GAMMI models (REF).
+  row-column association models for contingency tables (e.g., Agresti,
+  2002, Sec 9.6),
+  log-multiplicative or UNIDIFF models (Erikson and Goldthorpe, 1992;
+  Xie, 1992), and GAMMI models (van Eeuwijk, 1995).
 
   Other nonlinear terms may be incorporated in the model via
   plug-in functions that provide the objects required by \code{gnm} to
@@ -202,8 +204,23 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   but return the prior weights and deviance residuals respectively, as
   for \code{glm} objects.  
 }
-\references{ Cautres, B, Heath, A F and Firth, D (1998).  Class, religion and vote in
-Britain and France.  \emph{La Lettre de la Maison Francaise} \bold{8}. }
+\references{
+Agresti, A (2002).  \emph{Categorical Data Analysis} (2nd ed.)  New
+York: Wiley.
+
+Cautres, B, Heath, A F and Firth, D (1998).  Class,
+    religion and vote in Britain and France.  \emph{La Lettre de la Maison
+    Francaise} \bold{8}.
+
+Erikson, R and Goldthorpe, J H (1992).  \emph{The Constant Flux}.
+Oxford: Clarendon Press.
+
+van Eeuwijk, F A (1995).  Multiplicative interacyion in generalized
+linear models.  \emph{Biometrics} \bold{51}, 1017-1032.
+
+Xie, Y (1992).  The log-multiplicative layer effect model for comparing
+mobility tables.  \emph{American Sociological Review} \bold{57}, 380-395.
+}
 \author{ Heather Turner, David Firth }
 \seealso{
   \code{\link{formula}} for the symbolic language used to specify

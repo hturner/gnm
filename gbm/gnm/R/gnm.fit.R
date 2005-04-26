@@ -92,7 +92,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             Z <- cbind(z, X)
             WZ <- w * Z
             ZWZ <- crossprod(Z, WZ)
-            ZWZinv <- gInvSymm(ZWZ, eliminate = 1 + modelTools$eliminate,
+            ZWZinv <- MPinv(ZWZ, eliminate = 1 + modelTools$eliminate,
                                    first.col.only = TRUE)
             theChange <- - (ZWZinv[, 1] / ZWZinv[1, 1])[-1] 
             theta <- theta + theChange 
@@ -118,7 +118,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                 "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
     if (exists("WX")) Info <- crossprod(X, WX)
-    VCOV <- try(gInvSymm(Info, eliminate = modelTools$eliminate,
+    VCOV <- try(MPinv(Info, eliminate = modelTools$eliminate,
                          non.elim.only = TRUE), silent = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev[1]) + 2 * attr(VCOV, "rank"))

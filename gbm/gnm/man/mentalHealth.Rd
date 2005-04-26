@@ -32,27 +32,26 @@ set.seed(1)
 data(mentalHealth)
 
 ##  Goodman Row-Column association model fits well (deviance 3.57, df 8)
-mh.SES <- factor(mentalHealth$SES, ordered = FALSE)
-mh.MHS <- factor(mentalHealth$MHS, ordered = FALSE)
-mh.y <- mentalHealth$count
-mh.RC1model <- gnm(mh.y ~ mh.SES + mh.MHS +
-                   Mult(-1 + mh.SES, -1 + mh.MHS),
-                   family = poisson)
-## Row scores are parameters coef(mh.RC1model)[10:15]
-## Column scores are coef(mh.RC1model)[16:19]
+mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
+mentalHealth$SES <- C(mentalHealth$SES, treatment)
+RC1model <- gnm(count ~ SES + MHS +
+                Mult(-1 + SES, -1 + MHS),
+                family = poisson, data = mentalHealth)
+## Row scores are parameters coef(RC1model)[10:15]
+## Column scores are coef(RC1model)[16:19]
 ## -- both unnormalized in this parameterization of the model
 
 ## The scores can be normalized as in Agresti's eqn (9.15):
-mh.rowProbs <- tapply(mh.y, mh.SES, sum) / sum(mh.y)
-mh.colProbs <- tapply(mh.y, mh.MHS, sum) / sum(mh.y)
-mh.rowScores <- coef(mh.RC1model)[10:15]
-mh.colScores <- coef(mh.RC1model)[16:19]
-mh.rowScores <- mh.rowScores - sum(mh.rowScores * mh.rowProbs)
-mh.colScores <- mh.colScores - sum(mh.colScores * mh.colProbs)
-mh.beta1 <- sqrt(sum(mh.rowScores^2 * mh.rowProbs))
-mh.beta2 <- sqrt(sum(mh.colScores^2 * mh.colProbs))
-mh.assoc <- list(beta = mh.beta1 * mh.beta2,
-                 mu = mh.rowScores / mh.beta1,
-                 nu = mh.colScores / mh.beta2)
+rowProbs <- tapply(count, SES, sum) / sum(count)
+colProbs <- tapply(count, MHS, sum) / sum(count)
+rowScores <- coef(RC1model)[10:15]
+colScores <- coef(RC1model)[16:19]
+rowScores <- rowScores - sum(rowScores * rowProbs)
+colScores <- colScores - sum(colScores * colProbs)
+beta1 <- sqrt(sum(rowScores^2 * rowProbs))
+beta2 <- sqrt(sum(colScores^2 * colProbs))
+assoc <- list(beta = beta1 * beta2,
+              mu = rowScores / beta1,
+              nu = colScores / beta2)
 }
 \keyword{datasets}

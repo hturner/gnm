@@ -1,5 +1,5 @@
-\name{backpain}
-\alias{backpain}
+\name{backPain}
+\alias{backPain}
 \docType{data}
 \title{ Back Pain Prognosis }
 \description{
@@ -7,7 +7,7 @@
   variables were recorded at presentation and progress was categorised
   three weeks after treatment.
 }
-\usage{data(backpain)}
+\usage{data(backPain)}
 \format{
   A data frame with 101 observations on the following 4 variables.
   \describe{
@@ -67,7 +67,7 @@ levels(pain2)[2:3] <- paste(levels(pain2)[2:3], collapse = " | ")
 threeGroups <- update(fourGroups)
 
 ### Grouped continuous model, aka proportional odds model
-sixCategories <- polr(pain ~ x1 + x2 + x3, data = backpain)
+sixCategories <- polr(pain ~ x1 + x2 + x3, data = backPain)
 
 ### Obtain number of parameters and log-likelihoods for equivalent
 ### multinomial models as presented in Anderson (1984)

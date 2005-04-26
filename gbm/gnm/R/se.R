@@ -1,4 +1,4 @@
-se <- function(model, cmatrix, check.estimability = TRUE, ...){
+se <- function(model, cmatrix, checkEstimability = TRUE, ...){
     if (!inherits(model, "gnm")) stop(
                 "model is not of class \"gnm\"")
     if (!is.numeric(cmatrix)) stop("cmatrix not numeric")
@@ -9,7 +9,7 @@ se <- function(model, cmatrix, check.estimability = TRUE, ...){
     if (nrow(cmatrix) != l) stop(
           "nrow(cmatrix) does not match length(coef(model))")
     comb <- drop(crossprod(cmatrix, coefs))
-    if (check.estimability){
+    if (checkEstimability){
         estimable <- checkEstimable(model, cmatrix, ...)
     }
     var <- crossprod(cmatrix, crossprod(vcov(model), cmatrix))

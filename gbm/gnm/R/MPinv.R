@@ -1,5 +1,5 @@
-MPinv <- function(mat, eliminate = numeric(0), first.col.only = FALSE,
-                     non.elim.only = FALSE, tol = 100*.Machine$double.eps){
+MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
+                     onlyNonElim = FALSE, tolerance = 100*.Machine$double.eps){
     ## Moore-Penrose pseudoinverse of a real-valued matrix.
     ## Patterned after ginv() from the MASS package of W N Venables
     ## and B D Ripley.
@@ -28,7 +28,7 @@ MPinv <- function(mat, eliminate = numeric(0), first.col.only = FALSE,
         attr(result, "rank") <- sum(Positive)
         if (!is.null(Rownames)) colnames(result) <- Rownames
         if (!is.null(Colnames)) rownames(result) <- Colnames
-        if (first.col.only) result <- result[, 1, drop = FALSE]
+        if (onlyFirstCol) result <- result[, 1, drop = FALSE]
         return(result)
     }
     ## The rest is for the case length(eliminate) > 0
@@ -49,20 +49,20 @@ MPinv <- function(mat, eliminate = numeric(0), first.col.only = FALSE,
     rankQ <- attr(Qi, "rank")
     k <- length(T)
     result <- matrix(NA,
-                     if (non.elim.only) n - k else n,
-                     if (first.col.only) 1 else
-                         if (non.elim.only) n - k else n)
-    cols.notElim <- if (first.col.only) 1 else
-                        if (non.elim.only) 1:(n - k) else
+                     if (onlyNonElim) n - k else n,
+                     if (onlyFirstCol) 1 else
+                         if (onlyNonElim) n - k else n)
+    cols.notElim <- if (onlyFirstCol) 1 else
+                        if (onlyNonElim) 1:(n - k) else
                            !elim
-    rows.notElim <- if (non.elim.only) 1:(n - k) else !elim
-    if (first.col.only) Qi <- Qi[, 1, drop = FALSE]
+    rows.notElim <- if (onlyNonElim) 1:(n - k) else !elim
+    if (onlyFirstCol) Qi <- Qi[, 1, drop = FALSE]
     result[rows.notElim, cols.notElim] <- Qi
-    if (!non.elim.only){
+    if (!onlyNonElim){
                          temp <- - crossprod(Qi, V.Ti)
                          result[elim, cols.notElim] <- t(temp)
                      }
-    if (!first.col.only && !non.elim.only){
+    if (!onlyFirstCol && !onlyNonElim){
         result[!elim, elim] <- temp
         temp <- crossprod(V.Ti, Qi) %*% V.Ti
         diag.indices <- k*(0:(k-1)) + 1:k
@@ -71,11 +71,11 @@ MPinv <- function(mat, eliminate = numeric(0), first.col.only = FALSE,
     }
     attr(result, "rank") <- rankQ + k
     theNames <- colnames(mat)
-    rownames(result) <- if (non.elim.only) theNames[!elim]
+    rownames(result) <- if (onlyNonElim) theNames[!elim]
                         else theNames
     colnames(result) <-
-        if (first.col.only) theNames[!elim][1]
-        else if (non.elim.only) theNames[!elim]
+        if (onlyFirstCol) theNames[!elim][1]
+        else if (onlyNonElim) theNames[!elim]
              else theNames
     result
 }

@@ -1,8 +1,8 @@
-gnm.fit <- function(modelTools, y, constrain, family = poisson(),
+gnmFit <- function(modelTools, y, constrain, family = poisson(),
                     weights = rep.int(1, length(y)),
                     offset = rep.int(0, length(y)), nObs = length(y),
-                    start, control = gnm.control(...), verbose = FALSE,
-                    x = FALSE, vcov = FALSE, term.predictors = FALSE) {
+                    start, control = gnmControl(...), verbose = FALSE,
+                    x = FALSE, vcov = FALSE, termPredictors = FALSE) {
     attempt <- 1
     repeat {
         status <- "not.converged"
@@ -14,18 +14,18 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID == "plugInStart"
             unspecifiedLin <- linear & !specified & !constrain
-            theta.offset <- theta
-            theta.offset[!specified] <- 0
-            factorList <- modelTools$factorList(theta.offset)
+            thetaOffset <- theta
+            thetaOffset[!specified] <- 0
+            factorList <- modelTools$factorList(thetaOffset)
             offsetSpecified <- offset + modelTools$predictor(factorList)
-            X <- modelTools$localDesignFunction(theta.offset, factorList)
+            X <- modelTools$localDesignFunction(thetaOffset, factorList)
             theta[unspecifiedLin] <-
                 suppressWarnings(naToZero(glm.fit(X[, unspecifiedLin], y,
                                                   weights = weights,
                                                   offset = offsetSpecified,
                                                   family = family)$coef))
             oneAtATime <- !linear & !specified & !constrain
-            for (iter in seq(length = control$startit * any(oneAtATime))) {
+            for (iter in seq(length = control$iterStart * any(oneAtATime))) {
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
                     factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
@@ -39,11 +39,11 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
                     if (!is.finite(theta[i])) {
-                        status <- "bad.param"
+                        status <- "badParam"
                         break
                     } 
                 }
-                if (status == "not.converged") 
+                if (status == "notConverged") 
                     theta <- updateLinear(linear & !constrain, theta, y, offset,
                                           weights, family, modelTools, X)
                 if (control$trace){
@@ -51,12 +51,12 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
                     cat("Startup iteration", iter,
                         ". Deviance = ", dev, "\n")
                 }
-                if (status == "bad.param") break
+                if (status == "badParam") break
             }
         }    
         else theta <- structure(ifelse(!constrain, start, 0),
                                 names = names(modelTools$classID))
-        for (iter in seq(control$maxit)[status == "not.converged"]) {
+        for (iter in seq(control$iterMax)[status == "notConverged"]) {
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
             X <- modelTools$localDesignFunction(theta, factorList)
@@ -65,7 +65,7 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             vmu <- family$variance(mu)
             w <- weights * dmu * dmu / vmu
             if (any(!is.finite(w))) {
-                status <- "not.finite"
+                status <- "notFinite"
                 break
             }
             dev[2] <- dev[1]
@@ -73,14 +73,14 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             if (control$trace)
                 cat("Iteration", iter, ". Deviance = ", dev[1], "\n")
             if (is.nan(dev[1])) {
-                status <- "no.deviance"
+                status <- "noDeviance"
                 break
             }
             z <- (y - mu)/dmu
             WX <- w * X
             score <- drop(crossprod(z, WX))
             diagInfo <- colSums(X * WX)
-            if (all(abs(score) < control$epsilon*sqrt(diagInfo) |
+            if (all(abs(score) < control$tolerance*sqrt(diagInfo) |
                     diagInfo < 1e-20)){
                 status <- "converged"
                 break
@@ -93,33 +93,33 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
             WZ <- w * Z
             ZWZ <- crossprod(Z, WZ)
             ZWZinv <- MPinv(ZWZ, eliminate = 1 + modelTools$eliminate,
-                                   first.col.only = TRUE)
+                            onlyFirstCol = TRUE)
             theChange <- - (ZWZinv[, 1] / ZWZinv[1, 1])[-1] 
             theta <- theta + theChange 
             theta[constrain] <- 0
         }
-        if (status %in% c("converged", "not.converged") | all(!is.na(start)))
+        if (status %in% c("converged", "notConverged") | all(!is.na(start)))
             break
         else {
             attempt <- attempt + 1
             cat(switch(status,
-                       "bad.param" = "Bad parameterisation",
-                       "not.finite" = "Iterative weights are not all finite",
-                       "no.deviance" = "Deviance is NaN",
+                       "badParam" = "Bad parameterisation",
+                       "notFinite" = "Iterative weights are not all finite",
+                       "noDeviance" = "Deviance is NaN",
                        "stuck" = "Iterations are not converging"))
             if (attempt > 5)
                 stop("algorithm has failed: no model could be estimated")
             else if (verbose == TRUE) cat(": restarting\n")
         }
     }
-    if (status == "not.converged")
+    if (status == "notConverged")
         warning("fitting algorithm has either not converged or converged\n",
                 "to a non-solution of the likelihood equations: re-start \n",
                 "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
     if (exists("WX")) Info <- crossprod(X, WX)
     VCOV <- try(MPinv(Info, eliminate = modelTools$eliminate,
-                         non.elim.only = TRUE), silent = TRUE)
+                      onlyNonElim = TRUE), silent = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu, weights,
                                             dev[1]) + 2 * attr(VCOV, "rank"))
     
@@ -142,9 +142,9 @@ gnm.fit <- function(modelTools, y, constrain, family = poisson(),
         VCOV[constrain, constrain] <- 0
         fit$vcov <- VCOV
     }
-    if (term.predictors) {
+    if (termPredictors) {
         factorList <- modelTools$factorList(theta, term = TRUE)
-        fit$term.predictors <- modelTools$predictor(factorList, term = TRUE)
+        fit$termPredictors <- modelTools$predictor(factorList, term = TRUE)
     }
     fit    
 }

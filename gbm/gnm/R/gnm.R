@@ -1,8 +1,8 @@
 gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
-                data = NULL, subset, weights, na.action,  method = "gnm.fit",
-                offset, start = NULL, control = gnm.control(...),
+                data = NULL, subset, weights, na.action,  method = "gnmFit",
+                offset, start = NULL, control = gnmControl(...),
                 verbose = FALSE, model = TRUE, x = FALSE, vcov = FALSE,
-                term.predictors = FALSE, ...) {
+                termPredictors = FALSE, ...) {
     
     call <- match.call()
     
@@ -35,8 +35,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         attr(modelData, "terms") <- attr(modelTerms, "terms")
         return(modelData)
     }
-    else if (!method %in% c("gnm.fit", "coef.names"))
-        warning("method = ", method, " is not supported. Using \"gnm.fit\".")
+    else if (!method %in% c("gnmFit", "coefNames"))
+        warning("method = ", method, " is not supported. Using \"gnmFit\".")
     
     y <- model.response(modelData, "numeric")
     nObs <- NROW(y)
@@ -73,7 +73,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     }
 
     if (is.empty.model(modelTerms)) {
-        if (method == "coef.names") return(numeric(0))
+        if (method == "coefNames") return(numeric(0))
         if (!family$valideta(offset))
             stop("invalid predictor values in empty model")
         mu <- family$linkinv(offset)
@@ -83,22 +83,22 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         dev <- sum(family$dev.resids(y, mu, weights))
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
-        fit <- list(coefficients = numeric(0), predictors = offset,
-                    fitted.values = mu, deviance = dev, aic = modelAIC,
-                    iter = 0, conv = NULL,
+        fit <- list(coefficients = numeric(0), eliminate = numeric(0),
+                    predictors = offset, fitted.values = mu, deviance = dev,
+                    aic = modelAIC, iter = 0, conv = NULL,
                     weights = weights*dmu^2/family$variance(mu),
-                    residuals = (y - mu)/dmu,
-                    df.residual = nObs, rank = 0)
-        if(x) fit$x <- NULL
+                    residuals = (y - mu)/dmu, df.residual = nObs, rank = 0)
+        if (x) fit$x <- NULL
         if (vcov) fit$vcov <- NULL
+        if (termPredictors) fit$termPredictors <- NULL
     }
     else {
         modelTools <- gnmTools(modelTerms, modelData, x, family, weights,
-                               offset, eliminate, term.predictors)
+                               offset, eliminate, termPredictors)
         nParam <- length(modelTools$classID)
         nElim <- length(modelTools$eliminate)
 
-        if (method == "coef.names") return(names(modelTools$classID))
+        if (method == "coefNames") return(names(modelTools$classID))
 
         if (is.null(constrain))
           constrain <- rep.int(FALSE, nParam)
@@ -130,10 +130,10 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         }
             
         
-        fit <- gnm.fit(modelTools, y, constrain, family, weights,
+        fit <- gnmFit(modelTools, y, constrain, family, weights,
                        offset, nObs = nObs, start = start,
-                       control = gnm.control(...), verbose, x, vcov,
-                       term.predictors)
+                       control = gnmControl(...), verbose, x, vcov,
+                       termPredictors)
     }
     fit <- c(list(call = call, formula = formula, constrain = constrain,
                   family = family, prior.weights = weights,

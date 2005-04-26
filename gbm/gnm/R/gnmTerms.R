@@ -49,8 +49,8 @@ gnmTerms <- function(formula, eliminate)
                           response),
               terms = fullTerms,
               offset = offsetList,
-              parsed.labels = labelList,
-              prefix.labels = unlist(prefixList),
+              parsedLabels = labelList,
+              prefixLabels = unlist(prefixList),
               response = attr(fullTerms, "response"),
               extraData = extraData)
 }

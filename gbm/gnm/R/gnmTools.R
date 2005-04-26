@@ -1,9 +1,9 @@
 "gnmTools" <-
     function(gnmTerms, gnmData, x, family, weights, offset, eliminate,
-             term.predictors)
+             termPredictors)
 {
-    labelList <- attr(gnmTerms, "parsed.labels")
-    prefixList <- attr(gnmTerms, "prefix.labels")
+    labelList <- attr(gnmTerms, "parsedLabels")
+    prefixList <- attr(gnmTerms, "prefixLabels")
     offsetList <- lapply(attr(gnmTerms, "offset"), function(x) {
         if (!is.null(x))
             eval(parse(text = x), envir = gnmData)
@@ -44,7 +44,7 @@
     thetaClassID <- structure(thetaClassID[factorAssign],
                                 names = names(factorAssign))
     
-    if (x | term.predictors) {
+    if (x | termPredictors) {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
         if ("Linear" %in% classID) {
             linearAssign <- attr(termTools[[1]], "assign")
@@ -86,15 +86,15 @@
     }
     
     predictor <- function(factorList, term = FALSE) {
-        term.predictors <-
+        termPredictors <-
             do.call("cbind", tapply(structure(factorList, class = "list"),
                                     multIndex,
                                     function(list) do.call("pprod", list)))
-        if (term) colnames(term.predictors) <-
+        if (term) colnames(termPredictors) <-
             c("(Intercept)"[linearAssign == 0], attr(attr(gnmTerms, "terms"),
                             "term.labels"))
-        else term.predictors <- rowSums(term.predictors)
-        term.predictors
+        else termPredictors <- rowSums(termPredictors)
+        termPredictors
     }
     
     localDesignFunction <- function(theta, factorList) {

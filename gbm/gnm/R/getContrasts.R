@@ -25,6 +25,6 @@ getContrasts <- function(model, sets = NULL, nsets = 1, ...){
         }
         not.unestimable <- iden | is.na(iden)
         se(model, x[, not.unestimable, drop = FALSE],
-           check.estimability = FALSE)
+           checkEstimability = FALSE)
     })
 }

@@ -42,10 +42,8 @@ Nonlin(functionCall, data = NULL)
         fitted values or a matrix whose columns are
         additive components of the fitted values.}
       \item{localDesignFunction}{a function which takes the
-        arguments \code{coef} (a vector of
-        parameter estimates) and/or
-        \code{predictor} (the result
-        of the predictor function), and
+        arguments \code{coef} (a vector of parameter estimates) and/or 
+        \code{predictor} (the result of the predictor function), and
         returns the local design matrix.}
     }
     
@@ -76,12 +74,12 @@ Nonlin(functionCall, data = NULL)
   \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{Mult}}}
 \examples{
 set.seed(1)
-data(occupational.status)
+data(occupationalStatus)
 
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Nonlin(MultHomog(origin, destination)), family = poisson,
-               data = occupational.status)
+               data = occupationalStatus)
 }
 \keyword{ models }
 \keyword{ regression }

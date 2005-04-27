@@ -55,18 +55,18 @@ set.seed(1)
 ## Using 'Mult' with 'Exp' to constrain first factor
 data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
-                      Mult(Exp(-1 + educ), orig:dest),
-                      family = poisson, data = yaish)
+unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+               Mult(Exp(-1 + educ), orig:dest),
+               family = poisson, data = yaish)
 
 ## Using 'multiplicity' > 1
 data(wheat)
 yield.scaled <- wheat$yield * sqrt(3/1000)
 treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
-    wheat$N, sep = ""))
+                          wheat$N, sep = ""))
 bilinear2 <- gnm(yield.scaled ~ year + treatment +
-                  Mult(year, treatment, multiplicity = 2),
-                  family = gaussian, data = wheat)
+                 Mult(year, treatment, multiplicity = 2),
+                 family = gaussian, data = wheat)
 }
 \keyword{ models }
 \keyword{ regression }

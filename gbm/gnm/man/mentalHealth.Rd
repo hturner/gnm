@@ -42,8 +42,8 @@ RC1model <- gnm(count ~ SES + MHS +
 ## -- both unnormalized in this parameterization of the model
 
 ## The scores can be normalized as in Agresti's eqn (9.15):
-rowProbs <- tapply(count, SES, sum) / sum(count)
-colProbs <- tapply(count, MHS, sum) / sum(count)
+rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
+colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
 rowScores <- coef(RC1model)[10:15]
 colScores <- coef(RC1model)[16:19]
 rowScores <- rowScores - sum(rowScores * rowProbs)

@@ -1,3 +1,4 @@
+library(gnm)
 set.seed(1)
 data(cautres)
 

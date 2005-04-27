@@ -7,20 +7,20 @@
   direct inversion of a diagonal submatrix if such exists. 
 }
 \usage{
-MPinv(mat, eliminate = numeric(0), first.col.only = FALSE,
-non.elim.only = FALSE, tol = 100*.Machine$double.eps)
+MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
+      onlyNonElim = FALSE, tolerance = 100*.Machine$double.eps)
 }
 \arguments{
   \item{mat}{ A real matrix, which should be symmetric unless
     \code{eliminate} has zero length. }
   \item{eliminate}{ Numeric.  A vector of indices identifying
     rows/columns which form a diagonal submatrix of \code{mat}. }
-  \item{first.col.only}{ Logical.  If \code{TRUE}, return only the first
+  \item{onlyFirstCol}{ Logical.  If \code{TRUE}, return only the first
     column of the generalized inverse matrix; otherwise the whole matrix.}
-  \item{non.elim.only}{ Logical.  If TRUE, return only rows/columns that
+  \item{onlyNonElim}{ Logical.  If TRUE, return only rows/columns that
     are in the complement of the set specified in \code{eliminate}.}
-  \item{tol}{ A positive scalar which determines the tolerance for
-  detecting zeroes among the singular values }
+  \item{tolerance}{ A positive scalar which determines the toleranceerance for
+    detecting zeroes among the singular values }
 }
 \details{
   Real-valuedness is not checked, and neither is symmetry or the
@@ -28,7 +28,8 @@ non.elim.only = FALSE, tol = 100*.Machine$double.eps)
 
   The purpose of the \code{eliminate} argument is a substantial
   reduction of the computational burden when the number of `eliminated'
-  rows/columns is large.  
+  rows/columns is large.
+}
 \value{
   A matrix, with an additional attribute named \code{"rank"} containing
   the numerically determined rank of the matrix.
@@ -45,6 +46,7 @@ B <- MPinv(A)
 A \%*\% B \%*\% A - A  # essentially zero
 B \%*\% A \%*\% B - B  # essentially zero
 attr(B, "rank")    # here 2
+
 ## now a symmetric example with diagonal submatrix to `eliminate'
 A <- matrix(c(1, 0, 2,
               0, 2, 3,
@@ -53,6 +55,7 @@ B <- MPinv(A, eliminate = 1:2)
 A \%*\% B \%*\% A - A  # essentially zero
 B \%*\% A \%*\% B - B  # essentially zero
 attr(B, "rank")        # here 3
+
 \dontrun{
 ## demo that eliminate can give substantial speed gains
 A <- diag(rnorm(100))

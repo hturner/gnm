@@ -9,9 +9,9 @@
 }
 \usage{
 gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
-    data = NULL, subset, weights, na.action, method = "gnm.fit", offset,
-    start = NULL, control = gnm.control(...), verbose = FALSE,
-    model = TRUE, x = FALSE, vcov = FALSE, term.predictors = FALSE, ...)
+    data = NULL, subset, weights, na.action, method = "gnmFit", offset,
+    start = NULL, control = gnmControl(...), verbose = FALSE,
+    model = TRUE, x = FALSE, vcov = FALSE, termPredictors = FALSE, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -38,7 +38,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     \code{na.action} attribute of \code{data}; second, any
     \code{na.action} setting of \code{options}, and third,
     \code{na.fail}.}
-  \item{method}{ the method to be used: either \code{"gnm.fit"} to fit the
+  \item{method}{ the method to be used: either \code{"gnmFit"} to fit the
     model, \code{"coef"} to return a character vector of names for the
     coefficients in the model, or \code{"model.frame"} to return the
     model frame. }
@@ -51,7 +51,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     will be used. Starting values need not be specified for eliminated
     parameters. } 
   \item{control}{ a list of parameters for controlling the fitting process. See
-    \code{gnm.control} for details.}
+    \code{gnmControl} for details.}
   \item{verbose} { logical: if \code{TRUE} a diagnostic error message is
     printed if the algorithm restarts. }
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
@@ -59,7 +59,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     iteration is returned. }
   \item{vcov}{ logical: if \code{TRUE} the variance-covariance matrix of the
     model coefficients is returned. }
-  \item{term.predictors}{ logical: if \code{TRUE}, a matrix is returned
+  \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor }
   \item{\dots}{ further arguments passed to or from other methods. }
@@ -77,9 +77,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   multiplicative interaction between factors \code{A} and
   \code{B}. The family of multiplicative interaction models include
   row-column association models for contingency tables (e.g., Agresti,
-  2002, Sec 9.6),
-  log-multiplicative or UNIDIFF models (Erikson and Goldthorpe, 1992;
-  Xie, 1992), and GAMMI models (van Eeuwijk, 1995).
+  2002, Sec 9.6), log-multiplicative or UNIDIFF models (Erikson and
+  Goldthorpe, 1992; Xie, 1992), and GAMMI models (van Eeuwijk, 1995).
 
   Other nonlinear terms may be incorporated in the model via
   plug-in functions that provide the objects required by \code{gnm} to
@@ -99,7 +98,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   but are not of direct interest. If the factor is specified using
   \code{eliminate}, the effects of the factor will be estimated more
   efficiently. At the end of the fitting process these parameters are
-  eliminated from the vector of coefficents. See \code{\link{backpain}}
+  eliminated from the vector of coefficents. See \code{\link{backPain}}
   for an example.  
 
   For contingency tables, the data may be provided as an object of class
@@ -122,7 +121,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{start} argument or a plug-in function are updated one parameter
   at a time, then the linear parameters are jointly updated before the
   next iteration. In the main iterations, all the parameters are jointly
-  updated. See \code{gnm.control} for more details.
+  updated. See \code{gnmControl} for more details.
 
   By default, \code{gnm} uses an over-parameterized representation of
   the model that is being fitted. Only minimal identifiability constraints
@@ -143,7 +142,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{gnm} model with new constraints.
 }
 \value{
-  If \code{method = "gnm.fit"}, \code{gnm} returns \code{NULL} if the
+  If \code{method = "gnmFit"}, \code{gnm} returns \code{NULL} if the
   algorithm has failed and an object of class \code{"gnm"} otherwise. A
   \code{"gnm"} object inherits first from \code{"glm"} then \code{"lm"}
   and is a list containing the following components:     
@@ -180,7 +179,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{ rank }{ the numeric rank of the fitted model. }
   
   The list may also contain the components \code{model}, \code{x}, or
-  \code{vcov}, \code{term.predictors} if requested in the arguments to
+  \code{vcov}, \code{termPredictors} if requested in the arguments to
   \code{gnm}. 
 
   If a binomial \code{gnm} model is specified by giving a two-column
@@ -195,7 +194,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{coefficients}, \code{fitted.values}, \code{deviance},
   \code{extractAIC}, \code{weights}, \code{residuals},
   \code{df.residual}, \code{model.frame}, \code{model.matrix},
-  \code{vcov} and \code{term.predictors} maybe used to extract
+  \code{vcov} and \code{termPredictors} maybe used to extract
   components from the object returned by \code{gnm} or to construct the
   relevant objects where necessary. 
 
@@ -205,21 +204,21 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   for \code{glm} objects.  
 }
 \references{
-Agresti, A (2002).  \emph{Categorical Data Analysis} (2nd ed.)  New
-York: Wiley.
+  Agresti, A (2002).  \emph{Categorical Data Analysis} (2nd ed.)  New
+  York: Wiley.
 
-Cautres, B, Heath, A F and Firth, D (1998).  Class,
-    religion and vote in Britain and France.  \emph{La Lettre de la Maison
+  Cautres, B, Heath, A F and Firth, D (1998).  Class,
+  religion and vote in Britain and France.  \emph{La Lettre de la Maison
     Francaise} \bold{8}.
 
-Erikson, R and Goldthorpe, J H (1992).  \emph{The Constant Flux}.
-Oxford: Clarendon Press.
+  Erikson, R and Goldthorpe, J H (1992).  \emph{The Constant Flux}.
+  Oxford: Clarendon Press.
 
-van Eeuwijk, F A (1995).  Multiplicative interaction in generalized
-linear models.  \emph{Biometrics} \bold{51}, 1017-1032.
+  van Eeuwijk, F A (1995).  Multiplicative interaction in generalized
+  linear models.  \emph{Biometrics} \bold{51}, 1017-1032.
 
-Xie, Y (1992).  The log-multiplicative layer effect model for comparing
-mobility tables.  \emph{American Sociological Review} \bold{57}, 380-395.
+  Xie, Y (1992).  The log-multiplicative layer effect model for comparing
+  mobility tables.  \emph{American Sociological Review} \bold{57}, 380-395.
 }
 \author{ Heather Turner, David Firth }
 \seealso{

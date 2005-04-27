@@ -7,12 +7,12 @@
 }
 \usage{
 ##  S3 method for class 'gnm'
-\method{summary}{gnm}(object, dispersion = NULL, correlation = FALSE, symbolic.cor =
-FALSE, ...)
+\method{summary}{gnm}(object, dispersion = NULL, correlation = FALSE,
+                      symbolic.cor = FALSE, ...)
 
 ## S3 method for class 'summary.gnm'
-\method{print}{summary.gnm}(x, digits = max(3, getOption("digits") - 3), symbolic.cor =
-x$symbolic.cor, ...)
+\method{print}{summary.gnm}(x, digits = max(3, getOption("digits") - 3),
+                            symbolic.cor = x$symbolic.cor, ...)
 }
 \arguments{
   \item{object}{ an object of class \code{"gnm"}. }

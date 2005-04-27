@@ -1,22 +1,22 @@
-checkEstimable <- function(model, cmatrix, tolerance = 1e-8){
+checkEstimable <- function(model, coefMatrix, tolerance = 1e-8){
     if (!inherits(model, "gnm")) stop("model not of class gnm")
         coefs <- coef(model)
     l <- length(coefs)
-    cmatrix <- as.matrix(cmatrix)
-    if (nrow(cmatrix) != l) stop(
-          "cmatrix does not match coef(model)")
+    coefMatrix <- as.matrix(coefMatrix)
+    if (nrow(coefMatrix) != l) stop(
+          "coefMatrix does not match coef(model)")
     if (model$eliminate > 0) {
-        extra.rows <- matrix(0, model$eliminate, ncol(cmatrix))
-        cmatrix <- rbind(extra.rows, cmatrix)
+        extra.rows <- matrix(0, model$eliminate, ncol(coefMatrix))
+        coefMatrix <- rbind(extra.rows, coefMatrix)
     }
     Xt <- t(model.matrix(model))
-    cmatrix <- scale(cmatrix)
-    resultNA <- apply(cmatrix, 2, function(col) any(is.na(col)))
-    result <- logical(ncol(cmatrix))
+    coefMatrix <- scale(coefMatrix)
+    resultNA <- apply(coefMatrix, 2, function(col) any(is.na(col)))
+    result <- logical(ncol(coefMatrix))
     is.na(result) <- resultNA
-    resids <- qr.resid(qr(Xt), cmatrix[, !resultNA, drop = FALSE]) 
+    resids <- qr.resid(qr(Xt), coefMatrix[, !resultNA, drop = FALSE]) 
     rss <- apply(resids, 2, var)
     result[!resultNA] <- rss < tolerance
-    names(result) <- colnames(cmatrix)
+    names(result) <- colnames(coefMatrix)
     return(result)
 }

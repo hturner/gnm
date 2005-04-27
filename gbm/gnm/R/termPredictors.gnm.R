@@ -1,8 +1,8 @@
-term.predictors.gnm <- function(object, ...) {
-    if (is.null(object$term.predictors)){
+termPredictors.gnm <- function(object, ...) {
+    if (is.null(object$termPredictors)){
         start <- coef(object)
-        object <- update(object, term.predictors = TRUE, start = start,
+        object <- update(object, termPredictors = TRUE, start = start,
                          trace = FALSE)
     }
-    object$term.predictors
+    object$termPredictors
 }

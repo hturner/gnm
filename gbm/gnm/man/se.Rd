@@ -4,18 +4,18 @@
 \description{
   Computes approximate standard error for one or more linear
   combinations of the parameters in a \code{\link{gnm}} (generalized
-    nonlinear model) object.  By default, a check is made first on the
-    estimability of each specified combination.
+  nonlinear model) object.  By default, a check is made first on the
+  estimability of each specified combination.
 }
 \usage{
-se(model, cmatrix, check.estimability = TRUE, ...)
+se(model, coefMatrix, checkEstimability = TRUE, ...)
 }
 \arguments{
   \item{model}{  a model object of class \code{"gnm"}}
-  \item{cmatrix}{ numeric: either a vector of length the same as
+  \item{coefMatrix}{ numeric: either a vector of length the same as
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
-  \item{check.estimability}{ logical: should the estimability of
+  \item{checkEstimability}{ logical: should the estimability of
     all specified combinations be checked?}
   \item{\dots}{ possible further arguments for
     \code{\link{checkEstimable}} }
@@ -24,7 +24,7 @@ se(model, cmatrix, check.estimability = TRUE, ...)
 A data frame with two columns:
   \item{estimate }{The estimated parameter combinations}
   \item{se }{Their estimated standard errors}
-and row names the same as the column names (if any) of \code{cmatrix}.
+and row names the same as the column names (if any) of \code{coefMatrix}.
 }
 \references{
   Yaish, M (1998). Opportunities, Little Change. Class Mobility in
@@ -38,21 +38,21 @@ data(yaish)
 set.seed(1)
 
 ## Fit the "UNIDIFF" mobility model across education levels
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
-                     Mult(Exp(-1 + educ), orig:dest), family = poisson,
-                     data = yaish)
+unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+               Mult(Exp(-1 + educ), orig:dest), family = poisson,
+               data = yaish)
 ## Deviance is 208.3
 
 ## Get estimate and se for the contrast between educ4 and educ5 in the
 ## UNIDIFF multiplier
-educ4.pos <- grep("Mult.*educ4", names(coef(yaish.unidiff)))
-mycontrast <- rep(0, length(coef(yaish.unidiff)))
+educ4.pos <- grep("Mult.*educ4", names(coef(unidiff)))
+mycontrast <- rep(0, length(coef(unidiff)))
 mycontrast[educ4.pos] <- 1
 mycontrast[educ4.pos + 1] <- -1
-se(yaish.unidiff, mycontrast)
+se(unidiff, mycontrast)
 
 ## Get all of the contrasts with educ5 in the UNIDIFF multipliers
-getContrasts(yaish.unidiff, grep("Mult.*educ", names(coef(yaish.unidiff))))
+getContrasts(unidiff, grep("Mult.*educ", names(coef(unidiff))))
 }
 \keyword{ models }
 \keyword{ regression }

@@ -1,19 +1,19 @@
-se <- function(model, cmatrix, checkEstimability = TRUE, ...){
+se <- function(model, coefMatrix, checkEstimability = TRUE, ...){
     if (!inherits(model, "gnm")) stop(
                 "model is not of class \"gnm\"")
-    if (!is.numeric(cmatrix)) stop("cmatrix not numeric")
-    cmatrix <- as.matrix(cmatrix)
+    if (!is.numeric(coefMatrix)) stop("coefMatrix not numeric")
+    coefMatrix <- as.matrix(coefMatrix)
     coefs <- coef(model)
     l <- length(coefs)
-    estimable <- rep(TRUE, ncol(cmatrix)) 
-    if (nrow(cmatrix) != l) stop(
-          "nrow(cmatrix) does not match length(coef(model))")
-    comb <- drop(crossprod(cmatrix, coefs))
+    estimable <- rep(TRUE, ncol(coefMatrix)) 
+    if (nrow(coefMatrix) != l) stop(
+          "nrow(coefMatrix) does not match length(coef(model))")
+    comb <- drop(crossprod(coefMatrix, coefs))
     if (checkEstimability){
-        estimable <- checkEstimable(model, cmatrix, ...)
+        estimable <- checkEstimable(model, coefMatrix, ...)
     }
-    var <- crossprod(cmatrix, crossprod(vcov(model), cmatrix))
+    var <- crossprod(coefMatrix, crossprod(vcov(model), coefMatrix))
     sterr <- sqrt(diag(var))
     is.na(sterr[!estimable]) <- is.na(comb[!estimable]) <- TRUE
-    data.frame(estimate = comb, se = sterr, row.names = colnames(cmatrix))
+    data.frame(estimate = comb, se = sterr, row.names = colnames(coefMatrix))
 }

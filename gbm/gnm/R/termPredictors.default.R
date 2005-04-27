@@ -1,11 +1,11 @@
-term.predictors.default <- function(object, ...) {
-    if (is.null(object$term.predictors)){
+termPredictors.default <- function(object, ...) {
+    if (is.null(object$termPredictors)){
         X <- model.matrix(object)
-        term.predictors <- t(rowsum(t(X %*% diag(coef(object))),
+        termPredictors <- t(rowsum(t(X %*% diag(coef(object))),
                                     attr(X, "assign")))
-        colnames(term.predictors) <- c("(Intercept)"[attr(X, "assign") == 0],
+        colnames(termPredictors) <- c("(Intercept)"[attr(X, "assign") == 0],
                                        attr(object$terms, "term.labels"))
-        term.predictors
+        termPredictors
     }
-    else object$term.predictors
+    else object$termPredictors
 }

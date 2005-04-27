@@ -1,6 +1,6 @@
-export(checkEstimable, Diag, Dref, Exp,  getContrasts, getModelFrame, gnm,
-       gnm.control, MPinv, Mult, MultHomog, multinomial, Nonlin, se, Symm,
-       summary.gnm, term.predictors, wedderburn)
+export(checkEstimable, Diag, Dref, Exp, getContrasts, getModelFrame, gnm,
+       gnmControl, MPinv, Mult, MultHomog, Nonlin, se, Symm,
+       summary.gnm, termPredictors, wedderburn)
 
 import(MASS, stats, tcltk)
 importFrom(gtools, combinations)
@@ -39,7 +39,7 @@ S3method(residuals, gnm)
 S3method(rstandard, gnm)
 S3method(rstudent, gnm)
 S3method(summary, gnm)
-S3method(term.predictors, default)
-S3method(term.predictors, gnm)
+S3method(termPredictors, default)
+S3method(termPredictors, gnm)
 S3method(variable.names, gnm)
 S3method(vcov, gnm)

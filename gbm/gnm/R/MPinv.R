@@ -16,7 +16,7 @@ MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
         Rownames <- rownames(mat)
         Colnames <- colnames(mat)
         Svd <- svd(mat)
-        Positive <- Svd$d > max(tol * Svd$d[1], 0)
+        Positive <- Svd$d > max(tolerance * Svd$d[1], 0)
         result <- {
             if (all(Positive)) 
                 Svd$v %*% (1/Svd$d * t(Svd$u))
@@ -45,7 +45,7 @@ MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
     Ti.U <- Ti * U
     V.Ti <- t(Ti.U)
     Qmat <- W - crossprod(Ti.U, U)
-    Qi <- MPinv(Qmat, tol = tol)
+    Qi <- MPinv(Qmat, tolerance = tolerance)
     rankQ <- attr(Qi, "rank")
     k <- length(T)
     result <- matrix(NA,

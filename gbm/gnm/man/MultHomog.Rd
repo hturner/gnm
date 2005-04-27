@@ -47,12 +47,12 @@ MultHomog(...)
   \code{gnm} formulae.}
 \examples{
 set.seed(1)
-data(occupational.status)
+data(occupationalStatus)
 
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Nonlin(MultHomog(origin, destination)), family = poisson,
-               data = occupational.status)
+               data = occupationalStatus)
 ## Deviance is 32.56, 34 d.f.
 }
 \keyword{ models }

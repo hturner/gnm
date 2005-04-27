@@ -1,22 +1,22 @@
-getContrasts <- function(model, sets = NULL, nsets = 1, ...){
+getContrasts <- function(model, sets = NULL, nSets = 1, ...){
     if (is.null(sets)){
-        sets <- pickFrom(names(coef(model)), nsets,...)
+        sets <- pickFrom(names(coef(model)), nSets,...)
         if (length(sets) == 0) stop("no parameter set(s) specified")
     }
     coefs <- coef(model)
     l <- length(coefs)
     if (!is.list(sets)) sets <- list(sets)
-    nsets <- length(sets)
+    nSets <- length(sets)
     sets <- lapply(sets, function(x){
         if (is.numeric(x)) x <- names(coefs)[x]
         list(coefs = x, contr = contr.sum(factor(x)))})
-    cmatrix <- lapply(sets, function(x){
+    coefMatrix <- lapply(sets, function(x){
         temp <- matrix(0, l, length(x$coefs))
         rownames(temp) <- names(coefs)
         temp[x$coefs, 1:(ncol(temp) - 1)] <- x$contr
         colnames(temp) <- x$coefs
         temp})
-    lapply(cmatrix, function(x){
+    lapply(coefMatrix, function(x){
         iden <- checkEstimable(model, x)
         if (any(!na.omit(iden))) {
             print(iden)

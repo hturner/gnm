@@ -23,21 +23,21 @@ data(yaish)
 
 ## Fit the "UNIDIFF" mobility model across education levels
 
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+unidiff <- gnm(Freq ~ educ:orig + educ:dest +
                      Mult(Exp(-1 + educ), orig:dest), family = poisson,
                      data = yaish)
 ## Deviance should be 208.3
 
 ##  Look at the multipliers of the orig:dest association:
-coefs.of.interest <- grep("Mult1.*educ", names(coef(yaish.unidiff)))
-coef(yaish.unidiff)[coefs.of.interest]
+coefs.of.interest <- grep("Mult1.*educ", names(coef(unidiff)))
+coef(unidiff)[coefs.of.interest]
 ## Mult1.Factor1.educ1 Mult1.Factor1.educ2 Mult1.Factor1.educ3 
 ##           1.9853067           1.7685557           1.2540751 
 ## Mult1.Factor1.educ4 Mult1.Factor1.educ5 
 ##           0.9551895          -0.2525413
 
 ## Get standard errors for contrasts with educ5
-getContrasts(yaish.unidiff, coefs.of.interest)
+getContrasts(unidiff, coefs.of.interest)
 ##                     estimate        se
 ## Mult1.Factor1.educ1 2.237848 0.9411054
 ## Mult1.Factor1.educ2 2.021097 0.9434948
@@ -46,7 +46,7 @@ getContrasts(yaish.unidiff, coefs.of.interest)
 ## Mult1.Factor1.educ5 0.000000 0.0000000
 
 ## Table of model residuals
-residuals(yaish.unidiff)
+residuals(unidiff)
 }
 \author{David Firth}
 \keyword{ datasets }

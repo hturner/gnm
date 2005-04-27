@@ -7,13 +7,13 @@ estimated simple contrasts (i.e., differences) with the last parameter
 in the set, and estimated standard errors for those estimated differences.  
 }
 \usage{
-getContrasts(model, sets = NULL, nsets = 1, ...)
+getContrasts(model, sets = NULL, nSets = 1, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}}
-  \item{sets}{ a vector of indices (if \code{nsets} is 1) or
-    a list (of length \code{nsets}) of such vectors }
-  \item{nsets}{ the number of vectors of indices to use}
+  \item{sets}{ a vector of indices (if \code{nSets} is 1) or
+    a list (of length \code{nSets}) of such vectors }
+  \item{nSets}{ the number of vectors of indices to use}
   \item{\dots}{ arguments to pass to other functions }
 }
 \details{
@@ -27,7 +27,7 @@ getContrasts(model, sets = NULL, nsets = 1, ...)
   differences.
 }
 \value{
-  A list (of length \code{nsets}) of data frames, each containing variables
+  A list (of length \code{nSets}) of data frames, each containing variables
   \code{estimate} and \code{se}
 }
 \references{
@@ -38,15 +38,15 @@ getContrasts(model, sets = NULL, nsets = 1, ...)
 \author{ David Firth }
 \seealso{ \code{\link{se}} }
 \examples{
-data(yaish)
 set.seed(1)
+data(yaish)
 
 ## Fit the "UNIDIFF" mobility model across education levels
-yaish.unidiff <- gnm(Freq ~ educ:orig + educ:dest +
-                     Mult(Exp(-1 + educ), orig:dest), family = poisson,
-                     data = yaish)
+unidiff <- gnm(Freq ~ educ:orig + educ:dest +
+               Mult(Exp(-1 + educ), orig:dest), family = poisson,
+               data = yaish)
 ## Examine the education multipliers (differences on the log scale):
-getContrasts(yaish.unidiff, grep("Mult1.Factor1", names(coef(yaish.unidiff))))
+getContrasts(unidiff, grep("Mult1.Factor1", names(coef(unidiff))))
 }
 \keyword{ models }
 \keyword{ regression }

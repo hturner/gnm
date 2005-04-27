@@ -1,8 +1,9 @@
+library(gnm)
 set.seed(1)
 data(yaish)
 
-yaishUnidiff <- gnm(Freq ~ educ:orig + educ:dest +
+unidiff <- gnm(Freq ~ educ:orig + educ:dest +
                      Mult(Exp(-1 + educ), orig:dest), family = poisson,
                      data = yaish)
-yaishUnidiff
-getContrasts(yaishUnidiff, grep("Mult.*educ", names(coef(yaishUnidiff))))
+unidiff
+getContrasts(unidiff, grep("Mult.*educ", names(coef(unidiff))))

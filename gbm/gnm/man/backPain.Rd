@@ -32,6 +32,7 @@ set.seed(1)
 data(backPain)
 
 ### Re-express as count data
+library(nnet)
 .incidence <- class.ind(backPain$pain)
 .counts <- as.vector(t(.incidence))
 .rowID <- factor(t(row(.incidence)))
@@ -48,25 +49,26 @@ noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
 ## stereotype model
 oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain - 1, x1 + x2 + x3 - 1),
-                         startit = 3)
+                         iterStart = 3)
 
 threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
 
 ### Models to determine distinguishability in stereotype model
-pain2 <- backPain$pain
+.pain <- backPain$pain
 
-levels(pain2)[2:3] <- paste(levels(pain2)[2:3], collapse = " | ")
+levels(.pain)[2:3] <- paste(levels(.pain)[2:3], collapse = " | ")
 fiveGroups <- update(noRelationship,
-                     ~ . + Mult(as.ordered(pain2) - 1,
+                     ~ . + Mult(as.ordered(.pain) - 1,
                                 x1 + x2 + x3 - 1))
 
-levels(pain2)[4:5] <- paste(levels(pain2)[4:5], collapse = " | ")
+levels(.pain)[4:5] <- paste(levels(.pain)[4:5], collapse = " | ")
 fourGroups <- update(fiveGroups)
 
-levels(pain2)[2:3] <- paste(levels(pain2)[2:3], collapse = " | ")
+levels(.pain)[2:3] <- paste(levels(.pain)[2:3], collapse = " | ")
 threeGroups <- update(fourGroups)
 
 ### Grouped continuous model, aka proportional odds model
+library(MASS)
 sixCategories <- polr(pain ~ x1 + x2 + x3, data = backPain)
 
 ### Obtain number of parameters and log-likelihoods for equivalent

@@ -215,7 +215,7 @@ Cautres, B, Heath, A F and Firth, D (1998).  Class,
 Erikson, R and Goldthorpe, J H (1992).  \emph{The Constant Flux}.
 Oxford: Clarendon Press.
 
-van Eeuwijk, F A (1995).  Multiplicative interacyion in generalized
+van Eeuwijk, F A (1995).  Multiplicative interaction in generalized
 linear models.  \emph{Biometrics} \bold{51}, 1017-1032.
 
 Xie, Y (1992).  The log-multiplicative layer effect model for comparing

@@ -15,7 +15,7 @@ gnmControl(tolerance = 1e-04, iterStart = 2, iterMax = 500, trace = FALSE)
   \item{iterMax}{ a positive integer specifying the maximum number of main
     iterations to perform.}
   \item{trace}{ a logical value indicating whether the deviance
-    should be printed after each main iteration.}
+    should be printed after each iteration.}
 }
 \details{
   The \code{gnm} fitting algorithm consists of two stages.  In the start-up

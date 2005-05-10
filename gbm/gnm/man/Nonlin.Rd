@@ -11,9 +11,8 @@ Nonlin(functionCall, data = NULL)
 \arguments{
   \item{functionCall}{a call to a \dQuote{plug-in} function that provides the
     objects required to fit the special nonlinear term.}
-  \item{data}{a data.frame containing any variables required by the plug-in
-    function that are ONLY passed to specified arguments by
-    \code{functionCall}.}
+  \item{data}{(optional) a data.frame containing any variables in
+    \bold{specified} arguments of \code{functionCall}.}
 }
 \details{
     Nonlinear terms that cannot be specified by \code{Mult} require special
@@ -36,25 +35,26 @@ Nonlin(functionCall, data = NULL)
 	the number of parameters and returns a vector of
         starting values.}
       \item{labels}{a character vector of labels for the
-        parameters.}
+        parameters (to which \code{gnm} will prefix the call to the
+	plug-in function).}
       \item{predictor}{a function which takes a vector of parameter
         estimates and returns either a vector of
         fitted values or a matrix whose columns are
         additive components of the fitted values.}
       \item{localDesignFunction}{a function which takes the
-        arguments \code{coef} (a vector of parameter estimates) and/or 
+        arguments \code{coef} (a vector of parameter estimates) and 
         \code{predictor} (the result of the predictor function), and
         returns the local design matrix.}
     }
     
     Any variables passed to unspecified arguments of the plug-in function will
-    be automatically added to the model frame used in \code{gnm}.
+    automatically be added to the model frame used in \code{gnm}.
     This model frame can be accessed within a plug-in function
     using \code{getModelFrame}.  
     
-    Any variables passed to specified arguments must be given in the
-    \code{data} argument of \code{Nonlin}.  ALL the variables given in
-    \code{data} will be added to the model frame.  
+    The \code{data} argument of \code{Nonlin} can be used to provide any
+    variables required by specified arguments of the plug-in function.
+    ALL the variables given in \code{data} will be added to the model frame.
 }
 \value{
     An object of class \code{"Nonlin"} which is a list of deparsed expressions

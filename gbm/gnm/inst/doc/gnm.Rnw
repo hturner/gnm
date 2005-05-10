@@ -1,0 +1,282 @@
+\documentclass[a4paper]{article}
+
+\usepackage{Sweave}
+\usepackage{alltt}
+\usepackage{natbib}
+
+\setlength{\oddsidemargin}{0.5in}
+\setlength{\evensidemargin}{0.5in}
+\setlength{\textwidth}{5.5in}
+
+\title{Generalized nonlinear models in R: an overview of the \texttt{gnm}
+  package} 
+
+\author{Heather Turner and David Firth}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+\section{Generalized Linear Models}
+
+\section{Nonlinear Terms}
+
+The \texttt{gnm} package provides a flexible framework for the specification and
+estimation of generalized models with nonlinear terms. Multiplicative
+interaction terms can be estimated using the in-built capability of the
+\texttt{gnm} function and are specified in the model formula using the symbolic
+function \texttt{Mult}. Other nonlinear terms can be estimated using plug-in
+functions for \texttt{gnm} and are specified using \texttt{Nonlin}.
+
+There are two plug-in functions currently available in
+the \texttt{gnm} package: \texttt{MultHomog} for fitting multiplicative
+interaction terms with homogeneous effects and \texttt{Dref} for fitting
+diagonal reference terms. Users may also define custom plug-in functions to fit
+other types of nonlinear terms.
+
+\subsection{Multiplicative Interaction Terms using \texttt{Mult}}
+
+Multiplicative interaction terms can be included in the formula argument to
+\texttt{gnm} by using the symbolic wrapper function \texttt{Mult}. Factors in
+the interaction are passed as unspecified arguments to \texttt{Mult} and are expressed
+by symbolic linear formulae. An intercept is automatically added to each
+factor unless otherwise specified. For example, to fit the row-column association model
+\[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c,\]
+also known as the Goodman RC model \citep{Good79}, the \texttt{formula} argument
+of \texttt{gnm} would be 
+\begin{alltt}
+    mu \(\sim\) R + C + Mult(-1 + R, -1 + C)
+\end{alltt}
+where R and C are row and column factors respectively.
+
+\texttt{Mult} has one specified argument \texttt{multiplicity}, which is
+\texttt{1} by default. This argument determines the number of multiplicative
+components that are fitted. For example,
+\begin{alltt}
+    mu \(\sim\) R + C + Mult(-1 + R, -1 + C, multiplicity = 2)
+\end{alltt}
+would give the RC(2) model \citep{Good79}
+\[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c + \theta_r\phi_c.\]
+
+In some contexts, it may be desirable to constrain one or more of the
+multiplicative factors so that the factor is always nonnegative. This may be
+achieved by defining the factor as an exponential, as in the following `uniform
+difference' model \citep{Xie92, Erik93}
+\[\log \mu_{ijt} = \alpha_{it} + \beta_{jt} + e^{\gamma_t}\delta_{ij}.\]
+Exponentiated factors can be specified in \texttt{gnm} models using the symbolic
+function \texttt{Exp}, for example the uniform difference model above would be
+specified by the formula
+\begin{alltt}
+    mu \(\sim\) R:T + C:T + Mult(Exp(-1 + T), R:C, multiplicity = 2)
+\end{alltt}
+
+\subsection{Other Nonlinear Terms using \texttt{Nonlin}}
+
+Nonlinear terms which can not be specified using \texttt{Mult} may be specified
+using \texttt{Nonlin}. This symbolic function indicates a term which requires a
+plug-in function to estimate the associated parameters. There are two arguments
+to \texttt{Nonlin}: a call to the relevant plug-in function and if necessary, a
+data.frame containing any variables that are required by specified arguments of
+the plug-in function, which do not appear in any unspecified arguments of the
+plug-in function or elsewhere in the model formula. 
+
+For example, in the formula
+\begin{alltt}
+    mu ~ x + A + B + Nonlin(PlugInFunction(A, B, arg1 = x, arg2 = C)
+                                           data = data.frame.of.C)
+\end{alltt}
+\texttt{Nonlin} is used to specify a term that requires the plug-in function
+PlugInFunction. As the factor $C$ only appears in the specified arguments of the
+call to PlugInFunction, a data.frame containing factor C has been passed to the
+\texttt{data} argument of \texttt{Nonlin}. Note that this would not be necessary
+if $C$ could be found in an environment on the search path (given by
+\texttt{search()}).
+ 
+The two plug-in functions included in the \texttt{gnm} package are described
+below, followed by a guide to writing custom plug-in functions.
+
+\subsubsection{\texttt{MultHomog}}
+
+The \texttt{MultHomog} function provides the tools required to fit
+multiplicative interaction terms in which the level effects are constrained to be
+equal across the factors. The arguments of \texttt{MultHomog} are the factors in
+the interaction, which are assumed to be objects of class ``factor''. Like a
+\texttt{Mult} term, the interaction can include any number of factors, but there
+is no multiplicity argument.  
+
+As an example, consider the following association model with homogeneous
+row-column effects 
+\[\log \mu_{rc} = \alpha_r + \beta_c + \theta_{rc} + \gamma_r\gamma_c.\]
+To fit this model, the formula argument to \texttt{gnm} would be
+\begin{alltt}
+    mu \(\sim\) R + C + Diag(R, C) + Nonlin(MultHomog(R, C))
+\end{alltt}
+
+If the factors passed to \texttt{MultHomog} do not have exactly the same levels,
+a common set of levels is obtained by taking the union of the levels of each
+factor, sorted into increasing order. 
+
+\subsubsection{\texttt{Dref}}
+
+\texttt{Dref} is a plug-in function to fit diagonal reference terms involving
+two or more factors with a common set of levels. A diagonal reference term
+comprises an additive component for each factor. For a given data point, the
+component for the $i$'th factor, say $F$, is
+\[w_i\gamma_f\]
+where $w_i$ is the weight for factor $i$, $\gamma_f$ is the ``diagonal effect''
+for level $f$ and $f$ is the level of $F$ for the given data point.
+
+The weights are constrained to be nonnegative and to sum to one so that a
+``diagonal effect'', say $\gamma_l$, is the value of the diagonal reference term
+for data points with level $l$ across the factors. \texttt{Dref} constrains
+the weights by defining them as
+\[w_i = \frac{e^{\delta_i}}{\sum_r^n e^{\delta_r}}\]
+and estimating the $\delta_i$.
+
+Factors in the interaction are passed to unspecified arguments of
+\texttt{Dref}. For example, the following diagonal reference model for
+a contingency table classified by the row factor $R$ and the column factor $C$ 
+\[\mu_{rc} =\frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_r +
+\frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_c,\]
+would be specified by the formula
+\begin{alltt}
+    mu \(\sim\) -1 + Nonlin(Dref(R, C))
+\end{alltt}
+
+\texttt{Dref} has one specified argument \texttt{formula}, which is a symbolic
+description of the dependence of $\delta_i$ on any covariates. For example, the formula
+\begin{alltt}
+    mu \(\sim\) -1 + x + Nonlin(Dref(R, C, formula = ~ 1 + x))
+\end{alltt}
+specifies the following diagonal reference model
+\[\mu_{rc} = \beta_Xx + \frac{e^{\xi_1 + \beta_1x}}{e^{\xi_1 + \beta_1x} + e^{\xi_2 + \beta_2x}}\gamma_r +
+\frac{e^{\xi_2 + \beta_2x}}{e^{\xi_1 + \beta_x} + e^{\xi_2 + \beta_2x}}\gamma_c,\]
+The default value of \texttt{formula} is $\sim \mbox{\texttt{1}}$, so that
+constant weights are estimated. The coefficients returned by \texttt{gnm} are
+those that are directly estimated, i.e. the $\delta_i$ or the $\xi_i$ and $\beta_i$,
+rather than the implied weights $w_i$.
+
+\subsubsection{Custom Plug-in Functions}
+
+Custom plug-in functions may be written to enable \texttt{gnm} to fit nonlinear
+terms that can not be specifed by \texttt{Mult} or the plug-in functions provided
+by the \texttt{gnm} package. 
+
+There are no constraints on the arguments that a plug-in function may
+have. However it should not be assumed that model variables exist in an
+environment on the search path, since \texttt{gnm} does not assume this. Rather
+the function \texttt{getModelFrame} should be used to get the model.frame used
+by \texttt{gnm}, which will have all the model variables and also attributes
+useful for model.matrix etc.
+
+For example, the first few lines of the \texttt{MultHomog} function are
+\begin{alltt}
+    MultHomog <- function(...)\{
+      labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
+      gnmData <- getModelFrame()
+      designList <- lapply(gnmData[, labelList], class.ind)
+    ...
+\end{alltt}
+The names of the factors in the interaction are assigned to \texttt{labelList},
+and the model.frame used by \texttt{gnm} is assigned to \texttt{gnmData}. The
+factors can then be accessed by name from \texttt{gnmData}, as in the call to
+\texttt{lapply}. 
+
+The plug-in function should return a list with the following components
+\begin{description}
+\item[start]
+  (optional) either a vector of starting values
+  for the parameters or a function which takes
+  the number of parameters and returns a vector of
+  starting values.
+\item[labels]
+  a character vector of labels for the
+  parameters (to which \texttt{gnm} will prefix the call to the
+  plug-in function).
+\item[predictor]
+  a function which takes a vector of parameter estimates
+  and returns either a vector of fitted values or a matrix whose columns are
+  additive components of the fitted values.
+\item[localDesignFunction]
+  a function which takes the specified
+  arguments \texttt{coef} (a vector of parameter estimates) and 
+  \texttt{predictor} (the result of the predictor function), and
+  returns the local design matrix.
+\end{description}
+
+As an example of a \texttt{start} component, \texttt{Dref} simply returns
+\begin{alltt}
+    rep(0.5, length(labels))
+\end{alltt}
+where \texttt{labels} is the vector of parameter labels to be returned as the
+\texttt{labels} component, for instance
+\begin{alltt}
+    c("A", "B", "1", "2", "3", "4", "5", "6", "7")
+\end{alltt}
+
+The \texttt{MultHomog} function provides a simple example of a
+\texttt{predictor} component:
+\begin{alltt}
+    predictor <- function(coef) \{
+        do.call("pprod", lapply(designList, "%*%", coef))
+    \}
+\end{alltt}
+which computes the product of the vectors found by multiplying the design matrix
+for each factor in the interaction (held in \texttt{designList}) by the
+homogeneous coefficients (in \texttt{coef}). This function takes advantage of
+\textit{lexical scoping}: \texttt{designList} is an object defined in
+\texttt{MultHomog}, which \texttt{predictor} is able to find because
+\texttt{predictor} is also defined in \texttt{MultHomog} and hence
+\texttt{MultHomog} is the enclosing environment of \texttt{predictor}. 
+
+The \texttt{localDesignFunction} created by \texttt{MultHomog} is slightly more
+complicated: 
+\begin{alltt}
+    localDesignFunction <- function(coef, ...) \{
+        productList <- designList
+        for (i in seq(designList))
+            productList[[i]] <- designList[[i]] * 
+                drop(do.call("pprod", lapply(designList[-i], "%*%", coef)))
+        do.call("psum", productList)
+    \}
+\end{alltt}
+This function only requires the argument \texttt{coef}, but since the
+local design function returned by a plug-in function must also take the
+argument \texttt{predictor}, further arguments are allowed by the use of the
+special argument ``...''.
+
+\section{Controlling the Fitting Procedure}
+
+\texttt{gnm} has a number of arguments which affect the way a model will be
+fitted. Basic control parameters and starting values can be set by
+\texttt{control} and \texttt{start} respectively. The estimates of parameters specified by
+\texttt{constrain} will be constrained to zero. Finally \texttt{}
+
+
+\subsection{Using \texttt{gnmControl}}
+
+The \texttt{control} argument, by default a call to \texttt{gnmControl},
+provides a way to tweak the tolerance level for convergence, the number of
+starting iterations and the maximum number of main iterations, as well as the
+option to trace the deviance throughout the fitting process. For example
+\begin{alltt}
+    gnm(mu \(\sim\) R + C + Mult(-1 + R, -1 + C),
+        control = gnmControl(tolerance = 1e-6, iterStart = 3, trace = TRUE))
+\end{alltt}
+
+
+
+
+
+\section{Methods and Accessor functions}
+
+\section{Examples}
+
+\appendix
+
+\section{User-level Functions}
+
+\end{document}

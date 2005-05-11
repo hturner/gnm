@@ -1,3 +1,5 @@
+%\VignetteIndexEntry{Overview of gnm}
+
 \documentclass[a4paper]{article}
 
 \usepackage{Sweave}
@@ -344,9 +346,6 @@ the \texttt{start} argument of \texttt{gnm}.
 
 
 \section{Methods and Accessor functions}
-
-\begin{parbox}
-\begin{tabulate}
 
 
 

@@ -2,6 +2,7 @@
 
 \usepackage{Sweave}
 \usepackage{alltt}
+\usepackage{amsmath}
 \usepackage{natbib}
 
 \setlength{\oddsidemargin}{0.5in}
@@ -64,7 +65,7 @@ would give the RC(2) model \citep{Good79}
 In some contexts, it may be desirable to constrain one or more of the
 multiplicative factors so that the factor is always nonnegative. This may be
 achieved by defining the factor as an exponential, as in the following `uniform
-difference' model \citep{Xie92, Erik93}
+difference' model \citep{Xie92, Erik92}
 \[\log \mu_{ijt} = \alpha_{it} + \beta_{jt} + e^{\gamma_t}\delta_{ij}.\]
 Exponentiated factors can be specified in \texttt{gnm} models using the symbolic
 function \texttt{Exp}, for example the uniform difference model above would be
@@ -188,10 +189,11 @@ factors can then be accessed by name from \texttt{gnmData}, as in the call to
 The plug-in function should return a list with the following components
 \begin{description}
 \item[start]
-  (optional) either a vector of starting values
+  (optional) either a vector of default starting values
   for the parameters or a function which takes
-  the number of parameters and returns a vector of
-  starting values.
+  the number of parameters and returns a vector of default
+  starting values. See Section \ref{start} for details of how these values will
+  be used if provided and the generic default values that will be used otherwise.
 \item[labels]
   a character vector of labels for the
   parameters (to which \texttt{gnm} will prefix the call to the
@@ -252,31 +254,109 @@ special argument ``...''.
 
 \texttt{gnm} has a number of arguments which affect the way a model will be
 fitted. Basic control parameters and starting values can be set by
-\texttt{control} and \texttt{start} respectively. The estimates of parameters specified by
-\texttt{constrain} will be constrained to zero. Finally \texttt{}
+\texttt{control} and \texttt{start} respectively. Parameters can be constrained
+to zero by specifying a \texttt{constrain} argument. Finally parameters of a
+stratification factor can be handled more efficiently by specifying the term in
+an \texttt{eliminate} argument. These options are described in more detail below.
 
+\subsection{Using \texttt{control} with \texttt{gnmControl}}
 
-\subsection{Using \texttt{gnmControl}}
-
-The \texttt{control} argument, by default a call to \texttt{gnmControl},
-provides a way to tweak the tolerance level for convergence, the number of
-starting iterations and the maximum number of main iterations, as well as the
-option to trace the deviance throughout the fitting process. For example
+The \texttt{control} argument provides a way to specify the tolerance level for
+convergence, the number of starting iterations and the maximum number of main
+iterations, as well as the option to trace the deviance throughout the fitting
+process.  By default, the \texttt{control} argument is a call to
+\texttt{gnmControl} using any arguments passed on from
+\texttt{gnm}. \texttt{gnmControl} creates a list of the control
+parameters, including any at their default values. For example
+\begin{alltt}
+    gnm(mu \(\sim\) R + C + Mult(-1 + R, -1 + C), tolerance = 1e-6, iterStart = 3)
+\end{alltt}
+is equivalent to 
 \begin{alltt}
     gnm(mu \(\sim\) R + C + Mult(-1 + R, -1 + C),
-        control = gnmControl(tolerance = 1e-6, iterStart = 3, trace = TRUE))
+        control = gnmControl(tolerance = 1e-6, iterStart = 3))
+\end{alltt}
+which is the same as
+\begin{alltt}
+    gnm(mu \(\sim\) R + C + Mult(-1 + R, -1 + C),
+        control = list(tolerance = 1e-6, iterStart = 3, iterMax = 500, trace = FALSE))
 \end{alltt}
 
+\subsection{Using \texttt{start}}
+\label{start}
+
+In some contexts, the default starting values may not be appropriate and the
+algorithm will fail to converge, or perhaps only converge after a large number
+of iterations. Alternative starting values may be passed on to \texttt{gnm} by
+specifying a \texttt{start} argument. This should be a numeric vector of length
+equal to the number of parameters (or possibly the non-eliminated parameters,
+see Section \ref{eliminate}), however missing starting values (\texttt{NA}s) are
+allowed. 
+
+If there is no user-specified starting value for a parameter, the
+default value is used. This feature is particularly useful when adding terms to
+a model, since the estimates from the original model can be used as starting
+values, as in the example below
+\begin{alltt}
+    model1 <- gnm(mu \(\sim\) R + C + Mult(-1 + R, -1 + C))
+    model2 <- gnm(mu \(\sim\) R + C + Mult(-1 + R, -1 + C, multiplicity = 2),
+                  start = c(coef(model1), rep(NA, 10))
+\end{alltt}
+\texttt{gnm} can be run with \texttt{method = "coef"} to identify the
+parameters of a model prior to estimation, to assist with the specification of
+arguments such as \texttt{start}.
+
+The starting procedure used by \texttt{gnm} is as follows
+\begin{enumerate}
+\item
+Generate starting values $\theta_i$ for all parameters $i = 1, \ldots, p$ from
+the Uniform(-0.1, 0.1) distribution. Shift these values away from zero as follows
+\begin{equation*}
+\theta_i = \begin{cases}
+    \theta_i - 0.1 &  \text{if } \theta < 1 \\
+    \theta_i + 0.1 & \text{otherwise}
+\end{cases}
+\end{equation*}
+\item
+Replace generic starting values with any starting values specified by plug-in
+functions.
+\item
+Replace default starting values with any starting values specified by the
+\texttt{start} argument of \texttt{gnm}.
+\item
+Compute the \texttt{glm} estimate of any parameters in linear terms that were
+not specified by \texttt{start}, offsetting the contribution to the predictor of
+any parameters specified by \texttt{start} or a plug-in function.
+\item
+Run starting iterations: update any parameters in nonlinear terms
+that were not specified by \texttt{start} or a plug-in function one at a time,
+updating \textit{all} linear terms after each round of nonlinear updates.
+\end{enumerate}
+Note that no starting iterations will be run if all parameters are specified by
+the \texttt{start} argument of \texttt{gnm}.
+
+\subsection{Using \texttt{constrain}}
 
 
+
+\subsection{Using \texttt{eliminate}}
+\label{eliminate}
 
 
 \section{Methods and Accessor functions}
+
+\begin{parbox}
+\begin{tabulate}
+
+
 
 \section{Examples}
 
 \appendix
 
 \section{User-level Functions}
+
+\bibliography{gnm}
+\bibliographystyle{plain}
 
 \end{document}

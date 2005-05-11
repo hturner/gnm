@@ -30,9 +30,9 @@ Nonlin(functionCall, data = NULL)
     reference terms (\code{Dref}).  Users may also define their own plug-in
     functions which should return a list with the following components:
     \describe{
-      \item{start}{(optional) either a vector of starting values
+      \item{start}{(optional) either a vector of default starting values
         for the parameters or a function which takes
-	the number of parameters and returns a vector of
+	the number of parameters and returns a vector of default
         starting values.}
       \item{labels}{a character vector of labels for the
         parameters (to which \code{gnm} will prefix the call to the

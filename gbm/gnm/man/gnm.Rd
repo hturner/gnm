@@ -17,8 +17,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{formula}{ a symbolic description of the nonlinear predictor. }
   \item{eliminate} { an optional formula consisting of a single factor
     to be used instead of an intercept in the predictor. }
-  \item{constrain}{ either a numeric vector of indices, or a logical vector,
-    indicating coefficients to set to zero.}
+  \item{constrain}{ coefficients to set to zero, specified by a numeric
+    vector of indices, a logical vector, or "pick" to select from a Tk
+    dialog. }
   \item{family}{ a specification of the error distribution and link function
     to be used in the model. This can be a character string naming
     a family function; a family function, or the result of a call

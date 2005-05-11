@@ -103,7 +103,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (is.null(constrain))
           constrain <- rep.int(FALSE, nParam)
         else {
-            if (constrain == "pick") {
+            if (identical(constrain, "pick")) {
                 if (is.null(eliminate))
                     choice <- names(modelTools$classID)
                 else

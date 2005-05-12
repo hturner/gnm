@@ -23,6 +23,9 @@
 
 \section{Introduction}
 
+<<>>=
+library(gnm)
+@ 
 \section{Generalized Linear Models}
 
 \section{Nonlinear Terms}
@@ -88,8 +91,8 @@ plug-in function or elsewhere in the model formula.
 
 For example, in the formula
 \begin{alltt}
-    mu ~ x + A + B + Nonlin(PlugInFunction(A, B, arg1 = x, arg2 = C)
-                                           data = data.frame.of.C)
+    mu ~ x + A + B + Nonlin(PlugInFunction(A, B, arg1 = x, arg2 = C),
+                            data = data.frame.of.C)               
 \end{alltt}
 \texttt{Nonlin} is used to specify a term that requires the plug-in function
 PlugInFunction. As the factor $C$ only appears in the specified arguments of the
@@ -339,8 +342,50 @@ the \texttt{start} argument of \texttt{gnm}.
 
 \subsection{Using \texttt{constrain}}
 
+By default, \texttt{gnm} only imposes identifiability constraints on any linear
+terms in the model to be fitted. For these terms, the constraints are determined
+in the same way as they would be in \texttt{glm}. Any nonlinear terms will be
+over-parameterised unless constraints are imposed by the defining plug-in
+function (as in the case of \texttt{Dref} for example). For a model with
+nonlinear terms that are over-parameterised, \texttt{gnm} will return a random
+parameterisation. 
 
+To illustrate this point, consider the following application of \texttt{gnm},
+discussed later in Section \ref{RCmodels}
+<<"RC homogeneous model 1">>=
+data(occupationalStatus, package = "gnm")
+set.seed(1)
+RChomog1 <- gnm(Freq ~ origin + destination + Diag(origin, destination) + 
+               Nonlin(MultHomog(origin, destination)), family = poisson, 
+               data = occupationalStatus)
+@ 
+Running the analysis again from a different seed
+<<"RC homogeneous model 2">>=
+set.seed(2)
+RChomog2 <- eval(RChomog1$call)
+@ 
+gives a different representation of the same model
+<<"Compare coefficients">>=
+compareCoef <- cbind(coef(RChomog1), coef(RChomog2))
+colnames(compareCoef) <- c("RChomog1", "RChomog2") 
+compareCoef
+@ 
 
+<<>>=
+getContrasts(RChomog,  grep("Mult", names(coef(RChomog))))
+@ 
+
+<<>>=
+multConstrained <- getContrasts(RChomog,  
+                                grep("Mult", names(coef(RChomog))))[[1]][[1]]
+diagonal <- coef(RChomog)[grep("Diag", names(coef(RChomog)))]
+set.seed(1)
+RChomogConstrained1 <- update(RChomog, constrain = 31, 
+                             start = c(rep(NA, 15), diagonal, multConstrained))
+set.seed(2)
+RChomogConstrained2 <- eval(RChomogConstrained1$call)
+identical(coef(RChomogConstrained1), coef(RChomogConstrained2))
+@ 
 \subsection{Using \texttt{eliminate}}
 \label{eliminate}
 
@@ -350,6 +395,16 @@ the \texttt{start} argument of \texttt{gnm}.
 
 
 \section{Examples}
+\label{Examples}
+
+\subsection{Row-column Association Models}
+\label{RCmodels}
+
+\subsection{Uniform Difference (UNIDIFF) Models}
+
+\subsection{Generalized Additive and Mulipliactive (GAMMI) Models}
+
+\subsection{Stereotype Models}
 
 \appendix
 

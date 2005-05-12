@@ -1,7 +1,7 @@
 Mult <- function(..., multiplicity = 1){
     badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
                            sapply(sys.calls(),
-                                  function(x) as.character(x[[1]])))
+                                  function(x) as.character(x[[1]])[1]))
     if (!all(is.na(badCall))) {
         culprit <- gsub(".default", "",
                         as.character(sys.calls()

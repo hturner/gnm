@@ -144,6 +144,7 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
         fit$vcov <- VCOV
     }
     if (termPredictors) {
+        theta[is.na(theta)] <- 0
         factorList <- modelTools$factorList(theta, term = TRUE)
         fit$termPredictors <- modelTools$predictor(factorList, term = TRUE)
     }

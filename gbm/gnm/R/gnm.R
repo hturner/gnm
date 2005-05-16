@@ -111,7 +111,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 picked <- pickFrom(choice,
                               setlabels = "Coefficients to constrain",
                               title = "Constrain one or more gnm coefficients",
-                              items.label = "Model coefficients:")
+                              items.label = "Model coefficients:",
+                              edit.setlabels = FALSE)
                 constrain <- is.element(choice, picked)
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")

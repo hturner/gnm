@@ -1,4 +1,4 @@
-% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+%\VignetteIndexEntry{Overview of gnm} 
 
 \documentclass[a4paper]{article}
 
@@ -562,11 +562,11 @@ getContrasts(doubleUnidiff, coefs.of.interest)
 \label{Examples}
 
 This section provides examples of the wide range of models that may be fitted
-using the \texttt{gnm} package. Sections \ref{RCmodels}, \ref{Dref} and \ref{Unidiff}
-consider various models for contingency tables; Section \ref{GAMMI} considers
-GAMMI models which are typically used in agricultural applications, and Section
-\ref{Stereotype} considers the sterotype model, which is used to model an
-ordinal response.
+using the \texttt{gnm} package. Sections \ref{RCmodels}, \ref{Dref} and 
+\ref{Unidiff} consider various models for contingency tables; Section
+\ref{GAMMI} considers GAMMI models which are typically used in agricultural
+applications, and Section \ref{Stereotype} considers the sterotype model, which
+is used to model an ordinal response.
 
 \subsection{Row-column Association Models}
 \label{RCmodels}
@@ -580,18 +580,115 @@ models for higher order tables.
 
 \subsubsection{RC(1) model}
 
-rc1model
-rc2model
-inc Goodman multhomog
+The RC(1) model is a row and column association model with the interaction
+between row and column factors represented by one component of the multplicative
+interaction. If the rows are index by $r$ and the columns by $c$, then the
+log-multiplicative form of the RC(1) model for the cell means $\mu_{rc}$ is
+given by 
+\[log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c. \]
+
+We shall fit this model to the \texttt{mentalHealth} data set taken from
+\citet{Agre02}, which is a two-way contingency table classified by the child's
+mental impairment (MHS) and the parents' socioeconomic status (SES). Although
+both of these factors are ordered, we do not wish to use polynomial contrasts in
+the model, so we begin by setting the contrasts attribute of these factors to
+``treatment'' 
+<<"Set contrasts attribute">>=
+set.seed(1)
+data(mentalHealth)
+mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
+mentalHealth$SES <- C(mentalHealth$SES, treatment)
+@
+The \texttt{gnm} model is then specified as follows, using the poisson family
+with a log link function
+<<"RC1 model">>=
+RC1model <- gnm(count ~ SES + MHS +
+                Mult(-1 + SES, -1 + MHS),
+                family = poisson, data = mentalHealth)
+RC1model
+@ %def 
+The row scores (parameters 10 to 15) and the column scores (parameters 16 to 19)
+of the multiplicative interaction can be normalized as in Agresti's eqn (9.15)
+<<"Normalize scores">>=
+rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
+colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
+rowScores <- coef(RC1model)[10:15]
+colScores <- coef(RC1model)[16:19]
+rowScores <- rowScores - sum(rowScores * rowProbs)
+colScores <- colScores - sum(colScores * colProbs)
+beta1 <- sqrt(sum(rowScores^2 * rowProbs))
+beta2 <- sqrt(sum(colScores^2 * colProbs))
+assoc <- list(beta = beta1 * beta2,
+              mu = rowScores / beta1,
+              nu = colScores / beta2)
+assoc
+@ %def
+
+\subsubsection{RC(2) model}
+
+The RC(1) model can be extended to an RC($m$) model with $m$ components of the
+multiplicative interaction. For example, the RC(2) model is given by
+\[log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c + \theta_r\phi_c. \]
+Extra components of the multplicative interaction can be specified by the
+\texttt{multiplicity} component of \texttt{Mult}, so the RC(2) model is fitted
+as follows
+<<"RC2 model">>=
+RC2model <- gnm(count ~ SES + MHS +
+                Mult(-1 + SES, -1 + MHS, multiplicity = 2),
+                family = poisson, data = mentalHealth)
+RC2model
+@
+
+\subsubsection{Homogeneous effects}
+
+If the row and column factors have the same levels, or perhaps some levels in
+common, then the row-column interaction could be modelled by a multiplicative
+interaction with homogeneous effects, that is
+\[log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\gamma_c.\]
+
+For example, the \texttt{occupationalStatus} data set from \citet{Good79} is a
+contingency table classified by the occupational status of fathers (origin) and
+their sons (destination). Goodman fits a row-column association model with
+homogeneous effects to these data after deleting the cells on the main
+diagonal. Equivalently we can account for the diagonal effects by a separate
+\texttt{Diag} term: 
+@ 
+<<"Homogeneous effects">>=
+data(occupationalStatus)
+RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
+               Nonlin(MultHomog(origin, destination)), family = poisson,
+               data = occupationalStatus)
+RChomog
+@ %def 
+
+To determine whether it would be better to allow for heterogeneous effects on
+the association of the fathers' occupational status and the sons' occupational
+status, we can compare this model to the RC(1) model for these data:
+<<"Heterogeneous effects">>=
+data(occupationalStatus)
+RCheterog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
+               Mult(origin, destination), family = poisson,
+               data = occupationalStatus)
+RChomog$dev - RCheterog$dev
+RChomog$df.residual - RCheterog$df.residual
+@
+In this case there is little gain in allowing heterogenous effects.
 
 \subsection{Diagonal Reference Models}
 \label{Dref}
+
+Diagonal reference models, proposed by \citep{Sobe81, Sobe85}, are designed for
+contingency tables classified by factors with the same levels. The cell
+means are modelled as a function of the diagonal effects: the mean
+responses of the diagonal cells, where the levels of the row and column factors
+are homogeneous.
+
 \subsection{Uniform Difference (UNIDIFF) Models}
 \label{Unidiff}
 
 inc cautres double unidiff 
 
-\subsection{Generalized Additive and Mulipliactive (GAMMI) Models}
+\subsection{Generalized Additive and Muliplicative (GAMMI) Models}
 \label{GAMMI}
 
 \subsection{Stereotype Models}
@@ -602,6 +699,6 @@ inc cautres double unidiff
 \section{User-level Functions}
 
 \bibliography{gnm}
-\bibliographystyle{plain}
+\bibliographystyle{plainnat}
 
 \end{document}

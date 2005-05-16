@@ -41,12 +41,12 @@ RC <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
 ##  Partition row and column effects
 row.and.column.effects <- c(df = Uniform$df.res - RC$df.res,
                             deviance = Uniform$dev - RC$dev)
-homogeneous.row.column.effects <- c(df = Uniform$df.res - RChomog$df.res,
+homogeneous.row.column.effect <- c(df = Uniform$df.res - RChomog$df.res,
                                     deviance = Uniform$dev - RChomog$dev)
-row.column.effects <- row.and.column.effects -
-    homogeneous.row.column.effects
-rbind(homogeneous.row.column.effects,
-      row.column.effects,
+row.column.difference.effect <- row.and.column.effects -
+    homogeneous.row.column.effect
+rbind(homogeneous.row.column.effect,
+      row.column.difference.effect,
       row.and.column.effects)
 }
 \keyword{datasets}

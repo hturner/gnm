@@ -108,7 +108,11 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                     choice <- names(modelTools$classID)
                 else
                     choice <- names(modelTools$classID)[-modelTools$eliminate]
-                constrain <- is.element(choice, pickFrom(choice))
+                picked <- pickFrom(choice,
+                              setlabels = "Coefficients to constrain",
+                              title = "Constrain one or more gnm coefficients",
+                              items.label = "Model coefficients:")
+                constrain <- is.element(choice, picked)
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")
             }

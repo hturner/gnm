@@ -8,7 +8,6 @@ importFrom(graphics, plot)
 importFrom(nnet, class.ind)
 importFrom(relimp, pickFrom)
 
-
 S3method(add1, gnm)
 S3method(addterm, gnm)
 S3method(alias, gnm)

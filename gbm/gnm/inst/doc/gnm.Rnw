@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Overview of gnm}
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
 
 \documentclass[a4paper]{article}
 
@@ -23,7 +23,7 @@
 
 \section{Introduction}
 
-<<>>=
+<<"Load gnm">>=
 library(gnm)
 @ 
 \section{Generalized Linear Models}
@@ -341,6 +341,7 @@ Note that no starting iterations will be run if all parameters are specified by
 the \texttt{start} argument of \texttt{gnm}.
 
 \subsection{Using \texttt{constrain}}
+\label{constrain}
 
 By default, \texttt{gnm} only imposes identifiability constraints on any linear
 terms in the model to be fitted. For these terms, the constraints are determined
@@ -353,7 +354,7 @@ parameterisation.
 To illustrate this point, consider the following application of \texttt{gnm},
 discussed later in Section \ref{RCmodels}
 <<"RC homogeneous model 1">>=
-data(occupationalStatus, package = "gnm")
+data(occupationalStatus)
 set.seed(1)
 RChomog1 <- gnm(Freq ~ origin + destination + Diag(origin, destination) + 
                Nonlin(MultHomog(origin, destination)), family = poisson, 
@@ -369,42 +370,232 @@ gives a different representation of the same model
 compareCoef <- cbind(coef(RChomog1), coef(RChomog2))
 colnames(compareCoef) <- c("RChomog1", "RChomog2") 
 compareCoef
-@ 
+@
+Even though the linear terms are constrained, the parameter estimates for
+these terms still change, because these terms are aliased with the higher order
+multiplicative interaction, which is unconstrained.
 
-<<>>=
-getContrasts(RChomog,  grep("Mult", names(coef(RChomog))))
-@ 
-
-<<>>=
-multConstrained <- getContrasts(RChomog,  
-                                grep("Mult", names(coef(RChomog))))[[1]][[1]]
-diagonal <- coef(RChomog)[grep("Diag", names(coef(RChomog)))]
+Additional constraints may be specified through the \texttt{constrain} argument
+of \texttt{gnm}. This argument indicates parameters that are to be constrained 
+to zero in the fitting process. Parameters can be indicated by a logical vector,
+a vector of indices or, if \texttt{constrain = "pick"} they can be selected
+through a Tk dialog. 
+ 
+In the case above, constraining one level of the homogeneous multiplicative
+factor is sufficient to make the parameters of the nonlinear term
+identifiable, and hence all parameters in the model identifiable. For example,
+setting the last level of the homogeneous multiplicative factor to zero 
+<<"RC homogeneous constrained model">>=
+multCoef <- coef(RChomog1)[grep("Mult", names(coef(RChomog1)))]
 set.seed(1)
-RChomogConstrained1 <- update(RChomog, constrain = 31, 
-                             start = c(rep(NA, 15), diagonal, multConstrained))
+RChomogConstrained1 <- update(RChomog1, constrain = 31, 
+                              start = c(rep(NA, 23), multCoef - multCoef[8]))
 set.seed(2)
 RChomogConstrained2 <- eval(RChomogConstrained1$call)
 identical(coef(RChomogConstrained1), coef(RChomogConstrained2))
-@ 
+@
+gives the same results regardless of the random seed set beforehand.
+
+It is not usually so straightforward to constrain all the parameters in a
+generalized nonlinear model. However,the simple constraints imposed by
+\texttt{constrain} are often sufficient to make particular coefficients of
+interest identifiable. The functions \texttt{checkEstimable} or
+\texttt{getContrasts}, described in Section \ref{Methods} may be used to check
+whether particular contrasts are estimable.
+
 \subsection{Using \texttt{eliminate}}
 \label{eliminate}
 
+Sometimes a model will include a ``stratification'' factor which identifies units
+for which a unit-specific intercept should be estimated. It is often the case
+that such factors have a large number of levels and though they are required in
+the model, are not of direct interest in themselves. 
+
+The \texttt{eliminate} argument of \texttt{gnm} can be used to specify a
+stratification factor in a model, so that the factor can be handled more
+efficiently. The factor should be specified as a formula with a single term, for
+example
+\begin{alltt}
+    gnm(mu ~ -1 + unitID + A + B + Mult(A, B), eliminate = ~ unitID)               
+\end{alltt}
+The use of \texttt{eliminate} makes the specification of a stratification factor
+in the model formula redundant, so the above call is equivalent to 
+\begin{alltt}
+    gnm(mu ~ A + B + Mult(A, B), eliminate = ~ unitID)               
+\end{alltt}
+or even
+\begin{alltt}
+    gnm(mu ~ -1 + A + B + Mult(A, B), eliminate = ~ unitID)               
+\end{alltt}
+
+Specifying a stratification factor through \texttt{eliminate} has two
+advantages. First, the parameters in the factor are estimated more
+efficiently. Second, the estimated parameters are excluded from the returned vector of
+coefficients, so that summaries of the model focus on the coefficients of interest.
+
+* bit more on estimation here? *
 
 \section{Methods and Accessor functions}
+\label{Methods}
 
+\texttt{gnm} returns an object of class \texttt{c("gnm", "glm", "lm")}. There
+are several methods that have been written for objects of class \texttt{"glm"}
+or \texttt{"lm"} to facilitate evaluation of the fitted model they
+describe. Out of the generic functions in the \texttt{base},
+\texttt{stats} and \texttt{graphics} packages for which methods have been written
+for \texttt{"glm"} or \texttt{"lm"} objects, Figure \ref{glm.lm} shows those
+that can be used to analyse \texttt{"gnm"} objects, whilst Figure \ref{!glm.lm} shows
+those that are not implemented for \texttt{"gnm"} objects.
 
+\begin{figure}[!tbph]
+    \centering
+    \begin{fbox} 
+        {
+          \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
+              case.names	&	hatvalues	&	print	\\
+              coef	&	influence	&	residuals	\\
+              cooks.distance	&	labels	&	rstandard	\\
+              deviance	&	logLik	&	summary	\\
+              extractAIC	&	model.frame	&	variable.names	\\
+              family	&	model.matrix	&	vcov	\\
+              formula	&	plot	&	weights	\\
+          \end{tabular*}
+        }
+    \end{fbox}
+    \caption{Generic functions in the \texttt{base}, \texttt{stats} and
+      \texttt{graphics} packages that can be used to analyse \texttt{"gnm"} objects.}
+    \label{glm.lm}
+\end{figure}
 
+\begin{figure}[!tbph]
+    \centering
+    \begin{fbox} 
+        {
+          \begin{tabular*}{4.5cm}{@{\extracolsep{\fill}}ll@{\extracolsep{\fill}}}
+              add1	&	drop1	\\
+              alias	&	dummy.coef	\\
+              anova	&	effects	\\
+              confint	&	kappa	\\
+              dfbeta	&	predict	\\
+              dfbetas	&	proj	\\
+          \end{tabular*}
+        }
+    \end{fbox}
+    \caption{Generic functions in the \texttt{base}, \texttt{stats} and
+      \texttt{graphics} packages for which methods have been written for
+      \texttt{"glm"} or \texttt{"lm"} objects, but which are not implemented for
+      \texttt{"gnm"} objects.}
+    \label{!glm.lm}
+\end{figure}
+
+In addition to the accessor functions shown in Figure \ref{glm.lm}, the
+\texttt{gnm} package provides a new generic function \texttt{termPredictors}
+that has methods for objects of class \texttt{"gnm"}, \texttt{"glm"} and
+\texttt{"lm"}. This function returns the additive contribution of each term to the
+predictor. 
+
+Most of the methods listed in Figure \ref{glm.lm} can be used as they would be
+for \texttt{"glm"} or \texttt{"lm"} objects, however care must be taken with
+\texttt{vcov}, as the variance-covariance matrix will depend on the
+parameterization of the model. In particular, standard errors calculated using
+the variance-covariance matrix will only be valid for parameters or contrasts
+that are estimable! 
+
+The \texttt{checkEstimable} function can be used to check the estimability of
+contrasts. Consider the following model, that is described later in Section
+\ref{Unidiff}
+<<"Double UNIDIFF model">>=
+data(cautres)
+doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
+                     + Mult(Exp(election - 1), religion:vote - 1) +
+                     Mult(Exp(election - 1), class:vote - 1), family = poisson, 
+                     data = cautres)
+@ 
+The effects of the first factor of the first multiplicative term are
+estimable when the estimate of one of these effects is constrained to zero, say
+the effect of the last level. The parameters to be estimated are then the
+differences between each effect and the effect of the last level. These
+differences can be represented by a contrast matrix as follows 
+<<"Contrast matrix">>=
+coefs <- names(coef(doubleUnidiff))
+contrCoefs <- coefs[grep("Mult1.Factor1", coefs)]
+contrMatrix <- matrix(0, length(coefs), length(contrCoefs), 
+                      dimnames = list(coefs, contrCoefs))
+contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)] <- contr.sum(contrCoefs)
+contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)]
+@ 
+and then their estimability can be checked using \texttt{checkEstimable}
+<<"Check estimability 1">>=
+checkEstimable(doubleUnidiff, contrMatrix)
+@ 
+which confirms that the effects for the other three levels are estimable when 
+the effect for the last parameter is set to zero.
+
+However, applying the equivalent constraint to the second factor in the
+interaction is not sufficient to make the parameters in that factor estimable:
+<<"Check estimability 2">>=
+coefs <- names(coef(doubleUnidiff))
+contrCoefs <- coefs[grep("Mult1.Factor2", coefs)]
+contrMatrix <- matrix(0, length(coefs), length(contrCoefs), 
+                      dimnames = list(coefs, contrCoefs))
+contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)] <- contr.sum(contrCoefs)
+checkEstimable(doubleUnidiff, contrMatrix)
+@ 
+
+To investigate simple contrasts such as those above, it
+is easiest to use the \texttt{getContrasts} function, which checks the
+estimability of the contrasts and returns the parameter estimates with their
+standard errors. Returning to the example of the first factor in the first
+multiplictaive interaction, the differences between each effect and the effect
+of the last level can be obtained as follows 
+<<"Get contrasts 1">>=
+coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
+getContrasts(doubleUnidiff, coefs.of.interest)
+@ %def 
+Attempting to obtain the equivalent contrasts for the second factor produces the
+following result
+<<"Get contrasts 2">>=
+coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
+getContrasts(doubleUnidiff, coefs.of.interest)
+@ %def
 \section{Examples}
 \label{Examples}
+
+This section provides examples of the wide range of models that may be fitted
+using the \texttt{gnm} package. Sections \ref{RCmodels}, \ref{Dref} and \ref{Unidiff}
+consider various models for contingency tables; Section \ref{GAMMI} considers
+GAMMI models which are typically used in agricultural applications, and Section
+\ref{Stereotype} considers the sterotype model, which is used to model an
+ordinal response.
 
 \subsection{Row-column Association Models}
 \label{RCmodels}
 
+There are several models that have been proposed for modelling the relationship
+between the cell means of a contingency table and the cross-classifying
+factors. The following examples consider the row-column association models
+proposed by \citet{Good79}. The examples shown use data from two-way contingency
+tables, but the \texttt{gnm} package can also be used to fit the equivalent
+models for higher order tables.
+
+\subsubsection{RC(1) model}
+
+rc1model
+rc2model
+inc Goodman multhomog
+
+\subsection{Diagonal Reference Models}
+\label{Dref}
 \subsection{Uniform Difference (UNIDIFF) Models}
+\label{Unidiff}
+
+inc cautres double unidiff 
 
 \subsection{Generalized Additive and Mulipliactive (GAMMI) Models}
+\label{GAMMI}
 
 \subsection{Stereotype Models}
+\label{Stereotype}
 
 \appendix
 

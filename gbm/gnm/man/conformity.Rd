@@ -49,7 +49,7 @@ FOPLFadj <- ifelse(status.max, conformity$MOPLM, conformity$FOPLF)
 ## Models for mothers' conformity score
 A <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF)) + MFCM + AGEM + FRMF +
          MRMM + MWORK - 1, family = gaussian, data = conformity, trace = TRUE)
-exp(coef(A)[6])/(exp(coef(A)[6]) + exp(coef(A)[7])) # as in Table 4
+prop.table(exp(coef(A)[6:7])) # weights as in Table 4
 
 B <- gnm(MCFM ~ Nonlin(Dref(MOPLMadj, FOPLFadj)) + MFCM
          + AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
@@ -70,7 +70,7 @@ F <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)) + MFCM +
 ## equivalent models for fathers
 A <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM)) + FFCF + AGEM + FRMF +
          MRMM + MWORK - 1, family = gaussian, data = conformity)
-exp(coef(A)[6])/(exp(coef(A)[6]) + exp(coef(A)[7])) # as in Table 4
+prop.table(exp(coef(A)[6:7])) # weights as in Table 4
 
 B <- gnm(FCFF ~ Nonlin(Dref(FOPLFadj, MOPLMadj)) + FFCF
          + AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)

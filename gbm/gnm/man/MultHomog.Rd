@@ -16,13 +16,19 @@ MultHomog(...)
 \details{
   Designed to work as a plug-in function for \code{gnm}, \code{MultHomog}
   produces the objects required to fit a multiplicative interaction in which
-  level effects are constrained to be equal across factors. If the given
-  factors do not have exactly the same levels, the set of levels is taken to be
-  the union of the factor levels, sorted into increasing order.
+  level effects are constrained to be equal across factors, i.e.
+  \deqn{\gamma_i\gamma_j...}{gamma_i gamma_j}
+  for an observation with level \eqn{i} of the first factor, level
+  \eqn{j} of the second factor and so on, where \eqn{\gamma_l}{gamma_l}
+  is the effect for level \eqn{l} of the homogeneous multiplicative factor.
   
   To specify a homogeneous multiplicative interaction in the formula argument
   to \code{gnm}, the symbolic wrapper \code{Nonlin} must be used, with a call
-  to \code{MultHomog} as the first argument. 
+  to \code{MultHomog} as the first argument.
+
+  If the factors passed to \code{MultHomog} do not have exactly the same
+  levels, the set of levels is taken to be the union of the factor
+  levels, sorted into increasing order. 
 }
 \value{
   A list with the components required of a \code{gnm} plug-in function:

@@ -22,12 +22,21 @@ Exp(factor)
     multiplicative interaction.}
 }
 \details{
-    The factors in a \code{Mult} term are represented by symbolic
-    expressions that are interpreted in the same way as the right hand
-    side of a formula in an object of class \code{"formula"}. In
-    particular, an intercept term is added by default. Offsets can be added to
-    individual factors, using \code{offset}. Factors can be constrained
-    to be nonnegative through the use of \code{Exp}.
+  A multiplicative interaction is a term of the form
+  \deqn{\gamma_i\delta_j...}{gamma_i delta_j...}
+  for an observation with level \eqn{i} of the first factor whose effect
+  at level \eqn{l} is \eqn{\gamma_l}{gamma_l}, and with level \eqn{j} of the
+  second factor whose effect at level \eqn{m} is
+  \eqn{\delta_m}{delta_m}, and so on.
+
+  In a \code{Mult} term, the factors are represented by symbolic
+  expressions to allow factors to be specified as a function of
+  covariates. These expressions are interpreted in the same way as the
+  right hand side of a formula in an object of class
+  \code{"formula"}. In particular, an intercept term is added by
+  default. Offsets can be added to individual factors, using
+  \code{offset}. Factors can be constrained to be nonnegative through 
+  the use of \code{Exp}. 
 }
 \value{
     \code{Mult} returns a list of objects of class \code{"Mult"}, with one element

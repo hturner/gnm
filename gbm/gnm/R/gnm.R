@@ -104,6 +104,10 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
           constrain <- rep.int(FALSE, nParam)
         else {
             if (identical(constrain, "pick")) {
+                if (!require(tcltk))
+                    stop("constrain = \"pick\", and tcltk not installed")
+                if (!require(relimp))
+                    stop("the relimp package from CRAN needs to be installed")
                 if (is.null(eliminate))
                     choice <- names(modelTools$classID)
                 else

@@ -3,10 +3,8 @@ export(checkEstimable, Diag, Dref, Exp, getContrasts, getModelFrame, gnm,
        summary.gnm, termPredictors, wedderburn)
 
 import(MASS, stats)
-importFrom(gtools, combinations)
 importFrom(graphics, plot)
 importFrom(nnet, class.ind)
-importFrom(relimp, pickFrom)
 
 S3method(add1, gnm)
 S3method(addterm, gnm)

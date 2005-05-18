@@ -21,6 +21,10 @@ supplied as input.
 \examples{
 row <- gl(4, 4, 16)
 col <- gl(4, 1, 16)
+\dontrun{
+    ## Requires 'gtools' package from 'gregmisc' bundle
+    library(gtools)
+}
 Symm(row, col)
 matrix(Symm(row, col), 4, 4)
 }

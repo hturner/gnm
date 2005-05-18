@@ -1,6 +1,6 @@
 Symm <- function(...){
     if (!require(gtools))
-        stop("the gtools package from CRAN needs to be installed")
+        stop("requires the gtools package in the gregmisc bundle from CRAN")
     dots <- list(...)
     if (any(diff(sapply(dots, length)) != 0)) stop(
                 "arguments to symm() must all have same length")

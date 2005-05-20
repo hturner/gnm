@@ -61,8 +61,8 @@ yield.scaled <- wheat$yield * sqrt(3/1000)
 
 ##  Reproduce (up to error caused by rounding) Table 1 of Vargas et al (2001)
 aov(yield.scaled ~ year*tillage*summerCrop*manure*N, data = wheat)
-treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
-                          wheat$N, sep = ""))
+treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
+                         wheat$N, sep = "")
 mainEffects <- glm(yield.scaled ~ year + treatment, family = gaussian,
                    data = wheat)
 bilinear1 <- gnm(yield.scaled ~ year + treatment + Mult(year, treatment),

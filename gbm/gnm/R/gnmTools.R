@@ -91,8 +91,8 @@
                                     multIndex,
                                     function(list) do.call("pprod", list)))
         if (term) colnames(termPredictors) <-
-            c("(Intercept)"[linearAssign == 0], attr(attr(gnmTerms, "terms"),
-                            "term.labels"))
+            c("(Intercept)"[attr(attr(gnmTerms, "terms"), "intercept")],
+              attr(gnmTerms, "termLabels"))
         else termPredictors <- rowSums(termPredictors)
         termPredictors
     }

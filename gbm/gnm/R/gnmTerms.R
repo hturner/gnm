@@ -13,6 +13,9 @@ gnmTerms <- function(formula, eliminate)
 
     labelList <- attr(fullTerms, "term.labels")
     intercept <- attr(fullTerms, "intercept")
+    termLabels <- names(unlist(sapply(labelList, function(x)
+        numeric(prod(parse(text = x)[[1]]$multiplicity)), simplify = FALSE)))
+    
     nonlinear <- is.element(seq(labelList),
                             grep("(Mult|Nonlin)[[:space:]]*\\(", labelList))
     labelList <- c(list(structure(c(intercept, labelList[!nonlinear]),
@@ -48,6 +51,7 @@ gnmTerms <- function(formula, eliminate)
                             predictorOffset, unlist(colnames(extraData))),
                           response),
               terms = fullTerms,
+              termLabels = termLabels,
               offset = offsetList,
               parsedLabels = labelList,
               prefixLabels = unlist(prefixList),

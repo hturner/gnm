@@ -407,10 +407,10 @@ whether particular contrasts are estimable.
 \subsection{Using \texttt{eliminate}}
 \label{eliminate}
 
-Sometimes a model will include a ``stratification'' factor which identifies units
-for which a unit-specific intercept should be estimated. It is often the case
-that such factors have a large number of levels and though they are required in
-the model, are not of direct interest in themselves. 
+Sometimes a model will include a ``stratification'' factor which identifies
+units for which a unit-specific intercept should be estimated. It is often the
+case that such factors have a large number of levels and though they are
+required in the model, are not of direct interest in themselves. 
 
 The \texttt{eliminate} argument of \texttt{gnm} can be used to specify a
 stratification factor in a model, so that the factor can be handled more
@@ -543,7 +543,7 @@ contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)] <- contr.sum(contrCoefs)
 checkEstimable(doubleUnidiff, contrMatrix)
 @ 
 
-To investigate simple contrasts such as those above, it
+To investigate simple ``sum to zero'' contrasts such as those above, it
 is easiest to use the \texttt{getContrasts} function, which checks the
 estimability of the contrasts and returns the parameter estimates with their
 standard errors. Returning to the example of the first factor in the first
@@ -565,9 +565,9 @@ getContrasts(doubleUnidiff, coefs.of.interest)
 This section provides examples of the wide range of models that may be fitted
 using the \texttt{gnm} package. Sections \ref{RCmodels}, \ref{Dref} and 
 \ref{Unidiff} consider various models for contingency tables; Section
-\ref{GAMMI} considers GAMMI models which are typically used in agricultural
-applications, and Section \ref{Stereotype} considers the stereotype model, which
-is used to model an ordinal response.
+\ref{GAMMI} considers AMMI and GAMMI models which are typically used in
+agricultural applications, and Section \ref{Stereotype} considers the stereotype
+model, which is used to model an ordinal response.
 
 \subsection{Row-column Association Models}
 \label{RCmodels}
@@ -586,7 +586,7 @@ between row and column factors represented by one component of the multiplicativ
 interaction. If the rows are index by $r$ and the columns by $c$, then the
 log-multiplicative form of the RC(1) model for the cell means $\mu_{rc}$ is
 given by 
-\[log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c. \]
+\[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c. \]
 
 We shall fit this model to the \texttt{mentalHealth} data set taken from
 \citet{Agre02}, which is a two-way contingency table classified by the child's
@@ -629,7 +629,7 @@ assoc
 
 The RC(1) model can be extended to an RC($m$) model with $m$ components of the
 multiplicative interaction. For example, the RC(2) model is given by
-\[log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c + \theta_r\phi_c. \]
+\[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c + \theta_r\phi_c. \]
 Extra components of the multiplicative interaction can be specified by the
 \texttt{multiplicity} component of \texttt{Mult}, so the RC(2) model can be
 fitted to the \texttt{mentalHealth} data as follows
@@ -645,7 +645,7 @@ RC2model
 If the row and column factors have the same levels, or perhaps some levels in
 common, then the row-column interaction could be modelled by a multiplicative
 interaction with homogeneous effects, that is
-\[log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\gamma_c.\]
+\[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\gamma_c.\]
 
 For example, the \texttt{occupationalStatus} data set from \citet{Good79} is a
 contingency table classified by the occupational status of fathers (origin) and
@@ -804,14 +804,92 @@ getContrasts(unidiff, coefs.of.interest)
 @ %def
 
 Four-way contingency tables may be described by the ``double UNIDIFF'' model
-\[\mu_{ijkl} = \alpha_{il} + \beta_{jkl} + \delta_l\gamma_{ij} + \phi_l\theta_{ik},\]
-where 
-The \texttt{cautres} data set can be used to illustrate the application of
-UNIDIFF models to four-way contingency tables. This data set is classified by
-the variables vote, class, religion and election.
+\[\mu_{ijkl} = \alpha_{il} + \beta_{jkl} + \delta_l\gamma_{ij} + 
+\phi_l\theta_{ik},\]
+where the strengths of two, two-way associations with a common variable are
+estimated across the levels of the fourth variable.
 
-\subsection{Generalized Additive and Multiplicative (GAMMI) Models}
+The \texttt{cautres} data set can be used to illustrate the application of the
+double UNIDIFF model. This data set is classified by the variables vote, class,
+religion and election. Using a double UNIDIFF model, we can see how the
+association between class and vote, and the association between religion and
+vote, differ between the most recent election and the other elections:
+@ 
+<<"double UNIDIFF model">>=
+set.seed(1)
+data(cautres)
+doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
+                     Mult(Exp(-1 + election), religion:vote) +
+                     Mult(Exp(-1 + election), class:vote),
+                     family = poisson, data = cautres)
+getContrasts(doubleUnidiff, grep("Mult1.Factor1", names(coef(doubleUnidiff))))
+getContrasts(doubleUnidiff, grep("Mult2.Factor1", names(coef(doubleUnidiff))))
+@ %def 
+\subsection{Generalized Additive Main Effects and Multiplicative Interaction (GAMMI) Models}
 \label{GAMMI}
+
+Generalized additive main effects and multiplicative interaction models, or
+GAMMI models, were motivated by two-way contingency tables and comprise the row
+and column main effects plus one or more components of the multiplicative
+interaction. The singular value corresponding to each component is often factored out,
+as a measure of the strength of association between the row and column scores,
+indicating the importance of the component, or axis.
+
+For cell means $\mu_{rc}$ a GAMMI-K model has the form
+\[l\mu_{rc} = \alpha_r + \beta_c + \sum_{k=1}^K
+\sigma_k\gamma_{kr}\delta_{kc}. \] 
+in which $l$ is a link function, $\alpha_r$ and $\beta_c$ are the row and column
+main effects, $\gamma_{kr}$ and $\delta_{kc}$ are the row and column scores for
+component $k$ and $\sigma_k$ is the singular value for component $k$. $K$, the
+number of components, is less than or equal to the rank of the matrix of
+residuals from the main effects.
+
+The row-column association models discussed in Section \ref{RCmodels} are
+examples of GAMMI models, with a log link and poisson variance. Here we 
+illustrate the use of an AMMI model, which is a GAMMI model with an identity
+link and a constant variance. 
+
+We shall use the \texttt{wheat} data set taken from \citet{Varg01}, which gives
+wheat yields measured over ten years. First we shall scale these yields and
+create a new treatment factor, so that we can reproduce the analysis of
+\citet{Varg01} 
+@ 
+<<"Scale yields">>=
+set.seed(1)
+data(wheat)
+yield.scaled <- wheat$yield * sqrt(3/1000)
+treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
+                         wheat$N, sep = "")
+@ %def 
+Now we can fit the AMMI-1 model, to the scaled yields using the combined
+treatment factor and the year factor from the \texttt{wheat} dataset
+@ 
+<<"AMMI model">>=
+bilinear1 <- gnm(yield.scaled ~ year + treatment + Mult(year, treatment),
+                 family = gaussian, data = wheat)
+@ %def 
+and compare the AMMI-1 model to the main effects model
+@ 
+<<"AOD">>=
+mainEffects <- glm(yield.scaled ~ year + treatment, family = gaussian,
+                   data = wheat)
+anova(mainEffects, bilinear1)
+@ %def 
+giving the same results as in Table 1 of \citet{Varg01} (up to error caused by
+rounding). 
+
+\subsection{Biplot Models}
+
+Biplots are used to display two-dimensional data transformed into a space
+spanned by linearly independent vectors, such as the principal comonents or
+singular vectors. The transformed data is plotted on the two axes which show the
+most information about the data, for example the first two principal comonents.
+
+
+
+To illustrate the use of a GAMMI model, we shall use the \texttt{barley} data
+set which describes the incidence of leaf blotch over ten varieties of barley
+grown at nine sites. 
 
 \subsection{Stereotype Models}
 \label{Stereotype}

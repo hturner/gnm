@@ -23,10 +23,11 @@
 
 \section{Introduction}
 
-<<"Load gnm">>=
+<<Load_gnm>>=
 library(gnm)
 @ 
 \section{Generalized Linear Models}
+\label{glms}
 
 \section{Nonlinear Terms}
 
@@ -354,7 +355,7 @@ parameterisation.
 
 To illustrate this point, consider the following application of \texttt{gnm},
 discussed later in Section \ref{RCmodels}
-<<"RC homogeneous model 1">>=
+<<RC_homogeneous_model_1>>=
 data(occupationalStatus)
 set.seed(1)
 RChomog1 <- gnm(Freq ~ origin + destination + Diag(origin, destination) + 
@@ -362,12 +363,12 @@ RChomog1 <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                data = occupationalStatus)
 @ 
 Running the analysis again from a different seed
-<<"RC homogeneous model 2">>=
+<<RC_homogeneous_model_2>>=
 set.seed(2)
 RChomog2 <- eval(RChomog1$call)
 @ 
 gives a different representation of the same model
-<<"Compare coefficients">>=
+<<Compare_coefficients>>=
 compareCoef <- cbind(coef(RChomog1), coef(RChomog2))
 colnames(compareCoef) <- c("RChomog1", "RChomog2") 
 compareCoef
@@ -386,7 +387,7 @@ In the case above, constraining one level of the homogeneous multiplicative
 factor is sufficient to make the parameters of the nonlinear term
 identifiable, and hence all parameters in the model identifiable. For example,
 setting the last level of the homogeneous multiplicative factor to zero 
-<<"RC homogeneous constrained model">>=
+<<RC_homogeneous_constrained_model>>=
 multCoef <- coef(RChomog1)[grep("Mult", names(coef(RChomog1)))]
 set.seed(1)
 RChomogConstrained1 <- update(RChomog1, constrain = 31, 
@@ -505,7 +506,7 @@ that are estimable!
 The \texttt{checkEstimable} function can be used to check the estimability of
 contrasts. Consider the following model, that is described later in Section
 \ref{Unidiff}
-<<"Double UNIDIFF model">>=
+<<Double_UNIDIFF_model>>=
 data(cautres)
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
                      + Mult(Exp(election - 1), religion:vote - 1) +
@@ -517,7 +518,7 @@ estimable when the estimate of one of these effects is constrained to zero, say
 the effect of the last level. The parameters to be estimated are then the
 differences between each effect and the effect of the last level. These
 differences can be represented by a contrast matrix as follows 
-<<"Contrast matrix">>=
+<<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
 contrCoefs <- coefs[grep("Mult1.Factor1", coefs)]
 contrMatrix <- matrix(0, length(coefs), length(contrCoefs), 
@@ -526,7 +527,7 @@ contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)] <- contr.sum(contrCoefs)
 contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)]
 @ 
 and then their estimability can be checked using \texttt{checkEstimable}
-<<"Check estimability 1">>=
+<<Check_estimability_1>>=
 checkEstimable(doubleUnidiff, contrMatrix)
 @ 
 which confirms that the effects for the other three levels are estimable when 
@@ -534,7 +535,7 @@ the effect for the last parameter is set to zero.
 
 However, applying the equivalent constraint to the second factor in the
 interaction is not sufficient to make the parameters in that factor estimable:
-<<"Check estimability 2">>=
+<<Check_estimability_2>>=
 coefs <- names(coef(doubleUnidiff))
 contrCoefs <- coefs[grep("Mult1.Factor2", coefs)]
 contrMatrix <- matrix(0, length(coefs), length(contrCoefs), 
@@ -549,13 +550,13 @@ estimability of the contrasts and returns the parameter estimates with their
 standard errors. Returning to the example of the first factor in the first
 multiplicative interaction, the differences between each effect and the effect
 of the last level can be obtained as follows 
-<<"Get contrasts 1">>=
+<<Get_contrasts_1>>=
 coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
 @ %def 
 Attempting to obtain the equivalent contrasts for the second factor produces the
 following result
-<<"Get contrasts 2">>=
+<<Get_contrasts_2>>=
 coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
 @ %def
@@ -594,7 +595,7 @@ mental impairment (MHS) and the parents' socioeconomic status (SES). Although
 both of these factors are ordered, we do not wish to use polynomial contrasts in
 the model, so we begin by setting the contrasts attribute of these factors to
 ``treatment'' 
-<<"Set contrasts attribute">>=
+<<Set_contrasts_attribute>>=
 set.seed(1)
 data(mentalHealth)
 mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
@@ -602,7 +603,7 @@ mentalHealth$SES <- C(mentalHealth$SES, treatment)
 @
 The \texttt{gnm} model is then specified as follows, using the poisson family
 with a log link function
-<<"RC1 model">>=
+<<RC1_model>>=
 RC1model <- gnm(count ~ SES + MHS +
                 Mult(-1 + SES, -1 + MHS),
                 family = poisson, data = mentalHealth)
@@ -610,7 +611,7 @@ RC1model
 @ %def 
 The row scores (parameters 10 to 15) and the column scores (parameters 16 to 19)
 of the multiplicative interaction can be normalized as in Agresti's eqn (9.15)
-<<"Normalize scores">>=
+<<Normalize_scores>>=
 rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
 colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
 rowScores <- coef(RC1model)[10:15]
@@ -633,7 +634,7 @@ multiplicative interaction. For example, the RC(2) model is given by
 Extra components of the multiplicative interaction can be specified by the
 \texttt{multiplicity} component of \texttt{Mult}, so the RC(2) model can be
 fitted to the \texttt{mentalHealth} data as follows
-<<"RC2 model">>=
+<<RC2_model>>=
 RC2model <- gnm(count ~ SES + MHS +
                 Mult(-1 + SES, -1 + MHS, multiplicity = 2),
                 family = poisson, data = mentalHealth)
@@ -654,7 +655,7 @@ with homogeneous effects to these data after deleting the cells on the main
 diagonal. Equivalently we can account for the diagonal effects by a separate
 \texttt{Diag} term: 
 @ 
-<<"Homogeneous effects">>=
+<<Homogeneous_effects>>=
 data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Nonlin(MultHomog(origin, destination)), family = poisson,
@@ -665,7 +666,7 @@ RChomog
 To determine whether it would be better to allow for heterogeneous effects on
 the association of the fathers' occupational status and the sons' occupational
 status, we can compare this model to the RC(1) model for these data:
-<<"Heterogeneous effects">>=
+<<Heterogeneous_effects>>=
 data(occupationalStatus)
 RCheterog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Mult(origin, destination), family = poisson,
@@ -702,7 +703,7 @@ see Section \ref{NonlinDref} for more detail on the choice of parameterisation.
 
 The baseline model can be fitted as follows
 @ 
-<<"Baseline model">>=
+<<Baseline_model>>=
 set.seed(1)
 data(conformity)
 A <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
@@ -712,9 +713,10 @@ A
 Due to the constraints imposed on the weights in the diagonal reference term,
 the coefficients of model \texttt{A} are the unique solutions. Therefore
 these estimates should correspond to those reported in Table 4 of
-\citet{Vand02}. The weights in the diagonal reference term can be evaluated as follows:
+\citet{Vand02}. The weights in the diagonal reference term can be evaluated as
+follows: 
 @ 
-<<"Calculate weights">>=
+<<Calculate_weights>>=
 prop.table(exp(coef(A)[6:7]))
 @ %def
 giving the values reported by \citet{Vand02}. All the other coefficients of
@@ -728,7 +730,7 @@ independent of the estimates of the diagonal effects. For consistent
 interpretation of the covariate coefficients, it is better to recode the gender
 role factors as follows
 @ 
-<<"Baseline model recoded">>=
+<<Baseline_model_recoded>>=
 MRMM2 <- as.numeric(!conformity$MRMM)
 FRMF2 <- as.numeric(!conformity$FRMF)
 A <- gnm(MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM + 
@@ -751,7 +753,7 @@ e^{\xi_2 + \beta_2x}}\gamma_r + \frac{e^{\xi_2 + \beta_2x}}{e^{\xi_1 + \beta_1x}
 This model can be fitted as below, using the original coding for the gender 
 role factors for ease of comparison to the results reported by \citet{Vand02},
 @ 
-<<"Interaction with conflict">>=
+<<Interaction_with_conflict>>=
 F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
          Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)), family = gaussian, 
          data = conformity)
@@ -761,7 +763,7 @@ In this case there are two sets of weights, one for when the mother's conflict
 score is less than average (coded as zero) and one for when the score is greater
 than average (coded as one). These can be evaluated as follows
 @ 
-<<"Interaction model weights">>=
+<<Interaction_model_weights>>=
 prop.table(exp(coef(F))[c(6,8)])
 prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)]))
 @ %def 
@@ -770,7 +772,7 @@ giving the same weights as in Table 4 of \citet{Vand02}.
 \subsection{Uniform Difference (UNIDIFF) Models}
 \label{Unidiff}
 
-Uniform difference models \citep{Xie92, Erik93} use a simplified three-way
+Uniform difference models \citep{Xie92, Erik92} use a simplified three-way
 interaction to provide an interpretable model of contingency tables classified
 by three or more variables. For example, the uniform difference model for a
 three-way contingency table, also known as the UNIDIFF model, is given by
@@ -785,7 +787,7 @@ class (dest) and son's education level (educ). In this case, we can consider the
 importance of the association between the social class of father and son across
 the education levels:
 @ 
-<<"UNIDIFF model">>=
+<<UNIDIFF_model>>=
 set.seed(1)
 data(yaish)
 unidiff <- gnm(Freq ~ educ:orig + educ:dest +
@@ -799,7 +801,7 @@ the social class of father and son. We can contrast each multiplier to that of
 the highest education level and obtain the standard errors for these parameters
 as follows 
 @ 
-<<"Unidiff contrasts">>=
+<<Unidiff_contrasts>>=
 getContrasts(unidiff, coefs.of.interest)
 @ %def
 
@@ -815,7 +817,7 @@ religion and election. Using a double UNIDIFF model, we can see how the
 association between class and vote, and the association between religion and
 vote, differ between the most recent election and the other elections:
 @ 
-<<"double UNIDIFF model">>=
+<<double_UNIDIFF_model>>=
 set.seed(1)
 data(cautres)
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
@@ -825,15 +827,16 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
 getContrasts(doubleUnidiff, grep("Mult1.Factor1", names(coef(doubleUnidiff))))
 getContrasts(doubleUnidiff, grep("Mult2.Factor1", names(coef(doubleUnidiff))))
 @ %def 
-\subsection{Generalized Additive Main Effects and Multiplicative Interaction (GAMMI) Models}
+\subsection{Generalized Additive Main Effects and 
+Multiplicative Interaction (GAMMI) Models}
 \label{GAMMI}
 
 Generalized additive main effects and multiplicative interaction models, or
 GAMMI models, were motivated by two-way contingency tables and comprise the row
 and column main effects plus one or more components of the multiplicative
-interaction. The singular value corresponding to each component is often factored out,
-as a measure of the strength of association between the row and column scores,
-indicating the importance of the component, or axis.
+interaction. The singular value corresponding to each component is often
+factored out, as a measure of the strength of association between the row and
+column scores, indicating the importance of the component, or axis.
 
 For cell means $\mu_{rc}$ a GAMMI-K model has the form
 \[l\mu_{rc} = \alpha_r + \beta_c + \sum_{k=1}^K
@@ -854,7 +857,7 @@ wheat yields measured over ten years. First we shall scale these yields and
 create a new treatment factor, so that we can reproduce the analysis of
 \citet{Varg01} 
 @ 
-<<"Scale yields">>=
+<<Scale_yields>>=
 set.seed(1)
 data(wheat)
 yield.scaled <- wheat$yield * sqrt(3/1000)
@@ -864,13 +867,13 @@ treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
 Now we can fit the AMMI-1 model, to the scaled yields using the combined
 treatment factor and the year factor from the \texttt{wheat} dataset
 @ 
-<<"AMMI model">>=
+<<AMMI_model>>=
 bilinear1 <- gnm(yield.scaled ~ year + treatment + Mult(year, treatment),
                  family = gaussian, data = wheat)
 @ %def 
 and compare the AMMI-1 model to the main effects model
 @ 
-<<"AOD">>=
+<<AOD>>=
 mainEffects <- glm(yield.scaled ~ year + treatment, family = gaussian,
                    data = wheat)
 anova(mainEffects, bilinear1)
@@ -881,18 +884,135 @@ rounding).
 \subsection{Biplot Models}
 
 Biplots are used to display two-dimensional data transformed into a space
-spanned by linearly independent vectors, such as the principal comonents or
-singular vectors. The transformed data is plotted on the two axes which show the
-most information about the data, for example the first two principal comonents.
+spanned by linearly independent vectors, such as the principal components or
+singular vectors. The plot represents the levels of the two classifying factors by
+their scores on the two axes which show the most information about the data, for
+example the first two principal components.  
 
+A rank-$n$ model is a model based on the first $n$ components of the
+decomposition. In the case of a singular value decomposition, this is equivalent
+to a model with the first $n$ components of the multiplicative interaction.
 
-
-To illustrate the use of a GAMMI model, we shall use the \texttt{barley} data
+To illustrate the use of biplot models, we shall use the \texttt{barley} data
 set which describes the incidence of leaf blotch over ten varieties of barley
-grown at nine sites. 
+grown at nine sites. The biplot model is fitted as follows
+@ 
+<<Biplot_model>>=
+data(barley)
+set.seed(1)
+biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
+                   family = wedderburn, data = barley)
+@ %def 
+using the \texttt{wedderburn} family function introduced in Section
+\ref{glms}. Matrices of the row and column scores for the first two singular
+vectors can then be obtained as below
+@ 
+<<Row_and_column_scores>>=
+barleySVD <- svd(matrix(biplotModel$predictors, 10, 9))
+A <- sweep(barleySVD$v, 2, sqrt(barleySVD$d), "*")[, 1:2]
+B <- sweep(barleySVD$u, 2, sqrt(barleySVD$d), "*")[, 1:2]
+A
+B
+@ %def 
+These matrices are essentially the same as in \citet{Gabr98}, from which the
+biplot can be produced
+\begin{center}
+@ 
+<<Biplot, fig = TRUE>>=
+plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)), 
+     xlim = c(-4, 4), ylim = c(-4, 4))
+@ %Def
+\end{center}
+for sites $A \ldots I$ and varieties $1 \dots 9, X$. The product of the matrices
+$A$ and $B$ is unaffected by rotation or reciprocal scaling along either axis,
+so we can rotate the data so that the points for the sites are roughly parellel 
+to the horizontal axis and the points for the varieties are roughly parallel to
+the vertical axis. In addition, we can scale the data so that points for the
+sites are about the line one unit about the horizontal axis, roughly
+\begin{center}
+@ 
+<<Rotate_and_scale, fig = TRUE>>=
+a <- pi/5
+rotation <- matrix(c(cos(a), sin(a), -sin(a), cos(a)), 2, 2, byrow = TRUE)
+rA <- (2 * A/3) %*% rotation
+rB <- (3 * B/2) %*% rotation
+plot(rbind(rA, rB), pch = c(levels(barley$site), levels(barley$variety)), 
+     xlim = c(-4, 4), ylim = c(-4, 4))
+@ %def 
+\end{center}
+In the original biplot, the co-ordinates for the sites and varieties were given
+by the rows of A and B respectively, i.e
+\begin{eqnarray*}
+\alpha_i^T &= \sqrt(d)(u_{1j}, u_{2j})\\
+\beta_j^T &= \sqrt(d)(v_{1j}, v_{2j})
+\end{eqnarray*}
+The rotated and scaled biplot suggests the simpler model
+\begin{eqnarray*}
+\alpha_i^T = (\gamma_i, 1) \\
+\beta_j^T &= (\delta_j, \tau_j)
+\end{eqnarray*}
+which implies the following model for the logits of the leaf blotch incidence
+\[\alpha_i^T\beta_j = \gamma_i\delta_j + \tau_j.\]
+\citet{Gabr98} describes this as a double additive model, which we can fit as
+follows 
+@ 
+<<Double_additive>>=
+variety.binary <- factor(match(barley$variety, c(2,3,6), nomatch = 0) > 0,
+                        labels = c("rest", "2,3,6"))
+doubleAdditive <- gnm(y ~ variety + Mult(site, variety.binary),
+                      family = wedderburn, data = barley)
+@ %def 
+Comparing the chi-squared statistics, we see that the double additive model is
+an adequate model for the leaf blotch incidence
+@ 
+<<Compare_chi-squared>>=
+biplotModChiSq <- sum(residuals(biplotModel, type = "pearson")^2)
+doubleAddChiSq <- sum(residuals(doubleAdditive, type = "pearson")^2)
+c(doubleAddChiSq - biplotModChiSq, 
+  doubleAdditive$df.residual - biplotModel$df.residual)
+@ %def 
 
-\subsection{Stereotype Models}
+\subsection{Stereotype Model}
 \label{Stereotype}
+
+The stereotype model was proposed by \citep{Ande84} for ordered categorical
+data. It is a linear logistic model, in which there is assumed to be a common
+relationship between the response and the covariates in the model, but the scale of
+this association varies between categories and there is an additional category main
+effect or category-specific intercept:
+\[\log \mu_c =  \beta_{0c} + \gamma_c\sum_i \beta_{ic}x_i \]
+This model can be estimated by re-expressing the categorical data as counts and
+using a \texttt{gnm} model with a log link and poisson variance function.
+
+For example, the \texttt{backPain} data set from \citet{Ande84} describes the
+progress of patients with back pain. The data set consists of an ordered factor
+quantifying the progress of each patient, and three prognostic variables. These
+data can be re-expressed as follows
+@ 
+<<Re-express_data>>=
+set.seed(1)
+data(backPain)
+backPain[1:2,]
+library(nnet)
+.incidence <- class.ind(backPain$pain)
+.counts <- as.vector(t(.incidence))
+.rowID <- factor(t(row(.incidence)))
+backPain <- backPain[.rowID, ]
+backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
+                          levels = levels(backPain$pain), ordered = TRUE),
+                   treatment)
+cbind(.rowID[1:12], .counts[1:12], backPain[1:12,4:1])
+@ %def
+We can now fit the stereotype model to these data
+@ 
+<<Stereotype_model>>=
+oneDimensional <- gnm(.counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
+                      eliminate = ~ .rowID, family = "poisson", data = backPain,
+                      iterStart = 3)
+oneDimensional
+@ %def 
+using eliminate to handle the \texttt{.rowID} so these structural parameters do
+not appear in the returned coefficients. 
 
 \appendix
 

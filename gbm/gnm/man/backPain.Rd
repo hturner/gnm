@@ -37,8 +37,9 @@ library(nnet)
 .counts <- as.vector(t(.incidence))
 .rowID <- factor(t(row(.incidence)))
 backPain <- backPain[.rowID, ]
-backPain$pain <- factor(rep(levels(backPain$pain), nrow(.incidence)),
-                        levels = levels(backPain$pain), ordered = TRUE)
+backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
+                          levels = levels(backPain$pain), ordered = TRUE),
+                   treatment)
 
 ### Fit models described in Table 5 of Anderson (1984)
 

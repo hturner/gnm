@@ -5,6 +5,7 @@
 \usepackage{Sweave}
 \usepackage{alltt}
 \usepackage{amsmath}
+\usepackage{booktabs}
 \usepackage{natbib}
 
 \setlength{\oddsidemargin}{0.5in}
@@ -1012,11 +1013,76 @@ oneDimensional <- gnm(.counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
 oneDimensional
 @ %def 
 using eliminate to handle the \texttt{.rowID} so these structural parameters do
-not appear in the returned coefficients. 
+not appear in the returned coefficients. This model is one dimensional since it
+involves only one function of $\mathbf{x} = (x1, x2, x3)$. We can compare this
+model to one with category-specific coefficents of the $x$ variables, as may be
+used for a qualitative categorical response
+@ 
+<<Qualitative_model>>=
+threeDimensional  <- gnm(.counts ~ pain + pain:(x1 + x2 + x3),
+                         eliminate = ~ .rowID, family = "poisson", 
+                         data = backPain)
+threeDimensional
+@ %def 
+this model has the maximum dimensionality of three (as determined by the number
+of covariates). To obtain the log-likelihoods as reported in \citet{Ande84} we
+need to adjust for the extra parameters introduced to formulate the models as
+poisson models. We write a simple function to do this and compare the
+log-likelihoods of the one dimensional model and the three dimensional model
+@ 
+<<Calculate_log-likelihood>>=
+logLikMultinom <- function(model){
+    object <- get(model)
+    if (inherits(object, "gnm")) {
+        l <- logLik(object) + object$eliminate
+        c(nParameters = attr(l, "df") - object$eliminate, logLikelihood = l)
+    }
+    else
+        c(nParameters = object$edf, logLikelihood = -deviance(object)/2)
+}
+t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom))
+@ %def 
+which show that the oneDimensional model is perfectly adequate.
 
 \appendix
 
 \section{User-level Functions}
+
+\begin{table}[!h]
+\begin{tabular*}{\textwidth}{@{}p{0.2in}p{1in}p{4in}@{}}
+    \toprule
+    \multicolumn{3}{l}{\textbf{Model Fitting}} 	\\
+    \midrule
+    &	gnm	&  fit generalised nonlinear models	\\
+    &	gnmControl	&  set control parameters for fitting \texttt{gnm} models	\\
+    &	MPinv	&  get Moore-Penrose pseudoinverse of a real-valued matrix	\\
+    \midrule
+    \multicolumn{3}{l}{\textbf{Model Specification}}			\\
+    \midrule
+    &	Diag	&  create factor differentiating diagonal elements \\
+    &	Symm	&  create symmetric interaction of factors	\\
+    &	Mult	&  specify a multiplicative interaction in a \texttt{gnm} formula	\\
+    &	Exp	&  specify an exponentiated factor in a \texttt{Mult} term	\\
+    &	Nonlin	&  specify a special nonlinear term in a \texttt{gnm} formula	\\
+    &	Dref	&  ``plug-in'' function to fit diagonal reference terms	\\
+    &	MultHomog	&  ``plug-in'' function to fit multiplicative interactions with homogenous effects	\\
+    &   Wedderburn      &  specify the Wedderburn quasi-variance family \\ 
+    \midrule
+    \multicolumn{3}{l}{\textbf{Methods and Accessor Functions}}			\\
+    \midrule
+    &	summary.gnm	&  summarize \texttt{gnm} fits	\\
+    &	getContrasts	&  estimate contrasts and their standard errors	\\
+    &	checkEstimable	&  check whether one or more parameter combinations in a
+    \texttt{gnm} model is identified \\
+    &	se	&  get standard errors of linear parameter combinations in
+    \texttt{gnm} models	\\
+    &	termPredictors	&  (generic) extract term contributions to predictor	\\
+    \midrule
+    \multicolumn{3}{l}{\textbf{Auxiliary Function}}			\\
+    \midrule
+    &	getModelFrame	&  get the model frame in use by \texttt{gnm}	\\
+\end{tabular*}
+\end{table}
 
 \bibliography{gnm}
 \bibliographystyle{plainnat}

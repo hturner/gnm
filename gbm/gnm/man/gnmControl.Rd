@@ -35,8 +35,6 @@ gnmControl(tolerance = 1e-04, iterStart = 2, iterMax = 500, trace = FALSE)
 \value{
   A list with the arguments as components.
 }
-\references{ Cautres, B, Heath, A F and Firth, D (1998).  Class, religion and vote in
-Britain and France.  \emph{La Lettre de la Maison Francaise} \bold{8}. }
 \author{Heather Turner }
 \seealso{ \code{\link{gnm}} }
 \examples{

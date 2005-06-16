@@ -3,7 +3,7 @@
 \title{``Plug-in'' Function to Fit Diagonal Reference Terms}
 \description{
   A function to provide the objects and functions required to fit a diagonal
-  reference term in a generalized (non)-linear model using \code{gnm}.  
+  reference term in a generalized (non)-linear model using \code{\link{gnm}}.  
 }
 \usage{
 Dref(..., formula = ~ 1)

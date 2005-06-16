@@ -1,6 +1,6 @@
 \name{Diag}
 \alias{Diag}
-\title{Equality of two or more factors}
+\title{Equality of Two or More Factors}
 \description{
 Converts two or more factors into a new factor whose value is 0 where
 the original factors are not all equal, and nonzero otherwise.
@@ -25,11 +25,11 @@ variable equal to 1 where all of the input factors are equal and 0
 otherwise.
 }
 \author{ David Firth }
-\seealso{ \code{\link{Symm}}}
+\seealso{\code{\link{Symm}}}
 \examples{
 row <- gl(4, 4, 16)
 col <- gl(4, 1, 16)
-Diag(row, col)
+diag4by4 <- Diag(row, col)
 matrix(Diag(row, col, binary = TRUE), 4, 4)
 }
 \keyword{ models }

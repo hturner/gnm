@@ -1,7 +1,7 @@
 \name{Multiplicative interaction}
 \alias{Mult}
 \alias{Exp}
-\title{Specify a multiplicative interaction in a model formula}
+\title{Specify a Multiplicative Interaction in a Model Formula}
 \description{
 \code{Mult} is a symbolic wrapper to indicate a multiplicative interaction in
 the formula argument to \code{gnm}.
@@ -47,10 +47,6 @@ Exp(factor)
     expression representing the factor to be exponentiated.
   }
 \references{
-  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
-  Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
-  University of Oxford.
-
   Vargas, M, Crossa, J, van Eeuwijk, F, Sayre, K D and Reynolds, M P
   (2001).  Interpreting treatment by environment interaction in agronomy
   trials.  \emph{Agronomy Journal} \bold{93}, 949--960.

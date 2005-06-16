@@ -1,9 +1,10 @@
 \name{conformity}
 \alias{conformity}
 \docType{data}
-\title{Conformity to Parental Rules}
+\title{Data on Conformity to Parental Rules}
 \description{
-  Data from a study on the value parents place on their children
+  Data from a study by F van der Slik et al.,
+  on the value that parents place on their children
   conforming to their rules.
 }
 \usage{data(conformity)}
@@ -37,7 +38,7 @@
   \bold{18(4)}, 489 -- 502. 
 }
 \examples{
-### Examples from Van der Slik paper
+### Examples from Van der Slik et al. paper
 data(conformity)
 set.seed(1)
 

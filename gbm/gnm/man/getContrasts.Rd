@@ -1,6 +1,6 @@
 \name{getContrasts}
 \alias{getContrasts}
-\title{ Estimated contrasts and standard errors}
+\title{ Estimated Contrasts and Standard Errors}
 \description{
 For each set in a specified list of sets of model parameters, computes the
 estimated simple contrasts (i.e., differences) with the last parameter
@@ -29,11 +29,6 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
 \value{
   A list (of length \code{nSets}) of data frames, each containing variables
   \code{estimate} and \code{se}
-}
-\references{
-  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
-  Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
-  University of Oxford. 
 }
 \author{ David Firth }
 \seealso{ \code{\link{se}} }

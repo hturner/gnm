@@ -1,7 +1,7 @@
 \name{yaish}
 \alias{yaish}
 \docType{data}
-\title{ Class mobility by education in Israel}
+\title{ Class Mobility by Level of Education in Israel}
 \description{
   A 3-way contingency table of father/son pairs, classified by father's
   social class (\code{orig}), son's social class (\code{dest}) and son's 

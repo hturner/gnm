@@ -1,7 +1,7 @@
 \name{occupationalStatus}
 \alias{occupationalStatus}
 \docType{data}
-\title{ Occupational Status of Fathers and their Sons }
+\title{ Data on Occupational Status of Fathers and their Sons }
 \description{
   Cross-classification of a sample of British males according to each
   subject's occupational status and his father's occupational status.

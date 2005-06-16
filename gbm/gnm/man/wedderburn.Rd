@@ -1,6 +1,6 @@
 \name{wedderburn}
 \alias{wedderburn}
-\title{ Wedderburn quasi-variance family }
+\title{ Wedderburn Quasi-likelihood Family }
 \description{
   Creates a \code{link{family}} object for use with \code{\link{glm}},
   \code{\link{gnm}}, etc., for the variance function 

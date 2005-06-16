@@ -14,11 +14,6 @@ getModelFrame()
 \note{This function is only designed to work from within a plug-in
   function. To extract the model frame from a \code{gnm} object, use
   \code{model.frame}.}
-\references{
-Vargas, M, Crossa, J, van Eeuwijk, F, Sayre, K D and Reynolds, M P
-(2001).  Interpreting treatment by environment interaction in agronomy
-trials.  \emph{Agronomy Journal} \bold{93}, 949--960.
-}
 \author{ Heather Turner }
 \seealso{ \code{\link{gnm}}, \code{\link{Dref}}, \code{\link{MultHomog}} }
 \examples{

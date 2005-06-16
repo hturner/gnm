@@ -1,7 +1,7 @@
 \name{checkEstimable}
 \alias{checkEstimable}
-\title{ Check whether one or more parameter comninations in a gnm model
-  is identified }
+\title{ Check Whether One or More Parameter Combinations in a gnm Model
+  is Identified }
 \description{
   For each of a specified set of parameter combinations, checks
   numerically whether the combination's estimate is invariant to
@@ -20,11 +20,6 @@ checkEstimable(model, coefMatrix, tolerance = 1e-8)
 }
 \value{A logical vector of length equal to the number of parameter combinations
   tested; \code{NA} where a parameter combination is identically zero.}
-\references{
-  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
-  Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
-  University of Oxford. 
-}
 \author{ David Firth }
 \seealso{
   \code{\link{se}},

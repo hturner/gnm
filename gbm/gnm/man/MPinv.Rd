@@ -1,6 +1,6 @@
 \name{MPinv}
 \alias{MPinv}
-\title{ Moore-Penrose pseudoinverse of a real-valued matrix }
+\title{ Moore-Penrose Pseudoinverse of a Real-valued Matrix }
 \description{
   Computes the Moore-penrose generalized inverse, optionally using a
   method (appropriate for symmetric matrices only) which exploits the

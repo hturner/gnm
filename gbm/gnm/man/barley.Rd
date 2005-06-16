@@ -1,7 +1,7 @@
 \name{barley}
 \alias{barley}
 \docType{data}
-\title{ Jenkyn's data on leaf-blotch on barley }
+\title{ Jenkyn's Data on Leaf-blotch on Barley }
 \description{
   Incidence of \emph{R. secalis} on the leaves of ten varieties of barley grown
   at nine sites.
@@ -15,7 +15,7 @@
     \item{variety}{a factor with 10 levels \code{c(1:9, "X")}}
   }
 }
-\details{
+\note{
   This dataset was used in Wedderburn's original paper (1974) on 
   quasi-likelihood.
 }

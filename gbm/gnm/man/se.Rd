@@ -1,6 +1,6 @@
 \name{se}
 \alias{se}
-\title{ Standard errors of linear parameter combinations in gnm models }
+\title{ Standard Errors of Linear Parameter Combinations in gnm Models }
 \description{
   Computes approximate standard error for one or more linear
   combinations of the parameters in a \code{\link{gnm}} (generalized
@@ -25,11 +25,6 @@ A data frame with two columns:
   \item{estimate }{The estimated parameter combinations}
   \item{se }{Their estimated standard errors}
 and row names the same as the column names (if any) of \code{coefMatrix}.
-}
-\references{
-  Yaish, M (1998). Opportunities, Little Change. Class Mobility in
-  Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
-  University of Oxford. 
 }
 \author{ David Firth }
 \seealso{ \code{\link{getContrasts}}, \code{\link{checkEstimable}}}

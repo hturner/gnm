@@ -1,7 +1,7 @@
 \name{wheat}
 \alias{wheat}
 \docType{data}
-\title{ Wheat yields from  Mexican field trials }
+\title{ Wheat Yields from  Mexican Field Trials }
 \description{
 Data from a 10-year experiment at the CIMMYT experimental station
 located in the Yaqui Valley near Ciudad Obregon, Sonora, Mexico --- factorial

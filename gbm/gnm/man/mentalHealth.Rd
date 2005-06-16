@@ -1,7 +1,7 @@
 \name{mentalHealth}
 \alias{mentalHealth}
 \docType{data}
-\title{ Mental health and socioeconomic status}
+\title{ Data on Mental Health and Socioeconomic Status}
 \description{
   A 2-way contingency table from a sample of residents of Manhattan.
   Classifying variables are child's mental impairment (\code{MHS}) and

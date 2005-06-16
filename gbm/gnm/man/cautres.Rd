@@ -1,7 +1,7 @@
 \name{cautres}
 \alias{cautres}
 \docType{data}
-\title{ Class, religion and vote in France}
+\title{ Data on Class, Religion and Vote in France}
 \description{
   A 4-way contingency table of vote by class by religion
   in four French elections

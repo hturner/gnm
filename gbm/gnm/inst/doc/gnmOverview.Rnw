@@ -13,6 +13,7 @@
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,nohead]{geometry}
+\usepackage{hyperref}
 
 %% The next few definitions from "Writing Vignettes for Bioconductor Packages"
 %% by R Gentleman
@@ -115,7 +116,7 @@ structured interactions.
 
 As a simple example of their use, consider the log-linear models of
 \emph{quasi-independence}, \emph{quasi-symmetry} and \emph{symmetry}
-for a square contingency table.  \citet{Agre02}, page ??, gives data on
+for a square contingency table.  \citet{Agre02}, Section 10.4, gives data on
 migration between regions of the USA between 1980 and 1985:
 <<<migrationData>>=
 count <- c(11607,   100,   366,   124,
@@ -815,11 +816,12 @@ given by
 \[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c. \]
 
 We shall fit this model to the \Robject{mentalHealth} data set taken from
-\citet{Agre02} page ??, which is a two-way contingency table classified by the child's
+\citet{Agre02} page 381, which is a two-way contingency table classified 
+by the child's
 mental impairment (MHS) and the parents' socioeconomic status (SES). Although
-both of these factors are ordered, we do not wish to use polynomial contrasts in
-the model, so we begin by setting the contrasts attribute of these factors to
-``treatment''
+both of these factors are ordered, we do not wish to use polynomial contrasts 
+in the model, so we begin by setting the contrasts attribute of these 
+factors to \Robject{``treatment''}:
 <<Set_contrasts_attribute>>=
 set.seed(1)
 data(mentalHealth)
@@ -829,8 +831,7 @@ mentalHealth$SES <- C(mentalHealth$SES, treatment)
 The \Rclass{gnm} model is then specified as follows, using the poisson family
 with a log link function
 <<RC1_model>>=
-RC1model <- gnm(count ~ SES + MHS +
-                Mult(-1 + SES, -1 + MHS),
+RC1model <- gnm(count ~ SES + MHS + Mult(-1 + SES, -1 + MHS),
                 family = poisson, data = mentalHealth)
 RC1model
 @ %def

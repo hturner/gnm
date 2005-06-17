@@ -1296,7 +1296,7 @@ We list here, for easy reference, all of the user-level functions in the
 \Rpackage{gnm} package.  For full documentation see the package help pages.
 
 \begin{table}[!h]
-\begin{tabular*}{\textwidth}{@{}p{0.2in}p{1in}p{4in}@{}}
+\begin{tabular*}{\textwidth}{@{}p{0.2in}p{1.3in}p{4in}@{}}
     \toprule
     \multicolumn{3}{l}{\textbf{Model Fitting}} 	\\
     \midrule
@@ -1327,12 +1327,12 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rmethod{summary.gnm}	&  summarize \Rclass{gnm} fits	\\
     &	\Rfunction{getContrasts}	&  estimate contrasts and their
                                            standard errors \\
-    &	\Rfunction{checkEstimable}\quad	&  check whether one or more parameter
+    &	\Rfunction{checkEstimable}	&  check whether one or more parameter
                                            combinations in a
                                            \Rclass{gnm} model is identified \\
     &	\Rfunction{se}	&  get standard errors of linear parameter
                            combinations in \Rclass{gnm} models	\\
-    &	\Rfunction{termPredictors}\quad	&  (\emph{generic}) extract term
+    &	\Rfunction{termPredictors}	&  (\emph{generic}) extract term
                                            contributions to predictor	\\
     \midrule
     \multicolumn{3}{l}{\textbf{Auxiliary Functions}}			\\

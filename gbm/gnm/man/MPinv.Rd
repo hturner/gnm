@@ -2,7 +2,7 @@
 \alias{MPinv}
 \title{ Moore-Penrose Pseudoinverse of a Real-valued Matrix }
 \description{
-  Computes the Moore-penrose generalized inverse, optionally using a
+  Computes the Moore-Penrose generalized inverse, optionally using a
   method (appropriate for symmetric matrices only) which exploits the
   direct inversion of a diagonal submatrix if such exists. 
 }

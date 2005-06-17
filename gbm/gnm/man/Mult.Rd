@@ -64,6 +64,9 @@ unidiff <- gnm(Freq ~ educ:orig + educ:dest +
                Mult(Exp(-1 + educ), orig:dest),
                family = poisson, data = yaish)
 
+\dontrun{
+## (this example can take quite a while to run)
+##
 ## Using 'multiplicity' > 1
 data(wheat)
 yield.scaled <- wheat$yield * sqrt(3/1000)
@@ -72,6 +75,7 @@ treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
 bilinear2 <- gnm(yield.scaled ~ year + treatment +
                  Mult(year, treatment, multiplicity = 2),
                  family = gaussian, data = wheat)
+}
 }
 \keyword{ models }
 \keyword{ regression }

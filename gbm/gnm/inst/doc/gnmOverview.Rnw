@@ -45,8 +45,31 @@
 
 \section{Introduction}
 
-This document provides an extended overview
+The \Rpackage{gnm} package provides facilities for fitting
+\emph{generalized nonlinear models}, i.e., regression models in which the
+link-transformed mean is described as a sum of predictor terms, some of
+which may be non-linear in the unknown parameters.  Linear and generalized
+linear models,
+as handled by the \Rfunction{lm} and \Rfunction{glm} functions in R, are
+included in the class
+of generalized nonlinear models, as the special case in which there is no
+nonlinear term.
 
+This document gives an extended overview of the \Rpackage{gnm} package, with
+some examples of applications.  The primary package documentation in the
+form of standard help pages, as viewed in R by, for example, \texttt{?gnm} or
+\texttt{help(gnm)}, is supplemented rather than replaced by the present
+document.
+
+We begin below with a preliminary note (Section \ref{glms}) on ways in which
+the \Rpackage{gnm} package extends R's facilities for specifying, fitting
+and working with generalized \emph{linear} models.  Then (Section
+\ref{nonlinear} onwards) the facilities for nonlinear terms are introduced,
+explained and exemplified.
+
+The \Rpackage{gnm} package is installed in the standard way for CRAN packages,
+for example by using \Rfunction{install.packages}.  Once installed, the
+package is loaded into an R session by
 <<Load_gnm>>=
 library(gnm)
 @
@@ -54,7 +77,118 @@ library(gnm)
 \section{Generalized Linear Models}
 \label{glms}
 
+\subsection{Preamble}
+
+Central to the facilities provided by the \Rpackage{gnm} package is the
+model-fitting function \Rfunction{gnm}, which interprets a model formula
+and returns a model object.  The user interface of \Rfunction{gnm} is patterned
+after \Rfunction{glm} (which is included in R's standard \Rpackage{stats}
+package), and indeed
+\Rfunction{gnm} can be viewed as a replacement for
+\Rfunction{glm} for specifying and fitting generalized linear models.
+In general there is no reason to prefer \Rfunction{gnm} to \Rfunction{glm} for
+fitting generalized linear models, except perhaps when the model involves a
+large number of incidental parameters which are treatable
+by \Rfunction{gnm}'s \emph{eliminate} mechanism (see Section \ref{eliminate}).
+
+While the main purpose of the \Rpackage{gnm} package is to extend the class of
+models to include nonlinear terms, some of the new functions and methods
+can be used also with the familiar \Rfunction{lm} and \Rfunction{glm}
+model-fitting functions.  These are: two new data-manipulation functions
+\Rfunction{Diag}
+and \Rfunction{Symm}, for setting up structured interactions between
+homologous factors; a new \Rclass{family} function, \Rfunction{wedderburn},
+for modelling a response variable in $[0,1]$ with the variance function
+$V(\mu) = \mu^2(1-\mu)^2$ as in \citet{Wedd74};
+and a new generic function \Rfunction{termPredictors} which
+extracts the contribution of each term to the predictor from a fitted model
+object.  These functions are briefly introduced here, before we move on to
+nonlinear models in Section \ref{nonlinear}.
+
+\subsection{\Rfunction{Diag} and \Rfunction{Symm}}
+
+When dealing with \emph{homologous} factors, that is, categorical variables
+whose levels are the same, statistical models often involve structured
+interaction terms which exploit the inherent symmetry.  The functions
+\Rfunction{Diag} and \Rfunction{Symm} facilitate the specification of such
+structured interactions.
+
+As a simple example of their use, consider the log-linear models of
+\emph{quasi-independence}, \emph{quasi-symmetry} and \emph{symmetry}
+for a square contingency table.  \citet{Agre02}, page ??, gives data on
+migration between regions of the USA between 1980 and 1985:
+<<<migrationData>>=
+count <- c(11607,   100,   366,   124,
+              87, 13677,   515,   302,
+             172,   225, 17819,   270,
+              63,   176,   286, 10192 )
+region <- c("NE", "MW", "S", "W")
+row <-  gl(4, 4, labels = region)
+col <-  gl(4, 1, length = 16, labels = region)
+@
+The comparison of models reported by Agresti can be achieved as follows:
+<<squareTableModels>>=
+independence <- glm(count ~ row + col, family = poisson)
+quasi.indep <- glm(count ~ row + col + Diag(row, col), family = poisson)
+symmetry <- glm(count ~ Symm(row, col), family = poisson)
+quasi.symm <- glm(count ~ row + col + Symm(row, col), family = poisson)
+comparison1 <- anova(independence, quasi.indep, quasi.symm)
+print(comparison1, digits = 7)
+comparison2 <- anova(symmetry, quasi.symm)
+print(comparison2)
+@
+
+The \Rfunction{Diag} and \Rfunction{Symm} functions also generalize the notions
+of diagonal and symmetric interaction to cover situations with more than two
+homologous factors.
+
+\subsection{The \Rfunction{wedderburn} family}
+
+In \citet{Wedd74} it was suggested to represent the mean of
+a continuous response variable in
+$[0,1]$ using a quasi-likelihood model with logit link and the
+variance function $\mu^2(1-\mu)^2$.  This is not one of the variance
+functions made available as standard in R's \Rfunction{quasi} family.  The
+\Rfunction{wedderburn} family provides it.  As an example, Wedderburn's
+analysis of data on leaf blotch on barley can be reproduced as follows:
+<<wedderburn>>=
+data(barley)  ##  data from Wedderburn (1974), see ?barley
+logitModel <- glm(y ~ site + variety, family = wedderburn, data = barley)
+fit <- fitted(logitModel)
+print(sum((barley$y - fit)^2 / (fit * (1-fit))^2))
+@
+This agrees with the chi-squared value reported on page 331 of \citet{McCu89},
+which differs slightly from Wedderburn's reported value.
+
+\subsection{\Rfunction{termPredictors}}
+
+What's a good example here?  Just something simple to illustrate what it does.
+
+I tried
+\begin{verbatim}
+> termPredictors(quasi.symm)
+   (Intercept)       row      col Symm(row, col)
+1   -0.2641848 0.0000000 0.000000             NA
+2   -0.2641848 0.0000000 4.918310             NA
+3   -0.2641848 0.0000000 1.539852             NA
+4   -0.2641848 0.0000000 5.082641             NA
+5   -0.2641848 4.8693457 0.000000             NA
+6   -0.2641848 4.8693457 4.918310             NA
+7   -0.2641848 4.8693457 1.539852             NA
+8   -0.2641848 4.8693457 5.082641             NA
+9   -0.2641848 0.7465235 0.000000             NA
+10  -0.2641848 0.7465235 4.918310             NA
+11  -0.2641848 0.7465235 1.539852             NA
+12  -0.2641848 0.7465235 5.082641             NA
+13  -0.2641848 4.4109017 0.000000             NA
+14  -0.2641848 4.4109017 4.918310             NA
+15  -0.2641848 4.4109017 1.539852             NA
+16  -0.2641848 4.4109017 5.082641             NA
+\end{verbatim}
+--- is that a bug?
+
 \section{Nonlinear Terms}
+\label{nonlinear}
 
 The \Rpackage{gnm} package provides a flexible framework for the specification
 and
@@ -87,7 +221,7 @@ also known as the Goodman RC model \citep{Good79}, the \Rfunarg{formula}
 argument
 of \Rfunction{gnm} would be
 \begin{alltt}
-    mu \(\sim\) R + C + Mult(-1 + R, -1 + C)
+    mu \twiddle\ R + C + Mult(-1 + R, -1 + C)
 \end{alltt}
 where \Robject{R} and \Robject{C} are row and column factors respectively.
 
@@ -95,7 +229,7 @@ where \Robject{R} and \Robject{C} are row and column factors respectively.
 \Robject{1} by default. This argument determines the number of multiplicative
 components that are fitted. For example,
 \begin{alltt}
-    mu \(\sim\) R + C + Mult(-1 + R, -1 + C, multiplicity = 2)
+    mu \twiddle\ R + C + Mult(-1 + R, -1 + C, multiplicity = 2)
 \end{alltt}
 would give the RC(2) model \citep{Good79}
 \[
@@ -107,13 +241,13 @@ multiplicative factors so that the factor is always nonnegative. This may be
 achieved by defining the factor as an exponential, as in the following `uniform
 difference' model \citep{Xie92, Erik92}
 \[
-\log \mu_{ijt} = \alpha_{it} + \beta_{jt} + e^{\gamma_t}\delta_{ij}.
+\log \mu_{rct} = \alpha_{rt} + \beta_{ct} + e^{\gamma_t}\delta_{rc}.
 \]
 Exponentiated factors can be specified in \Rclass{gnm} models using the symbolic
 function \Rfunction{Exp}, for example the uniform difference model above
 would be specified by the formula
 \begin{alltt}
-    mu \(\sim\) R:T + C:T + Mult(Exp(-1 + T), R:C, multiplicity = 2)
+    mu \twiddle\ R:T + C:T + Mult(Exp(-1 + T), R:C, multiplicity = 2)
 \end{alltt}
 
 \subsection{Other Nonlinear Terms using \Rfunction{Nonlin}}
@@ -139,7 +273,7 @@ plug-in function
 \Robject{PlugInFunction}. As the factor $C$ only appears in the specified
 arguments of the
 call to \Robject{PlugInFunction}, a data frame containing factor
-\Robject{C} has been passed to the
+\Robject{C} has been passed as the
 \Rfunarg{data} argument of \Rfunction{Nonlin}.
 Note that this would not be necessary
 if \Robject{C} could be found in an environment on the search path (given by
@@ -163,10 +297,11 @@ is no multiplicity argument.
 
 As an example, consider the following association model with homogeneous
 row-column effects:
-\[\log \mu_{rc} = \alpha_r + \beta_c + \theta_{rc} + \gamma_r\gamma_c.\]
-To fit this model, the formula argument to \Rfunction{gnm} would be
+\[\log \mu_{rc} = \alpha_r + \beta_c + \theta_{r}I(r=c) + \gamma_r\gamma_c.\]
+To fit this model, with response variable named \Robject{mu},
+the formula argument to \Rfunction{gnm} would be
 \begin{alltt}
-    mu \(\sim\) R + C + Diag(R, C) + Nonlin(MultHomog(R, C))
+    mu \twiddle\ R + C + Diag(R, C) + Nonlin(MultHomog(R, C))
 \end{alltt}
 
 If the factors passed to \Rfunction{MultHomog} do not have
@@ -206,14 +341,14 @@ and the column factor \Robject{C},
 \]
 would be specified by the formula
 \begin{alltt}
-    mu \(\sim\) -1 + Nonlin(Dref(R, C))
+    mu \twiddle\ -1 + Nonlin(Dref(R, C))
 \end{alltt}
 
 \Rfunction{Dref} has one specified argument \Rfunarg{formula}, which is a symbolic
 description of the dependence of $\delta_i$ on any covariates.
 For example, the formula
 \begin{alltt}
-    mu \(\sim\) -1 + x + Nonlin(Dref(R, C, formula = ~ 1 + x))
+    mu \twiddle\ -1 + x + Nonlin(Dref(R, C, formula = ~ 1 + x))
 \end{alltt}
 specifies the following diagonal reference model
 \[
@@ -371,7 +506,7 @@ are allowed.
 If there is no user-specified starting value for a parameter, the
 default value is used. This feature is particularly useful when adding terms to
 a model, since the estimates from the original model can be used as starting
-values, as in the example below
+values, as in this example:
 \begin{alltt}
     model1 <- gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C))
     model2 <- gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C, multiplicity = 2),
@@ -386,7 +521,7 @@ The starting procedure used by \Rfunction{gnm} is as follows
 \begin{enumerate}
 \item
 Generate starting values $\theta_i$ for all parameters $i = 1, \ldots, p$ from
-the Uniform(-0.1, 0.1) distribution. Shift these values away from zero as
+the Uniform($-0.1$, 0.1) distribution. Shift these values away from zero as
 follows
 \begin{equation*}
 \theta_i = \begin{cases}
@@ -410,8 +545,8 @@ Run starting iterations: update any parameters in nonlinear terms
 that were not specified by \Rfunarg{start} or a plug-in function one at a time,
 updating \emph{all} linear terms after each round of nonlinear updates.
 \end{enumerate}
-Note that no starting iterations will be run if all parameters are specified by
-the \Rfunarg{start} argument of \Rfunction{gnm}.
+Note that no starting iterations (step 5) will be run if all
+parameters are specified by the \Rfunarg{start} argument of \Rfunction{gnm}.
 
 \subsection{Using \Rfunarg{constrain}}
 \label{constrain}
@@ -425,10 +560,10 @@ usually be
 over-parameterized unless constraints are imposed by the defining plug-in
 function (as in the case of \Rfunction{Dref} for example). For a model with
 nonlinear terms that are over-parameterized, \Rfunction{gnm}
-will return a random parameterisation.
+will return a random parameterization.
 
 To illustrate this point, consider the following application of \Rfunction{gnm},
-discussed later in Section \ref{RCmodels}
+discussed later in Section \ref{RCmodels}:
 <<RC_homogeneous_model_1>>=
 data(occupationalStatus)
 set.seed(1)
@@ -441,7 +576,7 @@ Running the analysis again from a different seed
 set.seed(2)
 RChomog2 <- eval(RChomog1$call)
 @
-gives a different representation of the same model
+gives a different representation of the same model:
 <<Compare_coefficients>>=
 compareCoef <- cbind(coef(RChomog1), coef(RChomog2))
 colnames(compareCoef) <- c("RChomog1", "RChomog2")
@@ -514,6 +649,13 @@ parameters are excluded from the returned
 vector of coefficients, so that summaries of the model focus on the
 coefficients of interest.
 
+The \Rfunarg{eliminate} feature is useful, for example, when
+multinomial-response models are fitted by using the well known equivalence
+between multinomial and (conditional) Poisson likelihoods.  In such situations
+the sufficient statistic involves a potentially large number of fixed
+multinomial row totals, and the corresponding parameters are of no
+substantive interest.  For an example see Section \ref{Stereotype} below.
+
 \section{Methods and Accessor functions}
 \label{Methods}
 
@@ -566,16 +708,17 @@ those that are not implemented for \Rclass{gnm} objects.
     \end{fbox}
     \caption{Generic functions in the \Rpackage{base}, \Rpackage{stats} and
       \Rpackage{graphics} packages for which methods have been written for
-      \Rclass{glm} or \Rclass{lm} objects, but which are not implemented for
-      \Rclass{gnm} objects.}
+      \Rclass{glm} or \Rclass{lm} objects, but which are \emph{not}
+      implemented for \Rclass{gnm} objects.}
     \label{!glm.lm}
 \end{figure}
 
 In addition to the accessor functions shown in Figure \ref{glm.lm}, the
-\Rpackage{gnm} package provides a new generic function \Rfunction{termPredictors}
+\Rpackage{gnm} package provides a new generic function
+\Rfunction{termPredictors}
 that has methods for objects of class \Rclass{gnm}, \Rclass{glm} and
 \Rclass{lm}. This function returns the additive contribution of each term to
-the predictor.
+the predictor.  See Section \ref{glms} for an example of its use.
 
 Most of the methods listed in Figure \ref{glm.lm} can be used as they would be
 for \Rclass{glm} or \Rclass{lm} objects, however care must be taken with
@@ -672,7 +815,7 @@ given by
 \[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c. \]
 
 We shall fit this model to the \Robject{mentalHealth} data set taken from
-\citet{Agre02}, which is a two-way contingency table classified by the child's
+\citet{Agre02} page ??, which is a two-way contingency table classified by the child's
 mental impairment (MHS) and the parents' socioeconomic status (SES). Although
 both of these factors are ordered, we do not wish to use polynomial contrasts in
 the model, so we begin by setting the contrasts attribute of these factors to
@@ -765,9 +908,9 @@ In this case there is little gain in allowing heterogeneous effects.
 
 Diagonal reference models, proposed by \citep{Sobe81, Sobe85}, are designed for
 contingency tables classified by factors with the same levels. The cell
-means are modelled as a function of the diagonal effects: the mean
-responses of the diagonal cells, where the levels of the row and column factors
-are the same.
+means are modelled as a function of the diagonal effects, i.e., the mean
+responses of the `diagonal' cells in which the levels of the row and
+column factors are the same.
 
 We shall use the \Robject{conformity} data set discussed in \citet{Vand02} to
 illustrate the use of diagonal reference models. These data relate to the value
@@ -783,9 +926,9 @@ education factors. This model may be expressed as
 \[
 \mu_{rc} = \beta_1x_1 + \beta_2x_2 + \beta_3x_3 +\beta_4x_4 +\beta_5x_5 +
 \frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_r +
-\frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_c,
+\frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_c .
 \]
-see Section \ref{NonlinDref} for more detail on the choice of parameterisation.
+See Section \ref{NonlinDref} for more detail on the choice of parameterisation.
 
 The baseline model can be fitted as follows
 @
@@ -899,8 +1042,8 @@ getContrasts(unidiff, coefs.of.interest)
 
 Four-way contingency tables may be described by the ``double UNIDIFF'' model
 \[
-\mu_{ijkl} = \alpha_{il} + \beta_{jkl} + \delta_l\gamma_{ij} +
-\phi_l\theta_{ik},
+\mu_{ijkl} = \alpha_{il} + \beta_{jkl} + \exp(\delta_l)\gamma_{ij} +
+\exp(\phi_l)\theta_{ik},
 \]
 where the strengths of two, two-way associations with a common variable are
 estimated across the levels of the fourth variable.
@@ -993,7 +1136,7 @@ to a model with the first $n$ components of the multiplicative interaction.
 
 To illustrate the use of biplot models, we shall use the \Robject{barley} data
 set which describes the incidence of leaf blotch over ten varieties of barley
-grown at nine sites. The biplot model is fitted as follows
+grown at nine sites \citep{Wedd74,Gabr98}. The biplot model is fitted as follows
 @
 <<Biplot_model>>=
 data(barley)
@@ -1012,8 +1155,8 @@ B <- sweep(barleySVD$u, 2, sqrt(barleySVD$d), "*")[, 1:2]
 A
 B
 @ %def
-These matrices are essentially the same as in \citet{Gabr98}, from which the
-biplot can be produced
+These matrices are essentially the same as in \citet{Gabr98}. From these the
+biplot can be produced:
 \begin{center}
 @
 <<Biplot, fig = TRUE>>=
@@ -1074,13 +1217,13 @@ c(doubleAddChiSq - biplotModChiSq,
 \subsection{Stereotype Model}
 \label{Stereotype}
 
-The stereotype model was proposed by \citep{Ande84} for ordered categorical
+The stereotype model was proposed by \citet{Ande84} for ordered categorical
 data. It is a linear logistic model, in which there is assumed to be a common
 relationship between the response and the covariates in the model, but the
 scale of this association varies between categories and there is an additional
 category main effect or category-specific intercept:
 \[
-\log \mu_c =  \beta_{0c} + \gamma_c\sum_i \beta_{ic}x_i.
+\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r \beta_{rc}x_{ir}.
 \]
 This model can be estimated by re-expressing the categorical data as counts and
 using a \Rclass{gnm} model with a log link and poisson variance function.
@@ -1143,7 +1286,7 @@ logLikMultinom <- function(model){
 }
 t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom))
 @ %def
-which show that the oneDimensional model is adequate.
+which show that the \Robject{oneDimensional} model is adequate.
 
 \appendix
 

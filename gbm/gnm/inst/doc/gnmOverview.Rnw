@@ -15,6 +15,8 @@
 \usepackage[left=2cm,nohead]{geometry}
 \usepackage{hyperref}
 
+\setkeys{Gin}{width=0.6\textwidth}
+
 %% The next few definitions from "Writing Vignettes for Bioconductor Packages"
 %% by R Gentleman
 \newcommand{\Robject}[1]{{\texttt{#1}}}
@@ -37,7 +39,7 @@
 \emph{University of Warwick}
 }
 
-\date{2005-06-17}
+\date{2005-06-19}
 
 \begin{document}
 \maketitle
@@ -140,8 +142,8 @@ print(comparison2)
 @
 
 The \Rfunction{Diag} and \Rfunction{Symm} functions also generalize the notions
-of diagonal and symmetric interaction to cover situations with more than two
-homologous factors.
+of diagonal and symmetric interaction to cover situations involving more than
+two homologous factors.
 
 \subsection{The \Rfunction{wedderburn} family}
 
@@ -163,30 +165,19 @@ which differs slightly from Wedderburn's reported value.
 
 \subsection{\Rfunction{termPredictors}}
 
-What's a good example here?  Just something simple to illustrate what it does.
+The generic function \Rfunction{termPredictors} extracts a term-by-term
+decomposition of the predictor function in a linear, generalized linear or
+generalized nonlinear model.
 
-I tried
-\begin{verbatim}
-> termPredictors(quasi.symm)
-   (Intercept)       row      col Symm(row, col)
-1   -0.2641848 0.0000000 0.000000             NA
-2   -0.2641848 0.0000000 4.918310             NA
-3   -0.2641848 0.0000000 1.539852             NA
-4   -0.2641848 0.0000000 5.082641             NA
-5   -0.2641848 4.8693457 0.000000             NA
-6   -0.2641848 4.8693457 4.918310             NA
-7   -0.2641848 4.8693457 1.539852             NA
-8   -0.2641848 4.8693457 5.082641             NA
-9   -0.2641848 0.7465235 0.000000             NA
-10  -0.2641848 0.7465235 4.918310             NA
-11  -0.2641848 0.7465235 1.539852             NA
-12  -0.2641848 0.7465235 5.082641             NA
-13  -0.2641848 4.4109017 0.000000             NA
-14  -0.2641848 4.4109017 4.918310             NA
-15  -0.2641848 4.4109017 1.539852             NA
-16  -0.2641848 4.4109017 5.082641             NA
-\end{verbatim}
---- is that a bug?
+As an illustrative example, we can decompose the linear predictor in the above
+quasi-symmetry model as follows:
+<<termPredictors>>=
+print(temp <- termPredictors(quasi.symm))
+rowSums(temp) - quasi.symm$linear.predictors
+@
+
+Such a decomposition might be useful, for example, in assessing the relative
+contributions of different terms or groups of terms.
 
 \section{Nonlinear Terms}
 \label{nonlinear}
@@ -199,22 +190,22 @@ interaction terms can be estimated using the in-built capability of the
 function \Rfunction{Mult}. Other nonlinear terms can be estimated using plug-in
 functions for \Rfunction{gnm} and are specified using \Rfunction{Nonlin}.
 
-There are two plug-in functions currently available in
+There are two plug-in functions currently made available in
 the \Rpackage{gnm} package: \Rfunction{MultHomog} for fitting multiplicative
 interaction terms with homogeneous effects and \Rfunction{Dref} for fitting
-diagonal reference terms. Users may also define custom plug-in functions to fit
-other types of nonlinear terms.
+diagonal reference terms. Users of \Rpackage{gnm} can define their own
+custom plug-in functions to specify other types of nonlinear term.
 
 \subsection{Multiplicative Interaction Terms using \Rfunction{Mult}}
 
 Multiplicative interaction terms can be included in the formula argument to
 \Rfunction{gnm} by using the symbolic wrapper function \Rfunction{Mult}.
-Factors in
+Multiplicative components in
 the interaction are passed as unspecified arguments to \Rfunction{Mult} and are
 expressed
 by symbolic linear formulae. An intercept is automatically added to each
-factor unless otherwise specified. For example, to fit the row-column
-association model
+multiplicative component unless otherwise specified. For example,
+to fit the row-column association model
 \[
 \log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c,
 \]
@@ -227,8 +218,8 @@ of \Rfunction{gnm} would be
 where \Robject{R} and \Robject{C} are row and column factors respectively.
 
 \Rfunction{Mult} has one specified argument \Rfunarg{multiplicity}, which is
-\Robject{1} by default. This argument determines the number of multiplicative
-components that are fitted. For example,
+\Robject{1} by default. This argument determines the number of times that
+the specified multiplicative structure appears in the model. For example,
 \begin{alltt}
     mu \twiddle\ R + C + Mult(-1 + R, -1 + C, multiplicity = 2)
 \end{alltt}
@@ -238,17 +229,19 @@ would give the RC(2) model \citep{Good79}
 \]
 
 In some contexts, it may be desirable to constrain one or more of the
-multiplicative factors so that the factor is always nonnegative. This may be
-achieved by defining the factor as an exponential, as in the following `uniform
-difference' model \citep{Xie92, Erik92}
+multiplicative components so that the component is always nonnegative.
+This may be
+achieved by specifying the component as an exponential, as in the
+following `uniform difference' model \citep{Xie92, Erik92}
 \[
 \log \mu_{rct} = \alpha_{rt} + \beta_{ct} + e^{\gamma_t}\delta_{rc}.
 \]
-Exponentiated factors can be specified in \Rclass{gnm} models using the symbolic
-function \Rfunction{Exp}, for example the uniform difference model above
+Exponentiated components are specified in \Rclass{gnm} models using the
+symbolic
+function \Rfunction{Exp}; for example, the uniform difference model above
 would be specified by the formula
 \begin{alltt}
-    mu \twiddle\ R:T + C:T + Mult(Exp(-1 + T), R:C, multiplicity = 2)
+    mu \twiddle\ R:T + C:T + Mult(Exp(-1 + T), R:C)
 \end{alltt}
 
 \subsection{Other Nonlinear Terms using \Rfunction{Nonlin}}
@@ -280,7 +273,8 @@ Note that this would not be necessary
 if \Robject{C} could be found in an environment on the search path (given by
 \texttt{search()}).
 
-The two plug-in functions included in the \Rpackage{gnm} package are described
+The two plug-in functions already included in the
+\Rpackage{gnm} package are described
 below, followed by a guide to writing custom plug-in functions.
 
 \subsubsection{\Rfunction{MultHomog}}
@@ -288,13 +282,13 @@ below, followed by a guide to writing custom plug-in functions.
 The \Rfunction{MultHomog} function provides the tools required to fit
 multiplicative interaction terms
 in which the level effects are constrained to be
-equal across the factors. The arguments of Rfunction{MultHomog}
+equal across the multiplicative components.
+The arguments of \Rfunction{MultHomog}
 are the factors in
 the interaction, which are assumed to be objects of class \Rclass{factor}.
 Like a
-\Rfunction{Mult} term, the interaction can include any number of factors,
-but there
-is no multiplicity argument.
+\Rfunction{Mult} term, the interaction can include any number of multiplicative
+components, but there is no multiplicity argument.
 
 As an example, consider the following association model with homogeneous
 row-column effects:
@@ -597,7 +591,7 @@ through a \emph{Tk} dialog.
 In the case above, constraining one level of the homogeneous multiplicative
 factor is sufficient to make the parameters of the nonlinear term
 identifiable, and hence all parameters in the model identifiable. For example,
-setting the last level of the homogeneous multiplicative factor to zero
+setting the last level of the homogeneous multiplicative factor to zero,
 <<RC_homogeneous_constrained_model>>=
 multCoef <- coef(RChomog1)[grep("Mult", names(coef(RChomog1)))]
 set.seed(1)
@@ -738,11 +732,12 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
                      Mult(Exp(election - 1), class:vote - 1), family = poisson,
                      data = cautres)
 @
-The effects of the first factor of the first multiplicative term are
+The effects of the first multiplicative component of the first multiplicative
+term are
 estimable when the estimate of one of these effects is constrained to zero, say
 the effect of the last level. The parameters to be estimated are then the
 differences between each effect and the effect of the last level. These
-differences can be represented by a contrast matrix as follows
+differences can be represented by a contrast matrix as follows:
 <<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
 contrCoefs <- coefs[grep("Mult1.Factor1", coefs)]
@@ -758,8 +753,9 @@ checkEstimable(doubleUnidiff, contrMatrix)
 which confirms that the effects for the other three levels are estimable when
 the effect for the last parameter is set to zero.
 
-However, applying the equivalent constraint to the second factor in the
-interaction is not sufficient to make the parameters in that factor estimable:
+However, applying the equivalent constraint to the second component in the
+interaction is not sufficient to make the parameters in that component
+estimable:
 <<Check_estimability_2>>=
 coefs <- names(coef(doubleUnidiff))
 contrCoefs <- coefs[grep("Mult1.Factor2", coefs)]
@@ -772,19 +768,21 @@ checkEstimable(doubleUnidiff, contrMatrix)
 To investigate simple ``sum to zero'' contrasts such as those above, it
 is easiest to use the \Rfunction{getContrasts} function, which checks the
 estimability of the contrasts and returns the parameter estimates with their
-standard errors. Returning to the example of the first factor in the first
-multiplicative interaction, the differences between each effect and the effect
-of the last level can be obtained as follows
+standard errors. Returning to the example of the first component in the first
+multiplicative interaction term, the differences between each election
+and the last can be obtained as follows:
 <<Get_contrasts_1>>=
 coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
 @ %def
-Attempting to obtain the equivalent contrasts for the second factor produces the
-following result
+Attempting to obtain the equivalent contrasts for the second
+(religion-vote association) multiplicative component produces the
+following result:
 <<Get_contrasts_2>>=
 coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
 @ %def
+
 \section{Examples}
 \label{Examples}
 
@@ -816,11 +814,11 @@ given by
 \[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c. \]
 
 We shall fit this model to the \Robject{mentalHealth} data set taken from
-\citet{Agre02} page 381, which is a two-way contingency table classified 
+\citet{Agre02} page 381, which is a two-way contingency table classified
 by the child's
 mental impairment (MHS) and the parents' socioeconomic status (SES). Although
-both of these factors are ordered, we do not wish to use polynomial contrasts 
-in the model, so we begin by setting the contrasts attribute of these 
+both of these factors are ordered, we do not wish to use polynomial contrasts
+in the model, so we begin by setting the contrasts attribute of these
 factors to \Robject{``treatment''}:
 <<Set_contrasts_attribute>>=
 set.seed(1)
@@ -829,14 +827,14 @@ mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
 mentalHealth$SES <- C(mentalHealth$SES, treatment)
 @
 The \Rclass{gnm} model is then specified as follows, using the poisson family
-with a log link function
+with a log link function:
 <<RC1_model>>=
 RC1model <- gnm(count ~ SES + MHS + Mult(-1 + SES, -1 + MHS),
                 family = poisson, data = mentalHealth)
 RC1model
 @ %def
 The row scores (parameters 10 to 15) and the column scores (parameters 16 to 19)
-of the multiplicative interaction can be normalized as in Agresti's eqn (9.15)
+of the multiplicative interaction can be normalized as in Agresti's eqn (9.15):
 <<Normalize_scores>>=
 rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
 colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
@@ -854,12 +852,12 @@ assoc
 
 \subsubsection{RC(2) model}
 
-The RC(1) model can be extended to an RC($m$) model with $m$ components of the
+The RC(1) model can be extended to an RC($m$) model with $m$ instances of the
 multiplicative interaction. For example, the RC(2) model is given by
 \[
 \log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c + \theta_r\phi_c.
 \]
-Extra components of the multiplicative interaction can be specified by the
+Extra instances of the multiplicative interaction can be specified by the
 \Rfunarg{multiplicity} argument of \Rfunction{Mult}, so the RC(2) model can be
 fitted to the \Robject{mentalHealth} data as follows
 <<RC2_model>>=
@@ -875,7 +873,6 @@ If the row and column factors have the same levels, or perhaps some levels in
 common, then the row-column interaction could be modelled by a multiplicative
 interaction with homogeneous effects, that is
 \[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\gamma_c.\]
-
 For example, the \Robject{occupationalStatus} data set from \citet{Good79} is a
 contingency table classified by the occupational status of fathers (origin) and
 their sons (destination). \citet{Good79} fits a row-column association model
@@ -907,7 +904,7 @@ In this case there is little gain in allowing heterogeneous effects.
 \subsection{Diagonal Reference Models}
 \label{Dref}
 
-Diagonal reference models, proposed by \citep{Sobe81, Sobe85}, are designed for
+Diagonal reference models, proposed by \citet{Sobe81, Sobe85}, are designed for
 contingency tables classified by factors with the same levels. The cell
 means are modelled as a function of the diagonal effects, i.e., the mean
 responses of the `diagonal' cells in which the levels of the row and
@@ -931,7 +928,7 @@ education factors. This model may be expressed as
 \]
 See Section \ref{NonlinDref} for more detail on the choice of parameterisation.
 
-The baseline model can be fitted as follows
+The baseline model can be fitted as follows:
 @
 <<Baseline_model>>=
 set.seed(1)
@@ -958,7 +955,7 @@ covariates. However, simply reversing the signs of these coefficents does not
 give the same model, since the estimates of these coefficients are not
 independent of the estimates of the diagonal effects. For consistent
 interpretation of the covariate coefficients, it is better to recode the gender
-role factors as follows
+role factors as follows:
 @
 <<Baseline_model_recoded>>=
 MRMM2 <- as.numeric(!conformity$MRMM)
@@ -974,7 +971,7 @@ the diagonal effects have been adjusted appropriately.
 several other models in which the weights in the diagonal reference term are
 dependent on one of the covariates. One particular model they consider
 incorporates an interaction of the weights with the mother's conflict score as
-follows
+follows:
 \[
 \mu_{rc} = \beta_1x_1 + \beta_2x_2 + \beta_3x_3 +\beta_4x_4 +\beta_5x_5 +
 \frac{e^{\xi_1 + \beta_1x}}{e^{\xi_1 + \beta_1x} +
@@ -993,7 +990,7 @@ F
 @ %def
 In this case there are two sets of weights, one for when the mother's conflict
 score is less than average (coded as zero) and one for when the score is greater
-than average (coded as one). These can be evaluated as follows
+than average (coded as one). These can be evaluated as follows:
 @
 <<Interaction_model_weights>>=
 prop.table(exp(coef(F))[c(6,8)])
@@ -1035,20 +1032,20 @@ coef(unidiff)[coefs.of.interest]
 The \Robject{coefs.of.interest} are the multipliers of the association between
 the social class of father and son. We can contrast each multiplier to that of
 the highest education level and obtain the standard errors for these parameters
-as follows
+as follows:
 @
 <<Unidiff_contrasts>>=
 getContrasts(unidiff, coefs.of.interest)
 @ %def
 
-Four-way contingency tables may be described by the ``double UNIDIFF'' model
+Four-way contingency tables may sometimes be described by a
+``double UNIDIFF'' model
 \[
 \mu_{ijkl} = \alpha_{il} + \beta_{jkl} + \exp(\delta_l)\gamma_{ij} +
 \exp(\phi_l)\theta_{ik},
 \]
 where the strengths of two, two-way associations with a common variable are
 estimated across the levels of the fourth variable.
-
 The \Robject{cautres} data set can be used to illustrate the application of the
 double UNIDIFF model. This data set is classified by the variables vote, class,
 religion and election. Using a double UNIDIFF model, we can see how the
@@ -1072,20 +1069,22 @@ Multiplicative Interaction (GAMMI) Models}
 
 Generalized additive main effects and multiplicative interaction models, or
 GAMMI models, were motivated by two-way contingency tables and comprise the row
-and column main effects plus one or more components of the multiplicative
-interaction. The singular value corresponding to each component is often
+and column main effects plus one or more terms of  multiplicative
+interaction. The singular value corresponding to each  multiplicative term
+is often
 factored out, as a measure of the strength of association between the row and
 column scores, indicating the importance of the component, or axis.
 
 For cell means $\mu_{rc}$ a GAMMI-K model has the form
 \[
 g(\mu_{rc}) = \alpha_r + \beta_c + \sum_{k=1}^K
-\sigma_k\gamma_{kr}\delta_{kc}.
+\sigma_k\gamma_{kr}\delta_{kc},
 \]
 in which $g$ is a link function, $\alpha_r$ and $\beta_c$ are the row and column
 main effects, $\gamma_{kr}$ and $\delta_{kc}$ are the row and column scores for
-component $k$ and $\sigma_k$ is the singular value for component $k$. $K$, the
-number of components, is less than or equal to the rank of the matrix of
+multiplicative term $k$ and $\sigma_k$ is the singular value for term $k$. The
+number of multiplicative terms, $K$,
+is less than or equal to the rank of the matrix of
 residuals from the main effects.
 
 The row-column association models discussed in Section \ref{RCmodels} are
@@ -1094,9 +1093,9 @@ illustrate the use of an AMMI model, which is a GAMMI model with an identity
 link and a constant variance.
 
 We shall use the \Robject{wheat} data set taken from \citet{Varg01}, which gives
-wheat yields measured over ten years. First we shall scale these yields and
+wheat yields measured over ten years. First we scale these yields and
 create a new treatment factor, so that we can reproduce the analysis of
-\citet{Varg01}
+\citet{Varg01}:
 @
 <<Scale_yields>>=
 set.seed(1)
@@ -1106,7 +1105,7 @@ treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
                          wheat$N, sep = "")
 @ %def
 Now we can fit the AMMI-1 model, to the scaled yields using the combined
-treatment factor and the year factor from the \Robject{wheat} dataset
+treatment factor and the year factor from the \Robject{wheat} dataset:
 @
 <<AMMI_model>>=
 bilinear1 <- gnm(yield.scaled ~ year + treatment + Mult(year, treatment),
@@ -1131,13 +1130,14 @@ factors by
 their scores on the two axes which show the most information about the data, for
 example the first two principal components.
 
-A rank-$n$ model is a model based on the first $n$ components of the
+A rank-$n$ model is a model based on the first $n$ terms of the
 decomposition. In the case of a singular value decomposition, this is equivalent
-to a model with the first $n$ components of the multiplicative interaction.
+to a model with $n$ instances of the multiplicative interaction.
 
 To illustrate the use of biplot models, we shall use the \Robject{barley} data
 set which describes the incidence of leaf blotch over ten varieties of barley
-grown at nine sites \citep{Wedd74,Gabr98}. The biplot model is fitted as follows
+grown at nine sites \citep{Wedd74,Gabr98}. The biplot model is fitted as
+follows:
 @
 <<Biplot_model>>=
 data(barley)
@@ -1147,7 +1147,7 @@ biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
 @ %def
 using the \Rfunction{wedderburn} family function introduced in Section
 \ref{glms}. Matrices of the row and column scores for the first two singular
-vectors can then be obtained as below
+vectors can then be obtained by:
 @
 <<Row_and_column_scores>>=
 barleySVD <- svd(matrix(biplotModel$predictors, 10, 9))
@@ -1157,15 +1157,15 @@ A
 B
 @ %def
 These matrices are essentially the same as in \citet{Gabr98}. From these the
-biplot can be produced:
+biplot can be produced, for sites $A \ldots I$ and varieties $1 \dots 9, X$:
 \begin{center}
 @
 <<Biplot, fig = TRUE>>=
 plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)),
-     xlim = c(-4, 4), ylim = c(-4, 4))
+     xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data")
 @ %Def
 \end{center}
-for sites $A \ldots I$ and varieties $1 \dots 9, X$. The product of the matrices
+The product of the matrices
 \Robject{A} and \Robject{B}
 is unaffected by rotation or reciprocal scaling along either axis,
 so we can rotate the data so that the points for the sites are roughly parellel
@@ -1180,7 +1180,8 @@ rotation <- matrix(c(cos(a), sin(a), -sin(a), cos(a)), 2, 2, byrow = TRUE)
 rA <- (2 * A/3) %*% rotation
 rB <- (3 * B/2) %*% rotation
 plot(rbind(rA, rB), pch = c(levels(barley$site), levels(barley$variety)),
-     xlim = c(-4, 4), ylim = c(-4, 4))
+     xlim = c(-4, 4), ylim = c(-4, 4),
+     main = "Biplot (rotated) for barley data")
 @ %def
 \end{center}
 In the original biplot, the co-ordinates for the sites and varieties were given
@@ -1194,10 +1195,10 @@ The rotated and scaled biplot suggests the simpler model
 \alpha_i^T = (\gamma_i, 1) \\
 \beta_j^T &= (\delta_j, \tau_j)
 \end{eqnarray*}
-which implies the following model for the logits of the leaf blotch incidence
+which implies the following model for the logits of the leaf blotch incidence:
 \[\alpha_i^T\beta_j = \gamma_i\delta_j + \tau_j.\]
 \citet{Gabr98} describes this as a double additive model, which we can fit as
-follows
+follows:
 @
 <<Double_additive>>=
 variety.binary <- factor(match(barley$variety, c(2,3,6), nomatch = 0) > 0,
@@ -1206,7 +1207,7 @@ doubleAdditive <- gnm(y ~ variety + Mult(site, variety.binary),
                       family = wedderburn, data = barley)
 @ %def
 Comparing the chi-squared statistics, we see that the double additive model is
-an adequate model for the leaf blotch incidence
+an adequate model for the leaf blotch incidence:
 @
 <<Compare_chi-squared>>=
 biplotModChiSq <- sum(residuals(biplotModel, type = "pearson")^2)
@@ -1232,7 +1233,7 @@ using a \Rclass{gnm} model with a log link and poisson variance function.
 For example, the \Robject{backPain} data set from \citet{Ande84} describes the
 progress of patients with back pain. The data set consists of an ordered factor
 quantifying the progress of each patient, and three prognostic variables. These
-data can be re-expressed as follows
+data can be re-expressed as follows:
 @
 <<Re-express_data>>=
 set.seed(1)
@@ -1248,7 +1249,7 @@ backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
                    treatment)
 cbind(.rowID[1:12], .counts[1:12], backPain[1:12,4:1])
 @ %def
-We can now fit the stereotype model to these data
+We can now fit the stereotype model to these data:
 @
 <<Stereotype_model>>=
 oneDimensional <- gnm(.counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
@@ -1261,7 +1262,7 @@ these structural parameters do
 not appear in the returned coefficients. This model is one dimensional since it
 involves only one function of $\mathbf{x} = (x1, x2, x3)$. We can compare this
 model to one with category-specific coefficents of the $x$ variables, as may be
-used for a qualitative categorical response
+used for a qualitative categorical response:
 @
 <<Qualitative_model>>=
 threeDimensional  <- gnm(.counts ~ pain + pain:(x1 + x2 + x3),
@@ -1269,10 +1270,10 @@ threeDimensional  <- gnm(.counts ~ pain + pain:(x1 + x2 + x3),
                          data = backPain)
 threeDimensional
 @ %def
-this model has the maximum dimensionality of three (as determined by the number
+This model has the maximum dimensionality of three (as determined by the number
 of covariates). To obtain the log-likelihoods as reported in \citet{Ande84} we
 need to adjust for the extra parameters introduced to formulate the models as
-poisson models. We write a simple function to do this and compare the
+Poisson models. We write a simple function to do this and compare the
 log-likelihoods of the one dimensional model and the three dimensional model:
 @
 <<Calculate_log-likelihood>>=
@@ -1289,6 +1290,7 @@ t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom))
 @ %def
 which show that the \Robject{oneDimensional} model is adequate.
 
+\newpage
 \appendix
 
 \section{User-level Functions}
@@ -1345,7 +1347,8 @@ We list here, for easy reference, all of the user-level functions in the
 \end{tabular*}
 \end{table}
 
+\newpage
 \bibliography{gnm}
-\bibliographystyle{plainnat}
+\bibliographystyle{chicago}
 
 \end{document}

@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{gnmOverview}
-%\VignetteDepends{nnet, gtools}
+%\VignetteDepends{gtools}
 %\VignetteKeywords{Generalized Nonlinear Models}
 %\VignettePackage{gnm}
 
@@ -13,7 +13,7 @@
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,nohead]{geometry}
-%\usepackage{hyperref}
+\usepackage{hyperref}
 
 \setkeys{Gin}{width=0.6\textwidth}
 

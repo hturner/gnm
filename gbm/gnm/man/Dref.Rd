@@ -58,6 +58,9 @@ Dref(..., formula = ~ 1)
   new models for the analysis of the mobility effects hypothesis.  
   \emph{American Sociological Review} \bold{50}, 699--712.
 
+  Clifford, P. and Heath, A. F. (1993) The Political Consequences of
+  Social Mobility. \emph{J. Roy. Stat. Soc. A}, \bold{156(1)}, 51-61.
+
   Van der Slik, F. W. P., De Graaf, N. D and Gerris, J. R. M. (2002)
   Conformity to Parental Rules: Asymmetric Influences of Father's and
   Mother's Levels of Education. \emph{European Sociological Review}
@@ -71,24 +74,148 @@ Dref(..., formula = ~ 1)
   \code{\link{Mult}} for specifying multiplicative interactions
   in \code{gnm} formulae.}
 \examples{
+### Examples from Clifford and Heath paper
+### (Results differ slightly - possible transcription error in
+### published data?)
+set.seed(1)
+data(voting)
+## reconstruct counts voting Labour/non-Labour
+count <- with(voting, percentage/100 * total)
+yvar <- cbind(count, voting$total - count)
+
+## fit diagonal reference model with constant weights
+classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
+                     family = binomial, data = voting)
+prop.table(exp(coef(classMobility)[2:3]))
+}
+
+## create factors indicating movement in and out of salariat (class 1)
+upward <- with(voting, origin != 1 & destination == 1)
+downward <- with(voting, origin == 1 & destination != 1)
+
+## fit separate weights for the "socially mobile" groups
+socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
+                                         formula = ~ 1 + downward + upward),
+                                    data = data.frame(downward, upward)),
+                      family = binomial, data = voting)
+prop.table(exp(coef(socialMobility)[c(4, 7)] + coef(socialMobility)[c(2, 5)]))
+prop.table(exp(coef(socialMobility)[c(3, 6)] + coef(socialMobility)[c(2, 5)]))
+prop.table(exp(coef(socialMobility)[c(2, 5)]))
+
+## fit separate weights for downwardly mobile groups only
+downwardMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
+                                           formula = ~ 1 + downward),
+                                      data = data.frame(downward)),
+                        family = binomial, data = voting)
+downwardMobility
+prop.table(exp(coef(downwardMobility)[c(3, 5)] + 
+               coef(downwardMobility)[c(2, 4)]))
+	       prop.table(exp(coef(downwardMobility)[c(2, 4)]))
+
+\dontrun{	       
 ### Examples from Van der Slik paper
-data(conformity)
+### For illustration only - data not publically available
+### Using data in data.frame named 'conformity', with variables
+### MCFM - mother's conformity score
+### FCFF - father's conformity score
+### MOPLM - a factor describing the mother's education with 7 levels
+### FOPLF - a factor describing the father's education with 7 levels
+### AGEM - mother's birth cohort
+### MRMM - mother's traditional role model
+### FRMF - father's traditional role model
+### MWORK - mother's employment
+### MFCM - mother's family conflict score
+### FFCF - father's family conflict score
+
 set.seed(1)
 
-## Models for mothers' conformity score
+## Models for mothers' conformity score as specified in Figure 1
 A <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF)) + MFCM + AGEM + FRMF +
-         MRMM + MWORK - 1, family = gaussian, data = conformity, trace = TRUE)
-prop.table(exp(coef(A)[6:7])) # weights as in Table 4
+MRMM + MWORK - 1, family = gaussian, data = conformity)
+A
+# Call:
+# gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+#     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+#
+#
+# Coefficients:
+#                    AGEM                      MRMM                      FRMF  
+#                 0.06364                  -0.32425                  -0.25324  
+#                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
+#                -0.06430                  -0.06043                   0.34389  
+# Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
+#                 0.65611                   4.95123                   4.86328  
+#     Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
+#                 4.86458                   4.72342                   4.43516  
+#     Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
+#                 4.18873                   4.43379  
+#
+# Deviance:            425.3389 
+# Pearson chi-squared: 425.3389 
+# Residual df:         576
 
-## equivalent models for fathers
-A <- gnm(FCFF ~ Nonlin(Dref(FOPLF, MOPLM)) + FFCF + AGEM + FRMF +
-         MRMM + MWORK - 1, family = gaussian, data = conformity)
 prop.table(exp(coef(A)[6:7])) # weights as in Table 4
+# Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
+#               0.4225734                0.5774266
 
-F <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)) + MFCM +
-         AGEM + FRMF + MRMM + MWORK - 1, family = gaussian, data = conformity)
+F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+         Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)), family = gaussian,
+         data = conformity)
+# Call:
+# gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+#     Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
+#     data = conformity)
+#
+#
+# Coefficients:
+#                                                      AGEM  
+#                                                   0.05818  
+#                                                      MRMM  
+#                                                  -0.32701  
+#                                                      FRMF  
+#                                                  -0.25772  
+#                                                     MWORK  
+#                                                  -0.07847  
+#                                                      MFCM  
+#                                                  -0.01694  
+# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)  
+#                                                   1.03516  
+#        Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM  
+#                                                  -1.77703  
+# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)  
+#                                                  -0.03516  
+#        Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM  
+#                                                   2.77703  
+#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1  
+#                                                   4.82477  
+#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2  
+#                                                   4.88066  
+#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3  
+#                                                   4.83969  
+#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4  
+#                                                   4.74849  
+#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5  
+#                                                   4.42019  
+#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6  
+#                                                   4.17956  
+#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7  
+#                                                   4.40819  
+# 
+# Deviance:            420.9022 
+# Pearson chi-squared: 420.9022 
+# Residual df:         575
+
 prop.table(exp(coef(F))[c(6,8)]) # weights for MFCM = 0
+# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept) 
+#                                                 0.7446585 
+# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept) 
+#                                                 0.2553415 
 prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)])) # weights for MFCM = 1
+# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM 
+#                                         0.02977851 
+# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM 
+#                                         0.97022149 
+}
 }
 \keyword{ models }
 \keyword{ regression }

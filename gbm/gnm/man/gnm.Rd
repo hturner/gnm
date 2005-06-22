@@ -10,7 +10,7 @@
 \usage{
 gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     data = NULL, subset, weights, na.action, method = "gnmFit", offset,
-    start = NULL, control = gnmControl(...), verbose = FALSE,
+    start = NULL, control = gnmControl(...), verbose = TRUE,
     model = TRUE, x = FALSE, vcov = FALSE, termPredictors = FALSE, ...)
 }
 \arguments{
@@ -53,8 +53,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     parameters. } 
   \item{control}{ a list of parameters for controlling the fitting process. See
     \code{gnmControl} for details.}
-  \item{verbose} { logical: if \code{TRUE} a diagnostic error message is
-    printed if the algorithm restarts. }
+  \item{verbose} { logical: if \code{TRUE} progress indicators are
+    printed as the model is fitted, including a diagnostic error message
+    if the algorithm restarts. } 
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
   \item{x}{ logical: if \code{TRUE} the local design matrix from the last
     iteration is returned. }

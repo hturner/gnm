@@ -13,7 +13,7 @@
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,nohead]{geometry}
-\usepackage{hyperref}
+%\usepackage{hyperref}
 
 \setkeys{Gin}{width=0.6\textwidth}
 
@@ -910,7 +910,286 @@ means are modelled as a function of the diagonal effects, i.e., the mean
 responses of the `diagonal' cells in which the levels of the row and
 column factors are the same.
 
+To illustrate the use of diagonal reference models we shall use the
+\Robject{voting} data from \citet{Clif93}. The data come from the 1987 British
+general election and are the percentage voting Labour in groups cross-classified
+by the class of the head of household (\Robject{destination}) and the class of
+their father (\Robject{origin}). In order to weight these percentages by the
+group size, we first back-transform them to the counts of those voting Labour
+and those not voting Labour: 
+@ 
+<<Transform_to_counts>>=
+set.seed(1)
+data(voting)
+count <- with(voting, percentage/100 * total)
+yvar <- cbind(count, voting$total - count)
+@ %def 
+
+The grouped percentages may be modelled by a basic diagonal reference model, that
+is, a weighted sum of the diagonal effects for the corresponding origin and
+destination classes. This model may be expressed as
+\[
+\mu_{od} = \frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
+\frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d .
+\]
+See Section \ref{NonlinDref} for more detail on the parameterisation. 
+
+The basic diagonal reference model may be fitted using \Rfunction{gnm} as
+follows 
+@ 
+<<Class_mobility>>=
+classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
+                       family = binomial, data = voting)
+classMobility
+@ %def 
+and the origin and destination weights can be evaluated as below
+@ 
+<<Class_mobility_weights>>=
+prop.table(exp(coef(classMobility)[2:3]))
+@ %def 
+This model is slightly different from that reported by \citet{Clif93}, which we
+believe may be due to a transcription error in the published data. 
+
+\citet{Clif93} suggest that movements in and out of the salariat (class 1)
+should be treated differently from movements between the lower classes (classes
+2 - 5), since the former has a greater effect on social status. Thus they 
+propose the following model
+\begin{equation*}
+\mu_{od} = \begin{cases}
+\frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
+\frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d & \text{if } i = 1\\
+\frac{e^{\delta_3}}{e^{\delta_3} + e^{\delta_4}}\gamma_o +
+\frac{e^{\delta_4}}{e^{\delta_3} + e^{\delta_4}}\gamma_d & \text{if } j = 1\\
+\frac{e^{\delta_5}}{e^{\delta_5} + e^{\delta_6}}\gamma_o +
+\frac{e^{\delta_6}}{e^{\delta_5} + e^{\delta_6}}\gamma_d & \text{if } i \ne 1
+\text{ and } j \ne 1
+\end{cases}
+\end{equation*}
+To fit this model we define factors indicating movement in (upward) and out
+(downward) of the salariat
+@ 
+<<Salariat_factors>>=
+upward <- with(voting, origin != 1 & destination == 1)
+downward <- with(voting, origin == 1 & destination != 1)
+@ %def 
+Then the diagonal reference model with separate weights for socially mobile
+groups can be estimated as follows
+@ 
+<<Social_mobility>>=
+socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
+                                         formula = ~ 1 + downward + upward),
+                                    data = data.frame(downward, upward)),
+                      family = binomial, data = voting)
+socialMobility
+@ %def 
+The weights for those moving into the salariat, those moving out of the
+salariat and those in any other group, can be evaluated as below
+@ 
+<<social_mobility_weights>>=
+prop.table(exp(coef(socialMobility)[c(4, 7)] + coef(socialMobility)[c(2, 5)]))
+prop.table(exp(coef(socialMobility)[c(3, 6)] + coef(socialMobility)[c(2, 5)]))
+prop.table(exp(coef(socialMobility)[c(2, 5)]))
+@ %def
+Again, the results differ slightly from those reported by \citet{Clif93}, but
+the essence of the results is the same: the origin weight is much larger for the
+downwardly mobile groups than for the other groups. The weights for the upwardly
+mobile groups are very similar to the base level weights, so the model may be
+simplified by only fitting separate weights for the downwardly mobile groups:
+@ 
+<<"Downward_mobility">>=
+downwardMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
+                                           formula = ~ 1 + downward),
+                                      data = data.frame(downward)),
+                        family = binomial, data = voting)
+downwardMobility
+prop.table(exp(coef(downwardMobility)[c(3, 5)] + 
+               coef(downwardMobility)[c(2, 4)]))
+prop.table(exp(coef(downwardMobility)[c(2, 4)]))
+@ %def 
+
 %\SweaveInput{vanDerSlikEg.Rnw}
+
+Another application of diagonal reference models is given by
+\citet{Vand02}. The data from this paper are not publically available, but we
+shall show how the models presented in the paper may be estimated using
+\Rfunction{gnm}. 
+
+The data relate to the value parents place on their children conforming to their
+rules. There are two response variables: the mother's conformity score (MCFM)
+and the father's conformity score (FCFF). The data are cross-classified by two
+factors describing the education level of the mother (MOPLM) and the father
+(FOPLF), and there are six further covariates (AGEM, MRMM, FRMF, MWORK, MFCM and
+FFCF). 
+
+In their baseline model for the mother's conformity score, \citet{Vand02}
+include five of the six covariates (leaving out the father's family conflict
+score, FCFF) and a diagonal reference term with constant weights based on the two
+education factors. This model may be expressed as
+\[
+\mu_{rc} = \beta_1x_1 + \beta_2x_2 + \beta_3x_3 +\beta_4x_4 +\beta_5x_5 +
+\frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_r +
+\frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_c .
+\]
+
+The baseline model can be fitted as follows:
+\begin{alltt}
+> set.seed(1)
+> A <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
++          Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+> A
+
+Call:
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+
+
+Coefficients:
+                    AGEM                      MRMM                      FRMF  
+                 0.06364                  -0.32425                  -0.25324  
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
+                -0.06430                  -0.06043                   0.34389  
+Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
+                 0.65611                   4.95123                   4.86328  
+    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
+                 4.86458                   4.72342                   4.43516  
+    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
+                 4.18873                   4.43379  
+
+Deviance:            425.3389 
+Pearson chi-squared: 425.3389 
+Residual df:         576
+\end{alltt}
+Due to the constraints imposed on the weights in the diagonal reference term,
+the coefficients of model \Robject{A} are the unique solutions. Therefore
+these estimates should correspond to those reported in Table 4 of
+\citet{Vand02}. The weights in the diagonal reference term can be evaluated as
+follows:
+\begin{alltt}
+> prop.table(exp(coef(A)[6:7]))
+Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
+               0.4225734                0.5774266 
+\end{alltt}
+giving the values reported by \citet{Vand02}. All the other coefficients of
+model A are the same as those reported by \citet{Vand02} except the coefficients
+of the mother's gender role (MRMM) and the father's gender role
+(FRMF). \citet{Vand02} reversed the signs of the coefficients of these factors
+since they were coded in the direction of liberal values, unlike the other
+covariates. However, simply reversing the signs of these coefficents does not
+give the same model, since the estimates of these coefficients are not
+independent of the estimates of the diagonal effects. For consistent
+interpretation of the covariate coefficients, it is better to recode the gender
+role factors as follows:
+\begin{alltt}
+> MRMM2 <- as.numeric(!conformity$MRMM)
+> FRMF2 <- as.numeric(!conformity$FRMF)
+> A <- gnm(MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
++          Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+> A
+
+Call:
+gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM + 
+    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+
+
+Coefficients:
+                    AGEM                     MRMM2                     FRMF2  
+                 0.06364                   0.32425                   0.25324  
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
+                -0.06430                  -0.06043                   0.34389  
+Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
+                 0.65611                   4.37373                   4.28578  
+    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
+                 4.28708                   4.14593                   3.85766  
+    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
+                 3.61123                   3.85629  
+
+Deviance:            425.3389 
+Pearson chi-squared: 425.3389 
+Residual df:         576
+\end{alltt}
+The coefficients of the covariates are now as reported by \citet{Vand02}, but
+the diagonal effects have been adjusted appropriately.
+
+\citet{Vand02} compare the baseline model for the mother's conformity score to
+several other models in which the weights in the diagonal reference term are
+dependent on one of the covariates. One particular model they consider
+incorporates an interaction of the weights with the mother's conflict score as
+follows:
+\[
+\mu_{rc} = \beta_1x_1 + \beta_2x_2 + \beta_3x_3 +\beta_4x_4 +\beta_5x_5 +
+\frac{e^{\xi_1 + \beta_1x}}{e^{\xi_1 + \beta_1x} +
+e^{\xi_2 + \beta_2x}}\gamma_r + \frac{e^{\xi_2 + \beta_2x}}{e^{\xi_1 + \beta_1x}
++ e^{\xi_2 + \beta_2x}}\gamma_c.
+\]
+
+This model can be fitted as below, using the original coding for the gender
+role factors for ease of comparison to the results reported by \citet{Vand02},
+\begin{alltt}
+> F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
++          Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)), family = gaussian,
++          data = conformity)
+> F
+
+Call:
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+    Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
+    data = conformity)
+
+
+Coefficients:
+                                                     AGEM  
+                                                  0.05818  
+                                                     MRMM  
+                                                 -0.32701  
+                                                     FRMF  
+                                                 -0.25772  
+                                                    MWORK  
+                                                 -0.07847  
+                                                     MFCM  
+                                                 -0.01694  
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)  
+                                                  1.03516  
+       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM  
+                                                 -1.77703  
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)  
+                                                 -0.03516  
+       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM  
+                                                  2.77703  
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1  
+                                                  4.82477  
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2  
+                                                  4.88066  
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3  
+                                                  4.83969  
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4  
+                                                  4.74849  
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5  
+                                                  4.42019  
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6  
+                                                  4.17956  
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7  
+                                                  4.40819  
+
+Deviance:            420.9022 
+Pearson chi-squared: 420.9022 
+Residual df:         575 
+\end{alltt}
+In this case there are two sets of weights, one for when the mother's conflict
+score is less than average (coded as zero) and one for when the score is greater
+than average (coded as one). These can be evaluated as follows:
+\begin{alltt}
+> prop.table(exp(coef(F))[c(6,8)])
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept) 
+                                                0.7446585 
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept) 
+                                                0.2553415 
+> prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)]))
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM 
+                                        0.02977851 
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM 
+                                        0.97022149 
+\end{alltt}
+giving the same weights as in Table 4 of \citet{Vand02}.
 
 \subsection{Uniform Difference (UNIDIFF) Models}
 \label{Unidiff}

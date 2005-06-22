@@ -1,0 +1,64 @@
+\begin{thebibliography}{10}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Agresti(2002)]{Agre02}
+A~Agresti.
+\newblock \emph{Categorical Data Analysis}.
+\newblock New York: Wiley, 2nd edition, 2002.
+
+\bibitem[Anderson(1984)]{Ande84}
+J.~A. Anderson.
+\newblock Regression and ordered categorical variables.
+\newblock \emph{J. R. Statist. Soc. B}, 46\penalty0 (1):\penalty0 1--30, 1984.
+
+\bibitem[der Slik et~al.(2002)der Slik, Graaf, and Gerris]{Vand02}
+F.~W. P.~Van der Slik, N.~D.~De Graaf, and J.~R.~M. Gerris.
+\newblock Conformity to parental rules: Asymmetric influences of father's and
+  mother's levels of education.
+\newblock \emph{Europ. Soc. Rev.}, 18:\penalty0 489--502, 4 2002.
+
+\bibitem[Erikson and Goldthorpe(1992)]{Erik92}
+R~Erikson and J~H Goldthorpe.
+\newblock \emph{The Constant Flux}.
+\newblock Oxford: Clarendon Press, 1992.
+
+\bibitem[Gabriel(1998)]{Gabr98}
+K.~R. Gabriel.
+\newblock Generalised bilinear regression.
+\newblock \emph{Biometrika}, 85:\penalty0 689--700, 1998.
+
+\bibitem[Goodman(1979)]{Good79}
+L~A Goodman.
+\newblock Simple models for the analysis of association in
+  cross-classifications having ordered categories.
+\newblock \emph{J. Amer. Statist. Assoc.}, 74:\penalty0 537--552, 1979.
+
+\bibitem[Sobel(1981)]{Sobe81}
+M.~E. Sobel.
+\newblock Diagonal mobility models: A substantively motivated class of designs
+  for the analysis of mobility effects.
+\newblock \emph{Amer. Soc. Rev.}, 46:\penalty0 893--906, 1981.
+
+\bibitem[Sobel(1985)]{Sobe85}
+M.~E. Sobel.
+\newblock Social mobility and fertility revisited: Some new models for the
+  analysis of the mobility effects hypothesis.
+\newblock \emph{Amer. Soc. Rev.}, 50:\penalty0 699--712, 1985.
+
+\bibitem[Vargas et~al.(2001)Vargas, Crossa, van Eeuwijk, Sayre, and
+  Reynolds]{Varg01}
+M~Vargas, J~Crossa, F~van Eeuwijk, K~D Sayre, and M~P Reynolds.
+\newblock Interpreting treatment by environment interaction in agronomy trials.
+\newblock \emph{Agronomy Journal}, 93:\penalty0 949--960, 2001.
+
+\bibitem[Xie(1992)]{Xie92}
+Y~Xie.
+\newblock The log-multiplicative layer effect model for comparing mobility
+  tables.
+\newblock \emph{American Sociological Review}, 57:\penalty0 380--395, 1992.
+
+\end{thebibliography}

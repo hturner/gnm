@@ -1,7 +1,7 @@
 gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 offset, start = NULL, control = gnmControl(...),
-                verbose = FALSE, model = TRUE, x = FALSE, vcov = FALSE,
+                verbose = TRUE, model = TRUE, x = FALSE, vcov = FALSE,
                 termPredictors = FALSE, ...) {
     
     call <- match.call()

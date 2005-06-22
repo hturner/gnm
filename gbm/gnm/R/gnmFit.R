@@ -26,6 +26,11 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
                                                   family = family)$coef))
             oneAtATime <- !linear & !specified & !constrain
             for (iter in seq(length = control$iterStart * any(oneAtATime))) {
+                if (verbose){
+                    if (iter == 1)
+                        cat("Running start-up iterations", "\n"[control$trace])
+                    if (!control$trace) cat(".")
+                }
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
                     factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
@@ -48,15 +53,21 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
                                           weights, family, modelTools, X)
                 if (control$trace){
                     dev <- sum(family$dev.resids(y, mu, weights))
-                    cat("Startup iteration", iter,
-                        ". Deviance = ", dev, "\n")
+                    cat("Start-up iteration ", iter,
+                        ". Deviance = ", dev, "\n", sep = "")
                 }
                 if (status == "bad.param") break
             }
+            if (any(oneAtATime) & verbose & !control$trace) cat("\n")
         }    
         else theta <- structure(ifelse(!constrain, start, 0),
                                 names = names(modelTools$classID))
         for (iter in seq(control$iterMax)[status == "not.converged"]) {
+            if (verbose){
+                if (iter == 1)
+                    cat("Running main iterations", "\n"[control$trace])
+                if (!control$trace) cat(".")
+            }
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
             X <- modelTools$localDesignFunction(theta, factorList)
@@ -71,7 +82,7 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
             dev[2] <- dev[1]
             dev[1] <- sum(family$dev.resids(y, mu, weights))
             if (control$trace)
-                cat("Iteration", iter, ". Deviance = ", dev[1], "\n")
+                cat("Iteration ", iter, ". Deviance = ", dev[1], "\n", sep = "")
             if (is.nan(dev[1])) {
                 status <- "no.deviance"
                 break
@@ -98,19 +109,21 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
             theta <- theta + theChange 
             theta[constrain] <- 0
         }
-        if (status %in% c("converged", "not.converged") | all(!is.na(start)))
+        if (status %in% c("converged", "not.converged") | all(!is.na(start))) {
+            if (verbose) cat("\n"[!control$trace], "Done\n", sep = "")
             break
+        }
         else {
             attempt <- attempt + 1
-            if (verbose == TRUE)
+            if (verbose)
                 cat(switch(status,
-                           "bad.param" = "Bad parameterisation",
-                           "not.finite" = "Iterative weights are not all finite",
-                           "no.deviance" = "Deviance is NaN",
-                           "stuck" = "Iterations are not converging"))
+                           "bad.param" = "\nBad parameterisation",
+                           "not.finite" = "\nIterative weights are not all finite",
+                           "no.deviance" = "\nDeviance is NaN",
+                           "stuck" = "\nIterations are not converging"))
             if (attempt > 5)
                 stop("algorithm has failed: no model could be estimated")
-            else if (verbose == TRUE) cat(": restarting\n")
+            else if (verbose) cat(": restarting\n")
         }
     }
     if (status == "not.converged")

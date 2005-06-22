@@ -130,12 +130,14 @@ prop.table(exp(coef(downwardMobility)[c(3, 5)] +
 set.seed(1)
 
 ## Models for mothers' conformity score as specified in Figure 1
-A <- gnm(MCFM ~ Nonlin(Dref(MOPLM, FOPLF)) + MFCM + AGEM + FRMF +
-MRMM + MWORK - 1, family = gaussian, data = conformity)
+A <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+         Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
+         verbose = FALSE)
 A
 # Call:
 # gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-#     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+#     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
+#     verbose = FALSE)
 #
 #
 # Coefficients:
@@ -158,13 +160,14 @@ prop.table(exp(coef(A)[6:7])) # weights as in Table 4
 # Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
 #               0.4225734                0.5774266
 
-F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
-         Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)), family = gaussian,
-         data = conformity)
+F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+         Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian,
+         data = conformity, verbose = FALSE)
+F	 
 # Call:
 # gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
 #     Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
-#     data = conformity)
+#     data = conformity, verbose = FALSE)
 #
 #
 # Coefficients:

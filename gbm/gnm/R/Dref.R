@@ -11,7 +11,8 @@ Dref <- function(..., formula = ~ 1) {
     nGlobal <- length(global)
 
     ## get design matrix for local structure
-    local <- model.matrix(formula, data = gnmData)
+    localData <- model.frame(formula, data = gnmData)
+    local <- model.matrix(formula, data = localData)
 
     ## create index and labels for parameters
     factorIndex <- c(rep(seq(labelList), each = ncol(local)), rep(0, nGlobal))

@@ -248,14 +248,10 @@ would be specified by the formula
 
 Nonlinear terms which can not be specified using \Rfunction{Mult} may be
 specified using \Rfunction{Nonlin}. This symbolic function indicates a term
-which requires a
-plug-in function to estimate the associated parameters. There are two arguments
-to \Rfunction{Nonlin}: a call to the relevant plug-in function and if
-necessary, a
-\Rclass{data.frame} object containing any variables that are required by
-specified arguments of
-the plug-in function, which do not appear in any unspecified arguments of the
-plug-in function or elsewhere in the model formula.
+which requires a plug-in function to estimate the associated parameters. There
+are two arguments to \Rfunction{Nonlin}: a call to the relevant plug-in function
+and if necessary, a \Rclass{data.frame} object containing any variables that are
+required uniquely by specified arguments of the plug-in function.
 
 For example, in the formula
 \begin{alltt}
@@ -271,7 +267,8 @@ call to \Robject{PlugInFunction}, a data frame containing factor
 \Rfunarg{data} argument of \Rfunction{Nonlin}.
 Note that this would not be necessary
 if \Robject{C} could be found in an environment on the search path (given by
-\texttt{search()}).
+\texttt{search()}), however \Robject{C} would only appear in the returned
+model frame if it was passed directly to \Rfunction{Nonlin}.
 
 The two plug-in functions already included in the
 \Rpackage{gnm} package are described
@@ -977,8 +974,7 @@ groups can be estimated as follows
 @ 
 <<Social_mobility>>=
 socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
-                                         formula = ~ 1 + downward + upward),
-                                    data = data.frame(downward, upward)),
+                                         formula = ~ 1 + downward + upward)),
                       family = binomial, data = voting)
 socialMobility
 @ %def 
@@ -998,8 +994,7 @@ simplified by only fitting separate weights for the downwardly mobile groups:
 @ 
 <<"Downward_mobility">>=
 downwardMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
-                                           formula = ~ 1 + downward),
-                                      data = data.frame(downward)),
+                                           formula = ~ 1 + downward)),
                         family = binomial, data = voting)
 downwardMobility
 prop.table(exp(coef(downwardMobility)[c(3, 5)] + 
@@ -1023,8 +1018,8 @@ FFCF).
 
 In their baseline model for the mother's conformity score, \citet{Vand02}
 include five of the six covariates (leaving out the father's family conflict
-score, FCFF) and a diagonal reference term with constant weights based on the two
-education factors. This model may be expressed as
+score, FCFF) and a diagonal reference term with constant weights based on the
+two education factors. This model may be expressed as
 \[
 \mu_{rc} = \beta_1x_1 + \beta_2x_2 + \beta_3x_3 +\beta_4x_4 +\beta_5x_5 +
 \frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_r +
@@ -1035,12 +1030,14 @@ The baseline model can be fitted as follows:
 \begin{alltt}
 > set.seed(1)
 > A <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
-+          Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
++          Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
++          verbose = FALSE)
 > A
 
 Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
+    verbose = FALSE)
 
 
 Coefficients:
@@ -1083,12 +1080,14 @@ role factors as follows:
 > MRMM2 <- as.numeric(!conformity$MRMM)
 > FRMF2 <- as.numeric(!conformity$FRMF)
 > A <- gnm(MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
-+          Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
++          Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
++          verbose = FALSE)
 > A
 
 Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM + 
-    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity)
+    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
+    verbose = FALSE)
 
 
 Coefficients:
@@ -1127,13 +1126,13 @@ role factors for ease of comparison to the results reported by \citet{Vand02},
 \begin{alltt}
 > F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
 +          Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)), family = gaussian,
-+          data = conformity)
++          data = conformity, verbose = FALSE)
 > F
 
 Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
     Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
-    data = conformity)
+    data = conformity, verbose = FALSE)
 
 
 Coefficients:

@@ -15,9 +15,12 @@ MultHomog(...)
 }
 \details{
   Designed to work as a plug-in function for \code{gnm}, \code{MultHomog}
-  produces the objects required to fit a multiplicative interaction in which
-  level effects are constrained to be equal across factors, i.e.
-  \deqn{\gamma_i\gamma_j...}{gamma_i gamma_j}
+  produces the objects required to fit a multiplicative interaction with
+  one component in which the constituent multipliers are the effects of
+  two or more factors and the effects of these factors are constrained
+  to be equal when the factor levels are equal. Thus the interaction
+  effect would be
+  \deqn{\gamma_i\gamma_j...}{gamma_i gamma_j ...}
   for an observation with level \eqn{i} of the first factor, level
   \eqn{j} of the second factor and so on, where \eqn{\gamma_l}{gamma_l}
   is the effect for level \eqn{l} of the homogeneous multiplicative factor.

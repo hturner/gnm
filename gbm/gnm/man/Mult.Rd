@@ -6,37 +6,42 @@
 \code{Mult} is a symbolic wrapper to indicate a multiplicative interaction in
 the formula argument to \code{gnm}.
 
-\code{Exp} is a symbolic wrapper to indicate an exponeniated factor in a
-\code{Mult} term.
+\code{Exp} is a symbolic wrapper to indicate an exponeniated multiplier
+in a \code{Mult} term. 
 }
 \usage{
 Mult(..., multiplicity = 1)
-Exp(factor)
+Exp(multiplier)
 }
 \arguments{
   \item{\dots}{a comma-separated list of two or more symbolic
-    expressions representing the factors in the interaction.}
+    expressions, which represent the constituent multipliers in each
+    component of the interaction.}
   \item{multiplicity}{a positive integer specifying the number of
-    multiplicative components to fit.}
-  \item{factor}{a symbolic expression representing a factor in a
-    multiplicative interaction.}
+    components to fit.}
+  \item{multiplier}{a symbolic expression.}
 }
 \details{
-  A multiplicative interaction is a term of the form
-  \deqn{\gamma_i\delta_j...}{gamma_i delta_j...}
-  for an observation with level \eqn{i} of the first factor whose effect
-  at level \eqn{l} is \eqn{\gamma_l}{gamma_l}, and with level \eqn{j} of the
-  second factor whose effect at level \eqn{m} is
-  \eqn{\delta_m}{delta_m}, and so on.
+  A multiplicative interaction is a sum of components that are of the
+  form 
+  \deqn{m_1 m_2 ... m_n}
+  where the constituent multipliers \eqn{m_1, m_2, ..., m_n} are linear
+  predictors, which are of the same form in each component.
 
-  In a \code{Mult} term, the factors are represented by symbolic
-  expressions to allow factors to be specified as a function of
-  covariates. These expressions are interpreted in the same way as the
-  right hand side of a formula in an object of class
-  \code{"formula"}. In particular, an intercept term is added by
-  default. Offsets can be added to individual factors, using
-  \code{offset}. Factors can be constrained to be nonnegative through 
-  the use of \code{Exp}. 
+  \code{Mult} may be used to specify a multiplicative interaction in the
+  \code{formula} argument to \code{gnm}. The desired number of
+  components in the interaction is specified by \code{multiplicity}.
+
+  Models for the constituent multipliers are specified symbolically
+  as unspecified arguments to \code{Mult}. These symbolic expressions
+  are interpreted in the same way as the right hand side of a formula in
+  an object of class \code{"formula"}. In particular, an intercept term
+  is added by default. Offsets can be added to constituent multipliers,
+  using \code{offset}.
+
+  \code{Exp} is a companion function to \code{Mult}, which may be used to
+  specify an exponentiated constituent multiplier, so that the
+  multiplier is constrained to be nonnegative. 
 }
 \value{
     \code{Mult} returns a list of objects of class \code{"Mult"}, with one element
@@ -57,7 +62,7 @@ Exp(factor)
          \code{\link{MultHomog}}}
 \examples{
 set.seed(1)
-## Using 'Mult' with 'Exp' to constrain first factor
+## Using 'Mult' with 'Exp' to constrain the first constituent multiplier
 data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ:orig + educ:dest +

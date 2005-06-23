@@ -1,0 +1,13 @@
+.*\.DS_Store
+.*\.log
+.*\.aux
+.*\.bib
+.*\.bbl
+.*\.tex
+.*\.ps
+.*\.eps
+.*-.*\.pdf
+.*\.dvi
+.*\.toc
+.*\.blg
+.*\.out

@@ -22,11 +22,12 @@ Exp(multiplier)
   \item{multiplier}{a symbolic expression.}
 }
 \details{
-  A multiplicative interaction is a sum of components that are of the
-  form 
-  \deqn{m_1 m_2 ... m_n}
+  A multiplicative interaction is : either (if \code{multiplicity = 1})
+  a product of the form 
+  \deqn{m_1 m_2 ... m_n},
   where the constituent multipliers \eqn{m_1, m_2, ..., m_n} are linear
-  predictors, which are of the same form in each component.
+  predictors; or (if \code{multiplicity} is greater than 1) a sum of
+  \sQuote{components}, each of which is a product of the same form.
 
   \code{Mult} may be used to specify a multiplicative interaction in the
   \code{formula} argument to \code{gnm}. The desired number of

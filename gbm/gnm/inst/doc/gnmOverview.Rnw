@@ -12,7 +12,7 @@
 \usepackage{courier}
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
-\usepackage[left=2cm,nohead]{geometry}
+\usepackage[left=2cm,top=3cm,nohead]{geometry}
 \usepackage{hyperref}
 
 \setkeys{Gin}{width=0.6\textwidth}
@@ -35,7 +35,9 @@
 \title{Generalized nonlinear models in R: an overview of the
 \textbf{\Rpackage{gnm}} package}
 
-\author{Heather Turner and David Firth\\
+\author{Heather Turner and David Firth\footnote{
+This work was supported by the Economic and Social Research Council (UK)
+through a Professorial Fellowship.}\\
 \emph{University of Warwick}
 }
 
@@ -1507,6 +1509,10 @@ logLikMultinom <- function(model){
 t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom))
 @ %def
 which show that the \Robject{oneDimensional} model is adequate.
+
+
+
+
 
 \newpage
 \appendix

@@ -4,6 +4,7 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
                     start, control = gnmControl(...), verbose = FALSE,
                     x = FALSE, vcov = FALSE, termPredictors = FALSE) {
     attempt <- 1
+    if (verbose) width <- as.numeric(options("width"))
     repeat {
         status <- "not.converged"
         dev <- numeric(2)
@@ -30,6 +31,7 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
                     if (iter == 1)
                         cat("Running start-up iterations", "\n"[control$trace],
                             sep = "")
+                    if ((iter + 25) %% width == (width - 1)) cat("\n")
                     if (!control$trace) cat(".")
                 }
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
@@ -68,6 +70,7 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
                 if (iter == 1)
                     cat("Running main iterations", "\n"[control$trace],
                         sep = "")
+                if ((iter + 21) %% width == (width - 1)) cat("\n")
                 if (!control$trace) cat(".")
             }
             factorList <- modelTools$factorList(theta)

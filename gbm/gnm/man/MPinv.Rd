@@ -17,10 +17,10 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
     rows/columns which form a diagonal submatrix of \code{mat}. }
   \item{onlyFirstCol}{ Logical.  If \code{TRUE}, return only the first
     column of the generalized inverse matrix; otherwise the whole matrix.}
-  \item{onlyNonElim}{ Logical.  If TRUE, return only rows/columns that
+  \item{onlyNonElim}{ Logical.  If \code{TRUE}, return only rows/columns that
     are in the complement of the set specified in \code{eliminate}.}
-  \item{tolerance}{ A positive scalar which determines the toleranceerance for
-    detecting zeroes among the singular values }
+  \item{tolerance}{ A positive scalar which determines the tolerance for
+    detecting zeroes among the singular values. }
 }
 \details{
   Real-valuedness is not checked, and neither is symmetry or the

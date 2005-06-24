@@ -21,7 +21,7 @@
   }
 }
 \source{
-  http://ideas.repec.org/c/boc/bocode/s419001.html
+  \url{http://ideas.repec.org/c/boc/bocode/s419001.html}
 }
 \references{
   Anderson, J. A. (1984) Regression and Ordered Categorical

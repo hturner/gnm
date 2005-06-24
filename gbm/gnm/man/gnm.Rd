@@ -15,7 +15,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
-  \item{eliminate} { an optional formula consisting of a single factor
+  \item{eliminate}{ an optional formula consisting of a single factor
     to be used instead of an intercept in the predictor. }
   \item{constrain}{ coefficients to set to zero, specified by a numeric
     vector of indices, a logical vector, or "pick" to select from a Tk
@@ -53,7 +53,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     parameters. } 
   \item{control}{ a list of parameters for controlling the fitting process. See
     \code{gnmControl} for details.}
-  \item{verbose} { logical: if \code{TRUE} progress indicators are
+  \item{verbose}{ logical: if \code{TRUE} progress indicators are
     printed as the model is fitted, including a diagnostic error message
     if the algorithm restarts. } 
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
@@ -71,7 +71,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   of the nonlinear predictor, of the form \code{response ~ terms}. The
   \code{response} is typically a numeric vector, see later in this
   section for alternatives. The usual symbolic language may be used to
-  specify any linear terms, see \code{formula} for details.
+  specify any linear terms, see \code{\link{formula}} for details.
 
   \code{gnm} has the in-built capability to handle multiplicative
   interactions, which can be specified in the model formula using the
@@ -123,7 +123,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{start} argument or a plug-in function are updated one parameter
   at a time, then the linear parameters are jointly updated before the
   next iteration. In the main iterations, all the parameters are jointly
-  updated. See \code{gnmControl} for more details.
+  updated. See \code{\link{gnmControl}} for more details.
 
   By default, \code{gnm} uses an over-parameterized representation of
   the model that is being fitted. Only minimal identifiability constraints
@@ -131,16 +131,16 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   The parameter estimates are ordered so that those for any linear terms
   appear first.
   
-  \code{getContrasts} may be used to obtain estimates of specified
+  \code{\link{getContrasts}} may be used to obtain estimates of specified
   contrasts, if these contrasts are identifiable. In particular,
   \code{getContrasts} may be used to estimate the contrast between the
   first \code{k - 1} levels of a factor and level \code{k}.
 
   If appropriate constraints are known in advance, or have been
   determined from a \code{gnm} fit, the model may be (re-)fitted using
-  the \code{constrain} argument to specify which coefficients should be
+  the \code{constrain} argument to specify coefficients which should be
   set to zero. Constraints may only be applied to non-eliminated
-  parameters. \code{update} provides a convenient way of re-fitting a 
+  parameters. \code{\link{update}} provides a convenient way of re-fitting a 
   \code{gnm} model with new constraints.
 }
 \value{
@@ -148,7 +148,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   algorithm has failed and an object of class \code{"gnm"} otherwise. A
   \code{"gnm"} object inherits first from \code{"glm"} then \code{"lm"}
   and is a list containing the following components:     
-  \item{ call } { the matched call. }
+  \item{ call }{ the matched call. }
   \item{ formula }{ the formula supplied. }
   \item{ constrain }{ a logical vector, indicating any coefficients that were
     constrained to zero in the fitting process. }
@@ -180,8 +180,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{ df.residual }{ the residual degrees of freedom. }
   \item{ rank }{ the numeric rank of the fitted model. }
   
-  The list may also contain the components \code{model}, \code{x}, or
-  \code{vcov}, \code{termPredictors} if requested in the arguments to
+  The list may also contain the components \code{model}, \code{x},
+  \code{vcov}, or \code{termPredictors} if requested in the arguments to
   \code{gnm}. 
 
   If a binomial \code{gnm} model is specified by giving a two-column
@@ -189,21 +189,23 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   numbers of cases (factored by the supplied case weights) and the
   component \code{y} of the result is the proportion of successes.
   
-  The function \code{summary} may be used to obtain and print a summary
+  The function \code{\link{summary}} may be used to obtain and print a summary
   of the results.
 
-  The generic functions \code{formula}, \code{family}, \code{terms},
-  \code{coefficients}, \code{fitted.values}, \code{deviance},
-  \code{extractAIC}, \code{weights}, \code{residuals},
-  \code{df.residual}, \code{model.frame}, \code{model.matrix},
-  \code{vcov} and \code{termPredictors} maybe used to extract
-  components from the object returned by \code{gnm} or to construct the
-  relevant objects where necessary. 
+  The generic functions \code{\link{formula}}, \code{\link{family}},
+  \code{\link{terms}}, \code{\link{coefficients}},
+  \code{\link{fitted.values}}, \code{\link{deviance}},
+  \code{\link{extractAIC}}, \code{\link{weights}},
+  \code{\link{residuals}}, \code{\link{df.residual}},
+  \code{\link{model.frame}}, \code{\link{model.matrix}},
+  \code{\link{vcov}} and \code{\link{termPredictors}} maybe used to
+  extract components from the object returned by \code{\link{gnm}} or to
+  construct the relevant objects where necessary. 
 
-  Note that the generic functions \code{weights} and \code{residuals} do
-  not act as straight-forward accessor functions for \code{gnm} objects,
-  but return the prior weights and deviance residuals respectively, as
-  for \code{glm} objects.  
+  Note that the generic functions \code{\link{weights}} and
+  \code{\link{residuals}} do not act as straight-forward accessor
+  functions for \code{gnm} objects, but return the prior weights and
+  deviance residuals respectively, as for \code{glm} objects.  
 }
 \references{
   Agresti, A (2002).  \emph{Categorical Data Analysis} (2nd ed.)  New
@@ -227,8 +229,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{\link{formula}} for the symbolic language used to specify
   formulae. 
 
-  \code{Diag} and \code{Symm} for specifying special types of
-  interaction.
+  \code{\link{Diag}} and \code{\link{Symm}} for specifying special types
+  of interaction.
   
   \code{\link{Mult}}, \code{\link{Nonlin}}, \code{\link{Dref}}
   and \code{\link{MultHomog}} for incorporating nonlinear terms in the
@@ -251,8 +253,9 @@ print(cautres)
 ##  interactions both modulated by nonnegative election-specific
 ##  multipliers.
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
-    + Mult(Exp(election - 1), religion:vote - 1) +
-    Mult(Exp(election - 1), class:vote - 1), family = poisson, data = cautres)
+                     + Mult(Exp(election - 1), religion:vote - 1) +
+                     Mult(Exp(election - 1), class:vote - 1), family = poisson,
+                     data = cautres)
 
 ##  Examine the multipliers of the class-vote log odds ratios
 coefs.of.interest <- grep("Mult2.*election", names(coef(doubleUnidiff)))

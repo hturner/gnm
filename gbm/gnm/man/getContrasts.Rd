@@ -1,10 +1,12 @@
 \name{getContrasts}
 \alias{getContrasts}
-\title{ Estimated Contrasts and Standard Errors}
+\title{ Estimated Contrasts and Standard Errors for Parameters in a gnm
+ Model } 
 \description{
-For each set in a specified list of sets of model parameters, computes the
-estimated simple contrasts (i.e., differences) with the last parameter
-in the set, and estimated standard errors for those estimated differences.  
+For each set in a specified list of sets of parameters from a
+\code{\link{gnm}} model, computes the estimated simple contrasts (i.e.,
+differences) with the last parameter in the set, and estimated standard
+errors for those estimated differences.
 }
 \usage{
 getContrasts(model, sets = NULL, nSets = 1, ...)
@@ -31,7 +33,7 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
   \code{estimate} and \code{se}
 }
 \author{ David Firth }
-\seealso{ \code{\link{se}} }
+\seealso{ \code{\link{gnm}}, \code{\link{se}}, \code{\link{checkEstimable}} }
 \examples{
 set.seed(1)
 data(yaish)

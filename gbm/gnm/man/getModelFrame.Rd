@@ -3,7 +3,7 @@
 \title{ Get the Model Frame in Use by 'gnm'   }
 \description{
   A utility function to enable \code{gnm} plug-in functions to get the
-  model frame in use by \code{gnm}.
+  model frame in use by \code{\link{gnm}}.
 }
 \usage{
 getModelFrame()
@@ -13,7 +13,7 @@ getModelFrame()
 }
 \note{This function is only designed to work from within a plug-in
   function. To extract the model frame from a \code{gnm} object, use
-  \code{model.frame}.}
+  \code{\link{model.frame}}.}
 \author{ Heather Turner }
 \seealso{ \code{\link{gnm}}, \code{\link{Dref}}, \code{\link{MultHomog}} }
 \examples{

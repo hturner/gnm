@@ -2,17 +2,18 @@
 \alias{Nonlin}
 \title{Specify a Special Nonlinear Term in a Model Formula}
 \description{
-  A symbolic wrapper, for use in the formula argument to \code{gnm}, to
-  indicate a nonlinear term that requires special handling.  
+  A symbolic wrapper, for use in the formula argument to
+  \code{\link{gnm}}, to indicate a nonlinear term that requires special
+  handling.
 }
 \usage{
 Nonlin(functionCall, data = NULL)
 }
 \arguments{
-  \item{functionCall}{a call to a \dQuote{plug-in} function that provides the
-    objects required to fit the special nonlinear term.}
-  \item{data}{(optional) a data.frame containing any variables in
-    \bold{specified} arguments of \code{functionCall}.}
+  \item{functionCall}{ a call to a \dQuote{plug-in} function that provides the
+    objects required to fit the special nonlinear term. }
+  \item{data}{ (optional) a data.frame containing any variables in
+    \bold{specified} arguments of \code{functionCall}. }
 }
 \details{
     Nonlinear terms that cannot be specified by \code{Mult} require special
@@ -52,9 +53,9 @@ Nonlin(functionCall, data = NULL)
     }
     
     Any variables passed to unspecified arguments of the plug-in function will
-    automatically be added to the model frame used in \code{gnm}.
+    be automatically added to the model frame used in \code{gnm}.
     This model frame can be accessed within a plug-in function
-    using \code{getModelFrame}.  
+    using \code{\link{getModelFrame}}.  
     
     The \code{data} argument of \code{Nonlin} can be used to provide any
     variables required by specified arguments of the plug-in function.
@@ -64,9 +65,9 @@ Nonlin(functionCall, data = NULL)
     An object of class \code{"Nonlin"} which is a list of deparsed expressions
     representing the variables passed to unspecified arguments of the plug-in
     function, with the attributes
-  \item{call}{the call to make to the plug-in function}
-  \item{extraData}{if supplied, the data frame passed to the \code{data}
-                   argument of \code{Nonlin}}
+  \item{call}{ the call to make to the plug-in function. }
+  \item{extraData}{ if supplied, the data frame passed to the \code{data}
+                   argument of \code{Nonlin}. }
 	       }
 \references{
   Goodman, L. A. (1979) Simple Models for the Analysis of Association in
@@ -74,7 +75,7 @@ Nonlin(functionCall, data = NULL)
   Categories. \emph{J. Am. Stat. Assoc.}, \bold{74(367)}, 537-552.
 }
 \author{Heather Turner}
-\seealso{\code{\link{gnm}}, \code{getModelFrame},
+\seealso{\code{\link{gnm}}, \code{\link{getModelFrame}},
   \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{Mult}}}
 \examples{
 set.seed(1)

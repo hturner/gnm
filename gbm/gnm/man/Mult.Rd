@@ -1,10 +1,10 @@
 \name{Multiplicative interaction}
 \alias{Mult}
 \alias{Exp}
-\title{Specify a Multiplicative Interaction in a Model Formula}
+\title{Specify a Multiplicative Interaction in a gnm Model Formula}
 \description{
 \code{Mult} is a symbolic wrapper to indicate a multiplicative interaction in
-the formula argument to \code{gnm}.
+the formula argument to \code{\link{gnm}}.
 
 \code{Exp} is a symbolic wrapper to indicate an exponeniated multiplier
 in a \code{Mult} term. 
@@ -22,9 +22,9 @@ Exp(multiplier)
   \item{multiplier}{a symbolic expression.}
 }
 \details{
-  A multiplicative interaction is : either (if \code{multiplicity = 1})
+  A multiplicative interaction is either (if \code{multiplicity = 1})
   a product of the form 
-  \deqn{m_1 m_2 ... m_n},
+  \deqn{m_1 m_2 ... m_n,}
   where the constituent multipliers \eqn{m_1, m_2, ..., m_n} are linear
   predictors; or (if \code{multiplicity} is greater than 1) a sum of
   such \dQuote{components}, each of which is a product of the same
@@ -51,7 +51,7 @@ Exp(multiplier)
     expressions representing the factors in the multiplicative interaction.
 
     \code{Exp} returns an object of class \code{"Exp"} which is a deparsed
-    expression representing the factor to be exponentiated.
+    expression representing the multiplier to be exponentiated.
   }
 \references{
   Vargas, M, Crossa, J, van Eeuwijk, F, Sayre, K D and Reynolds, M P

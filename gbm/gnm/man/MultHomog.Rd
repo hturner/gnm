@@ -1,17 +1,17 @@
 \name{MultHomog}
 \alias{MultHomog}
-\title{``Plug-in'' Function to Fit Multiplicative Interactions
-  with Homogeneous Effects}
+\title{``Plug-in'' Function to Fit Multiplicative Interactions with
+ Homogeneous Effects}
 \description{
   A function to provide the objects and functions required to fit
   multiplicative interactions with homogeneous effects in a generalized
-  nonlinear model using \code{gnm}.  
+  nonlinear model using \code{\link{gnm}}.  
 }
 \usage{
 MultHomog(...)
 }
 \arguments{
-  \item{\dots}{a comma-separated list of two or more factors.}
+  \item{\dots}{ a comma-separated list of two or more factors. }
 }
 \details{
   Designed to work as a plug-in function for \code{gnm}, \code{MultHomog}
@@ -35,13 +35,13 @@ MultHomog(...)
 }
 \value{
   A list with the components required of a \code{gnm} plug-in function:
-  \item{labels}{a character vector of labels for the parameters in the
-    interaction.}
-  \item{predictor} {a function that takes estimates of the parameters in the
-    interaction and returns the fitted values.}
-  \item{localDesignFunction} {a function that takes a vector of estimates of
+  \item{labels}{ a character vector of labels for the parameters in the
+    interaction. }
+  \item{predictor}{ a function that takes estimates of the parameters in the
+    interaction and returns the fitted values. }
+  \item{localDesignFunction}{ a function that takes a vector of estimates of
     the parameters in the interaction and returns
-    the local design matrix.}
+    the local design matrix. }
 }
 \references{
   Goodman, L. A. (1979) Simple Models for the Analysis of Association in

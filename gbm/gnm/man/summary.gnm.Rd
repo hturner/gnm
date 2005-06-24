@@ -3,14 +3,12 @@
 \alias{print.summary.gnm}
 \title{ Summarize Generalized Nonlinear Model Fits }
 \description{
-\code{summary} method for objects of class \code{``gnm''}
+\code{summary} method for objects of class \code{"gnm"}
 }
 \usage{
-##  S3 method for class 'gnm'
 \method{summary}{gnm}(object, dispersion = NULL, correlation = FALSE,
                       symbolic.cor = FALSE, ...)
 
-## S3 method for class 'summary.gnm'
 \method{print}{summary.gnm}(x, digits = max(3, getOption("digits") - 3),
                             symbolic.cor = x$symbolic.cor, ...)
 }
@@ -48,7 +46,7 @@
   \item{aic }{ the \code{"aic"} component from object. }
   \item{df.residual }{ the \code{"df.residual"} component from object. }
   \item{iter }{ the \code{"iter"} component from object. }
-  \item{deviance.resid }{ the deviance residuals, see \code{residuals.glm}. }
+  \item{deviance.resid }{ the deviance residuals, see \code{\link{residuals.glm}}. }
   \item{coefficients }{ the \code{"coefficients"} component from object.}
   \item{dispersion }{ either the supplied argument or the estimated
     dispersion if the latter is \code{NULL}. }

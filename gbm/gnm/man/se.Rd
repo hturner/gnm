@@ -27,7 +27,8 @@ A data frame with two columns:
 and row names the same as the column names (if any) of \code{coefMatrix}.
 }
 \author{ David Firth }
-\seealso{ \code{\link{getContrasts}}, \code{\link{checkEstimable}}}
+\seealso{ \code{\link{gnm}}, \code{\link{getContrasts}},
+  \code{\link{checkEstimable}}} 
 \examples{
 data(yaish)
 set.seed(1)

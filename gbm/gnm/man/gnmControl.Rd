@@ -2,7 +2,7 @@
 \alias{gnmControl}
 \title{Set Control Parameters for Model Fitting}
 \description{
-  Set parameters to control the \code{gnm} fitting algorithm.  
+  Set parameters to control the \code{\link{gnm}} fitting algorithm.  
 }
 \usage{
 gnmControl(tolerance = 1e-04, iterStart = 2, iterMax = 500, trace = FALSE)

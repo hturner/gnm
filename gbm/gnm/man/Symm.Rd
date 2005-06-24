@@ -10,7 +10,7 @@
 Symm(...)
 }
 \arguments{
-  \item{\dots}{ One or more factors }
+  \item{\dots}{ one or more factors. }
 }
 \value{
 A factor whose levels index the symmetric interaction of all factors 

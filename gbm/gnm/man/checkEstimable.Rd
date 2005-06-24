@@ -1,11 +1,11 @@
 \name{checkEstimable}
 \alias{checkEstimable}
 \title{ Check Whether One or More Parameter Combinations in a gnm Model
-  is Identified }
+ are Identified }
 \description{
-  For each of a specified set of parameter combinations, checks
-  numerically whether the combination's estimate is invariant to
-  re-parameterization of the model.
+  For each of a specified set of combinations of parameters from a
+  \code{\link{gnm}} model, checks numerically whether the combination's
+  estimate is invariant to re-parameterization of the model.
 }
 \usage{
 checkEstimable(model, coefMatrix, tolerance = 1e-8)
@@ -22,6 +22,7 @@ checkEstimable(model, coefMatrix, tolerance = 1e-8)
   tested; \code{NA} where a parameter combination is identically zero.}
 \author{ David Firth }
 \seealso{
+  \code{\link{gnm}}, 
   \code{\link{se}},
   \code{\link{getContrasts}}
 }

@@ -3,7 +3,7 @@
 \title{``Plug-in'' Function to Fit Diagonal Reference Terms}
 \description{
   A function to provide the objects and functions required to fit a diagonal
-  reference term in a generalized (non)-linear model using \code{\link{gnm}}.  
+  reference term in a generalized nonlinear model using \code{\link{gnm}}.  
 }
 \usage{
 Dref(..., formula = ~ 1)
@@ -29,7 +29,7 @@ Dref(..., formula = ~ 1)
   and the \eqn{\delta_i}{delta_i} are modelled as specified by the
   \code{formula} argument (constant weights by default). The
   returned parameters are those in the model for
-  \eqn{\delta_i}{delta_i}, rather than the implied weights \eqn{w_i}
+  \eqn{\delta_i}{delta_i}, rather than the implied weights \eqn{w_i}.
   
   To specify a diagonal reference term in the formula argument to \code{gnm},
   the symbolic wrapper \code{Nonlin} must be used, with a call to \code{Dref}
@@ -131,90 +131,90 @@ A <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
          Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
          verbose = FALSE)
 A
-# Call:
-# gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-#     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
-#     verbose = FALSE)
-#
-#
-# Coefficients:
-#                    AGEM                      MRMM                      FRMF  
-#                 0.06364                  -0.32425                  -0.25324  
-#                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
-#                -0.06430                  -0.06043                   0.34389  
-# Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
-#                 0.65611                   4.95123                   4.86328  
-#     Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
-#                 4.86458                   4.72342                   4.43516  
-#     Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
-#                 4.18873                   4.43379  
-#
-# Deviance:            425.3389 
-# Pearson chi-squared: 425.3389 
-# Residual df:         576
+## Call:
+## gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+##     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
+##     verbose = FALSE)
+##
+##
+## Coefficients:
+##                    AGEM                      MRMM                      FRMF  
+##                 0.06364                  -0.32425                  -0.25324  
+##                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
+##                -0.06430                  -0.06043                   0.34389  
+## Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
+##                 0.65611                   4.95123                   4.86328  
+##     Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
+##                 4.86458                   4.72342                   4.43516  
+##     Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
+##                 4.18873                   4.43379  
+##
+## Deviance:            425.3389 
+## Pearson chi-squared: 425.3389 
+## Residual df:         576
 
-prop.table(exp(coef(A)[6:7])) # weights as in Table 4
-# Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
-#               0.4225734                0.5774266
+prop.table(exp(coef(A)[6:7])) ## weights as in Table 4
+## Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
+##               0.4225734                0.5774266
 
 F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
          Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian,
          data = conformity, verbose = FALSE)
 F	 
-# Call:
-# gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-#     Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
-#     data = conformity, verbose = FALSE)
-#
-#
-# Coefficients:
-#                                                      AGEM  
-#                                                   0.05818  
-#                                                      MRMM  
-#                                                  -0.32701  
-#                                                      FRMF  
-#                                                  -0.25772  
-#                                                     MWORK  
-#                                                  -0.07847  
-#                                                      MFCM  
-#                                                  -0.01694  
-# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)  
-#                                                   1.03516  
-#        Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM  
-#                                                  -1.77703  
-# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)  
-#                                                  -0.03516  
-#        Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM  
-#                                                   2.77703  
-#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1  
-#                                                   4.82477  
-#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2  
-#                                                   4.88066  
-#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3  
-#                                                   4.83969  
-#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4  
-#                                                   4.74849  
-#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5  
-#                                                   4.42019  
-#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6  
-#                                                   4.17956  
-#                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7  
-#                                                   4.40819  
-# 
-# Deviance:            420.9022 
-# Pearson chi-squared: 420.9022 
-# Residual df:         575
+## Call:
+## gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+##     Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
+##     data = conformity, verbose = FALSE)
+##
+##
+## Coefficients:
+##                                                      AGEM  
+##                                                   0.05818  
+##                                                      MRMM  
+##                                                  -0.32701  
+##                                                      FRMF  
+##                                                  -0.25772  
+##                                                     MWORK  
+##                                                  -0.07847  
+##                                                      MFCM  
+##                                                  -0.01694  
+## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)  
+##                                                   1.03516  
+##        Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM  
+##                                                  -1.77703  
+## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)  
+##                                                  -0.03516  
+##        Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM  
+##                                                   2.77703  
+##                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1  
+##                                                   4.82477  
+##                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2  
+##                                                   4.88066  
+##                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3  
+##                                                   4.83969  
+##                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4  
+##                                                   4.74849  
+##                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5  
+##                                                   4.42019  
+##                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6  
+##                                                   4.17956  
+##                 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7  
+##                                                   4.40819  
+## 
+## Deviance:            420.9022 
+## Pearson chi-squared: 420.9022 
+## Residual df:         575
 
-prop.table(exp(coef(F))[c(6,8)]) # weights for MFCM = 0
-# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept) 
-#                                                 0.7446585 
-# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept) 
-#                                                 0.2553415 
-prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)])) # weights for MFCM = 1
-# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM 
-#                                         0.02977851 
-# Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM 
-#                                         0.97022149 
+prop.table(exp(coef(F))[c(6,8)]) ## weights for MFCM = 0
+## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept) 
+##                                                 0.7446585 
+## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept) 
+##                                                 0.2553415 
+prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)])) ## weights for MFCM = 1
+## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM 
+##                                         0.02977851 
+## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM 
+##                                         0.97022149 
 }
 }
 \keyword{ models }

@@ -41,7 +41,7 @@ through a Professorial Fellowship.}\\
 \emph{University of Warwick, UK}
 }
 
-\date{For \Rpackage{gnm} version 0.60-1, 2005-06-24}
+\date{For \Rpackage{gnm} version 0.6-1, 2005-06-24}
 
 \begin{document}
 \maketitle

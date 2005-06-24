@@ -39,6 +39,13 @@ Goodman, L.~A. (1979).
   cross-classifications having ordered categories.
 \newblock {\em J. Amer. Statist. Assoc.\/}~{\em 74}, 537--552.
 
+\bibitem[\protect\citeauthoryear{Hatzinger and Francis}{Hatzinger and
+  Francis}{2004}]{Hatz04}
+Hatzinger, R. and B.~J. Francis (2004).
+\newblock Fitting paired comparison models in {R}.
+\newblock Technical Report~3, Department of Statistics and Mathematics,
+  Wirtschaftsuniversit\"at Wien.
+
 \bibitem[\protect\citeauthoryear{McCullagh and Nelder}{McCullagh and
   Nelder}{1989}]{McCu89}
 McCullagh, P. and J.~A. Nelder (1989).

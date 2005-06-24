@@ -38,7 +38,7 @@
 \author{Heather Turner and David Firth\footnote{
 This work was supported by the Economic and Social Research Council (UK)
 through a Professorial Fellowship.}\\
-\emph{University of Warwick}
+\emph{University of Warwick, UK}
 }
 
 \date{For \Rpackage{gnm} version 0.60-1, 2005-06-24}
@@ -659,6 +659,10 @@ between multinomial and (conditional) Poisson likelihoods.  In such situations
 the sufficient statistic involves a potentially large number of fixed
 multinomial row totals, and the corresponding parameters are of no
 substantive interest.  For an example see Section \ref{Stereotype} below.
+
+The  \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the 
+earlier work of \cite{Hatz04} to a broader class of models and to 
+over-parameterized model representations.
 
 \section{Methods and Accessor functions}
 \label{Methods}

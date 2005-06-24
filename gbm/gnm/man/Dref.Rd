@@ -1,6 +1,6 @@
 \name{Dref}
 \alias{Dref}
-\title{``Plug-in'' Function to Fit Diagonal Reference Terms}
+\title{gnm ``plug-in'' Function to Fit Diagonal Reference Terms}
 \description{
   A function to provide the objects and functions required to fit a diagonal
   reference term in a generalized nonlinear model using \code{\link{gnm}}.  
@@ -17,19 +17,19 @@ Dref(..., formula = ~ 1)
   the objects required to fit diagonal reference terms as introduced by
   Sobel (1981, 1985).  Such terms comprise an additive component for
   each factor of the form
-  \deqn{w_i\gamma_l}{w_i gamma_l}
-  where \eqn{w_i} is the weight for factor \eqn{i},
+  \deqn{w_f\gamma_l}{w_f gamma_l}
+  where \eqn{w_f} is the weight for factor \eqn{f},
   \eqn{\gamma_l}{gamma_l} is the diagonal effect for level \eqn{l} and
-  \eqn{l} is the level of factor \eqn{i} for the given data point.
+  \eqn{l} is the level of factor \eqn{f} for the given data point.
 
   The weights are constrained to be nonnegative and to sum to one as
   follows
-  \deqn{w_i = \frac{e^{\delta_i}}{\sum_r e^{\delta_r}}}{
-    w_i = exp(delta_i)/sum_r(exp(delta_r))}
-  and the \eqn{\delta_i}{delta_i} are modelled as specified by the
+  \deqn{w_f = \frac{e^{\delta_f}}{\sum_i e^{\delta_i}}}{
+    w_f = exp(delta_f)/sum_i(exp(delta_i))}
+  and the \eqn{\delta_f}{delta_f} are modelled as specified by the
   \code{formula} argument (constant weights by default). The
   returned parameters are those in the model for
-  \eqn{\delta_i}{delta_i}, rather than the implied weights \eqn{w_i}.
+  \eqn{\delta_f}{delta_f}, rather than the implied weights \eqn{w_f}.
   
   To specify a diagonal reference term in the formula argument to \code{gnm},
   the symbolic wrapper \code{Nonlin} must be used, with a call to \code{Dref}

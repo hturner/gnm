@@ -15,7 +15,7 @@ termPredictors(object, ...)
 \details{
   The default method assumes that the predictor is linear and calculates
   the contribution of each term from the model matrix and fitted
-  coefficients. A method is also available for \code\link{{gnm}} objects.
+  coefficients. A method is also available for \code{\link{gnm}} objects.
 }
 \value{
   A matrix with the additive components of the predictor in labelled columns.

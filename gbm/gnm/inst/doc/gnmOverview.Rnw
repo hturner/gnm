@@ -275,12 +275,12 @@ plug-in function
 \Robject{PlugInFunction}. As the factor $C$ only appears in the specified
 arguments of the
 call to \Robject{PlugInFunction}, a data frame containing factor
-\Robject{C} has been passed as the
+\Robject{C} has been passed to the
 \Rfunarg{data} argument of \Rfunction{Nonlin}.
 Note that this would not be necessary
 if \Robject{C} could be found in an environment on the search path (given by
-\texttt{search()}), however \Robject{C} would only appear in the returned
-model frame if it was passed directly to \Rfunction{Nonlin}.
+\texttt{search()}), however \Robject{C} would only be added to the
+model frame if it was passed to \Rfunction{Nonlin}.
 
 The two plug-in functions already included in the
 \Rpackage{gnm} package are described
@@ -289,15 +289,11 @@ below, followed by a guide to writing custom plug-in functions.
 \subsubsection{\Rfunction{MultHomog}}
 
 The \Rfunction{MultHomog} function provides the tools required to fit
-multiplicative interaction terms
-in which the level effects are constrained to be
-equal across the constituent multipliers.
-The arguments of \Rfunction{MultHomog}
-are the factors in
-the interaction, which are assumed to be objects of class \Rclass{factor}.
-Like a
-\Rfunction{Mult} term, the interaction can include any number of constituent
-multipliers, but there is no multiplicity argument.
+multiplicative interaction terms with one component in which the constituent
+multipliers are the effects of two or more factors and the effects of these
+factors are constrained to be equal when the factor levels are equal. The
+arguments of \Rfunction{MultHomog} are the factors in the interaction, which are
+assumed to be objects of class \Rclass{factor}.
 
 As an example, consider the following association model with homogeneous
 row-column effects:
@@ -318,22 +314,22 @@ factor, sorted into increasing order.
 
 \Rfunction{Dref} is a plug-in function to fit diagonal reference terms involving
 two or more factors with a common set of levels. A diagonal reference term
-comprises an additive component for each factor. For a given data point, the
-component for the $i$th factor, say $F$, is
+comprises an additive component for each factor. The component for factor $f$,
+is given by
 \[
-w_i\gamma_f
+w_f\gamma_l
 \]
-where $w_i$ is the weight for factor $i$, $\gamma_f$ is the ``diagonal effect''
-for level $f$ and $f$ is the level of $F$ for the given data point.
+for an observation with level $l$ of factor $f$, where $w_f$ is the weight for
+factor $f$ and $\gamma_l$ is the ``diagonal effect'' for level $l$.
 
 The weights are constrained to be nonnegative and to sum to one so that a
 ``diagonal effect'', say $\gamma_l$, is the value of the diagonal reference term
 for data points with level $l$ across the factors. \Rfunction{Dref} constrains
 the weights by defining them as
 \[
-w_i = \frac{e^{\delta_i}}{\sum_r e^{\delta_r}}
+w_f = \frac{e^{\delta_f}}{\sum_i e^{\delta_i}}
 \]
-and estimating the $\delta_i$.
+and estimating the $\delta_f$.
 
 Factors in the interaction are passed to unspecified arguments of
 \Rfunction{Dref}. For example, the following diagonal reference model for
@@ -349,7 +345,7 @@ would be specified by the formula
 \end{alltt}
 
 \Rfunction{Dref} has one specified argument \Rfunarg{formula}, which is a symbolic
-description of the dependence of $\delta_i$ on any covariates.
+description of the dependence of $\delta_f$ on any covariates.
 For example, the formula
 \begin{alltt}
     mu \twiddle\ -1 + x + Nonlin(Dref(R, C, formula = ~ 1 + x))
@@ -361,8 +357,8 @@ specifies the following diagonal reference model
 \]
 The default value of \Rfunarg{formula} is \Robject{\twiddle 1}, so that
 constant weights are estimated. The coefficients returned by \Rfunction{gnm} are
-those that are directly estimated, i.e. the $\delta_i$ or the $\xi_i$ and
-$\beta_i$, rather than the implied weights $w_i$.
+those that are directly estimated, i.e. the $\delta_f$ or the $\xi_f$ and
+$\beta_f$, rather than the implied weights $w_f$.
 
 \subsubsection{Custom Plug-in Functions}
 
@@ -419,6 +415,7 @@ and optionally one further component
   starting values. See Section \ref{start} for details of how these values will
   be used if provided and the generic default values that will be used otherwise.
 \end{description}
+
 As an example of a \Robject{start} component, \Rfunction{Dref} simply returns
 \begin{alltt}
     rep(0.5, length(labels))
@@ -455,8 +452,8 @@ is slightly more complicated:
         do.call("psum", productList)
     \}
 \end{alltt}
-This function only requires the argument \Rfunarg{coef}, but since the
-local design function returned by a plug-in function must also take the
+This function only uses the argument \Rfunarg{coef}, but since the
+local design function returned by a plug-in function must also accept the
 argument \Rfunarg{predictor}, further arguments are allowed by the use of the
 special argument `\Robject{...}'.
 
@@ -553,7 +550,7 @@ that were not specified by \Rfunarg{start} or a plug-in function one at a time,
 updating \emph{all} linear terms after each round of nonlinear updates.
 \end{enumerate}
 Note that no starting iterations (step 5) will be run if all
-parameters are specified by the \Rfunarg{start} argument of \Rfunction{gnm}.
+parameters are specified by \Rfunarg{start} or a plug-in function.
 
 \subsection{Using \Rfunarg{constrain}}
 \label{constrain}
@@ -565,9 +562,9 @@ For these terms, the constraints are determined
 in the same way as they would be in \Rfunction{glm}. Any nonlinear terms will
 usually be
 over-parameterized unless constraints are imposed by the defining plug-in
-function (as in the case of \Rfunction{Dref} for example). For a model with
+function (as in the case of \Rfunction{Dref}, for example). For a model with
 nonlinear terms that are over-parameterized, \Rfunction{gnm}
-will return a random parameterization.
+will return a random parameterisation.
 
 To illustrate this point, consider the following application of \Rfunction{gnm},
 discussed later in Section \ref{RCmodels}:
@@ -744,11 +741,10 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
                      Mult(Exp(election - 1), class:vote - 1), family = poisson,
                      data = cautres)
 @
-The effects of the first constituent multiplier of the first multiplicative
-term are
-estimable when the estimate of one of these effects is constrained to zero, say
-the effect of the last level. The parameters to be estimated are then the
-differences between each effect and the effect of the last level. These
+The effects of the first constituent multiplier in the first multiplicative
+interaction are identified when the estimate of one of these effects is constrained to
+zero, say for the effect of the last level. The parameters to be estimated are
+then the differences between each effect and the effect of the last level. These
 differences can be represented by a contrast matrix as follows:
 <<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
@@ -758,12 +754,12 @@ contrMatrix <- matrix(0, length(coefs), length(contrCoefs),
 contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)] <- contr.sum(contrCoefs)
 contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)]
 @
-and then their estimability can be checked using \Rfunction{checkEstimable}
+Then their estimability can be checked using \Rfunction{checkEstimable}
 <<Check_estimability_1>>=
 checkEstimable(doubleUnidiff, contrMatrix)
 @
 which confirms that the effects for the other three levels are estimable when
-the effect for the last parameter is set to zero.
+the effect for the last level is set to zero.
 
 However, applying the equivalent constraint to the second constituent
 multiplier in the
@@ -790,7 +786,7 @@ coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
 @ %def
 Attempting to obtain the equivalent contrasts for the second
-(religion-vote association) constituent multiplier produces the
+(religion-vote association) multiplier produces the
 following result:
 <<Get_contrasts_2>>=
 coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
@@ -866,7 +862,7 @@ assoc
 
 \subsubsection{RC(2) model}
 
-The RC(1) model can be extended to an RC($m$) model with $m$ instances of the
+The RC(1) model can be extended to an RC($m$) model with $m$ components of the
 multiplicative interaction. For example, the RC(2) model is given by
 \[
 \log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c + \theta_r\phi_c.
@@ -1017,7 +1013,7 @@ downwardly mobile groups than for the other groups. The weights for the upwardly
 mobile groups are very similar to the base level weights, so the model may be
 simplified by only fitting separate weights for the downwardly mobile groups:
 @ 
-<<"Downward_mobility">>=
+<<Downward_mobility>>=
 downwardMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
                                            formula = ~ 1 + downward)),
                         family = binomial, data = voting)
@@ -1291,11 +1287,10 @@ Multiplicative Interaction (GAMMI) Models}
 
 Generalized additive main effects and multiplicative interaction models, or
 GAMMI models, were motivated by two-way contingency tables and comprise the row
-and column main effects plus one or more terms of  multiplicative
-interaction. The singular value corresponding to each  multiplicative term
-is often
-factored out, as a measure of the strength of association between the row and
-column scores, indicating the importance of the component, or axis.
+and column main effects plus one or more components of the multiplicative
+interaction. The singular value corresponding to each multiplicative component
+is often factored out, as a measure of the strength of association between the
+row and column scores, indicating the importance of the component, or axis.
 
 For cell means $\mu_{rc}$ a GAMMI-K model has the form
 \[
@@ -1304,10 +1299,9 @@ g(\mu_{rc}) = \alpha_r + \beta_c + \sum_{k=1}^K
 \]
 in which $g$ is a link function, $\alpha_r$ and $\beta_c$ are the row and column
 main effects, $\gamma_{kr}$ and $\delta_{kc}$ are the row and column scores for
-multiplicative term $k$ and $\sigma_k$ is the singular value for term $k$. The
-number of multiplicative terms, $K$,
-is less than or equal to the rank of the matrix of
-residuals from the main effects.
+multiplicative component $k$ and $\sigma_k$ is the singular value for component
+$k$. The number of multiplicative components, $K$, is less than or equal to the
+rank of the matrix of residuals from the main effects.
 
 The row-column association models discussed in Section \ref{RCmodels} are
 examples of GAMMI models, with a log link and poisson variance. Here we
@@ -1352,9 +1346,9 @@ factors by
 their scores on the two axes which show the most information about the data, for
 example the first two principal components.
 
-A rank-$n$ model is a model based on the first $n$ terms of the
+A rank-$n$ model is a model based on the first $n$ components of the
 decomposition. In the case of a singular value decomposition, this is equivalent
-to a model with $n$ instances of the multiplicative interaction.
+to a model with $n$ components of the multiplicative interaction.
 
 To illustrate the use of biplot models, we shall use the \Robject{barley} data
 set which describes the incidence of leaf blotch over ten varieties of barley
@@ -1409,12 +1403,12 @@ plot(rbind(rA, rB), pch = c(levels(barley$site), levels(barley$variety)),
 In the original biplot, the co-ordinates for the sites and varieties were given
 by the rows of A and B respectively, i.e
 \begin{eqnarray*}
-\alpha_i^T &= \sqrt(d)(u_{1j}, u_{2j})\\
+\alpha_i^T &= \sqrt(d)(u_{1i}, u_{2i})\\
 \beta_j^T &= \sqrt(d)(v_{1j}, v_{2j})
 \end{eqnarray*}
 The rotated and scaled biplot suggests the simpler model
 \begin{eqnarray*}
-\alpha_i^T = (\gamma_i, 1) \\
+\alpha_i^T &= (\gamma_i, 1) \\
 \beta_j^T &= (\delta_j, \tau_j)
 \end{eqnarray*}
 which implies the following model for the logits of the leaf blotch incidence:
@@ -1525,11 +1519,11 @@ We list here, for easy reference, all of the user-level functions in the
 \Rpackage{gnm} package.  For full documentation see the package help pages.
 
 \begin{table}[!h]
-\begin{tabular*}{\textwidth}{@{}p{0.2in}p{1.3in}p{4in}@{}}
+\begin{tabular*}{\textwidth}{@{}p{0.2in}p{1.3in}p{4.5in}@{}}
     \toprule
     \multicolumn{3}{l}{\textbf{Model Fitting}} 	\\
     \midrule
-    &	\Rfunction{gnm}	&  fit generalised nonlinear models	\\
+    &	\Rfunction{gnm}	&  fit generalized nonlinear models	\\
     &	\Rfunction{gnmControl}	&  set control parameters for fitting
                                    \Rclass{gnm} models	\\
     \midrule
@@ -1540,13 +1534,13 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rfunction{Symm}	&  create symmetric interaction of factors \\
     &	\Rfunction{Mult}	&  specify a multiplicative interaction in a
                                    \Rfunction{gnm} formula	\\
-    &	\Rfunction{Exp}	&  specify an exponentiated factor in a
+    &	\Rfunction{Exp}	&  specify an exponentiated constituent multiplier in a
                            \Rfunction{Mult} term	\\
     &	\Rfunction{Nonlin}	&  specify a special nonlinear term in a
                                    \Rfunction{gnm} formula	\\
-    &	\Rfunction{Dref}	&  ``plug-in'' function to fit diagonal
+    &	\Rfunction{Dref}	&  gnm plug-in function to fit diagonal
                                    reference terms \\
-    &	\Rfunction{MultHomog}	&  ``plug-in'' function to fit multiplicative
+    &	\Rfunction{MultHomog}	&  gnm plug-in function to fit multiplicative
                                    interactions with homogenous effects	\\
     &   \Rfunction{wedderburn}      &  specify the Wedderburn
                                        quasi-likelihood family \\
@@ -1555,7 +1549,8 @@ We list here, for easy reference, all of the user-level functions in the
     \midrule
     &	\Rmethod{summary.gnm}	&  summarize \Rclass{gnm} fits	\\
     &	\Rfunction{getContrasts}	&  estimate contrasts and their
-                                           standard errors \\
+                                           standard errors for parameters in a gnm
+                                           model \\
     &	\Rfunction{checkEstimable}	&  check whether one or more parameter
                                            combinations in a
                                            \Rclass{gnm} model is identified \\

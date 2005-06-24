@@ -27,7 +27,8 @@ Exp(multiplier)
   \deqn{m_1 m_2 ... m_n},
   where the constituent multipliers \eqn{m_1, m_2, ..., m_n} are linear
   predictors; or (if \code{multiplicity} is greater than 1) a sum of
-  \sQuote{components}, each of which is a product of the same form.
+  such \dQuote{components}, each of which is a product of the same
+  linear predictors.
 
   \code{Mult} may be used to specify a multiplicative interaction in the
   \code{formula} argument to \code{gnm}. The desired number of

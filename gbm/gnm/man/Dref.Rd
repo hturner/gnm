@@ -87,7 +87,6 @@ yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
                      family = binomial, data = voting)
 prop.table(exp(coef(classMobility)[2:3]))
-}
 
 ## create factors indicating movement in and out of salariat (class 1)
 upward <- with(voting, origin != 1 & destination == 1)
@@ -95,8 +94,7 @@ downward <- with(voting, origin == 1 & destination != 1)
 
 ## fit separate weights for the "socially mobile" groups
 socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
-                                         formula = ~ 1 + downward + upward),
-                                    data = data.frame(downward, upward)),
+                                         formula = ~ 1 + downward + upward)),
                       family = binomial, data = voting)
 prop.table(exp(coef(socialMobility)[c(4, 7)] + coef(socialMobility)[c(2, 5)]))
 prop.table(exp(coef(socialMobility)[c(3, 6)] + coef(socialMobility)[c(2, 5)]))
@@ -104,8 +102,7 @@ prop.table(exp(coef(socialMobility)[c(2, 5)]))
 
 ## fit separate weights for downwardly mobile groups only
 downwardMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
-                                           formula = ~ 1 + downward),
-                                      data = data.frame(downward)),
+                                           formula = ~ 1 + downward)),
                         family = binomial, data = voting)
 downwardMobility
 prop.table(exp(coef(downwardMobility)[c(3, 5)] + 

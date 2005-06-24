@@ -1,4 +1,4 @@
-Exp <- function(factor){
+Exp <- function(multiplier){
     badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
                          sapply(sys.calls(),
                                 function(x) as.character(x[[1]])[1]))
@@ -12,6 +12,6 @@ Exp <- function(factor){
                    "as part of the formula of a gnm object."))
     }
     
-    structure(deparse(substitute(factor)), class = "Exp")
+    structure(deparse(substitute(multiplier)), class = "Exp")
 }
 

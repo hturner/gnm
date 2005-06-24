@@ -35,7 +35,6 @@ yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
                      family = binomial, data = voting)
 prop.table(exp(coef(classMobility)[2:3]))
-}
 
 ## create factors indicating movement in and out of salariat (class 1)
 upward <- with(voting, origin != 1 & destination == 1)

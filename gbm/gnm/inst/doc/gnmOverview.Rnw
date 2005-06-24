@@ -39,7 +39,7 @@
 \emph{University of Warwick}
 }
 
-\date{2005-06-19}
+\date{For \Rpackage{gnm} version 0.60-1, 2005-06-24}
 
 \begin{document}
 \maketitle
@@ -120,7 +120,7 @@ As a simple example of their use, consider the log-linear models of
 \emph{quasi-independence}, \emph{quasi-symmetry} and \emph{symmetry}
 for a square contingency table.  \citet{Agre02}, Section 10.4, gives data on
 migration between regions of the USA between 1980 and 1985:
-<<<migrationData>>=
+<<migrationData>>=
 count <- c(11607,   100,   366,   124,
               87, 13677,   515,   302,
              172,   225, 17819,   270,
@@ -200,11 +200,19 @@ custom plug-in functions to specify other types of nonlinear term.
 
 Multiplicative interaction terms can be included in the formula argument to
 \Rfunction{gnm} by using the symbolic wrapper function \Rfunction{Mult}.
-Multiplicative components in
+Constituent multipliers\footnote{
+A note on terminology: the rather cumbersome phrase `constituent multiplier', or
+sometimes the abbreviation `multiplier', will
+be used throughout this document in preference to the more elegant and standard
+mathematical term `factor'.  This will avoid possible confusion with the 
+completely different meaning of the word `factor' --- that is, a categorical 
+variable --- in R.
+}
+in
 the interaction are passed as unspecified arguments to \Rfunction{Mult} and are
 expressed
 by symbolic linear formulae. An intercept is automatically added to each
-multiplicative component unless otherwise specified. For example,
+constituent multiplier unless otherwise specified. For example,
 to fit the row-column association model
 \[
 \log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c,
@@ -216,6 +224,8 @@ of \Rfunction{gnm} would be
     mu \twiddle\ R + C + Mult(-1 + R, -1 + C)
 \end{alltt}
 where \Robject{R} and \Robject{C} are row and column factors respectively.
+
+
 
 \Rfunction{Mult} has one specified argument \Rfunarg{multiplicity}, which is
 \Robject{1} by default. This argument determines the number of times that
@@ -229,15 +239,15 @@ would give the RC(2) model \citep{Good79}
 \]
 
 In some contexts, it may be desirable to constrain one or more of the
-multiplicative components so that the component is always nonnegative.
+constituent multipliers so that it is always nonnegative.
 This may be
-achieved by specifying the component as an exponential, as in the
+achieved by specifying the multiplier as an exponential, as in the
 following `uniform difference' model \citep{Xie92, Erik92}
 \[
 \log \mu_{rct} = \alpha_{rt} + \beta_{ct} + e^{\gamma_t}\delta_{rc}.
 \]
-Exponentiated components are specified in \Rclass{gnm} models using the
-symbolic
+Exponentiated constituent multipliers 
+are specified in \Rclass{gnm} models using the symbolic
 function \Rfunction{Exp}; for example, the uniform difference model above
 would be specified by the formula
 \begin{alltt}
@@ -279,13 +289,13 @@ below, followed by a guide to writing custom plug-in functions.
 The \Rfunction{MultHomog} function provides the tools required to fit
 multiplicative interaction terms
 in which the level effects are constrained to be
-equal across the multiplicative components.
+equal across the constituent multipliers.
 The arguments of \Rfunction{MultHomog}
 are the factors in
 the interaction, which are assumed to be objects of class \Rclass{factor}.
 Like a
-\Rfunction{Mult} term, the interaction can include any number of multiplicative
-components, but there is no multiplicity argument.
+\Rfunction{Mult} term, the interaction can include any number of constituent
+multipliers, but there is no multiplicity argument.
 
 As an example, consider the following association model with homogeneous
 row-column effects:
@@ -381,14 +391,9 @@ The
 factors can then be accessed by name from \Robject{gnmData}, as in the call to
 \Rfunction{lapply}.
 
-The plug-in function should return a list with the following components:
+The plug-in function should return a list with at least the following 
+three components:
 \begin{description}
-\item[\Robject{start}]
-  (optional) either a vector of default starting values
-  for the parameters or a function which takes
-  the number of parameters and returns a vector of default
-  starting values. See Section \ref{start} for details of how these values will
-  be used if provided and the generic default values that will be used otherwise.
 \item[\Robject{labels}]
   a character vector of labels for the
   parameters (to which \Rfunction{gnm} will prefix the call to the
@@ -403,7 +408,15 @@ The plug-in function should return a list with the following components:
   \Rfunarg{predictor} (the result of the predictor function), and
   returns the local design matrix.
 \end{description}
-
+and optionally one further component
+\begin{description}
+\item[\Robject{start}]
+  either a vector of default starting values
+  for the parameters or a function which takes
+  the number of parameters and returns a vector of default
+  starting values. See Section \ref{start} for details of how these values will
+  be used if provided and the generic default values that will be used otherwise.
+\end{description}
 As an example of a \Robject{start} component, \Rfunction{Dref} simply returns
 \begin{alltt}
     rep(0.5, length(labels))
@@ -729,7 +742,7 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
                      Mult(Exp(election - 1), class:vote - 1), family = poisson,
                      data = cautres)
 @
-The effects of the first multiplicative component of the first multiplicative
+The effects of the first constituent multiplier of the first multiplicative
 term are
 estimable when the estimate of one of these effects is constrained to zero, say
 the effect of the last level. The parameters to be estimated are then the
@@ -750,8 +763,9 @@ checkEstimable(doubleUnidiff, contrMatrix)
 which confirms that the effects for the other three levels are estimable when
 the effect for the last parameter is set to zero.
 
-However, applying the equivalent constraint to the second component in the
-interaction is not sufficient to make the parameters in that component
+However, applying the equivalent constraint to the second constituent
+multiplier in the
+interaction is not sufficient to make the parameters in that multiplier
 estimable:
 <<Check_estimability_2>>=
 coefs <- names(coef(doubleUnidiff))
@@ -765,7 +779,8 @@ checkEstimable(doubleUnidiff, contrMatrix)
 To investigate simple ``sum to zero'' contrasts such as those above, it
 is easiest to use the \Rfunction{getContrasts} function, which checks the
 estimability of the contrasts and returns the parameter estimates with their
-standard errors. Returning to the example of the first component in the first
+standard errors. Returning to the example of the first constituent multiplier
+in the first
 multiplicative interaction term, the differences between each election
 and the last can be obtained as follows:
 <<Get_contrasts_1>>=
@@ -773,7 +788,7 @@ coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
 @ %def
 Attempting to obtain the equivalent contrasts for the second
-(religion-vote association) multiplicative component produces the
+(religion-vote association) constituent multiplier produces the
 following result:
 <<Get_contrasts_2>>=
 coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
@@ -783,7 +798,7 @@ getContrasts(doubleUnidiff, coefs.of.interest)
 \section{Examples}
 \label{Examples}
 
-This section provides examples of the wide range of models that may be fitted
+This section provides some examples of the wide range of models that may be fitted
 using the \Rpackage{gnm} package. Sections \ref{RCmodels}, \ref{Dref} and
 \ref{Unidiff} consider various models for contingency tables; Section
 \ref{GAMMI} considers AMMI and GAMMI models which are typically used in
@@ -907,6 +922,9 @@ means are modelled as a function of the diagonal effects, i.e., the mean
 responses of the `diagonal' cells in which the levels of the row and
 column factors are the same.
 
+\subsubsection*{\Rfunction{Dref} example 1: Political consequences of 
+social mobility}
+
 To illustrate the use of diagonal reference models we shall use the
 \Robject{voting} data from \citet{Clif93}. The data come from the 1987 British
 general election and are the percentage voting Labour in groups cross-classified
@@ -944,8 +962,11 @@ and the origin and destination weights can be evaluated as below
 <<Class_mobility_weights>>=
 prop.table(exp(coef(classMobility)[2:3]))
 @ %def 
-This model is slightly different from that reported by \citet{Clif93}, which we
-believe may be due to a transcription error in the published data. 
+This model is slightly different from that reported by \citet{Clif93}.  The reason 
+for this is unclear: we are confident that the above results are correct for the
+data as given in \citet{Clif93}, but have not been able to confirm that the data
+as printed in the journal were exactly as used in Clifford and Heath's 
+analysis.
 
 \citet{Clif93} suggest that movements in and out of the salariat (class 1)
 should be treated differently from movements between the lower classes (classes
@@ -955,8 +976,10 @@ propose the following model
 \mu_{od} = \begin{cases}
 \frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
 \frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d & \text{if } i = 1\\
+\\
 \frac{e^{\delta_3}}{e^{\delta_3} + e^{\delta_4}}\gamma_o +
 \frac{e^{\delta_4}}{e^{\delta_3} + e^{\delta_4}}\gamma_d & \text{if } j = 1\\
+\\
 \frac{e^{\delta_5}}{e^{\delta_5} + e^{\delta_6}}\gamma_o +
 \frac{e^{\delta_6}}{e^{\delta_5} + e^{\delta_6}}\gamma_d & \text{if } i \ne 1
 \text{ and } j \ne 1
@@ -1002,10 +1025,13 @@ prop.table(exp(coef(downwardMobility)[c(3, 5)] +
 prop.table(exp(coef(downwardMobility)[c(2, 4)]))
 @ %def 
 
+\subsubsection*{\Rfunction{Dref} example 2: Conformity to parental rules} 
+
 %\SweaveInput{vanDerSlikEg.Rnw}
 
 Another application of diagonal reference models is given by
-\citet{Vand02}. The data from this paper are not publically available, but we
+\citet{Vand02}. The data from this paper are not publicly available\footnote{
+We thank Frans van der Slik for his kindness in sending us the data.}, but we
 shall show how the models presented in the paper may be estimated using
 \Rfunction{gnm}. 
 

@@ -28,12 +28,9 @@ Nonlin(functionCall, data = NULL)
     The \pkg{gnm} package includes plug-in functions for multiplicative
     interactions with homogeneous effects (\code{MultHomog}) and diagonal
     reference terms (\code{Dref}).  Users may also define their own plug-in
-    functions which should return a list with the following components:
+    functions which should return a list with at least the following
+    three components:
     \describe{
-      \item{start}{(optional) either a vector of default starting values
-        for the parameters or a function which takes
-	the number of parameters and returns a vector of default
-        starting values.}
       \item{labels}{a character vector of labels for the
         parameters (to which \code{gnm} will prefix the call to the
 	plug-in function).}
@@ -45,6 +42,13 @@ Nonlin(functionCall, data = NULL)
         arguments \code{coef} (a vector of parameter estimates) and 
         \code{predictor} (the result of the predictor function), and
         returns the local design matrix.}
+    }
+    and optionally one further component
+    \describe{
+        \item{start}{either a vector of default starting values
+        for the parameters or a function which takes
+	the number of parameters and returns a vector of default
+        starting values.}
     }
     
     Any variables passed to unspecified arguments of the plug-in function will

@@ -736,7 +736,7 @@ that are estimable!
 
 The \Rfunction{checkEstimable} function can be used to check the estimability of
 contrasts. Consider the following model, that is described later in Section
-\ref{Unidiff}
+\ref{Unidiff}:
 <<Double_UNIDIFF_model>>=
 data(cautres)
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
@@ -1232,7 +1232,8 @@ The $\gamma_{ij}$ represent a pattern of association that varies in strength
 over the dimension indexed by $k$, and $\exp(\delta_k)$ represents the relative
 strength of that association at level $k$.
 
-This model can be applied to the \Robject{yaish} data set, which is a
+This model can be applied to the \Robject{yaish} data set \citep{Yais98}, 
+which is a
 contingency table cross-classified by father's social class (\Robject{orig}),
 son's social
 class (\Robject{dest}) and son's education level (\Robject{educ}).
@@ -1266,7 +1267,8 @@ Four-way contingency tables may sometimes be described by a
 \]
 where the strengths of two, two-way associations with a common variable are
 estimated across the levels of the fourth variable.
-The \Robject{cautres} data set can be used to illustrate the application of the
+The \Robject{cautres} data set, from \citet{Caut98}, can be used to illustrate 
+the application of the
 double UNIDIFF model. This data set is classified by the variables vote, class,
 religion and election. Using a double UNIDIFF model, we can see how the
 association between class and vote, and the association between religion and

@@ -10,6 +10,12 @@ Anderson, J.~A. (1984).
 \newblock Regression and ordered categorical variables.
 \newblock {\em J. R. Statist. Soc. B\/}~{\em 46\/}(1), 1--30.
 
+\bibitem[\protect\citeauthoryear{Cautres, Heath, and Firth}{Cautres
+  et~al.}{1998}]{Caut98}
+Cautres, B., A.~F. Heath, and D.~Firth (1998).
+\newblock Class, religion and vote in {B}ritain and {F}rance.
+\newblock {\em La Lettre de la Maison Fran\c{c}aise\/}~{\em 8}.
+
 \bibitem[\protect\citeauthoryear{Clifford and Heath}{Clifford and
   Heath}{1993}]{Clif93}
 Clifford, P. and A.~F. Heath (1993).
@@ -76,5 +82,11 @@ Xie, Y. (1992).
 \newblock The log-multiplicative layer effect model for comparing mobility
   tables.
 \newblock {\em American Sociological Review\/}~{\em 57}, 380--395.
+
+\bibitem[\protect\citeauthoryear{Yaish}{Yaish}{1998}]{Yais98}
+Yaish, M. (1998).
+\newblock {\em Opportunities, Little Change. Class Mobility in {I}sraeli
+  Society, 1974--1991}.
+\newblock Ph.\ D. thesis, Nuffield College, University of Oxford.
 
 \end{thebibliography}

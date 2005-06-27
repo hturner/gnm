@@ -722,7 +722,7 @@ those that are not implemented for \Rclass{gnm} objects.
 \end{figure}
 
 In addition to the accessor functions shown in Figure \ref{glm.lm}, the
-\Rpackage{gnm} package provides a new generic function
+\Rpackage{gnm} package provides a new generic function called
 \Rfunction{termPredictors}
 that has methods for objects of class \Rclass{gnm}, \Rclass{glm} and
 \Rclass{lm}. This function returns the additive contribution of each term to

@@ -1,0 +1,178 @@
+
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(gnm)
+> set.seed(1)
+> data(wheat)
+> 
+> yield.scaled <- wheat$yield * sqrt(3/1000)
+> treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
++                           wheat$N, sep = ""))
+> bilinear3 <- gnm(yield.scaled ~ year + treatment +
++                  Mult(year, treatment, multiplicity = 3),
++                  family = gaussian, data = wheat)
+Running start-up iterations..
+Running main iterations............................................
+Done
+> bilinear3
+
+Call:
+gnm(formula = yield.scaled ~ year + treatment + Mult(year, treatment, 
+    multiplicity = 3), family = gaussian, data = wheat)
+
+
+Coefficients:
+                (Intercept)                       year.L  
+                  3.933e+02                   -8.856e+00  
+                     year.Q                       year.C  
+                  2.118e+01                    1.008e+01  
+                     year^4                       year^5  
+                  5.426e+01                    4.867e+00  
+                     year^6                       year^7  
+                 -4.801e+00                   -5.136e+01  
+                     year^8                       year^9  
+                 -9.878e+01                    6.409e+00  
+              treatmentTSMN                treatmentTSMn  
+                  3.631e+01                    5.314e+01  
+              treatmentTSm0                treatmentTSmN  
+                 -9.359e+01                    3.902e+01  
+              treatmentTSmn                treatmentTsM0  
+                  2.199e+01                   -2.294e+01  
+              treatmentTsMN                treatmentTsMn  
+                  4.276e+01                    3.518e+01  
+              treatmentTsm0                treatmentTsmN  
+                 -1.335e+02                    3.025e+01  
+              treatmentTsmn                treatmenttSM0  
+                  1.013e+01                   -2.072e+01  
+              treatmenttSMN                treatmenttSMn  
+                  2.682e+01                    3.113e+01  
+              treatmenttSm0                treatmenttSmN  
+                 -9.642e+01                    1.723e+01  
+              treatmenttSmn                treatmenttsM0  
+                  1.150e+01                   -7.027e+01  
+              treatmenttsMN                treatmenttsMn  
+                  2.016e+01                    3.207e+01  
+              treatmenttsm0                treatmenttsmN  
+                 -1.495e+02                    2.218e+01  
+              treatmenttsmn    Mult1.Factor1.(Intercept)  
+                 -2.319e+00                    8.256e-03  
+       Mult1.Factor1.year.L         Mult1.Factor1.year.Q  
+                 -2.025e+01                    1.847e+01  
+       Mult1.Factor1.year.C         Mult1.Factor1.year^4  
+                  1.898e+01                   -3.761e+00  
+       Mult1.Factor1.year^5         Mult1.Factor1.year^6  
+                 -3.623e+01                    2.645e+01  
+       Mult1.Factor1.year^7         Mult1.Factor1.year^8  
+                 -3.335e+01                    3.687e+00  
+       Mult1.Factor1.year^9    Mult1.Factor2.(Intercept)  
+                  1.126e+01                   -7.699e-01  
+Mult1.Factor2.treatmentTSMN  Mult1.Factor2.treatmentTSMn  
+                  2.381e+00                    1.596e+00  
+Mult1.Factor2.treatmentTSm0  Mult1.Factor2.treatmentTSmN  
+                  6.430e-01                    1.378e+00  
+Mult1.Factor2.treatmentTSmn  Mult1.Factor2.treatmentTsM0  
+                  6.826e-01                   -3.401e-02  
+Mult1.Factor2.treatmentTsMN  Mult1.Factor2.treatmentTsMn  
+                  1.987e+00                    1.782e+00  
+Mult1.Factor2.treatmentTsm0  Mult1.Factor2.treatmentTsmN  
+                  1.030e+00                    1.235e+00  
+Mult1.Factor2.treatmentTsmn  Mult1.Factor2.treatmenttSM0  
+                  1.002e+00                   -8.473e-01  
+Mult1.Factor2.treatmenttSMN  Mult1.Factor2.treatmenttSMn  
+                  1.326e+00                    6.901e-01  
+Mult1.Factor2.treatmenttSm0  Mult1.Factor2.treatmenttSmN  
+                 -3.661e-01                    1.029e+00  
+Mult1.Factor2.treatmenttSmn  Mult1.Factor2.treatmenttsM0  
+                  4.077e-01                   -2.969e-01  
+Mult1.Factor2.treatmenttsMN  Mult1.Factor2.treatmenttsMn  
+                  1.583e+00                    7.779e-01  
+Mult1.Factor2.treatmenttsm0  Mult1.Factor2.treatmenttsmN  
+                  1.403e+00                    2.274e-01  
+Mult1.Factor2.treatmenttsmn    Mult2.Factor1.(Intercept)  
+                  2.348e-01                   -3.087e-02  
+       Mult2.Factor1.year.L         Mult2.Factor1.year.Q  
+                  3.320e+00                   -1.179e+01  
+       Mult2.Factor1.year.C         Mult2.Factor1.year^4  
+                 -2.151e+01                   -5.825e+01  
+       Mult2.Factor1.year^5         Mult2.Factor1.year^6  
+                 -3.553e+01                   -2.208e+01  
+       Mult2.Factor1.year^7         Mult2.Factor1.year^8  
+                  1.272e+01                   -1.368e+01  
+       Mult2.Factor1.year^9    Mult2.Factor2.(Intercept)  
+                  2.520e+01                    2.605e-01  
+Mult2.Factor2.treatmentTSMN  Mult2.Factor2.treatmentTSMn  
+                 -1.420e+00                   -9.196e-01  
+Mult2.Factor2.treatmentTSm0  Mult2.Factor2.treatmentTSmN  
+                  7.307e-01                   -7.350e-01  
+Mult2.Factor2.treatmentTSmn  Mult2.Factor2.treatmentTsM0  
+                 -3.113e-01                    8.935e-01  
+Mult2.Factor2.treatmentTsMN  Mult2.Factor2.treatmentTsMn  
+                 -1.344e+00                   -9.885e-01  
+Mult2.Factor2.treatmentTsm0  Mult2.Factor2.treatmentTsmN  
+                  1.192e+00                   -9.359e-01  
+Mult2.Factor2.treatmentTsmn  Mult2.Factor2.treatmenttSM0  
+                 -5.579e-01                   -1.474e-01  
+Mult2.Factor2.treatmenttSMN  Mult2.Factor2.treatmenttSMn  
+                 -1.148e+00                   -7.341e-01  
+Mult2.Factor2.treatmenttSm0  Mult2.Factor2.treatmenttSmN  
+                  4.090e-01                   -7.429e-01  
+Mult2.Factor2.treatmenttSmn  Mult2.Factor2.treatmenttsM0  
+                 -5.396e-01                    1.500e+00  
+Mult2.Factor2.treatmenttsMN  Mult2.Factor2.treatmenttsMn  
+                 -1.077e+00                   -8.921e-01  
+Mult2.Factor2.treatmenttsm0  Mult2.Factor2.treatmenttsmN  
+                  1.603e+00                   -6.435e-01  
+Mult2.Factor2.treatmenttsmn    Mult3.Factor1.(Intercept)  
+                  7.472e-02                    3.263e-02  
+       Mult3.Factor1.year.L         Mult3.Factor1.year.Q  
+                  7.607e+00                   -3.541e+01  
+       Mult3.Factor1.year.C         Mult3.Factor1.year^4  
+                  3.042e+01                   -1.636e+01  
+       Mult3.Factor1.year^5         Mult3.Factor1.year^6  
+                 -9.447e+00                    6.107e+00  
+       Mult3.Factor1.year^7         Mult3.Factor1.year^8  
+                  8.610e+00                    4.727e+01  
+       Mult3.Factor1.year^9    Mult3.Factor2.(Intercept)  
+                 -2.972e+01                   -9.353e-01  
+Mult3.Factor2.treatmentTSMN  Mult3.Factor2.treatmentTSMn  
+                  2.579e-01                    3.655e-01  
+Mult3.Factor2.treatmentTSm0  Mult3.Factor2.treatmentTSmN  
+                  1.304e+00                    1.044e+00  
+Mult3.Factor2.treatmentTSmn  Mult3.Factor2.treatmentTsM0  
+                  1.624e+00                    2.700e-01  
+Mult3.Factor2.treatmentTsMN  Mult3.Factor2.treatmentTsMn  
+                  3.444e-01                    8.543e-01  
+Mult3.Factor2.treatmentTsm0  Mult3.Factor2.treatmentTsmN  
+                  1.708e+00                    1.041e+00  
+Mult3.Factor2.treatmentTsmn  Mult3.Factor2.treatmenttSM0  
+                  1.269e+00                    7.092e-01  
+Mult3.Factor2.treatmenttSMN  Mult3.Factor2.treatmenttSMn  
+                  9.737e-01                    8.039e-01  
+Mult3.Factor2.treatmenttSm0  Mult3.Factor2.treatmenttSmN  
+                  1.376e+00                    9.420e-01  
+Mult3.Factor2.treatmenttSmn  Mult3.Factor2.treatmenttsM0  
+                  1.760e+00                    5.635e-01  
+Mult3.Factor2.treatmenttsMN  Mult3.Factor2.treatmenttsMn  
+                  8.692e-01                    7.653e-01  
+Mult3.Factor2.treatmenttsm0  Mult3.Factor2.treatmenttsmN  
+                  1.431e+00                    1.581e+00  
+Mult3.Factor2.treatmenttsmn  
+                  2.096e+00  
+
+Deviance:            52494.66 
+Pearson chi-squared: 52494.66 
+Residual df:         120 
+> 

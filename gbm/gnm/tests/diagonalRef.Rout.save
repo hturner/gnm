@@ -1,0 +1,96 @@
+
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(gnm)
+> set.seed(1)
+> data(voting)
+> 
+> count <- with(voting, percentage/100 * total)
+> yvar <- cbind(count, voting$total - count)
+> 
+> classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
++                      family = binomial, data = voting)
+Running main iterations.......
+Done
+> classMobility
+
+Call:
+
+gnm(formula = yvar ~ Nonlin(Dref(origin, destination)), family = binomial, 
+    data = voting)
+
+
+Coefficients:
+                          (Intercept)       Dref(origin, destination).origin  
+                              -1.6055                                 0.3738  
+Dref(origin, destination).destination            Dref(origin, destination).1  
+                               0.6262                                -0.5723  
+          Dref(origin, destination).2            Dref(origin, destination).3  
+                               0.4729                                -0.3494  
+          Dref(origin, destination).4            Dref(origin, destination).5  
+                               1.0272                                 1.6459  
+
+Deviance:            21.22093 
+Pearson chi-squared: 18.95311 
+Residual df:         19 
+> 
+> upward <- with(voting, origin != 1 & destination == 1)
+> downward <- with(voting, origin == 1 & destination != 1)
+> 
+> socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
++                                          formula = ~ 1 + downward + upward),
++                                     data = data.frame(downward, upward)),
++                       family = binomial, data = voting)
+Running main iterations.......
+Done
+> socialMobility
+
+Call:
+gnm(formula = yvar ~ Nonlin(Dref(origin, destination, formula = ~1 + 
+    downward + upward), data = data.frame(downward, upward)), 
+    family = binomial, data = voting)
+
+
+Coefficients:
+                                                                         (Intercept)  
+                                                                             -1.5844  
+      Dref(origin, destination, formula = ~1 + downward + upward).origin.(Intercept)  
+                                                                              0.3066  
+     Dref(origin, destination, formula = ~1 + downward + upward).origin.downwardTRUE  
+                                                                              0.9054  
+       Dref(origin, destination, formula = ~1 + downward + upward).origin.upwardTRUE  
+                                                                              0.4699  
+ Dref(origin, destination, formula = ~1 + downward + upward).destination.(Intercept)  
+                                                                              0.6934  
+Dref(origin, destination, formula = ~1 + downward + upward).destination.downwardTRUE  
+                                                                              0.0946  
+  Dref(origin, destination, formula = ~1 + downward + upward).destination.upwardTRUE  
+                                                                              0.5301  
+                       Dref(origin, destination, formula = ~1 + downward + upward).1  
+                                                                             -0.4732  
+                       Dref(origin, destination, formula = ~1 + downward + upward).2  
+                                                                              0.4717  
+                       Dref(origin, destination, formula = ~1 + downward + upward).3  
+                                                                             -0.4104  
+                       Dref(origin, destination, formula = ~1 + downward + upward).4  
+                                                                              1.0153  
+                       Dref(origin, destination, formula = ~1 + downward + upward).5  
+                                                                              1.6420  
+
+Deviance:            18.97407 
+Pearson chi-squared: 17.07495 
+Residual df:         17 
+> 

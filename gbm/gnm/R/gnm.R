@@ -26,7 +26,9 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                                           "variables")
 
     if (!is.null(eliminate)) {
-        if (!suppressWarnings(is.factor(with(modelData, eval(eliminate[[2]])))))
+        toElim <- attr(terms(eliminate), "factors")
+        if (ncol(toElim) != 1 |
+            any(attr(modelData, "dataClasses")[rownames(toElim)] != "factor"))
             stop("'eliminate' formula must contain one term only,",
                  " which must be a factor")
     }

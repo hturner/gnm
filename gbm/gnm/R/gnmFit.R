@@ -15,16 +15,18 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID == "plugInStart"
             unspecifiedLin <- linear & !specified & !constrain
-            thetaOffset <- theta
-            thetaOffset[!specified] <- 0
-            factorList <- modelTools$factorList(thetaOffset)
-            offsetSpecified <- offset + modelTools$predictor(factorList)
-            X <- modelTools$localDesignFunction(thetaOffset, factorList)
-            theta[unspecifiedLin] <-
-                suppressWarnings(naToZero(glm.fit(X[, unspecifiedLin], y,
-                                                  weights = weights,
-                                                  offset = offsetSpecified,
-                                                  family = family)$coef))
+            if (any(unspecifiedLin)) {
+                thetaOffset <- theta
+                thetaOffset[!specified] <- 0
+                factorList <- modelTools$factorList(thetaOffset)
+                offsetSpecified <- offset + modelTools$predictor(factorList)
+                X <- modelTools$localDesignFunction(thetaOffset, factorList)
+                theta[unspecifiedLin] <-
+                    suppressWarnings(naToZero(glm.fit(X[, unspecifiedLin], y,
+                                                      weights = weights,
+                                                      offset = offsetSpecified,
+                                                      family = family)$coef))
+            }
             oneAtATime <- !linear & !specified & !constrain
             for (iter in seq(length = control$iterStart * any(oneAtATime))) {
                 if (verbose){
@@ -51,7 +53,7 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
                         break
                     } 
                 }
-                if (status == "not.converged") 
+                if (status == "not.converged" & any(linear)) 
                     theta <- updateLinear(linear & !constrain, theta, y, offset,
                                           weights, family, modelTools, X)
                 if (control$trace){
@@ -60,8 +62,8 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
                         ". Deviance = ", dev, "\n", sep = "")
                 }
                 if (status == "bad.param") break
+                cat("\n"[iter == control$iterStart & verbose & !control$trace])
             }
-            if (any(oneAtATime) & verbose & !control$trace) cat("\n")
         }    
         else theta <- structure(ifelse(!constrain, start, 0),
                                 names = names(modelTools$classID))
@@ -114,21 +116,23 @@ gnmFit <- function(modelTools, y, constrain, family = poisson(),
             theta <- theta + theChange 
             theta[constrain] <- 0
         }
-        if (status %in% c("converged", "not.converged") | all(!is.na(start))) {
+        if (status %in% c("converged", "not.converged")) {
             if (verbose) cat("\n"[!control$trace], "Done\n", sep = "")
             break
         }
         else {
-            attempt <- attempt + 1
             if (verbose)
-                cat(switch(status,
-                           "bad.param" = "\nBad parameterisation",
-                           "not.finite" = "\nIterative weights are not all finite",
-                           "no.deviance" = "\nDeviance is NaN",
-                           "stuck" = "\nIterations are not converging"))
-            if (attempt > 5)
-                stop("algorithm has failed: no model could be estimated")
-            else if (verbose) cat(": restarting\n")
+                message("\n"[!control$trace],
+                        switch(status,
+                               "bad.param" = "Bad parameterisation",
+                               "not.finite" =
+                               "Iterative weights are not all finite",
+                               "no.deviance" = "Deviance is NaN",
+                               "stuck" = "Iterations are not converging"))
+            attempt <- attempt + 1
+            if (attempt > 5 | all(!is.na(start))) return()
+            else if (verbose)
+                message("Restarting")
         }
     }
     if (status == "not.converged")

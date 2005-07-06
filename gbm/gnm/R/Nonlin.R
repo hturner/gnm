@@ -15,6 +15,9 @@ Nonlin <- function(functionCall, data = NULL){
     functionCall <- match.call()$functionCall
     variables <- match.call(match.fun(functionCall[[1]]), functionCall,
                             expand.dots = FALSE)[["..."]]
+    if (!length(variables))
+        stop("Nonlin requires at least one variable to be passed to an \n",
+             "unspecified argument of the plug-in function.")
     structure(as.character(variables), class = "Nonlin", call = functionCall,
               extraData = substitute(data))
 }

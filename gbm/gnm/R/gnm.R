@@ -146,6 +146,10 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                        control = gnmControl(...), verbose, x, vcov,
                        termPredictors)
     }
+    if (is.null(fit)) {
+        warning("Algorithm failed - no model could be estimated", call. = FALSE)
+        return()
+    }
     fit <- c(list(call = call, formula = formula, constrain = constrain,
                   family = family, prior.weights = weights,
                   terms = attr(modelTerms, "terms"),

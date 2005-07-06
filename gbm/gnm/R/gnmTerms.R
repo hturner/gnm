@@ -31,7 +31,7 @@ gnmTerms <- function(formula, eliminate)
             switch(classIndex[[i]],
                    "Mult" = paste("Mult", multNo[i], ".Factor",
                    seq(labelList[[i]]), ".", sep = ""),
-                   "Nonlin" = deparse(attr(labelList[[i]], "call")),
+                   "Nonlin" = deparse(attr(labelList[[i]], "call"))[1],
                    "")
 
     labelList <- unlistOneLevel(labelList)

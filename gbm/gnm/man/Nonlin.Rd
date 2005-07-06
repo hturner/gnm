@@ -53,9 +53,10 @@ Nonlin(functionCall, data = NULL)
     }
     
     Any variables passed to unspecified arguments of the plug-in function will
-    be automatically added to the model frame used in \code{gnm}.
-    This model frame can be accessed within a plug-in function
-    using \code{\link{getModelFrame}}.  
+    be automatically added to the model frame used in \code{gnm}. It is
+    assumed that there will be at least one such variable, to form the
+    basis of the term. The model frame can be accessed within a plug-in
+    function using \code{\link{getModelFrame}}.   
     
     The \code{data} argument of \code{Nonlin} can be used to provide any
     variables required by specified arguments of the plug-in function.

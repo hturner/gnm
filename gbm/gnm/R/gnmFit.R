@@ -18,7 +18,7 @@
         status <- "not.converged"
         dev <- numeric(2)
         if (any(is.na(start))) {
-            theta <- modelTools$start()
+            theta <- modelTools$start(family = family)
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
             linear <- modelTools$classID == "Linear"
@@ -97,13 +97,17 @@
             }
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
+            if (any(!is.finite(eta))) {
+                status <- "eta.not.finite"
+                break
+            }
             X <- modelTools$localDesignFunction(theta, factorList)
             mu <- family$linkinv(eta)
             dmu <- family$mu.eta(eta)
             vmu <- family$variance(mu)
             w <- weights * dmu * dmu/vmu
             if (any(!is.finite(w))) {
-                status <- "not.finite"
+                status <- "w.not.finite"
                 break
             }
             dev[2] <- dev[1]
@@ -150,11 +154,14 @@
                 message("\n"[!control$trace],
                         switch(status,
                                bad.param = "Bad parameterisation",
-                               not.finite = "Iterative weights are not all finite",
+                               eta.not.finite = "Predictors are not all finite",
+                               w.not.finite =
+                               "Iterative weights are not all finite",
                                no.deviance = "Deviance is NaN",
                                stuck = "Iterations are not converging"))
             attempt <- attempt + 1
-            if (attempt > 5 | all(!is.na(start)))
+            if (attempt > 5 | all(!is.na(start) | modelTools$classID %in%
+                                  c("Linear", "plugInStart")))
                 return()
             else if (verbose)
                 message("Restarting")

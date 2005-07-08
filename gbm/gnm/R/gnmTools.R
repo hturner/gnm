@@ -11,6 +11,8 @@
             0
     })
 
+    method <- function(){return()}
+
     termTools <- factorAssign <- labelList
     for (i in seq(labelList)) {
         if (inherits(labelList[[i]], "Nonlin")) {
@@ -53,14 +55,19 @@
         }
     }
 
-    start <- function (scale = 0.1) {
+    start <- function (scale = 0.1, ...) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
                            names = names(factorAssign))
         theta <- ifelse(theta < 0, theta - scale, theta + scale)
         for (i in seq(termTools)[plugInStart]) {
             ind <- factorAssign == i
+            thetaOffset <- theta
+            thetaOffset[ind] <- 0
+            factorList <- factorList(thetaOffset)
+            offsetOthers <- predictor(factorList)
             if (is.function(termTools[[i]]$start))
-                theta[ind] <- termTools[[i]]$start(sum(ind))
+                theta[ind] <- termTools[[i]]$start(sum(ind), family = family,
+                                                   offset = offsetOthers)
             else
                 theta[ind] <- termTools[[i]]$start
         }

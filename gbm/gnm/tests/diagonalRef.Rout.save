@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -51,8 +51,7 @@ Residual df:         19
 > downward <- with(voting, origin == 1 & destination != 1)
 > 
 > socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
-+                                          formula = ~ 1 + downward + upward),
-+                                     data = data.frame(downward, upward)),
++                                          formula = ~ 1 + downward + upward)),
 +                       family = binomial, data = voting)
 Running main iterations.......
 Done
@@ -60,8 +59,7 @@ Done
 
 Call:
 gnm(formula = yvar ~ Nonlin(Dref(origin, destination, formula = ~1 + 
-    downward + upward), data = data.frame(downward, upward)), 
-    family = binomial, data = voting)
+    downward + upward)), family = binomial, data = voting)
 
 
 Coefficients:

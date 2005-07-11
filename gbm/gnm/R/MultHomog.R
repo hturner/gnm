@@ -1,8 +1,6 @@
 MultHomog <- function(...){
     labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
-    gnmData <- getModelFrame()
-
-    designList <- lapply(gnmData[, labelList], class.ind)
+    designList <- lapply(list(...), class.ind)
 
     ## get labels for all levels
     allLevels <- lapply(designList, colnames)
@@ -12,7 +10,7 @@ MultHomog <- function(...){
     ## expand design matrices if necessary
     if (!all(mapply(identical, allLevels, list(labels)))) {
         labels <- sort(labels)
-        M <- matrix(0, nrow = nrow(gnmData), ncol = nLevels,
+        M <- matrix(0, nrow = nrow(designList[[1]]), ncol = nLevels,
                     dimnames = list(NULL, labels))
         designList <- lapply(designList, function(design, M) {
             M[,colnames(design)] <- design

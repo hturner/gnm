@@ -17,11 +17,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                            formula = falseFormula,
                            as.list(modelData)[argPos],
                            drop.unused.levels = TRUE))
-    if (!is.null(attr(modelTerms, "extraData")))
-        modelData <- eval(modelData, attr(modelTerms, "extraData"),
-                          parent.frame())
-    else
-        modelData <- eval(modelData, parent.frame())   
+    modelData <- eval(modelData, parent.frame())   
     attr(modelTerms, "variables") <- attr(attr(modelData, "terms"),
                                           "variables")
 
@@ -95,8 +91,9 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (termPredictors) fit$termPredictors <- NULL
     }
     else {
-        modelTools <- gnmTools(modelTerms, modelData, x, family, weights,
-                               offset, eliminate, termPredictors)
+        gnmEnvironment <- parent.frame()
+        modelTools <- gnmTools(gnmEnvironment, modelTerms, modelData, x, family,
+                               weights, offset, eliminate, termPredictors)
         nParam <- length(modelTools$classID)
         nElim <- length(modelTools$eliminate)
 

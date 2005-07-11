@@ -1,6 +1,6 @@
 "gnmTools" <-
-    function(gnmTerms, gnmData, x, family, weights, offset, eliminate,
-             termPredictors)
+    function(gnmEnvironment, gnmTerms, gnmData, x, family, weights, offset,
+             eliminate, termPredictors)
 {
     labelList <- attr(gnmTerms, "parsedLabels")
     prefixList <- attr(gnmTerms, "prefixLabels")
@@ -16,7 +16,8 @@
     termTools <- factorAssign <- labelList
     for (i in seq(labelList)) {
         if (inherits(labelList[[i]], "Nonlin")) {
-            termTools[[i]] <- eval(attr(labelList[[i]], "call"))
+            termTools[[i]] <- eval(attr(labelList[[i]], "call"),
+                                   envir = gnmData, enclos = gnmEnvironment)
             factorAssign[[i]] <-
                 structure(rep(i, length(termTools[[i]]$labels)),
                           names = paste(prefixList[[i]], ".",

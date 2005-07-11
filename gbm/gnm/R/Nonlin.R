@@ -1,4 +1,4 @@
-Nonlin <- function(functionCall, data = NULL){
+Nonlin <- function(functionCall){
     badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
                            sapply(sys.calls(),
                                   function(x) as.character(x[[1]])[1]))
@@ -13,11 +13,9 @@ Nonlin <- function(functionCall, data = NULL){
     }
 
     functionCall <- match.call()$functionCall
-    variables <- match.call(match.fun(functionCall[[1]]), functionCall,
-                            expand.dots = FALSE)[["..."]]
+    variables <- getVariables(functionCall)
     if (!length(variables))
         stop("Nonlin requires at least one variable to be passed to an \n",
              "unspecified argument of the plug-in function.")
-    structure(as.character(variables), class = "Nonlin", call = functionCall,
-              extraData = substitute(data))
+    structure(variables, class = "Nonlin", call = functionCall)
 }

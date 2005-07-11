@@ -18,9 +18,10 @@
         status <- "not.converged"
         dev <- numeric(2)
         if (any(is.na(start))) {
-            theta <- modelTools$start(family = family)
+            theta <- modelTools$start()
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
+            modelTools$classID[is.na(theta)] <- "Linear"
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID ==
                 "plugInStart"

@@ -13,7 +13,6 @@ upward <- with(voting, origin != 1 & destination == 1)
 downward <- with(voting, origin == 1 & destination != 1)
 
 socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
-                                         formula = ~ 1 + downward + upward),
-                                    data = data.frame(downward, upward)),
+                                         formula = ~ 1 + downward + upward)),
                       family = binomial, data = voting)
 socialMobility

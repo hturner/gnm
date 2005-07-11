@@ -1,9 +1,8 @@
 Dref <- function(..., formula = ~ 1) {
     labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
-    gnmData <- getModelFrame()
     
     # get design matrices for Dref factors
-    designList <- lapply(gnmData[, labelList], class.ind)
+    designList <- lapply(list(...), class.ind)
 
     ## get labels for global parameters
     allLevels <- lapply(designList, colnames)
@@ -11,8 +10,8 @@ Dref <- function(..., formula = ~ 1) {
     nGlobal <- length(global)
 
     ## get design matrix for local structure
-    localData <- model.frame(formula, data = gnmData)
-    local <- model.matrix(formula, data = localData)
+    gnmData <- getModelFrame()
+    local <- model.matrix(formula, data = gnmData)
 
     ## create index and labels for parameters
     factorIndex <- c(rep(seq(labelList), each = ncol(local)), rep(0, nGlobal))

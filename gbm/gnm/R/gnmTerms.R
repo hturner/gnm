@@ -37,9 +37,6 @@ gnmTerms <- function(formula, eliminate)
     labelList <- unlistOneLevel(labelList)
     offsetList <- lapply(labelList, attr, "offset")
 
-    extraData <- lapply(labelList, attr, "extraData")
-    extraData <- do.call("cbind", extraData[!sapply(extraData, is.null)])
-
     if (attr(fullTerms, "response") < 1) response <- ""
     else response <- evalq(attr(fullTerms, "variables")[[2]])
     
@@ -48,13 +45,11 @@ gnmTerms <- function(formula, eliminate)
                                                            "offset")], deparse)
     
     structure(reformulate(c(unlist(labelList), unlist(offsetList),
-                            predictorOffset, unlist(colnames(extraData))),
-                          response),
+                            predictorOffset), response),
               terms = fullTerms,
               termLabels = termLabels,
               offset = offsetList,
               parsedLabels = labelList,
               prefixLabels = unlist(prefixList),
-              response = attr(fullTerms, "response"),
-              extraData = extraData)
+              response = attr(fullTerms, "response"))
 }

@@ -16,7 +16,6 @@
         width <- as.numeric(options("width"))
     repeat {
         status <- "not.converged"
-        dev <- numeric(2)
         if (any(is.na(start))) {
             theta <- modelTools$start()
             theta[!is.na(start)] <- start[!is.na(start)]
@@ -86,6 +85,17 @@
         }
         else theta <- structure(ifelse(!constrain, start, 0),
                                 names = names(modelTools$classID))
+        if (status == "not.converged") {
+            dev <- numeric(2)
+            factorList <- modelTools$factorList(theta)
+            eta <- offset + modelTools$predictor(factorList)
+            if (any(!is.finite(eta))) {
+                status <- "eta.not.finite"
+                break
+            }
+            mu <- family$linkinv(eta)
+            dev[1] <- sum(family$dev.resids(y, mu, weights))
+        }
         for (iter in seq(control$iterMax)[status == "not.converged"]) {
             if (verbose) {
                 if (iter == 1)
@@ -96,31 +106,18 @@
                 if (!control$trace)
                     cat(".")
             }
-            factorList <- modelTools$factorList(theta)
-            eta <- offset + modelTools$predictor(factorList)
-            if (any(!is.finite(eta))) {
-                status <- "eta.not.finite"
-                break
-            }
-            X <- modelTools$localDesignFunction(theta, factorList)
-            mu <- family$linkinv(eta)
+            if (control$trace)
+                cat("Iteration ", iter, ". Deviance = ", dev[1],
+                    "\n", sep = "")
             dmu <- family$mu.eta(eta)
+            z <- (y - mu)/dmu
             vmu <- family$variance(mu)
             w <- weights * dmu * dmu/vmu
             if (any(!is.finite(w))) {
                 status <- "w.not.finite"
                 break
             }
-            dev[2] <- dev[1]
-            dev[1] <- sum(family$dev.resids(y, mu, weights))
-            if (control$trace)
-                cat("Iteration ", iter, ". Deviance = ", dev[1],
-                    "\n", sep = "")
-            if (is.nan(dev[1])) {
-                status <- "no.deviance"
-                break
-            }
-            z <- (y - mu)/dmu
+            X <- modelTools$localDesignFunction(theta, factorList)
             WX <- w * X
             score <- drop(crossprod(z, WX))
             diagInfo <- colSums(X * WX)
@@ -142,7 +139,26 @@
                             eliminate = 1 + modelTools$eliminate,
                             onlyFirstCol = TRUE)
             theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] * znorm
-            theta <- theta + theChange
+            dev[2] <- dev[1]
+            j <- 1
+            while (dev[1] >= dev[2] & j < 11) {
+                nextTheta <- theta + theChange
+                factorList <- modelTools$factorList(nextTheta)
+                eta <- offset + modelTools$predictor(factorList)
+                if (any(!is.finite(eta))) {
+                    status <- "eta.not.finite"
+                    break
+                }
+                mu <- family$linkinv(eta)
+                dev[1] <- sum(family$dev.resids(y, mu, weights))
+                if (is.nan(dev[1])) {
+                    status <- "no.deviance"
+                    break
+                }
+                theChange <- theChange/2
+                j <- j + 1
+            }
+            theta <- nextTheta
             theta[constrain] <- 0
         }
         if (status %in% c("converged", "not.converged")) {

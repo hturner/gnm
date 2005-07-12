@@ -1,6 +1,6 @@
 export(checkEstimable, Diag, Dref, Exp, getContrasts, getModelFrame, gnm,
-       gnmControl, MPinv, Mult, MultHomog, Nonlin, se, Symm,
-       summary.gnm, termPredictors, wedderburn)
+       gnmControl, LogExcess, MPinv, Mult, MultHomog, Nonlin, NonlinVariables,
+       se, Symm, summary.gnm, termPredictors, wedderburn)
 
 import(MASS, stats)
 importFrom(graphics, plot)

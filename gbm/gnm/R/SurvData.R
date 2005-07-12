@@ -8,13 +8,14 @@ SurvData <- function(time, status, data, timeDependent = clockControl(...),
         caseData <- data[rep(1:nrow(data), roundTime), -timeDependent$ind]
         caseData[, c(time, status)] <- data.frame(timeHistory, statusHistory)
         historicalData <-
-            mapply(function(x, time, decreasing, by) {
+            mapply(function(name, x, time, decreasing, by) {
                 x <- as.matrix(x)
                 if (decreasing)
                     unlist(mapply(seq, x + by * (time - 1), x, by = -abs(by)))
                 else
                     unlist(mapply(seq, x - by * (time - 1), x, by = abs(by)))
             },
+                   name = colnames(data[,timeDependent$ind, drop = FALSE]),
                    x = ceiling(data[,timeDependent$ind, drop = FALSE]),
                    decreasing = timeDependent$decreasing,
                    by = timeDependent$by,

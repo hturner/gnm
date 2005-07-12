@@ -1,4 +1,4 @@
-getVariables <- function(functionCall) {
+NonlinVariables <- function(functionCall) {
     varMethod <- paste(as.character(functionCall[[1]]), "Variables", sep = "")
     if (exists(varMethod)) {
         functionCall[[1]] <- as.name(varMethod)

@@ -1,6 +1,5 @@
 "gnmTools" <-
-    function(gnmEnvironment, gnmTerms, gnmData, x, family, weights, offset,
-             eliminate, termPredictors)
+    function(gnmEnvironment, gnmTerms, gnmData, x, eliminate, termPredictors)
 {
     labelList <- attr(gnmTerms, "parsedLabels")
     prefixList <- attr(gnmTerms, "prefixLabels")
@@ -10,8 +9,6 @@
         else
             0
     })
-
-    method <- function(){return()}
 
     termTools <- factorAssign <- labelList
     for (i in seq(labelList)) {
@@ -62,13 +59,8 @@
         theta <- ifelse(theta < 0, theta - scale, theta + scale)
         for (i in seq(termTools)[plugInStart]) {
             ind <- factorAssign == i
-            thetaOffset <- theta
-            thetaOffset[ind] <- 0
-            factorList <- factorList(thetaOffset)
-            offsetOthers <- predictor(factorList)
             if (is.function(termTools[[i]]$start))
-                theta[ind] <- termTools[[i]]$start(sum(ind), family = family,
-                                                   offset = offsetOthers)
+                theta[ind] <- termTools[[i]]$start(sum(ind))
             else
                 theta[ind] <- termTools[[i]]$start
         }

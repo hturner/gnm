@@ -92,8 +92,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     }
     else {
         gnmEnvironment <- parent.frame()
-        modelTools <- gnmTools(gnmEnvironment, modelTerms, modelData, x, family,
-                               weights, offset, eliminate, termPredictors)
+        modelTools <- gnmTools(gnmEnvironment, modelTerms, modelData, x,
+                               eliminate, termPredictors)
         nParam <- length(modelTools$classID)
         nElim <- length(modelTools$eliminate)
 

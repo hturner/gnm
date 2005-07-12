@@ -13,7 +13,7 @@ Nonlin <- function(functionCall){
     }
 
     functionCall <- match.call()$functionCall
-    variables <- getVariables(functionCall)
+    variables <- NonlinVariables(functionCall)
     if (!length(variables))
         stop("Nonlin requires at least one variable to be passed to an \n",
              "unspecified argument of the plug-in function.")

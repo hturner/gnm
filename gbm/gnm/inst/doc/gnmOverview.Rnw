@@ -41,7 +41,7 @@ through a Professorial Fellowship.}\\
 \emph{University of Warwick, UK}
 }
 
-\date{For \Rpackage{gnm} version 0.6-2, 2005-07-10}
+\date{For \Rpackage{gnm} version 0.6-2, 2005-07-14}
 
 \begin{document}
 \maketitle
@@ -148,12 +148,12 @@ two homologous factors.
 
 \subsection{\Rfunction{Topo}}
 
-More general structured interactions than those provided by \Runction{Diag} 
+More general structured interactions than those provided by \Rfunction{Diag} 
 and \Rfunction{Symm} can be specified using the function \Rfunction{Topo}.  
-The name of this function is short for `topological interaction', 
+(The name of this function is short for `topological interaction', 
 which is the nomenclature
 often used in sociology for factor interactions with structure derived from
-subject-matter theory.
+subject-matter theory.)
 
 The \Rfunction{Topo} function operates on any number ($k$, say) 
 of input factors, and
@@ -163,7 +163,52 @@ levels for the $i$th factor.  The \Rfunarg{spec} argument specifies
 the interaction level corresponding to every possible combination of 
 the input factors, and the result is a new factor representing the specified
 interaction.
- 
+
+As an example, consider fitting the `log-multiplicative layer effects' models
+described in \citet{Xie92}.  The data are 7 by 7 versions of social mobility
+tables from \citet{Erik82}:
+<<EriksonData>>=
+set.seed(1)
+data(erikson)
+### Collapse to 7 by 7 table as in Erikson et al. (1982)
+erikson <- as.data.frame(erikson)
+lvl <- levels(erikson$origin)
+levels(erikson$origin) <- levels(erikson$destination) <-
+    c(rep(paste(lvl[1:2], collapse = " + "), 2), lvl[3],
+      rep(paste(lvl[4:5], collapse = " + "), 2), lvl[6:9])
+erikson <- xtabs(Freq ~ origin + destination + country, data = erikson)
+@
+From sociological theory --- for which see \citet{Erik82} or \citet{Xie92} --- 
+the log-linear interaction between origin and destination is assumed to have
+a particular structure:
+<<levelMatrix>>=
+levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
+                        3, 3, 4, 6, 4, 5, 6,
+                        4, 4, 2, 5, 5, 5, 5,
+                        6, 6, 5, 1, 6, 5, 2,
+                        4, 4, 5, 6, 3, 4, 5,
+                        5, 4, 5, 5, 3, 3, 5,
+                        6, 6, 5, 3, 5, 4, 1), 7, 7, byrow = TRUE)
+@  
+The models of table 3 of \citet{Xie92} can now be fitted as follows:
+<<XieModels>>=
+## Null association between origin and destination
+nullModel <- gnm(Freq ~ country:origin + country:destination,
+                 family = poisson, data = erikson)
+## Interaction specified by levelMatrix, common to all countries
+commonTopo <- update(nullModel, ~ . +
+                     Topo(origin, destination, spec = levelMatrix))
+## Interaction specified by levelMatrix, different multiplier for each country
+multTopo <- update(nullModel, ~ . +
+                   Mult(country, Topo(origin, destination,
+                                      spec = levelMatrix)))
+## Interaction specified by levelMatrix, different effects for each country
+separateTopo <- update(nullModel, ~ . +
+                       country:Topo(origin, destination, spec = levelMatrix))
+@ 
+Here we have used \Rfunction{gnm} to fit all of these log-link models; the
+first, second and fourth are log-linear and could equally well have been fitted
+using \Rfunction{glm}.
 
 \subsection{The \Rfunction{wedderburn} family}
 

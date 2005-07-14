@@ -53,17 +53,12 @@
         }
     }
 
-    start <- function (scale = 0.1, ...) {
+    start <- function(scale = 0.1) {
         theta <- structure(runif(length(factorAssign), -1, 1) * scale,
                            names = names(factorAssign))
         theta <- ifelse(theta < 0, theta - scale, theta + scale)
-        for (i in seq(termTools)[plugInStart]) {
-            ind <- factorAssign == i
-            if (is.function(termTools[[i]]$start))
-                theta[ind] <- termTools[[i]]$start(sum(ind))
-            else
-                theta[ind] <- termTools[[i]]$start
-        }
+        for (i in seq(termTools)[plugInStart])
+            theta[factorAssign == i] <- termTools[[i]]$start
         theta
     }
 

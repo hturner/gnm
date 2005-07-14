@@ -12,10 +12,14 @@
 A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
 \code{orig} (levels \code{1:7}) and \code{dest} (levels \code{1:7}).
 }
+\source{Originally in Yaish (1998), see also Yaish (2004, p316).}
 \references{
   Yaish, M (1998). Opportunities, Little Change. Class Mobility in
   Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
   University of Oxford. 
+  
+  Yaish, M (2004).  \em{Class Mobility Trends in Israeli Society, 1974-1991.}
+  Lewiston: Edwin Mellen Press.
 }
 \examples{
 set.seed(1)

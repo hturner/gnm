@@ -41,7 +41,7 @@ through a Professorial Fellowship.}\\
 \emph{University of Warwick, UK}
 }
 
-\date{For \Rpackage{gnm} version 0.6-1, 2005-06-28}
+\date{For \Rpackage{gnm} version 0.6-2, 2005-07-10}
 
 \begin{document}
 \maketitle
@@ -99,10 +99,9 @@ by \Rfunction{gnm}'s \emph{eliminate} mechanism (see Section \ref{eliminate}).
 While the main purpose of the \Rpackage{gnm} package is to extend the class of
 models to include nonlinear terms, some of the new functions and methods
 can be used also with the familiar \Rfunction{lm} and \Rfunction{glm}
-model-fitting functions.  These are: two new data-manipulation functions
-\Rfunction{Diag}
-and \Rfunction{Symm}, for setting up structured interactions between
-homologous factors; a new \Rclass{family} function, \Rfunction{wedderburn},
+model-fitting functions.  These are: three new data-manipulation functions
+\Rfunction{Diag}, \Rfunction{Symm} and \Rfunction{Topo}, for setting up structured interactions between factors; a new \Rclass{family} function, 
+\Rfunction{wedderburn},
 for modelling a response variable in $[0,1]$ with the variance function
 $V(\mu) = \mu^2(1-\mu)^2$ as in \citet{Wedd74};
 and a new generic function \Rfunction{termPredictors} which
@@ -146,6 +145,25 @@ print(comparison2)
 The \Rfunction{Diag} and \Rfunction{Symm} functions also generalize the notions
 of diagonal and symmetric interaction to cover situations involving more than
 two homologous factors.
+
+\subsection{\Rfunction{Topo}}
+
+More general structured interactions than those provided by \Runction{Diag} 
+and \Rfunction{Symm} can be specified using the function \Rfunction{Topo}.  
+The name of this function is short for `topological interaction', 
+which is the nomenclature
+often used in sociology for factor interactions with structure derived from
+subject-matter theory.
+
+The \Rfunction{Topo} function operates on any number ($k$, say) 
+of input factors, and
+requires an argument named \Rfunarg{spec} which must be an array of
+dimension $L_1 \times \ldots \times L_k$, where $L_i$ is the number of 
+levels for the $i$th factor.  The \Rfunarg{spec} argument specifies
+the interaction level corresponding to every possible combination of 
+the input factors, and the result is a new factor representing the specified
+interaction.
+ 
 
 \subsection{The \Rfunction{wedderburn} family}
 
@@ -1232,7 +1250,8 @@ The $\gamma_{ij}$ represent a pattern of association that varies in strength
 over the dimension indexed by $k$, and $\exp(\delta_k)$ represents the relative
 strength of that association at level $k$.
 
-This model can be applied to the \Robject{yaish} data set \citep{Yais98}, 
+This model can be applied to the \Robject{yaish} data set 
+\citep{Yais98,Yais04}, 
 which is a
 contingency table cross-classified by father's social class (\Robject{orig}),
 son's social

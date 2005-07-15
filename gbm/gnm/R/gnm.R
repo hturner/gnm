@@ -81,7 +81,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         dev <- sum(family$dev.resids(y, mu, weights))
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
-        fit <- list(coefficients = numeric(0), eliminate = numeric(0),
+        fit <- list(coefficients = numeric(0), eliminate = 0,
                     predictors = offset, fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0, conv = NULL,
                     weights = weights*dmu^2/family$variance(mu),

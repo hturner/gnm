@@ -143,7 +143,8 @@
             dev[2] <- dev[1]
             j <- 1
             while (dev[1] >= dev[2] & j < 11) {
-                nextTheta <- replace(theta, !constrain, theta + theChange)
+                nextTheta <- replace(theta, !constrain,
+                                     theta[!constrain] + theChange)
                 factorList <- modelTools$factorList(nextTheta)
                 eta <- offset + modelTools$predictor(factorList)
                 if (any(!is.finite(eta))) {

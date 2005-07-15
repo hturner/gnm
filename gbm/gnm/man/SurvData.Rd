@@ -2,133 +2,62 @@
 \alias{SurvData}
 \title{ Fill in history for right-censored survival data }
 \description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Given the event status and follow-up time, \code{SurvData} will fill
+  in the history of these variables and any other covariates, including
+  simple time-dependent variables, producing a data frame with one row
+  for each unit of time. 
 }
 \usage{
 SurvData(time, event, data, timeDependent = clockControl(...), ...)
-}
-%- maybe also 'usage' for other objects documented here.
+or
+SurvData(event, data =, timeDependent = clockControl(...), ...)
+ }
 \arguments{
-  \item{time}{ ~~Describe \code{time} here~~ }
-  \item{event}{ ~~Describe \code{event} here~~ }
-  \item{data}{ ~~Describe \code{data} here~~ }
-  \item{timeDependent}{ ~~Describe \code{timeDependent} here~~ }
-  \item{\dots}{ ~~Describe \code{\dots} here~~ }
+  \item{time}{ the follow-up times, specified either by a character
+    vector which is the name of a column in \code{data}, or by a numeric
+    vector }
+  \item{event}{ if \code{time} is not specified, a \code{\link{Surv}}
+    object giving both event status and follow-up times; otherwise the
+    status indicator, specified in the same way as \code{time}. Status
+    should be indicated by one of the following codings for
+    {no event}/{event}: 0/1; FALSE/TRUE, or 1/2. If \code{event} is not
+    specified, all subjects are assumed to have had an event at
+    \code{time}. }
+  \item{data}{ a data frame of variables recorded for each subject,
+    possibly including the event time and status.  }
+  \item{timeDependent}{ a list of parameters specifying the
+    time-dependence of variables in \code{data}, where relevant. See
+    \code{\link{clockControl}} for details.  }
+  \item{\dots}{ arguments to be passed on to \code{clockControl} }
 }
 \details{
-  ~~ If necessary, more details than the __description__  above ~~
+  Any time-dependent variables, including the follow-up times, are
+  rounded up to the nearest integer. A record is then produced for each 
+  unit of time from 1 up to \code{time}, for each subject.
+
+  The amplified time and status data will appear in the returned data
+  frame with the names "time" and "status", or the names of the vectors
+  passed to \code{time} and \code{event} where applicable. If
+  \code{data} contains variables with these names that are not identical
+  to the variables specified by \code{time} and \code{status}, unique
+  names for the amplified time and status data will be obtained using
+  \code{make.unique}. 
+  
+  The function tries to distinguish between the use of 0/1 and 1/2
+  coding for using \code{if (max(status) == 2)}. If 1/2 coding is used
+  and all the subjects are censored, it will guess wrong.  Use 0/1
+  coding in this case. 
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of 'comp1'}
-  \item{comp2 }{Description of 'comp2'}
-  ...
+  A data frame of the amplified time and status data, along with the
+  corresponding covariate data.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
-
- ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{ ~~objects to See Also as \code{\link{~~fun~~}}, ~~~ }
+\author{ Heather Turner }
+\seealso{ \code{\link{clockControl}}, \code{\link{Surv}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function(time, event, data,
-                     timeDependent = clockControl(...), ...) {
-    argList <- as.list(match.call())
-    
-    if (missing(event)) {
-        if (missing(time))
-            stop("No event data!")
-        else if (inherits(time, "Surv"))
-            event <- time
-        else
-            event <- 1
-    }
-
-    colNames <- c("time", "status")
-   
-    if (inherits(event, "Surv")) {
-        if (ncol(event) != 2)
-            stop("'SurvData' can not be used on interval event data")
-        time <- event$time
-        event <- event$status
-    }
-    else {
-        if (is.character(time)) {
-            colNames[1] <- time
-            time <- data[[time]]
-        }
-        else {
-            if (!is.numeric(time))
-                stop("'time' is not of the correct format")
-            if (is.name(argList$time))
-                colNames[1] <- deparse(argList$time)[1]
-        }
-        if (is.character(event)) {
-            colNames[2] <- event
-            event <- data[[event]]
-        }
-        else {
-            if (is.logical(event))
-                event <- as.numeric(event)
-            else if (!is.numeric(event))
-                stop("'event' is not of the correct format")
-            if (max(event) == 2)
-                event <- event - 1
-            if(is.name(argList$event))
-                colNames[2] <- deparse(argList$event)[1]
-        }
-    }
-                    
-    roundTime <- ceiling(time)
-    timeHistory <- sequence(roundTime)
-    eventHistory <- replace(numeric(length(timeHistory)), cumsum(roundTime),
-                            event)
-
-    if (missing(data)) {
-        survData <- cbind(timeHistory, eventHistory)
-        colnames(survData) <- colNames
-    }
-    else {
-        survData <- data[rep(1:nrow(data), roundTime), ]
-        if (!identical(data[[colNames[1]]], time)) {
-            survData[rev(make.unique(c(colnames(data), colNames[1])))[1]] <-
-                timeHistory
-        }
-        else
-            survData[, colNames[1]] <- timeHistory
-        if (!identical(data[[colNames[2]]], event)) {
-            survData[rev(make.unique(c(colnames(data), colNames[2])))[1]] <-
-                eventHistory
-        }
-        else
-            survData[, colNames[2]] <- eventHistory
-        if (length(timeDependent$ind)) { 
-            survData[, timeDependent$ind] <-
-                mapply(function(name, x, time, decreasing, by) {
-                    x <- as.matrix(x)
-                    if (decreasing)
-                        unlist(mapply(seq, x + by * (time - 1), x,
-                                      by = -abs(by)))
-                    else
-                        unlist(mapply(seq, x - by * (time - 1), x,
-                                      by = abs(by)))
-                },
-                       name = colnames(data[,timeDependent$ind, drop = FALSE]),
-                       x = ceiling(data[,timeDependent$ind, drop = FALSE]),
-                       decreasing = timeDependent$decreasing,
-                       by = timeDependent$by,
-                       MoreArgs = list(time = roundTime))
-        }
-    }
-    survData
-  }
+library(survival)
+aml
+SurvData("time", "status", data = aml)
 }
-\keyword{ ~kwd1 }% at least one, from doc/KEYWORDS
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ manip }
+\keyword{ survival }

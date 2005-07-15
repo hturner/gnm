@@ -23,8 +23,8 @@
             modelTools$classID[is.na(theta)] <- "Linear"
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID ==
-                "plugInStart"
-            unspecifiedLin <- linear & !specified & !constrain
+                "plugInStart" | constrain
+            unspecifiedLin <- linear & !specified
             if (any(unspecifiedLin)) {
                 thetaOffset <- theta
                 thetaOffset[!specified] <- 0

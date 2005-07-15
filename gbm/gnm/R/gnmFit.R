@@ -118,6 +118,7 @@
                 break
             }
             X <- modelTools$localDesignFunction(theta, factorList)
+            X <- X[, !constrain, drop = FALSE]
             WX <- w * X
             score <- drop(crossprod(z, WX))
             diagInfo <- colSums(X * WX)
@@ -142,7 +143,7 @@
             dev[2] <- dev[1]
             j <- 1
             while (dev[1] >= dev[2] & j < 11) {
-                nextTheta <- theta + theChange
+                nextTheta <- replace(theta, !constrain, theta + theChange)
                 factorList <- modelTools$factorList(nextTheta)
                 eta <- offset + modelTools$predictor(factorList)
                 if (any(!is.finite(eta))) {
@@ -159,7 +160,6 @@
                 j <- j + 1
             }
             theta <- nextTheta
-            theta[constrain] <- 0
         }
         if (status %in% c("converged", "not.converged")) {
             if (verbose)

@@ -19,7 +19,8 @@ gnmTerms <- function(formula, eliminate)
     nonlinear <- is.element(seq(labelList),
                             grep("(Mult|Nonlin)[[:space:]]*\\(", labelList))
     labelList <- c(list(structure(c(intercept, labelList[!nonlinear]),
-                                  class = "Linear"))[any(!nonlinear|intercept)],
+                                  class = "Linear"))[any(
+                                  c(intercept, !nonlinear))],
                    lapply(labelList[nonlinear],
                           function(term) eval(parse(text = term))))
     labelList <- prefixList <- unlistOneLevel(labelList)

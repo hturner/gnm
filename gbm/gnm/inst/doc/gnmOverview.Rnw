@@ -168,7 +168,6 @@ As an example, consider fitting the `log-multiplicative layer effects' models
 described in \citet{Xie92}.  The data are 7 by 7 versions of social mobility
 tables from \citet{Erik82}:
 <<EriksonData>>=
-set.seed(1)
 data(erikson)
 ### Collapse to 7 by 7 table as in Erikson et al. (1982)
 erikson <- as.data.frame(erikson)
@@ -181,7 +180,8 @@ erikson <- xtabs(Freq ~ origin + destination + country, data = erikson)
 From sociological theory --- for which see \citet{Erik82} or \citet{Xie92} --- 
 the log-linear interaction between origin and destination is assumed to have
 a particular structure:
-<<levelMatrix>>=
+\newpage
+\begin{verbatim}
 levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
                         3, 3, 4, 6, 4, 5, 6,
                         4, 4, 2, 5, 5, 5, 5,
@@ -189,9 +189,9 @@ levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
                         4, 4, 5, 6, 3, 4, 5,
                         5, 4, 5, 5, 3, 3, 5,
                         6, 6, 5, 3, 5, 4, 1), 7, 7, byrow = TRUE)
-@  
+\end{verbatim}  
 The models of table 3 of \citet{Xie92} can now be fitted as follows:
-<<XieModels>>=
+\begin{verbatim}
 ## Null association between origin and destination
 nullModel <- gnm(Freq ~ country:origin + country:destination,
                  family = poisson, data = erikson)
@@ -199,13 +199,27 @@ nullModel <- gnm(Freq ~ country:origin + country:destination,
 commonTopo <- update(nullModel, ~ . +
                      Topo(origin, destination, spec = levelMatrix))
 ## Interaction specified by levelMatrix, different multiplier for each country
-multTopo <- update(nullModel, ~ . +
-                   Mult(country, Topo(origin, destination,
+multTopo <- update(nullModel, ~ . + Mult(country, Topo(origin, destination,
                                       spec = levelMatrix)))
 ## Interaction specified by levelMatrix, different effects for each country
 separateTopo <- update(nullModel, ~ . +
                        country:Topo(origin, destination, spec = levelMatrix))
-@ 
+> anova.glm(nullModel, commonTopo, multTopo, separateTopo)
+Analysis of Deviance Table
+
+Model 1: Freq ~ country:origin + country:destination
+Model 2: Freq ~ Topo(origin, destination, spec = levelMatrix) + 
+    country:origin + country:destination
+Model 3: Freq ~ Mult(country, Topo(origin, destination, spec = levelMatrix)) + 
+    country:origin + country:destination
+Model 4: Freq ~ country:origin + country:destination + country:Topo(origin, 
+    destination, spec = levelMatrix)
+  Resid. Df Resid. Dev  Df Deviance
+1       108     4860.0             
+2       103      244.3   5   4615.7
+3       101      216.4   2     28.0
+4        93      208.5   8      7.9
+\end{verbatim}
 Here we have used \Rfunction{gnm} to fit all of these log-link models; the
 first, second and fourth are log-linear and could equally well have been fitted
 using \Rfunction{glm}.

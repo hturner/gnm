@@ -33,7 +33,7 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
   component, named \code{summary}, is a data frame containing variables
   \code{estimate}, \code{se} and \code{quasi.se}.  The \code{quasi.se}
   variable is
-  not present if either the \code{\link{qvcalc}} package is unavailable
+  not present if either the \code{qvcalc} package is unavailable
   or there are fewer than two estimable differences.  The second
   component, named \code{relative.errors}, is a character vector
   of length 2 containing the smallest and largest relative errors of the
@@ -45,7 +45,7 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
 }
 \author{ David Firth }
 \seealso{ \code{\link{gnm}}, \code{\link{se}},
-  \code{\link{checkEstimable}}, \code{\link{qvcalc}}}
+  \code{\link{checkEstimable}}, \code{\link[qvcalc]{qvcalc}}}
 \references{
   Firth, D (2003).  Overcoming the reference category problem in the
   presentation of statistical models.  \emph{Sociological Methodology}

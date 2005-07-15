@@ -38,7 +38,7 @@
                                                      offset = offsetSpecified,
                                                      family = family)$coef))
             }
-            oneAtATime <- !linear & !specified & !constrain
+            oneAtATime <- !linear & !specified
             for (iter in seq(length = control$iterStart * any(oneAtATime))) {
                 if (verbose) {
                     if (iter == 1)

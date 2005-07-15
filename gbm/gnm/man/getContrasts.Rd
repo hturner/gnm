@@ -29,11 +29,31 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
   differences.
 }
 \value{
-  A list (of length \code{nSets}) of data frames, each containing variables
-  \code{estimate} and \code{se}
+  A list (of length \code{nSets}) of 2-component lists.  The first
+  component, named \code{summary}, is a data frame containing variables
+  \code{estimate}, \code{se} and \code{quasi.se}.  The \code{quasi.se}
+  variable is
+  not present if either the \code{\link{qvcalc}} package is unavailable
+  or there are fewer than two estimable differences.  The second
+  component, named \code{relative.errors}, is a character vector
+  of length 2 containing the smallest and largest relative errors of the
+  quasi-standard-error approximation, in the set of all simple
+  contrasts; or \code{NULL} if quasi standard errors have not been
+  calculated. See Firth (2003) or Firth and Menezes (2004)
+  for details of quasi standard errors and their use.
+  
 }
 \author{ David Firth }
-\seealso{ \code{\link{gnm}}, \code{\link{se}}, \code{\link{checkEstimable}} }
+\seealso{ \code{\link{gnm}}, \code{\link{se}},
+  \code{\link{checkEstimable}}, \code{\link{qvcalc}}}
+\references{
+  Firth, D (2003).  Overcoming the reference category problem in the
+  presentation of statistical models.  \emph{Sociological Methodology}
+  \bold{33}, 1--18.
+
+  Firth, D and Menezes, R X de (2004).  Quasi-variances.
+  \emph{Biometrika} \bold{91}, 65--80.
+  }
 \examples{
 set.seed(1)
 data(yaish)

@@ -28,7 +28,18 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
                 "estimable\n")
         }
         not.unestimable <- iden | is.na(iden)
-        se(model, x[, not.unestimable, drop = FALSE],
+        result <- se(model, x[, not.unestimable, drop = FALSE],
            checkEstimability = FALSE)
+        relerrs <- NULL
+        if (sum(not.unestimable) > 2 && require(qvcalc)) {
+            not.unestimable <- names(not.unestimable)[not.unestimable]
+            V <- vcov(model)[not.unestimable, not.unestimable, drop = FALSE]
+            QVs <- qvcalc(V)
+            quasi.se <- sqrt(QVs$qvframe$quasiVar)
+            result <- cbind(result, quasi.se)
+            relerrs <- round(100*c(min(QVs$relerrs), max(QVs$relerrs)), 1)
+            relerrs <- paste(relerrs, "%", sep = "")
+        }
+        list(summary = result, relative.errors = relerrs)
     })
 }

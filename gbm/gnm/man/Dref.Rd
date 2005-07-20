@@ -1,6 +1,6 @@
 \name{Dref}
 \alias{Dref}
-\title{gnm ``plug-in'' Function to Fit Diagonal Reference Terms}
+\title{gnm Plug-in Function to Fit Diagonal Reference Terms}
 \description{
   A function to provide the objects and functions required to fit a diagonal
   reference term in a generalized nonlinear model using \code{\link{gnm}}.  
@@ -40,7 +40,10 @@ Dref(..., formula = ~ 1)
   be the union of the factor levels, sorted into increasing order.
 }
 \value{
-  A list with the components required of a \code{gnm} plug-in function:
+  A list with the anticipated components of a \code{gnm} plug-in
+  function:
+  \item{start}{ a vector of starting values for the parameters in the
+    diagonal reference term. }
   \item{labels}{a character vector of labels for the parameters in the
     diagonal reference term.}
   \item{predictor}{a function that takes estimates of the parameters in the
@@ -69,7 +72,8 @@ Dref(..., formula = ~ 1)
 \author{ Heather Turner }
 \seealso{\code{\link{gnm}} and \code{\link{Nonlin}} for usage.
   
-  \code{\link{MultHomog}} for another \code{gnm} plug-in function.
+  \code{\link{MultHomog}} and \code{\link{LogExcess}} for other
+  \code{gnm} plug-in functions.
   
   \code{\link{Mult}} for specifying multiplicative interactions
   in \code{gnm} formulae.}

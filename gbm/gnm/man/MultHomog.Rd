@@ -1,6 +1,6 @@
 \name{MultHomog}
 \alias{MultHomog}
-\title{gnm ``plug-in'' Function to Fit Multiplicative Interactions with
+\title{gnm Plug-in Function to Fit Multiplicative Interactions with
  Homogeneous Effects}
 \description{
   A function to provide the objects and functions required to fit
@@ -50,7 +50,8 @@ MultHomog(...)
 \author{ Heather Turner }
 \seealso{\code{\link{gnm}} and \code{\link{Nonlin}} for usage.
   
-  \code{\link{Dref}} for another \code{gnm} plug-in function.
+  \code{\link{Dref}} and \code{\link{LogExcess}} for other \code{gnm}
+  plug-in functions.
   
   \code{\link{Mult}} for specifying multiplicative interactions in
   \code{gnm} formulae.}

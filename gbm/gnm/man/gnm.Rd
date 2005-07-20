@@ -90,9 +90,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   by the plug-in function \code{PlugInFunction} involving factors
   \code{A} and \code{B}. The \pkg{gnm} package includes plug-in
   functions for multiplicative interactions with homogeneous effects
-  (\code{MultHomog}) and diagonal reference terms (\code{Dref}). Users
-  may also define their own plug-in functions, see \code{\link{Nonlin}}
-  for details.
+  (\code{MultHomog}), diagonal reference terms (\code{Dref}) and log
+  excess terms (\code{LogExcess}). Users may also define their own
+  plug-in functions, see \code{\link{Nonlin}} for details.
 
   The \code{eliminate} argument may be used to specify a single factor
   to be used instead of an intercept in the model of the predictor. This
@@ -232,9 +232,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{\link{Diag}} and \code{\link{Symm}} for specifying special types
   of interaction.
   
-  \code{\link{Mult}}, \code{\link{Nonlin}}, \code{\link{Dref}}
-  and \code{\link{MultHomog}} for incorporating nonlinear terms in the
-  \code{formula} argument to \code{gnm}.
+  \code{\link{Mult}}, \code{\link{Nonlin}}, \code{\link{Dref}},
+  \code{\link{MultHomog}} and \code{LogExcess} for incorporating
+  nonlinear terms in the \code{formula} argument to \code{gnm}.
 
   \code{\link{residuals.glm}} and the generic functions
   \code{\link{coef}}, \code{\link{fitted}}, etc. for extracting

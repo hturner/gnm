@@ -13,9 +13,17 @@ Nonlin <- function(functionCall){
     }
 
     functionCall <- match.call()$functionCall
-    variables <- NonlinVariables(functionCall)
+    envir <- environment(eval(functionCall[[1]]))
+    varMethod <- paste(as.character(functionCall[[1]]), "Variables", sep = "")
+    if (exists(varMethod, envir)) {
+        varMethod <- as.call(c(as.name(varMethod), as.list(functionCall)[-1]))
+        variables <- eval(substitute(varMethod), envir)
+    }
+    else
+       variables <- as.character(match.call(match.fun(functionCall[[1]]),
+                                            functionCall,
+                                            expand.dots = FALSE)[["..."]])
     if (!length(variables))
-        stop("Nonlin requires at least one variable to be passed to an \n",
-             "unspecified argument of the plug-in function.")
+        stop("No variables in term!")
     structure(variables, class = "Nonlin", call = functionCall)
 }

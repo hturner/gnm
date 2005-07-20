@@ -10,10 +10,8 @@
 Nonlin(functionCall, data = NULL)
 }
 \arguments{
-  \item{functionCall}{ a call to a \dQuote{plug-in} function that provides the
+  \item{functionCall}{ a call to a plug-in function that provides the
     objects required to fit the special nonlinear term. }
-  \item{data}{ (optional) a data.frame containing any variables in
-    \bold{specified} arguments of \code{functionCall}. }
 }
 \details{
     Nonlinear terms that cannot be specified by \code{Mult} require special
@@ -27,10 +25,12 @@ Nonlin(functionCall, data = NULL)
     necessary to fit the desired term.  
 
     The \pkg{gnm} package includes plug-in functions for multiplicative
-    interactions with homogeneous effects (\code{MultHomog}) and diagonal
-    reference terms (\code{Dref}).  Users may also define their own plug-in
-    functions which should return a list with at least the following
-    three components:
+    interactions with homogeneous effects (\code{MultHomog}), diagonal
+    reference terms (\code{Dref}) and log excess terms
+    (\code{LogExcess}).
+
+    Users may also define their own plug-in functions which should
+    return a list with at least the following three components:
     \describe{
       \item{labels}{a character vector of labels for the
         parameters (to which \code{gnm} will prefix the call to the
@@ -46,30 +46,37 @@ Nonlin(functionCall, data = NULL)
     }
     and optionally one further component
     \describe{
-        \item{start}{either a vector of default starting values
-        for the parameters or a function which takes
-	the number of parameters and returns a vector of default
-        starting values.}
-    }
-    
-    Any variables passed to unspecified arguments of the plug-in function will
-    be automatically added to the model frame used in \code{gnm}. It is
-    assumed that there will be at least one such variable, to form the
-    basis of the term. The model frame can be accessed within a plug-in
-    function using \code{\link{getModelFrame}}.   
-    
-    The \code{data} argument of \code{Nonlin} can be used to provide any
-    variables required by specified arguments of the plug-in function.
-    ALL the variables given in \code{data} will be added to the model frame.
+        \item{start}{a vector of default starting values for the
+	  parameters. \code{NA} may be used to indicate parameters which
+	  may be treated as linear for the purpose of finding starting
+	  values, given the non-\code{NA} values. } 
+      }
+
+    \code{Nonlin} identifies variables in the term from the call to the
+    plug-in function and returns deparsed expressions representing these
+    variables, so that they can be added to the model frame. By default,
+    expressions passed to unspecified arguments of the plug-in function
+    are deparsed.
+
+    If the default action of \code{Nonlin} will not capture the required
+    variables, a companion function must exist in the environment of the
+    plug-in function, which takes a call to the plug-in function and
+    returns  the necessary deparsed expressions. The name of this
+    function must be the name of the plug-in function suffixed with
+    "Variables", e.g. PlugInFunctionVariables would be the companion
+    function for PlugInFunction. 
+
+    The call to the plug-in function is evaluated in the environment of
+    the model frame and in the enclosing environment of the parent frame
+    of the call to \code{gnm}. To access the model frame directly from
+    within a plug-in function (e.g. for use with \code{model.matrix}),
+    use \code{\link{getModelFrame}}.
 }
 \value{
     An object of class \code{"Nonlin"} which is a list of deparsed expressions
-    representing the variables passed to unspecified arguments of the plug-in
-    function, with the attributes
-  \item{call}{ the call to make to the plug-in function. }
-  \item{extraData}{ if supplied, the data frame passed to the \code{data}
-                   argument of \code{Nonlin}. }
-	       }
+    representing the variables in the nonlinear term, with the call to
+    the plug-in function as an attribute.  
+ }
 \references{
   Goodman, L. A. (1979) Simple Models for the Analysis of Association in
   Cross-Classifications having Ordered
@@ -77,7 +84,7 @@ Nonlin(functionCall, data = NULL)
 }
 \author{Heather Turner}
 \seealso{\code{\link{gnm}}, \code{\link{getModelFrame}},
-  \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{Mult}}}
+  \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{LogExcess}}, \code{\link{Mult}}}
 \examples{
 set.seed(1)
 data(occupationalStatus)

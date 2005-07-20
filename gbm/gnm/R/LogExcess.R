@@ -27,6 +27,6 @@ LogExcess <- function(x, side = "left", constraint = ifelse(side == "right",
         cbind(log(x + exp(coef[2])), coef[1] * exp(coef[2])/(x + exp(coef[2])))
     }
 
-    list(start = c(NA, 0), labels = c("slope", "endpoint"),
+    list(start = c(NA, 0), labels = c("slope", "excess"),
          predictor = predictor, localDesignFunction = localDesignFunction)
 }

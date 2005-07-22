@@ -1088,14 +1088,14 @@ should be treated differently from movements between the lower classes (classes
 propose the following model
 \begin{equation*}
 \mu_{od} = \begin{cases}
-\frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
-\frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d & \text{if } i = 1\\
+\dfrac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
+\dfrac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d & \text{if } i = 1\\
 \\
-\frac{e^{\delta_3}}{e^{\delta_3} + e^{\delta_4}}\gamma_o +
-\frac{e^{\delta_4}}{e^{\delta_3} + e^{\delta_4}}\gamma_d & \text{if } j = 1\\
+\dfrac{e^{\delta_3}}{e^{\delta_3} + e^{\delta_4}}\gamma_o +
+\dfrac{e^{\delta_4}}{e^{\delta_3} + e^{\delta_4}}\gamma_d & \text{if } j = 1\\
 \\
-\frac{e^{\delta_5}}{e^{\delta_5} + e^{\delta_6}}\gamma_o +
-\frac{e^{\delta_6}}{e^{\delta_5} + e^{\delta_6}}\gamma_d & \text{if } i \ne 1
+\dfrac{e^{\delta_5}}{e^{\delta_5} + e^{\delta_6}}\gamma_o +
+\dfrac{e^{\delta_6}}{e^{\delta_5} + e^{\delta_6}}\gamma_d & \text{if } i \ne 1
 \text{ and } j \ne 1
 \end{cases}
 \end{equation*}

@@ -47,7 +47,9 @@ through a Professorial Fellowship.}\\
 \begin{document}
 \maketitle
 
-\tableofcontents
+{\small
+ \tableofcontents
+}
 
 \section{Introduction}
 
@@ -1647,6 +1649,7 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rfunction{Diag}	&  create factor differentiating
                                    diagonal elements \\
     &	\Rfunction{Symm}	&  create symmetric interaction of factors \\
+    &   \Rfunction{Topo}        &  create `topological' interaction factors \\
     &	\Rfunction{Mult}	&  specify a multiplicative interaction in a
                                    \Rfunction{gnm} formula	\\
     &	\Rfunction{Exp}	&  specify an exponentiated constituent multiplier in a

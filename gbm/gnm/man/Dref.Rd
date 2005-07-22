@@ -72,8 +72,7 @@ Dref(..., formula = ~ 1)
 \author{ Heather Turner }
 \seealso{\code{\link{gnm}} and \code{\link{Nonlin}} for usage.
   
-  \code{\link{MultHomog}} and \code{\link{LogExcess}} for other
-  \code{gnm} plug-in functions.
+  \code{\link{MultHomog}} for another \code{gnm} plug-in function.
   
   \code{\link{Mult}} for specifying multiplicative interactions
   in \code{gnm} formulae.}

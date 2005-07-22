@@ -7,7 +7,7 @@
   handling.
 }
 \usage{
-Nonlin(functionCall, data = NULL)
+Nonlin(functionCall)
 }
 \arguments{
   \item{functionCall}{ a call to a plug-in function that provides the
@@ -25,9 +25,8 @@ Nonlin(functionCall, data = NULL)
     necessary to fit the desired term.  
 
     The \pkg{gnm} package includes plug-in functions for multiplicative
-    interactions with homogeneous effects (\code{MultHomog}), diagonal
-    reference terms (\code{Dref}) and log excess terms
-    (\code{LogExcess}).
+    interactions with homogeneous effects (\code{MultHomog}) and diagonal
+    reference terms (\code{Dref}).
 
     Users may also define their own plug-in functions which should
     return a list with at least the following three components:
@@ -61,10 +60,10 @@ Nonlin(functionCall, data = NULL)
     If the default action of \code{Nonlin} will not capture the required
     variables, a companion function must exist in the environment of the
     plug-in function, which takes a call to the plug-in function and
-    returns  the necessary deparsed expressions. The name of this
+    returns the necessary deparsed expressions. The name of this
     function must be the name of the plug-in function suffixed with
-    "Variables", e.g. PlugInFunctionVariables would be the companion
-    function for PlugInFunction. 
+    \code{Variables}, e.g. \code{PlugInFunctionVariables} would be the
+    companion function for \code{PlugInFunction}. 
 
     The call to the plug-in function is evaluated in the environment of
     the model frame and in the enclosing environment of the parent frame
@@ -84,7 +83,7 @@ Nonlin(functionCall, data = NULL)
 }
 \author{Heather Turner}
 \seealso{\code{\link{gnm}}, \code{\link{getModelFrame}},
-  \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{LogExcess}}, \code{\link{Mult}}}
+  \code{\link{MultHomog}}, \code{\link{Dref}}, \code{\link{Mult}}}
 \examples{
 set.seed(1)
 data(occupationalStatus)

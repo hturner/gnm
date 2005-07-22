@@ -1,0 +1,62 @@
+Changes in gnm 0.7-1
+=======================
+
+New Features
+------------
+
+    o	Topo() introduced for creating topological interaction factors.
+
+    o	anova() implemented for objects of class c("gnm", "glm").
+
+
+Improvements
+------------
+
+    o	Diagnostic messages given by gnm() have been improved.
+
+    o	Step-halving introduced in main iterations of gnm() to ensure deviance 
+	is reduced at every iteration.
+
+    o	getContrasts() now (additionally) reports quasi standard errors, when
+	available.
+
+    o	Calls to gnm() plug-in functions are now evaluated in the environment 
+	of the model frame and the enclosing environment of the parent frame 
+	of the call to gnm(). This means that variables can be found in a 
+	more standard fashion.
+
+
+Changes in Behaviour
+--------------------
+
+    o	The 'data' argument of Nonlin() is defunct: Nonlin() now identifies 
+	variables to be added to the model frame as those passed to unspecified
+	arguments of the plug-in function or those identified by a companion 
+	function to the plug-in, which is of a specified format.
+
+    o	The (optional) 'start' object returned by a plug-in function can no 
+	longer be a function, only a vector. However it may now include NA 
+	values, to indicate parameters which may be treated as linear for the 
+	purpose of finding starting values, given the non-NA values.
+
+
+Bug Fixes
+---------
+
+    o	The 'eliminate' argument of gnm() now handles functions of variables in 
+	the given formula e.g. ~ strata(A, B), ~ as.factor(A):as.factor(B), etc. 
+
+    o	gnm() was giving an error for models with either no linear parameters, 
+	or none specified by the 'start' argument, this is now fixed.
+
+    o	Long calls to plug-in functions caused problems in parsing the model 
+	formula: now fixed.
+
+    o	gnm() now only restarts after failing if there are unspecified nonlinear
+	parameters.
+
+    o	gnm() now returns NULL if model fails.
+
+    o	Bug fixed in calculation of starting values for gnm() that occurred when some
+	parameters were constrained.
+	

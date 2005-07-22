@@ -8,7 +8,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
         warning("the following arguments to 'anova.gnm' are invalid and dropped: ", 
             paste(deparse(dotargs[named]), collapse = ", "))
     dotargs <- dotargs[!named]
-    is.gnm <- unlist(lapply(dotargs, function(x) inherits(x, "gnm")))
+    is.gnm <- unlist(lapply(dotargs, function(x) inherits(x, c("gnm", "glm"))))
     dotargs <- dotargs[is.gnm]
     if (length(dotargs) > 0) 
         return(anova.glmlist(c(list(object), dotargs), dispersion = dispersion, 

@@ -10,11 +10,12 @@ anova.gnm(object, ..., dispersion = NULL, test = NULL)
 }
 \arguments{
   \item{object}{ an object of class \code{gnm} }
-  \item{\dots}{ additional objects of class \code{gnm} }
+  \item{\dots}{ additional objects of class \code{gnm} or \code{glm}}
   \item{dispersion}{ the dispersion parameter for the fitting family. By
   default it is derived from \code{object} }
   \item{test}{ (optional) a character string, (partially) matching one
-    of "Chisq", "F", or "Cp". See \code{\link{stat.anova}}. }
+    of \code{"Chisq"}, \code{"F"}, or \code{"Cp"}. See
+    \code{\link{stat.anova}}. } 
 }
 \details{
   Specifying a single object gives a sequential analysis of deviance
@@ -34,7 +35,7 @@ anova.gnm(object, ..., dispersion = NULL, test = NULL)
   most appropriate, and for those with dispersion estimated by moments
   (e.g., 'gaussian', 'quasibinomial' and 'quasipoisson' fits) the F test
   is most appropriate.  Mallows' Cp statistic is the residual deviance
-  plus twice the estimate of sigma^2 times the residual degrees of
+  plus twice the estimate of \eqn{\sigma^2}{sigma^2} times the residual degrees of
   freedom, which is closely related to AIC (and a multiple of it if the
   dispersion is known). 
 }
@@ -44,7 +45,7 @@ anova.gnm(object, ..., dispersion = NULL, test = NULL)
 \author{ Heather Turner }
 \section{Warning }{ The comparison between two or more models will only
   be valid if they are fitted to the same dataset. This may be a problem
-  if there are missing values and R's default of 'na.action = na.omit'
+  if there are missing values and R's default of \code{na.action = na.omit}
   is used; an error will be given in this case. } 
 
 \seealso{ \code{\link{gnm}}, \code{\link{anova}}}
@@ -55,10 +56,8 @@ data(occupationalStatus)
 ##  Fit a uniform association model separating diagonal effects
 Rscore <- scale(as.numeric(row(occupationalStatus)), scale = FALSE)
 Cscore <- scale(as.numeric(col(occupationalStatus)), scale = FALSE)
-Uniform <- gnm(Freq ~ origin + destination + Diag(origin, destination) + 
+Uniform <- glm(Freq ~ origin + destination + Diag(origin, destination) + 
                Rscore:Cscore, family = poisson, data = occupationalStatus)
-
-anova(Uniform, test = "Chisq")
 
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
@@ -70,7 +69,8 @@ RC <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
           Mult(origin, destination), family = poisson,
           data = occupationalStatus)
 
-anova(Uniform, RChomog, RC, test = "Chisq")
+anova(RC, test = "Chisq")
 
+anova(Uniform, RChomog, RC, test = "Chisq")
 }
 \keyword{ models }

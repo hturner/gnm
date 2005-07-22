@@ -9,11 +9,11 @@
 \usage{data(erikson)}
 \format{
     A table of counts, with classifying factors \code{origin} (father's
-    class; levels \code{\code{I}, \code{II}, \code{III}, \code{IVa},
+    class; levels \code{I}, \code{II}, \code{III}, \code{IVa},
       \code{IVb}, \code{IVc}, \code{V/VI}, 
-      \code{VIIa}, \code{VIIb})}) \code{destination} (son's
+      \code{VIIa}, \code{VIIb}) \code{destination} (son's
     class; levels as before), and \code{country} (son's country of
-    residence; levels \code{EW}, \code{F}, \code{S})).
+    residence; levels \code{EW}, \code{F}, \code{S}).
 }
 \source{
   Hauser, R. M. (1984) Vertical Class Mobility in England, France and

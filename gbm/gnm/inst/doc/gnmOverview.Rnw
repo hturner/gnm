@@ -14,6 +14,7 @@
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,top=3cm,nohead]{geometry}
 \usepackage{hyperref}
+\usepackage{moreverb}
 
 \setkeys{Gin}{width=0.6\textwidth}
 
@@ -41,7 +42,7 @@ through a Professorial Fellowship.}\\
 \emph{University of Warwick, UK}
 }
 
-\date{For \Rpackage{gnm} version 0.6-2, 2005-07-14}
+\date{For \Rpackage{gnm} version \Sexpr{packageDescription("gnm")[["Version"]]} , \Sexpr{Sys.Date()}}
 
 \begin{document}
 \maketitle
@@ -182,34 +183,44 @@ the log-linear interaction between origin and destination is assumed to have
 a particular structure:
 \newpage
 \begin{verbatim}
-levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
-                        3, 3, 4, 6, 4, 5, 6,
-                        4, 4, 2, 5, 5, 5, 5,
-                        6, 6, 5, 1, 6, 5, 2,
-                        4, 4, 5, 6, 3, 4, 5,
-                        5, 4, 5, 5, 3, 3, 5,
-                        6, 6, 5, 3, 5, 4, 1), 7, 7, byrow = TRUE)
+> levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
++                         3, 3, 4, 6, 4, 5, 6,
++                         4, 4, 2, 5, 5, 5, 5,
++                         6, 6, 5, 1, 6, 5, 2,
++                         4, 4, 5, 6, 3, 4, 5,
++                         5, 4, 5, 5, 3, 3, 5,
++                         6, 6, 5, 3, 5, 4, 1), 7, 7, byrow = TRUE)
 \end{verbatim}  
 The models of table 3 of \citet{Xie92} can now be fitted as follows:
 \begin{verbatim}
-## Null association between origin and destination
-nullModel <- gnm(Freq ~ country:origin + country:destination,
-                 family = poisson, data = erikson)
-## Interaction specified by levelMatrix, common to all countries
-commonTopo <- update(nullModel, ~ . +
-                     Topo(origin, destination, spec = levelMatrix))
-## Interaction specified by levelMatrix, different multiplier for each country
-multTopo <- update(nullModel, ~ . + Mult(country, Topo(origin, destination,
-                                      spec = levelMatrix)))
-## Interaction specified by levelMatrix, different effects for each country
-separateTopo <- update(nullModel, ~ . +
-                       country:Topo(origin, destination, spec = levelMatrix))
-> anova.glm(nullModel, commonTopo, multTopo, separateTopo)
+> ## Null association between origin and destination
+> nullModel <- gnm(Freq ~ country:origin + country:destination,
++                  family = poisson, data = erikson)
+Running main iterations.
+Done
+> ## Interaction specified by levelMatrix, common to all countries
+> commonTopo <- update(nullModel, ~ . +
++                      Topo(origin, destination, spec = levelMatrix))
+Running main iterations.
+Done
+> ## Interaction specified by levelMatrix, different multiplier for each country
+> multTopo <- update(nullModel, ~ . + Mult(country, Topo(origin, destination,
++                                       spec = levelMatrix)))
+Running start-up iterations..
+Running main iterations.......
+Done
+> ## Interaction specified by levelMatrix, different effects for each country
+> separateTopo <- update(nullModel, ~ . +
++                        country:Topo(origin, destination, spec = levelMatrix))
+Running main iterations.
+Done
+> 
+> anova(nullModel, commonTopo, multTopo, separateTopo)
 Analysis of Deviance Table
 
 Model 1: Freq ~ country:origin + country:destination
-Model 2: Freq ~ Topo(origin, destination, spec = levelMatrix) + 
-    country:origin + country:destination
+Model 2: Freq ~ Topo(origin, destination, spec = levelMatrix) + country:origin + 
+    country:destination
 Model 3: Freq ~ Mult(country, Topo(origin, destination, spec = levelMatrix)) + 
     country:origin + country:destination
 Model 4: Freq ~ country:origin + country:destination + country:Topo(origin, 
@@ -220,7 +231,7 @@ Model 4: Freq ~ country:origin + country:destination + country:Topo(origin,
 3       101      216.4   2     28.0
 4        93      208.5   8      7.9
 \end{verbatim}
-Here we have used \Rfunction{gnm} to fit all of these log-link models; the
+Here we have used \Rfunction{gnm} to fit all of these log-link models; the 
 first, second and fourth are log-linear and could equally well have been fitted
 using \Rfunction{glm}.
 
@@ -337,27 +348,16 @@ would be specified by the formula
 
 Nonlinear terms which can not be specified using \Rfunction{Mult} may be
 specified using \Rfunction{Nonlin}. This symbolic function indicates a term
-which requires a plug-in function to estimate the associated parameters. There
-are two arguments to \Rfunction{Nonlin}: a call to the relevant plug-in function
-and if necessary, a \Rclass{data.frame} object containing any variables that are
-required uniquely by specified arguments of the plug-in function.
+which requires a plug-in function to estimate the associated
+parameters. \Rfunction{Nonlin} takes a single argument, which is a call to the
+relevant plug-in function.  
 
 For example, in the formula
 \begin{alltt}
-    mu ~ x + A + B + Nonlin(PlugInFunction(A, B, arg1 = x, arg2 = C),
-                            data = data.frame.of.C)
+    mu ~ x + A + B + Nonlin(PlugInFunction(A, B, arg1 = x, arg2 = C))
 \end{alltt}
 the call to \Rfunction{Nonlin} is used to specify a term that requires the
-plug-in function
-\Robject{PlugInFunction}. As the factor $C$ only appears in the specified
-arguments of the
-call to \Robject{PlugInFunction}, a data frame containing factor
-\Robject{C} has been passed to the
-\Rfunarg{data} argument of \Rfunction{Nonlin}.
-Note that this would not be necessary
-if \Robject{C} could be found in an environment on the search path (given by
-\texttt{search()}), however \Robject{C} would only be added to the
-model frame if it was passed to \Rfunction{Nonlin}.
+plug-in function \Robject{PlugInFunction}.
 
 The two plug-in functions already included in the
 \Rpackage{gnm} package are described
@@ -444,27 +444,56 @@ nonlinear terms that can not be specified by \Rfunction{Mult}
 or the plug-in functions provided by the \Rpackage{gnm} package.
 
 There are no constraints on the arguments that a plug-in function may
-have. However it should not be assumed that model variables exist in an
-environment on the search path, since \Rfunction{gnm} does not assume this.
-Rather,
-the function \Rfunction{getModelFrame} should be used to get the
-model frame used
-by \Rfunction{gnm}, which will have all the model variables and also attributes
-useful for \Rfunction{model.matrix} etc.
+take.  However it is important that \Rfunction{Nonlin}, when given a call to the
+plug-in function, can determine the variables that are in the term, so that these
+variables can be added to the model frame. By default, expressions passed to
+unspecified arguments of the plug-in function are assumed to represent the
+variables in the term. 
 
-For example, the first few lines of the \Rfunction{MultHomog} function are
+If the default action of \Rfunction{Nonlin} will not capture the required
+variables, a companion function must exist (in the environment of the
+plug-in function), which takes the same arguments as the plug-in function and
+returns deparsed expressions representing the necessary variables. The name of
+this function must be the name of the plug-in function suffixed with
+"Variables". For example, the (non-visible) companion function for
+\Rfunction{Dref} is defined as
+\begin{verbatim}
+    DrefVariables <- function(..., formula = ~ 1) {
+        as.character(c(match.call(expand.dots = FALSE)[[2]], formula[[2]]))
+    }
+\end{verbatim}
+returning the expressions passed to unspecified arguments and the right-hand
+side of the formula passed to \Rfunarg{formula}, as character strings. For
+instance 
+@ 
+<<DrefVariables_example>>=
+gnm:::DrefVariables(A, B, formula = ~ 1 + C)
+@ %def 
+from which \Rfunction{Nonlin} will know that \Robject{A}, \Robject{B} and
+\Robject{C} need to be added to the model frame.
+
+The call to the plug-in function is evaluated in the environment of
+the model frame and in the enclosing environment of the parent frame
+of the call to \Rfunction{gnm}. This should ensure that variables passed
+directly to the plug-in function can be found. However, to evaluate variables
+within the plug-in function, it may be necessary to access the model frame,
+which can be obtained using the function \Rfunction{getModelFrame}.
+
+For example, the factors in a \Rfunction{Dref} term are passed directly to
+unspecified arguments, so the dummy variables for these factors can be found as
+follows 
 \begin{alltt}
-    MultHomog <- function(...)\{
-      labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
-      gnmData <- getModelFrame()
-      designList <- lapply(gnmData[, labelList], class.ind)
-    ...
+    # get design matrices for Dref factors
+    designList <- lapply(list(...), class.ind)
 \end{alltt}
-The names of the factors in the interaction are assigned to \Robject{labelList},
-and the model frame used by \Rfunction{gnm} is assigned to \Robject{gnmData}.
-The
-factors can then be accessed by name from \Robject{gnmData}, as in the call to
-\Rfunction{lapply}.
+But any covariates on which the weights depend are only represented symbolically
+in the \Rfunarg{formula} argument, so the design matrix for these variables must
+be found in the context of the model frame
+\begin{alltt}
+    ## get design matrix for local structure
+    gnmData <- getModelFrame()
+    local <- model.matrix(formula, data = gnmData)   
+\end{alltt}
 
 The plug-in function should return a list with at least the following 
 three components:
@@ -486,11 +515,12 @@ three components:
 and optionally one further component
 \begin{description}
 \item[\Robject{start}]
-  either a vector of default starting values
-  for the parameters or a function which takes
-  the number of parameters and returns a vector of default
-  starting values. See Section \ref{start} for details of how these values will
-  be used if provided and the generic default values that will be used otherwise.
+  a vector of default starting values for the
+  parameters. \Robject{NA} may be used to indicate parameters which
+  may be treated as linear for the purpose of finding starting
+  values, given the non-\Robject{NA} values. See Section \ref{start} for details of
+  how these starting values will be used if provided and the generic default
+  values that will be used otherwise. 
 \end{description}
 
 As an example of a \Robject{start} component, \Rfunction{Dref} simply returns
@@ -602,7 +632,7 @@ The starting procedure used by \Rfunction{gnm} is as follows
 \begin{enumerate}
 \item
 Generate starting values $\theta_i$ for all parameters $i = 1, \ldots, p$ from
-the Uniform($-0.1$, 0.1) distribution. Shift these values away from zero as
+the Uniform($-0.1$, $0.1$) distribution. Shift these values away from zero as
 follows
 \begin{equation*}
 \theta_i = \begin{cases}
@@ -611,20 +641,21 @@ follows
 \end{cases}
 \end{equation*}
 \item
-Replace generic starting values with any starting values specified by plug-in
-functions.
+Replace generic starting values with default starting values set by plug-in
+functions, where applicable.
 \item
 Replace default starting values with any starting values specified by the
-\Rfunarg{start} argument of \Rfunction{gnm}.
+\Rfunarg{start} argument of \Rfunction{gnm}. 
 \item
-Compute the \Rfunction{glm} estimate of any parameters in linear terms that were
-not specified by \Rfunarg{start},
-offsetting the contribution to the predictor of
-any parameters specified by \Rfunarg{start} or a plug-in function.
+Compute the \Rfunction{glm} estimate of any parameters that may be treated as
+linear (i.e. those in linear terms or those with a default starting value of
+\Robject{NA} set by a plug-in function), offsetting the contribution to
+the predictor of any parameters specified by \Rfunarg{start} or a plug-in
+function. 
 \item
-Run starting iterations: update any parameters in nonlinear terms
-that were not specified by \Rfunarg{start} or a plug-in function one at a time,
-updating \emph{all} linear terms after each round of nonlinear updates.
+Run starting iterations: update one at a time any remaining nonlinear parameters
+not specified by \Rfunarg{start} or a plug-in function, updating \emph{all}
+parameters that may be treated as linear after each round of updates. 
 \end{enumerate}
 Note that no starting iterations (step 5) will be run if all
 parameters are specified by \Rfunarg{start} or a plug-in function.
@@ -761,13 +792,15 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
-              case.names	&	hatvalues	&	print	\\
-              coef	&	influence	&	residuals	\\
-              cooks.distance	&	labels	&	rstandard	\\
-              deviance	&	logLik	&	summary	\\
-              extractAIC	&	model.frame	&	variable.names	\\
-              family	&	model.matrix	&	vcov	\\
-              formula	&	plot	&	weights	\\
+              anova	&	hatvalues	&	residuals	\\
+              case.names	&	influence	&	rstandard	\\
+              coef	&	labels	&	summary	\\
+              cooks.distance	&	logLik	&	variable.names	\\
+              deviance	&	model.frame	&	vcov	\\
+              extractAIC	&	model.matrix	&	weights	\\
+              family	&	plot	&		\\
+              formula	&	print	&		\\
+
           \end{tabular*}
         }
     \end{fbox}
@@ -782,12 +815,12 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{4.5cm}{@{\extracolsep{\fill}}ll@{\extracolsep{\fill}}}
-              add1	&	drop1	\\
-              alias	&	dummy.coef	\\
-              anova	&	effects	\\
+              add1	&	dummy.coef	\\
+              alias	&	effects	\\
               confint	&	kappa	\\
               dfbeta	&	predict	\\
               dfbetas	&	proj	\\
+              drop1	&		\\
           \end{tabular*}
         }
     \end{fbox}
@@ -1176,7 +1209,7 @@ model A are the same as those reported by \citet{Vand02} except the coefficients
 of the mother's gender role (MRMM) and the father's gender role
 (FRMF). \citet{Vand02} reversed the signs of the coefficients of these factors
 since they were coded in the direction of liberal values, unlike the other
-covariates. However, simply reversing the signs of these coefficents does not
+covariates. However, simply reversing the signs of these coefficients does not
 give the same model, since the estimates of these coefficients are not
 independent of the estimates of the diagonal effects. For consistent
 interpretation of the covariate coefficients, it is better to recode the gender
@@ -1466,7 +1499,7 @@ plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)),
 The product of the matrices
 \Robject{A} and \Robject{B}
 is unaffected by rotation or reciprocal scaling along either axis,
-so we can rotate the data so that the points for the sites are roughly parellel
+so we can rotate the data so that the points for the sites are roughly parallel
 to the horizontal axis and the points for the varieties are roughly parallel to
 the vertical axis. In addition, we can scale the data so that points for the
 sites are about the line one unit about the horizontal axis, roughly
@@ -1623,7 +1656,7 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rfunction{Dref}	&  gnm plug-in function to fit diagonal
                                    reference terms \\
     &	\Rfunction{MultHomog}	&  gnm plug-in function to fit multiplicative
-                                   interactions with homogenous effects	\\
+                                   interactions with homogeneous effects	\\
     &   \Rfunction{wedderburn}      &  specify the Wedderburn
                                        quasi-likelihood family \\
     \midrule
@@ -1649,6 +1682,57 @@ We list here, for easy reference, all of the user-level functions in the
                                    real-valued matrix	\\
 \end{tabular*}
 \end{table}
+
+\newpage
+\section{Key Changes since Last Release}
+
+The new features, improvements and changes in behaviour since the last release
+are given below. For bug fixes since the last release and the changes made in
+previous releases, see the CHANGES file in the package directory.
+
+\begin{verbatimtab}
+
+Changes in gnm 0.7-1
+=======================
+
+New Features
+------------
+
+    o	Topo() introduced for creating topological interaction factors.
+
+    o	anova() implemented for objects of class c("gnm", "glm").
+
+
+Improvements
+------------
+
+    o	Diagnostic messages given by gnm() have been improved.
+
+    o	Step-halving introduced in main iterations of gnm() to ensure deviance 
+	is reduced at every iteration.
+
+    o	getContrasts() now (additionally) reports quasi standard errors, when
+	available.
+
+    o	Calls to gnm() plug-in functions are now evaluated in the environment 
+	of the model frame and the enclosing environment of the parent frame 
+	of the call to gnm(). This means that variables can be found in a 
+	more standard fashion.
+
+
+Changes in Behaviour
+--------------------
+
+    o	The 'data' argument of Nonlin() is defunct: Nonlin() now identifies 
+	variables to be added to the model frame as those passed to unspecified
+	arguments of the plug-in function or those identified by a companion 
+	function to the plug-in, which is of a specified format.
+
+    o	The (optional) 'start' object returned by a plug-in function can no 
+	longer be a function, only a vector. However it may now include NA 
+	values, to indicate parameters which may be treated as linear for the 
+	purpose of finding starting values, given the non-NA values.
+\end{verbatimtab}
 
 \newpage
 \bibliography{gnm}

@@ -201,7 +201,7 @@
                 predictors = eta, fitted.values = mu, deviance = dev[1],
                 aic = modelAIC, iter = iter, conv = status == "converged",
                 weights = w, residuals = z,
-                df.residual = nObs - attr(VCOV,"rank"),
+                df.residual = nObs - sum(weights == 0) - attr(VCOV,"rank"),
                 rank = attr(VCOV, "rank"))
     if (x)
         fit$x <- structure(X, assign = modelTools$termAssign)

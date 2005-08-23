@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -30,7 +30,7 @@ Type 'q()' to quit R.
 +                       eliminate = ~ .rowID, family = "poisson",
 +                       data = backPain, iterStart = 3)
 Running start-up iterations...
-Running main iterations.............
+Running main iterations...........
 Done
 > oneDimensional
 
@@ -42,21 +42,21 @@ gnm(formula = .counts ~ pain + Mult(pain - 1, x1 + x2 + x3 -
 
 Coefficients:
                                 pain.L                                  pain.Q  
-                               13.9085                                 -4.3978  
+                             13.907034                               -4.395852  
                                 pain.C                                  pain^4  
-                                7.0767                                 -5.7203  
+                              7.076315                               -5.719667  
                                 pain^5                 Mult1.Factor1.painworse  
-                               -1.8522                                 -4.0617  
+                             -1.852921                               -2.499234  
                 Mult1.Factor1.painsame    Mult1.Factor1.painslight.improvement  
-                                0.3283                                  0.0916  
+                              0.137516                               -0.004642  
 Mult1.Factor1.painmoderate.improvement    Mult1.Factor1.painmarked.improvement  
-                               -0.9458                                  1.3958  
+                             -0.627987                                0.778672  
      Mult1.Factor1.paincomplete.relief                        Mult1.Factor2.x1  
-                                2.2954                                 -0.8450  
+                              1.319279                               -1.406570  
                       Mult1.Factor2.x2                        Mult1.Factor2.x3  
-                               -0.4847                                 -0.4267  
+                             -0.806779                               -0.710535  
 
 Deviance:            303.1003 
-Pearson chi-squared: 433.3728 
+Pearson chi-squared: 433.3762 
 Residual df:         493 
 > 

@@ -1,5 +1,5 @@
 "gnmFit" <-
-    function (modelTools, y, constrain,
+    function (modelTools, y, constrain, eliminate,
               family = poisson(),
               weights = rep.int(1, length(y)),
               offset = rep.int(0, length(y)),
@@ -14,6 +14,7 @@
     attempt <- 1
     if (verbose)
         width <- as.numeric(options("width"))
+    constrain[modelTools$unestimable] <- TRUE
     repeat {
         status <- "not.converged"
         if (any(is.na(start))) {
@@ -87,6 +88,7 @@
                                 names = names(modelTools$classID))
         if (status == "not.converged") {
             dev <- numeric(2)
+            needToElim <- seq(sum(!constrain[seq(eliminate)]))
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
             if (any(!is.finite(eta))) {
@@ -137,7 +139,7 @@
             WZ <- w * Z
             ZWZ <- crossprod(Z, WZ)
             ZWZinv <- MPinv(ZWZ,
-                            eliminate = 1 + modelTools$eliminate,
+                            eliminate = 1 + needToElim,
                             onlyFirstCol = TRUE)
             theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] * znorm
             dev[2] <- dev[1]
@@ -192,12 +194,12 @@
     theta[constrain] <- NA
     if (exists("WX"))
         Info <- crossprod(X, WX)
-    VCOV <- try(MPinv(Info, eliminate = modelTools$eliminate,
+    VCOV <- try(MPinv(Info, eliminate = seq(eliminate),
                       onlyNonElim = TRUE), silent = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
-    fit <- list(coefficients = theta, eliminate = length(modelTools$eliminate),
+    fit <- list(coefficients = theta, eliminate = eliminate,
                 predictors = eta, fitted.values = mu, deviance = dev[1],
                 aic = modelAIC, iter = iter, conv = status == "converged",
                 weights = w, residuals = z,
@@ -206,8 +208,8 @@
     if (x)
         fit$x <- structure(X, assign = modelTools$termAssign)
     if (vcov) {
-        if (length(modelTools$eliminate))
-            constrain <- constrain[-modelTools$eliminate]
+        if (!is.null(eliminate))
+            constrain <- constrain[-seq(eliminate)]
         VCOV[constrain, constrain] <- 0
         fit$vcov <- VCOV
     }

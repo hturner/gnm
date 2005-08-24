@@ -23,10 +23,14 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 
     if (!is.null(eliminate)) {
         toElim <- attr(terms(eliminate), "factors")
-        if (ncol(toElim) != 1 |
-            any(attr(modelData, "dataClasses")[rownames(toElim)] != "factor"))
-            stop("'eliminate' formula must contain one term only,",
-                 " which must be a factor")
+        if (any(attr(attr(modelData, "terms"),
+                     "dataClasses")[rownames(toElim)] != "factor"))
+            stop("variables in 'eliminate' formula must be factors")
+        elimCols <- model.matrix(update.formula(eliminate, ~ -1 + .),
+                                                data = modelData)
+        nElim <- ncol(elimCols)
+        if (nrow(unique(elimCols)) > nElim)
+            stop("'eliminate' formula is not equivalent to single factor")
     }
     
     if (method == "model.frame") {
@@ -93,9 +97,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     else {
         gnmEnvironment <- parent.frame()
         modelTools <- gnmTools(gnmEnvironment, modelTerms, modelData, x,
-                               eliminate, termPredictors)
+                               termPredictors)
         nParam <- length(modelTools$classID)
-        nElim <- length(modelTools$eliminate)
 
         if (method == "coefNames") return(names(modelTools$classID))
 
@@ -110,7 +113,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 if (is.null(eliminate))
                     choice <- names(modelTools$classID)
                 else
-                    choice <- names(modelTools$classID)[-modelTools$eliminate]
+                    choice <- names(modelTools$classID)[-seq(nElim)]
                 picked <- pickFrom(choice,
                               setlabels = "Coefficients to constrain",
                               title = "Constrain one or more gnm coefficients",
@@ -138,7 +141,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         }
             
         
-        fit <- gnmFit(modelTools, y, constrain, family, weights,
+        fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
                        offset, nObs = nObs, start = start,
                        control = gnmControl(...), verbose, x, vcov,
                        termPredictors)

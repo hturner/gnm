@@ -4,7 +4,7 @@
 \description{
   Computes the Moore-Penrose generalized inverse, optionally using a
   method (appropriate for symmetric matrices only) which exploits the
-  direct inversion of a diagonal submatrix if such exists. 
+  direct inversion of a nonsingular diagonal submatrix if such exists. 
 }
 \usage{
 MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
@@ -23,8 +23,11 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
     detecting zeroes among the singular values. }
 }
 \details{
-  Real-valuedness is not checked, and neither is symmetry or the
+  Real-valuedness is not checked, neither is symmetry, nor the
   diagonality of the submatrix when \code{eliminate} is used.
+
+  When \code{eliminate} is used, all of the eliminated submatrix's
+  diagonal entries must be non-zero.  
 
   The purpose of the \code{eliminate} argument is a substantial
   reduction of the computational burden when the number of `eliminated'

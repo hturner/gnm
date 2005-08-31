@@ -88,7 +88,7 @@
                                 names = names(modelTools$classID))
         if (status == "not.converged") {
             dev <- numeric(2)
-            needToElim <- seq(sum(!constrain[seq(eliminate)]))
+            needToElim <- seq(sum(!constrain[seq(eliminate)]))[eliminate > 0]
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
             if (any(!is.finite(eta))) {
@@ -194,7 +194,7 @@
     theta[constrain] <- NA
     if (exists("WX"))
         Info <- crossprod(X, WX)
-    VCOV <- try(MPinv(Info, eliminate = seq(eliminate),
+    VCOV <- try(MPinv(Info, eliminate = needToElim,
                       onlyNonElim = TRUE), silent = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
@@ -205,19 +205,32 @@
                 weights = w, residuals = z,
                 df.residual = nObs - sum(weights == 0) - attr(VCOV,"rank"),
                 rank = attr(VCOV, "rank"))
-    if (x)
-        fit$x <- structure(X, assign = modelTools$termAssign)
+    if (x) {
+        if (sum(constrain) > 0) {
+            fit$x <- array(0, dim = c(nrow(X), length(theta)),
+                           dimnames = list(NULL, names(theta)))
+            attr(fit$x, "assign") <- modelTools$termAssign
+            fit$x[, !constrain] <- X
+        }
+        else
+            fit$x <- structure(X, assign = modelTools$termAssign)
+    }
     if (vcov) {
-        if (!is.null(eliminate))
+        if (eliminate)
             constrain <- constrain[-seq(eliminate)]
-        VCOV[constrain, constrain] <- 0
-        fit$vcov <- VCOV
+        if (sum(constrain) > 0) {
+            fit$vcov <- array(0, dim = c(length(theta), length(theta)),
+                              dimnames = list(names(theta), names(theta)))
+            attr(fit$vcov, "rank") <- attr(VCOV, "rank")
+            fit$vcov[!constrain, !constrain] <- VCOV
+        }
+        else
+            fit$vcov <- VCOV       
     }
     if (termPredictors) {
         theta[is.na(theta)] <- 0
         factorList <- modelTools$factorList(theta, term = TRUE)
-        fit$termPredictors <- modelTools$predictor(factorList,
-                                                   term = TRUE)
+        fit$termPredictors <- modelTools$predictor(factorList, term = TRUE)
     }
     fit
 }

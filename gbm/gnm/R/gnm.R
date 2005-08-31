@@ -32,6 +32,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (nrow(unique(elimCols)) > nElim)
             stop("'eliminate' formula is not equivalent to single factor")
     }
+    else nElim <- 0
     
     if (method == "model.frame") {
         attr(modelData, "terms") <- attr(modelTerms, "terms")

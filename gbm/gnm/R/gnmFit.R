@@ -192,8 +192,7 @@
                 "to a non-solution of the likelihood equations: re-start \n",
                 "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
-    if (exists("WX"))
-        Info <- crossprod(X, WX)
+    Info <- crossprod(X, WX)
     VCOV <- try(MPinv(Info, eliminate = needToElim,
                       onlyNonElim = TRUE), silent = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
@@ -219,13 +218,12 @@
         if (eliminate)
             constrain <- constrain[-seq(eliminate)]
         if (sum(constrain) > 0) {
-            fit$vcov <- array(0, dim = c(length(theta), length(theta)),
-                              dimnames = list(names(theta), names(theta)))
-            attr(fit$vcov, "rank") <- attr(VCOV, "rank")
+            fit$vcov <- array(0, dim = rep(length(theta), 2),
+                              dimnames = rep(list(names(theta)), 2))
             fit$vcov[!constrain, !constrain] <- VCOV
         }
         else
-            fit$vcov <- VCOV       
+            fit$vcov <- VCOV[, , drop = FALSE]       
     }
     if (termPredictors) {
         theta[is.na(theta)] <- 0

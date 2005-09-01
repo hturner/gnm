@@ -14,9 +14,9 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         else dispersion <- Inf
     }
     if (!"vcov" %in% names(object)){
-        start <- coef(object)
-        cov.unscaled <- update(object, vcov = TRUE, start = start,
-                               verbose = FALSE, trace = FALSE)$vcov
+        cov.unscaled <- eval(update(object, vcov = TRUE, start = coef(object),
+                                    verbose = FALSE, trace = FALSE,
+                                    evaluate = FALSE), parent.frame())$vcov
     }
     else cov.unscaled  <- object$vcov
     cov.scaled <- dispersion * cov.unscaled

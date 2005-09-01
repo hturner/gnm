@@ -15,7 +15,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
-  \item{eliminate}{ an optional formula consisting of a single factor
+  \item{eliminate}{ an optional formula of the form \code{~ model},
+    where \code{model} spans the space of a single factor and is
     to be used instead of an intercept in the predictor. }
   \item{constrain}{ coefficients to set to zero, specified by a numeric
     vector of indices, a logical vector, or "pick" to select from a Tk
@@ -94,14 +95,14 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   may also define their own plug-in functions, see \code{\link{Nonlin}}
   for details. 
 
-  The \code{eliminate} argument may be used to specify a single factor
-  to be used instead of an intercept in the model of the predictor. This
-  feature is designed for such factors that are required in the model
-  but are not of direct interest. If the factor is specified using
-  \code{eliminate}, the effects of the factor will be estimated more
-  efficiently. At the end of the fitting process these parameters are
-  eliminated from the vector of coefficents. See \code{\link{backPain}}
-  for an example.  
+  The \code{eliminate} argument may be used to specify terms which span
+  the space of a single factor and replace the intercept in the model of
+  the predictor. This feature is designed for terms that are required
+  in the model but are not of direct interest. If such terms are
+  specified using \code{eliminate}, the corresponding parameters will be
+  estimated more efficiently. At the end of the fitting process these
+  parameters are eliminated from the vector of coefficents. See
+  \code{\link{backPain}} for an example.  
 
   For contingency tables, the data may be provided as an object of class
   \code{"table"} from which the frequencies will be extracted to use

@@ -16,8 +16,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
   \item{eliminate}{ an optional formula of the form \code{~ model},
-    where \code{model} spans the space of a single factor and is
-    to be used instead of an intercept in the predictor. }
+    i.e., a formula with no response variable specified, to be included in the
+    predictor but excluded from the output of \code{print()},
+    \code{summary()}, \code{coef()}, etc.  See details. }
   \item{constrain}{ coefficients to set to zero, specified by a numeric
     vector of indices, a logical vector, or "pick" to select from a Tk
     dialog. }
@@ -96,12 +97,18 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   for details. 
 
   The \code{eliminate} argument may be used to specify terms which span
-  the space of a single factor and replace the intercept in the model of
-  the predictor. This feature is designed for terms that are required
-  in the model but are not of direct interest. If such terms are
-  specified using \code{eliminate}, the corresponding parameters will be
-  estimated more efficiently. At the end of the fitting process these
-  parameters are eliminated from the vector of coefficents. See
+  the space of a single factor; such terms are then included in the model,
+  but the corresponding parameter estimates are excluded from the
+  standard model summaries.  If \code{eliminate} is used, the fitted
+  model will not have an intercept (which would be redundant if present).
+  This feature is designed for terms that are required
+  in the model but are not of direct interest (e.g., terms needed to
+  fit multinomial-response models as conditional Poisson models).
+  If such terms are specified using \code{eliminate}, rather than through
+  the \code{formula} argument, computational
+  efficiency is improved --- substantially so if the number of eliminated
+  parameters is large.  At the end of the fitting process these
+  parameters are absent from the vector of coefficents. See
   \code{\link{backPain}} for an example.  
 
   For contingency tables, the data may be provided as an object of class

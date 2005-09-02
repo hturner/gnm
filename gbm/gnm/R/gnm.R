@@ -22,7 +22,14 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                                           "variables")
 
     if (!is.null(eliminate)) {
-        toElim <- attr(terms(eliminate), "factors")
+        if (!inherits(eliminate, "formula")) {
+            stop("eliminate argument must be a formula")
+        }
+        elimTerms <- terms(eliminate)
+        if (attr(elimTerms, "response") == 1) {
+            stop("eliminate formula cannot have a response variable")
+        }
+        toElim <- attr(elimTerms, "factors")
         if (any(attr(attr(modelData, "terms"),
                      "dataClasses")[rownames(toElim)] != "factor"))
             stop("variables in 'eliminate' formula must be factors")

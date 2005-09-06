@@ -96,20 +96,18 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   may also define their own plug-in functions, see \code{\link{Nonlin}}
   for details. 
 
-  The \code{eliminate} argument may be used to specify terms which span
-  the space of a single factor; such terms are then included in the model,
-  but the corresponding parameter estimates are excluded from the
-  standard model summaries.  If \code{eliminate} is used, the fitted
-  model will not have an intercept (which would be redundant if present).
-  This feature is designed for terms that are required
-  in the model but are not of direct interest (e.g., terms needed to
-  fit multinomial-response models as conditional Poisson models).
-  If such terms are specified using \code{eliminate}, rather than through
-  the \code{formula} argument, computational
-  efficiency is improved --- substantially so if the number of eliminated
-  parameters is large.  At the end of the fitting process these
-  parameters are absent from the vector of coefficents. See
-  \code{\link{backPain}} for an example.  
+  The \code{eliminate} argument may be used to specify terms spanning
+  the space of a single factor, so that these terms are included
+  in the model, but the corresponding parameter estimates are excluded
+  from the standard model summaries. The terms in the \code{eliminate}
+  formula are included as the first terms in the model (since an
+  intercept is then redundant, none is fitted). The structure of these
+  terms is then exploited to improve computational efficiency  ---
+  substantially so if the number of eliminated parameters is large.  Use
+  of \code{eliminate} is designed for terms that are required in the
+  model but are not of direct interest (e.g., terms needed to fit
+  multinomial-response models as conditional Poisson models). See
+  \code{\link{backPain}} for an example. 
 
   For contingency tables, the data may be provided as an object of class
   \code{"table"} from which the frequencies will be extracted to use

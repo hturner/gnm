@@ -740,27 +740,28 @@ required in the model, are not of direct interest in themselves.
 
 The \Rfunarg{eliminate} argument of \Rfunction{gnm} can be used to specify a
 stratification factor in a model, so that the factor can be handled more
-efficiently. The factor should be specified as a formula with a single term, for
-example
+efficiently. The factor should be specified by a formula with no response
+variable and with terms spanning the space of a single factor, i.e., a factor, an
+interaction between factors, or crossed factors, for example
 \begin{alltt}
-    gnm(mu ~ -1 + unitID + A + B + Mult(A, B), eliminate = ~ unitID)
+    gnm(mu ~ -1 + strata1*strata2 + A + B + Mult(A, B), eliminate = ~ strata1*strata2)
 \end{alltt}
 The use of \Rfunarg{eliminate} makes the specification of a
 stratification factor
 in the model formula redundant, so the above call is equivalent to
 \begin{alltt}
-    gnm(mu ~ A + B + Mult(A, B), eliminate = ~ unitID)
+    gnm(mu ~ -1 + A + B + Mult(A, B), eliminate = ~ strata1*strata2)
 \end{alltt}
 or even
 \begin{alltt}
-    gnm(mu ~ -1 + A + B + Mult(A, B), eliminate = ~ unitID)
+    gnm(mu ~ A + B + Mult(A, B), eliminate = ~ strata1*strata2)
 \end{alltt}
+since no intercept is fitted when a formula is passed to \Rfunarg{eliminate}.
 
 Specifying a stratification factor through \Rfunarg{eliminate} has two
 advantages. First, computational speed is improved --- substantially
 so if the number of eliminated parameters is large. Second, the eliminated
-parameters are excluded from the returned
-vector of coefficients, so that summaries of the model focus on the
+parameters are excluded from summaries of the model so that they focus on the
 coefficients of interest.
 
 The \Rfunarg{eliminate} feature is useful, for example, when

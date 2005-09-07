@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -36,27 +36,27 @@ gnm(formula = count ~ SES + MHS + Mult(-1 + SES, -1 + MHS), family = poisson,
 
 Coefficients:
               (Intercept)                       SESB  
-                 3.831001                  -0.067413  
+                  3.83385                   -0.06742  
                      SESC                       SESD  
-                 0.109938                   0.404937  
+                  0.11092                    0.40644  
                      SESE                       SESF  
-                 0.025196                  -0.200766  
+                  0.02800                   -0.19690  
                   MHSmild                MHSmoderate  
-                 0.713248                   0.205317  
+                  0.70938                    0.20075  
               MHSimpaired         Mult1.Factor1.SESA  
-                 0.252311                   0.341189  
+                  0.24453                    0.88881  
        Mult1.Factor1.SESB         Mult1.Factor1.SESC  
-                 0.343966                   0.115341  
+                  0.89614                    0.29242  
        Mult1.Factor1.SESD         Mult1.Factor1.SESE  
-                -0.005967                  -0.305568  
+                 -0.02790                   -0.81906  
        Mult1.Factor1.SESF      Mult1.Factor2.MHSwell  
-                -0.551688                   0.934517  
+                 -1.46902                    0.35553  
     Mult1.Factor2.MHSmild  Mult1.Factor2.MHSmoderate  
-                 0.094601                  -0.056957  
+                  0.03746                   -0.01993  
 Mult1.Factor2.MHSimpaired  
-                -0.754612  
+                 -0.28412  
 
 Deviance:            3.570562 
-Pearson chi-squared: 3.568094 
+Pearson chi-squared: 3.56809 
 Residual df:         8 
 > 

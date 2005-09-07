@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 +                      Mult(Exp(-1 + election), class:vote),
 +                      family = poisson, data = cautres)
 Running start-up iterations..
-Running main iterations........
+Running main iterations.......
 Done
 > doubleUnidiff
 
@@ -35,141 +35,141 @@ gnm(formula = Freq ~ election:vote + election:class:religion +
 
 Coefficients:
                   (Intercept)                election1:vote1  
-                    3.9932051                     -1.4729272  
+                     3.998918                      -1.433195  
               election2:vote1                election3:vote1  
-                    0.0720507                     -0.6420389  
+                     0.070195                      -0.650804  
               election4:vote1                election1:vote2  
-                    0.2047403                     -1.3686573  
+                     0.201757                      -1.343891  
               election2:vote2                election3:vote2  
-                   -0.1220953                     -0.1812836  
+                    -0.110078                      -0.180848  
               election4:vote2     election1:class1:religion1  
-                    0.0058490                      0.3442729  
+                     0.010691                       0.276332  
    election2:class1:religion1     election3:class1:religion1  
-                   -0.3730233                      0.1118413  
+                    -0.412823                       0.086051  
    election4:class1:religion1     election1:class2:religion1  
-                   -0.9048697                     -0.3011059  
+                    -0.934143                      -0.370506  
    election2:class2:religion1     election3:class2:religion1  
-                   -1.0139446                     -0.7302947  
+                    -1.056631                      -0.758373  
    election4:class2:religion1     election1:class3:religion1  
-                   -1.4012073                      0.1467145  
+                    -1.432577                       0.077021  
    election2:class3:religion1     election3:class3:religion1  
-                   -0.9268722                     -0.5159526  
+                    -0.970139                      -0.544492  
    election4:class3:religion1     election1:class4:religion1  
-                   -1.0680379                      0.0821333  
+                    -1.099830                       0.013169  
    election2:class4:religion1     election3:class4:religion1  
-                   -0.0812448                      0.2566908  
+                    -0.123069                       0.229295  
    election4:class4:religion1     election1:class5:religion1  
-                   -0.4111802                      0.5465539  
+                    -0.441925                       0.477910  
    election2:class5:religion1     election3:class5:religion1  
-                    0.3153146                      0.7864748  
+                     0.274125                       0.759582  
    election4:class5:religion1     election1:class6:religion1  
-                   -0.2619885                      0.6182252  
+                    -0.292273                       0.546731  
    election2:class6:religion1     election3:class6:religion1  
-                   -0.1024601                      0.2287834  
+                    -0.149286                       0.197423  
    election4:class6:religion1     election1:class1:religion2  
-                   -0.7268534                      0.0948537  
+                    -0.761231                       0.051896  
    election2:class1:religion2     election3:class1:religion2  
-                   -0.5055176                     -0.3150182  
+                    -0.522434                      -0.321575  
    election4:class1:religion2     election1:class2:religion2  
-                   -1.0071203                     -0.2376608  
+                    -1.018404                      -0.282078  
    election2:class2:religion2     election3:class2:religion2  
-                   -1.1473069                     -0.4525004  
+                    -1.167110                      -0.461345  
    election4:class2:religion2     election1:class3:religion2  
-                   -1.1524933                     -1.1729171  
+                    -1.165873                      -1.217628  
    election2:class3:religion2     election3:class3:religion2  
-                   -1.4260801                     -0.8457138  
+                    -1.446464                      -0.855019  
    election4:class3:religion2     election1:class4:religion2  
-                   -1.0529720                     -0.7082973  
+                    -1.066774                      -0.752279  
    election2:class4:religion2     election3:class4:religion2  
-                   -0.4514229                      0.1201304  
+                    -0.470365                       0.111968  
    election4:class4:religion2     election1:class5:religion2  
-                   -0.4103379                      0.5515184  
+                    -0.423092                       0.507858  
    election2:class5:religion2     election3:class5:religion2  
-                    0.2949134                      0.8521332  
+                     0.276607                       0.844475  
    election4:class5:religion2     election1:class6:religion2  
-                    0.1431606                      0.9793810  
+                     0.130867                       0.932870  
    election2:class6:religion2     election3:class6:religion2  
-                    0.1445694                      0.4716460  
+                     0.120626                       0.459520  
    election4:class6:religion2     election1:class1:religion3  
-                   -0.2838601                     -0.0230365  
+                    -0.300247                      -0.060403  
    election2:class1:religion3     election3:class1:religion3  
-                    0.0346886                      0.3061851  
+                     0.022893                       0.303933  
    election4:class1:religion3     election1:class2:religion3  
-                   -0.8788643                      0.4257473  
+                    -0.886122                       0.386921  
    election2:class2:religion3     election3:class2:religion3  
-                    0.4013537                      0.6339936  
+                     0.386672                       0.629454  
    election4:class2:religion3     election1:class3:religion3  
-                    0.0775471                     -0.5589419  
+                     0.068194                      -0.598062  
    election2:class3:religion3     election3:class3:religion3  
-                   -0.0771800                      0.4505196  
+                    -0.092444                       0.445518  
    election4:class3:religion3     election1:class4:religion3  
-                   -0.0853634                      0.6351491  
+                    -0.095139                       0.596758  
    election2:class4:religion3     election3:class4:religion3  
-                    0.8180745                      1.2239489  
+                     0.804253                       1.220091  
    election4:class4:religion3     election1:class5:religion3  
-                    0.6755732                      1.2286361  
+                     0.666845                       1.190567  
    election2:class5:religion3     election3:class5:religion3  
-                    1.5075442                      1.8008205  
+                     1.494358                       1.797467  
    election4:class5:religion3     election1:class6:religion3  
-                    1.1588435                      1.6148907  
+                     1.150577                       1.573970  
    election2:class6:religion3     election3:class6:religion3  
-                    1.5359130                      1.6235595  
+                     1.517090                       1.615737  
    election4:class6:religion3     election1:class1:religion4  
-                    0.9865524                     -1.7593951  
+                     0.974192                      -1.779023  
    election2:class1:religion4     election3:class1:religion4  
-                   -1.8273813                     -1.9363944  
+                    -1.822930                      -1.924990  
    election4:class1:religion4     election1:class2:religion4  
-                   -2.3894529                     -1.5374084  
+                    -2.383938                      -1.558495  
    election2:class2:religion4     election3:class2:religion4  
-                   -1.3634929                     -1.1900295  
+                    -1.361927                      -1.180912  
    election4:class2:religion4     election1:class3:religion4  
-                   -1.0892542                     -1.7099920  
+                    -1.085834                      -1.731374  
    election2:class3:religion4     election3:class3:religion4  
-                   -0.6124248                     -0.5852596  
+                    -0.611442                      -0.576605  
    election4:class3:religion4     election1:class4:religion4  
-                   -0.4543338                     -1.7895570  
+                    -0.451337                      -1.810209  
    election2:class4:religion4     election3:class4:religion4  
-                   -0.0627653                     -0.0406203  
+                    -0.060340                      -0.030822  
    election4:class4:religion4     election1:class5:religion4  
-                   -0.0068505                     -1.2156685  
+                    -0.002805                      -1.235999  
    election2:class5:religion4     election3:class5:religion4  
-                   -0.0748653                      0.1130810  
+                    -0.071804                       0.123384  
    election4:class5:religion4     election1:class6:religion4  
-                   -0.0941568                      0.0083975  
+                    -0.089650                      -0.014784  
    election2:class6:religion4     election3:class6:religion4  
-                   -0.0001252                     -0.0023921  
+                    -0.002701                       0.003442  
    election4:class6:religion4        Mult1.Factor1.election1  
-                    0.0011415                      0.3325727  
+                     0.001555                      -1.642857  
       Mult1.Factor1.election2        Mult1.Factor1.election3  
-                    0.2447548                      0.0710529  
+                    -1.730675                      -1.904376  
       Mult1.Factor1.election4      Mult1.Factor2.(Intercept)  
-                    0.0042270                      0.0707647  
+                    -1.971202                       0.391753  
 Mult1.Factor2.religion1:vote1  Mult1.Factor2.religion2:vote1  
-                    0.4243687                      0.2591010  
+                     3.219598                       1.898904  
 Mult1.Factor2.religion3:vote1  Mult1.Factor2.religion4:vote1  
-                   -0.0320930                     -0.6863881  
+                    -0.229426                      -5.038411  
 Mult1.Factor2.religion1:vote2  Mult1.Factor2.religion2:vote2  
-                   -0.7295746                     -0.2180298  
+                    -4.888276                      -1.329344  
 Mult1.Factor2.religion3:vote2  Mult1.Factor2.religion4:vote2  
-                    0.1090191                      0.4013489  
+                     0.999681                       3.015589  
       Mult2.Factor1.election1        Mult2.Factor1.election2  
-                   -0.2953686                      0.3863683  
+                    -1.119518                      -0.437781  
       Mult2.Factor1.election3        Mult2.Factor1.election4  
-                    0.1540053                      0.0664595  
+                    -0.670144                      -0.757695  
     Mult2.Factor2.(Intercept)     Mult2.Factor2.class1:vote1  
-                   -0.1261692                      0.1955995  
+                    -0.287171                       0.489739  
    Mult2.Factor2.class2:vote1     Mult2.Factor2.class3:vote1  
-                    0.2642421                      0.1227725  
+                     0.650713                       0.329069  
    Mult2.Factor2.class4:vote1     Mult2.Factor2.class5:vote1  
-                   -0.0083430                     -0.0407224  
+                     0.027900                      -0.046907  
    Mult2.Factor2.class6:vote1     Mult2.Factor2.class1:vote2  
-                   -0.3246265                     -0.4248019  
+                    -0.685460                      -1.004348  
    Mult2.Factor2.class2:vote2     Mult2.Factor2.class3:vote2  
-                   -0.4450001                     -0.1080920  
+                    -1.045931                      -0.276893  
    Mult2.Factor2.class4:vote2     Mult2.Factor2.class5:vote2  
-                    0.0490617                      0.0771903  
+                     0.079171                       0.142317  
    Mult2.Factor2.class6:vote2  
-                    0.2375320  
+                     0.516621  
 
 Deviance:            133.0430 
 Pearson chi-squared: 126.8171 

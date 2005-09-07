@@ -6,20 +6,15 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     
     call <- match.call()
     
-    modelTerms <- gnmTerms(formula, eliminate)
-    falseFormula <- as.call(as.list(modelTerms))
-    environment(falseFormula) <- environment(formula)
-    
+    modelTerms <- gnmTerms(formula, eliminate)    
     modelData <- match.call(expand.dots = FALSE)
     argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
                     names(modelData), 0)
     modelData <- as.call(c(as.name("model.frame"),
-                           formula = falseFormula,
+                           formula = modelTerms,
                            as.list(modelData)[argPos],
                            drop.unused.levels = TRUE))
-    modelData <- eval(modelData, parent.frame())   
-    attr(modelTerms, "variables") <- attr(attr(modelData, "terms"),
-                                          "variables")
+    modelData <- eval(modelData, parent.frame())
 
     if (!is.null(eliminate)) {
         if (!inherits(eliminate, "formula")) {
@@ -103,9 +98,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (termPredictors) fit$termPredictors <- NULL
     }
     else {
-        gnmEnvironment <- parent.frame()
-        modelTools <- gnmTools(gnmEnvironment, modelTerms, modelData, x,
-                               termPredictors)
+        modelTools <- gnmTools(modelTerms, modelData, x, termPredictors)
         nParam <- length(modelTools$classID)
 
         if (method == "coefNames") return(names(modelTools$classID))

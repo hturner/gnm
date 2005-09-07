@@ -4,6 +4,7 @@ gnmTerms <- function(formula, eliminate)
         tmp <- .Internal(update.formula(formula,
                                         substitute(~ -1 + e + .,
                                                    list(e = eliminate[[2]]))))
+        environment(tmp) <- environment(formula)
         formula <- formula(terms.formula(tmp, simplify = TRUE,
                                          keep.order = TRUE))
     }
@@ -52,5 +53,5 @@ gnmTerms <- function(formula, eliminate)
               offset = offsetList,
               parsedLabels = labelList,
               prefixLabels = unlist(prefixList),
-              response = attr(fullTerms, "response"))
+              .Environment = environment(formula))
 }

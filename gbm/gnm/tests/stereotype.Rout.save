@@ -42,21 +42,21 @@ gnm(formula = .counts ~ pain + Mult(pain - 1, x1 + x2 + x3 -
 
 Coefficients:
                                 pain.L                                  pain.Q  
-                             13.907034                               -4.395852  
+                              13.90782                                -4.39698  
                                 pain.C                                  pain^4  
-                              7.076315                               -5.719667  
+                               7.07682                                -5.72008  
                                 pain^5                 Mult1.Factor1.painworse  
-                             -1.852921                               -2.499234  
+                              -1.85272                                -2.80804  
                 Mult1.Factor1.painsame    Mult1.Factor1.painslight.improvement  
-                              0.137516                               -0.004642  
+                               0.13462                                -0.02405  
 Mult1.Factor1.painmoderate.improvement    Mult1.Factor1.painmarked.improvement  
-                             -0.627987                                0.778672  
+                              -0.71960                                 0.85006  
      Mult1.Factor1.paincomplete.relief                        Mult1.Factor2.x1  
-                              1.319279                               -1.406570  
+                               1.45324                                -1.26053  
                       Mult1.Factor2.x2                        Mult1.Factor2.x3  
-                             -0.806779                               -0.710535  
+                              -0.72301                                -0.63666  
 
 Deviance:            303.1003 
-Pearson chi-squared: 433.3762 
+Pearson chi-squared: 433.3742 
 Residual df:         493 
 > 

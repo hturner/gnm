@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -22,7 +22,7 @@ Type 'q()' to quit R.
 +                    family = wedderburn, data = barley)
 Running start-up iterations..
 Running main iterations.........................................................
-.........................
+......................
 Done
 > biplotModel
 
@@ -33,45 +33,45 @@ gnm(formula = y ~ -1 + Mult(site, variety, multiplicity = 2),
 
 Coefficients:
 Mult1.Factor1.(Intercept)        Mult1.Factor1.siteB  
-                  5.21920                   -1.98148  
+                  1.59565                   -0.09510  
       Mult1.Factor1.siteC        Mult1.Factor1.siteD  
-                 -3.22980                   -1.65920  
+                 -1.53481                   -3.70350  
       Mult1.Factor1.siteE        Mult1.Factor1.siteF  
-                 -2.94856                   -2.51170  
+                 -2.64773                   -3.97939  
       Mult1.Factor1.siteG        Mult1.Factor1.siteH  
-                 -1.90226                   -0.62021  
+                 -5.77393                   -9.79893  
       Mult1.Factor1.siteI  Mult1.Factor2.(Intercept)  
-                 -0.11771                   -1.00458  
+                -13.41243                   -0.87131  
    Mult1.Factor2.variety2     Mult1.Factor2.variety3  
-                 -0.33544                   -0.26672  
+                 -0.59848                   -0.58090  
    Mult1.Factor2.variety4     Mult1.Factor2.variety5  
-                  0.18140                    0.34949  
+                  0.04065                    0.08938  
    Mult1.Factor2.variety6     Mult1.Factor2.variety7  
-                  0.39448                    0.58270  
+                 -0.30831                    0.18875  
    Mult1.Factor2.variety8     Mult1.Factor2.variety9  
-                  0.83474                    0.80335  
+                  0.21511                    0.12996  
    Mult1.Factor2.varietyX  Mult2.Factor1.(Intercept)  
-                  0.97502                   -1.98559  
+                  0.29259                    4.16194  
       Mult2.Factor1.siteB        Mult2.Factor1.siteC  
-                  0.59621                    1.39749  
+                 -1.70240                   -2.44400  
       Mult2.Factor1.siteD        Mult2.Factor1.siteE  
-                  1.61678                    1.66018  
+                 -0.55556                   -1.93186  
       Mult2.Factor1.siteF        Mult2.Factor1.siteG  
-                  1.94579                    2.32478  
+                 -1.23167                   -0.27013  
       Mult2.Factor1.siteH        Mult2.Factor1.siteI  
-                  3.19906                    4.16954  
+                  1.81276                    3.11793  
 Mult2.Factor2.(Intercept)     Mult2.Factor2.variety2  
-                  1.53468                    1.30673  
+                 -1.65789                   -0.81451  
    Mult2.Factor2.variety3     Mult2.Factor2.variety4  
-                  1.31026                    0.02419  
+                 -0.73676                    0.20036  
    Mult2.Factor2.variety5     Mult2.Factor2.variety6  
-                  0.01803                    1.07698  
+                  0.39540                    0.09908  
    Mult2.Factor2.variety7     Mult2.Factor2.variety8  
-                 -0.07253                    0.03885  
+                  0.69296                    0.94578  
    Mult2.Factor2.variety9     Mult2.Factor2.varietyX  
-                  0.23639                   -0.06137  
+                  0.84482                    1.13978  
 
 Deviance:            41.02424 
-Pearson chi-squared: 54.29148 
+Pearson chi-squared: 54.29084 
 Residual df:         56 
 > 

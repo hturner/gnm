@@ -1696,46 +1696,21 @@ previous releases, see the CHANGES file in the package directory.
 
 \begin{verbatimtab}
 
-Changes in gnm 0.7-1
+Changes in gnm 0.7-2
 =======================
-
-New Features
-------------
-
-    o	Topo() introduced for creating topological interaction factors.
-
-    o	anova() implemented for objects of class c("gnm", "glm").
-
 
 Improvements
 ------------
 
-    o	Diagnostic messages given by gnm() have been improved.
-
-    o	Step-halving introduced in main iterations of gnm() to ensure deviance 
-	is reduced at every iteration.
-
-    o	getContrasts() now (additionally) reports quasi standard errors, when
-	available.
-
-    o	Calls to gnm() plug-in functions are now evaluated in the environment 
-	of the model frame and the enclosing environment of the parent frame 
-	of the call to gnm(). This means that variables can be found in a 
-	more standard fashion.
-
+    o	Extended use of the 'eliminate' argument of gnm() to allow crossed 
+	factors - this also fixes bug which occurred when interactions were 
+	eliminated in the presence of lower order terms involving other factors 
 
 Changes in Behaviour
 --------------------
 
-    o	The 'data' argument of Nonlin() is defunct: Nonlin() now identifies 
-	variables to be added to the model frame as those passed to unspecified
-	arguments of the plug-in function or those identified by a companion 
-	function to the plug-in, which is of a specified format.
-
-    o	The (optional) 'start' object returned by a plug-in function can no 
-	longer be a function, only a vector. However it may now include NA 
-	values, to indicate parameters which may be treated as linear for the 
-	purpose of finding starting values, given the non-NA values.
+    o	'vcov' returned by gnm() now has no rank attribute (as before, the
+	rank is returned as the separate component 'rank').
 \end{verbatimtab}
 
 \newpage

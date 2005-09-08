@@ -1,3 +1,39 @@
+Changes in gnm 0.7-2
+=======================
+
+Improvements
+------------
+
+    o	Extended use of the 'eliminate' argument of gnm() to allow crossed 
+	factors - this also fixes bug which occurred when interactions were 
+	eliminated in the presence of lower order terms involving other factors 
+
+Changes in Behaviour
+--------------------
+
+    o	'vcov' returned by gnm() now has no rank attribute (as before, the
+	rank is returned as the separate component 'rank').
+
+Bug Fixes
+---------
+
+    o	Changed the calculation of 'df.residual' returned by gnm() to 
+	correctly take account of zero-weighted observations (as in glm()).
+
+    o	When gnm() is called with arguments x = TRUE or VCOV = TRUE, the 
+	returned matrices now include columns of zeros for constrained 
+	parameters.
+
+    o	Corrected evaluation of model frame in gnm() so that if data is missing, 
+	variables are taken from environment(formula), as documented. Modified 
+	evaluation of plug-in functions to be consistent with this, i.e. 
+	objects are taken from environment(formula) if not in model frame.
+
+    o	MPinv() now checks that the diagonal elements of an `eliminate'd 
+	submatrix are all non-zero and reports an error otherwise.
+
+
+
 Changes in gnm 0.7-1
 =======================
 

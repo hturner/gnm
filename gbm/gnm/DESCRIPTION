@@ -1,6 +1,6 @@
 Package: gnm
 Title: Generalized Nonlinear Models
-Version: 0.7-2
+Version: 0.7-3
 Date: 2005-08-05
 Author: Heather Turner and David Firth
 Description: Functions to specify and fit generalized nonlinear models, including models with multiplicative interaction terms such as the UNIDIFF model from sociology and the AMMI model from crop science.  This is a major re-working of an earlier Xlisp-Stat package, "Llama".  Over-parameterized representations of models are used throughout; functions are provided for inference on estimable parameter combinations, as well as standard methods for diagnostics etc.

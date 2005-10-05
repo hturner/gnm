@@ -21,7 +21,8 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
     if (nvars > 0) {
         for (i in 0:(nvars - 1)) {
             constrain <- replace(object$constrain, varseq > i, TRUE)
-            fit <- update(object, constrain = constrain, verbose = FALSE)
+            fit <- update(object, formula = formula(object),
+                          constrain = constrain, verbose = FALSE)
             resdev <- c(resdev, fit$deviance)
             resdf <- c(resdf, fit$df.residual)
         }

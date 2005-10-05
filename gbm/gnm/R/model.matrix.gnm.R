@@ -1,8 +1,7 @@
 model.matrix.gnm <- function(object, ...) {
     if (!"x" %in% names(object)){
-        start <- coef(object)
-        object <- update(object, x = TRUE, start = start, verbose = FALSE,
-                         trace = FALSE)
+        object <- update(object, formula = formula(object), x = TRUE,
+                         start = coef(object), verbose = FALSE, trace = FALSE)
     }
     return(object[[match("x", names(object))]])
 }

@@ -10,7 +10,8 @@
             0
     })
 
-    termTools <- factorAssign <- labelList
+    nFactor <- length(labelList)
+    termTools <- factorAssign <- vector(mode = "list", length = nFactor)
     for (i in seq(labelList)) {
         if (inherits(labelList[[i]], "Nonlin")) {
             termTools[[i]] <- eval(attr(labelList[[i]], "call"), gnmData,
@@ -29,8 +30,25 @@
                                            colnames(termTools[[i]]), sep = ""))
         }
     }
-
+    
     factorAssign <- do.call("c", factorAssign)
+    nTheta <- length(factorAssign)
+    nr <- dim(gnmData)[1]
+    tmp <- seq(factorAssign) * nr
+    first <- c(0, tmp[-nTheta])
+    last <- tmp - 1
+    nc <- tabulate(factorAssign)
+    tmp <- cumsum(nc)
+    a <- c(1, tmp[-nFactor] + 1)
+    z <- tmp
+    storage.mode(first) <- storage.mode(last) <- storage.mode(a) <-
+        storage.mode(z) <- "integer"
+    X <- baseMatrix <- matrix(1, nrow = nr, ncol = nTheta)
+    for (i in seq(termTools)) 
+        if (is.matrix(termTools[[i]]))
+            baseMatrix[, factorAssign == i] <- termTools[[i]]
+    colnames(X) <- names(factorAssign)
+    storage.mode(X) <- storage.mode(baseMatrix) <- "double"
 
     multIndex <- gsub("\.Factor[0-9]+\.", "", unlist(prefixList))
     multIndex[multIndex == ""] <- seq(sum(multIndex == ""))
@@ -41,10 +59,13 @@
     thetaClassID[plugInStart] <- "plugInStart"
     thetaClassID <- structure(thetaClassID[factorAssign],
                                 names = names(factorAssign))
+
+    if (classID[1] == "Linear")
+        X[, factorAssign == 1] <- termTools[[1]]
     
     if (x | termPredictors) {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
-        if ("Linear" %in% classID) {
+        if (classID[1] == "Linear") {
             linearAssign <- attr(termTools[[1]], "assign")
             termAssign <- termAssign + max(linearAssign) - 1
             termAssign[thetaClassID == "Linear"] <- linearAssign
@@ -52,7 +73,7 @@
     }
 
     start <- function(scale = 0.1) {
-        theta <- structure(runif(length(factorAssign), -1, 1) * scale,
+        theta <- structure(runif(nTheta, -1, 1) * scale,
                            names = names(factorAssign))
         theta <- ifelse(theta < 0, theta - scale, theta + scale)
         for (i in seq(termTools)[plugInStart])
@@ -90,21 +111,43 @@
         termPredictors
     }
     
-    localDesignFunction <- function(theta, factorList) {
-        derivativeList <- productList <- list()
-        for (i in seq(termTools)) derivativeList[[i]] <- 
-            switch(classID[[i]],
-                   "Exp" = factorList[[i]] * termTools[[i]],
-                   "Nonlin" = termTools[[i]]$localDesignFunction(
-                   coef = theta[factorAssign == i],
-                   predictor = factorList[[i]]),
-                   termTools[[i]])
-        for (i in seq(derivativeList)) 
-            productList[[i]] <- derivativeList[[i]] * 
-                do.call("pprod", (factorList[(multIndex == multIndex[i]) &
-                                   (seq(multIndex) != i)]))
-        structure(do.call("cbind", productList),
-                  dimnames = list(NULL, names(factorAssign)))
+    localDesignFunction <- function(theta, factorList, ind = NULL) {
+        if (!is.null(ind)) {
+            if (length(ind) > 1)
+                return(X[, ind])
+            else {
+                a <- ind
+                ind <- ind - z[factorAssign[ind] - 1]
+            }
+        }
+            
+        for (i1 in a) {
+            fi <- factorAssign[i1]
+            i2 <- ifelse(is.null(ind), z[fi], i1)            
+            switch(classID[fi],
+                   "Exp" = {
+                       v <- do.call("pprod",
+                                    factorList[multIndex == multIndex[fi]])
+                   },
+                   "Nonlin" = {
+                       .Call("nonlin", X, first[i1], last[i2],
+                             quote(termTools[[fi]]$localDesignFunction(
+                             coef = theta[factorAssign == fi],
+                             predictor = factorList[[fi]], ind = ind)),
+                             environment()), PACKAGE = "gnm")
+                   },
+                   "character" = {
+                       v <- do.call("pprod",
+                                    factorList[(multIndex == multIndex[fi])
+                                               & (seq(multIndex) != fi)])
+                   })
+            if (exists("v")) {
+                    .Call("prod_M", X, baseMatrix, as.double(v),
+                          first[i1], last[i2], nr), PACKAGE = "gnm")
+            }
+        }
+        if(!is.null(ind)) X[, a, drop = FALSE]
+        else X
     }
 
     theta <- start()

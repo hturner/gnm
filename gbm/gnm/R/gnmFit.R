@@ -25,19 +25,19 @@
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID ==
                 "plugInStart" | constrain
-            unspecifiedLin <- linear & !specified
+            unspecifiedLin <- seq(theta)[linear & !specified]
             if (any(unspecifiedLin)) {
                 thetaOffset <- theta
                 thetaOffset[!specified] <- 0
                 factorList <- modelTools$factorList(thetaOffset)
                 offsetSpecified <- offset + modelTools$predictor(factorList)
                 X <- modelTools$localDesignFunction(thetaOffset,
-                                                    factorList)
-                theta[unspecifiedLin] <- suppressWarnings(naToZero(
-                                             glm.fit(X[, unspecifiedLin], y,
-                                                     weights = weights,
-                                                     offset = offsetSpecified,
-                                                     family = family)$coef))
+                                                    factorList, unspecifiedLin)
+                theta[unspecifiedLin] <-
+                    suppressWarnings(naToZero(glm.fit(X, y,
+                                                      weights = weights,
+                                                      offset = offsetSpecified,
+                                                      family = family)$coef))
             }
             oneAtATime <- !linear & !specified
             for (iter in seq(length = control$iterStart * any(oneAtATime))) {
@@ -54,12 +54,11 @@
                     factorList <- modelTools$factorList(theta)
                     eta <- offset + modelTools$predictor(factorList)
                     mu <- family$linkinv(eta)
-                    X <- modelTools$localDesignFunction(theta,
-                                                        factorList)
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
                     w <- weights * dmu * dmu/vmu
-                    Xi <- X[, i]
+                    Xi <- modelTools$localDesignFunction(theta,
+                                                         factorList, i)
                     score <- crossprod((y - mu)/dmu, w * Xi)
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
@@ -68,11 +67,15 @@
                         break
                     }
                 }
-                if (status == "not.converged" & any(linear))
-                    theta <- updateLinear(linear & !constrain,
-                                          theta, y, offset, weights,
-                                          family, modelTools,
-                                          X)
+                if (status == "not.converged" & any(linear)) {
+                    if (iter == 1) {
+                        which <- seq(theta)[linear & !constrain]
+                        X <- modelTools$localDesignFunction(thetaOffset,
+                                                            factorList, which)
+                    }
+                    theta <- updateLinear(which, theta, y, offset, weights,
+                                          family, modelTools, X)
+                }
                 if (control$trace) {
                     dev <- sum(family$dev.resids(y, mu, weights))
                     cat("Start-up iteration ", iter, ". Deviance = ",

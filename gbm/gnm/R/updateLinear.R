@@ -10,7 +10,7 @@ updateLinear <- function(which, theta, y, offset, weights, family,
     offsetFactorList <- modelTools$factorList(theta)
     offset <- offset + modelTools$predictor(offsetFactorList)
     z <- eta - offset + (y - mu)/dmu
-    theta[which] <- suppressWarnings(naToZero(lm.wfit(X[,which], z, w)$coef))
+    theta[which] <- suppressWarnings(naToZero(lm.wfit(X, z, w)$coef))
     theta
 }
             

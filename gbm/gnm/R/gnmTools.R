@@ -134,7 +134,7 @@
                              quote(termTools[[fi]]$localDesignFunction(
                              coef = theta[factorAssign == fi],
                              predictor = factorList[[fi]], ind = ind)),
-                             environment()), PACKAGE = "gnm")
+                             environment(), PACKAGE = "gnm")
                    },
                    "character" = {
                        v <- do.call("pprod",
@@ -143,7 +143,7 @@
                    })
             if (exists("v")) {
                     .Call("prod_M", X, baseMatrix, as.double(v),
-                          first[i1], last[i2], nr), PACKAGE = "gnm")
+                          first[i1], last[i2], nr, PACKAGE = "gnm")
             }
         }
         if(!is.null(ind)) X[, a, drop = FALSE]

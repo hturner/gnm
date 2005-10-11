@@ -150,7 +150,7 @@
         else X
     }
 
-    theta <- start()
+    theta <- seq(factorAssign)
     unestimable <- apply(localDesignFunction(theta, factorList(theta)) == 0,
                                              2, all)
 

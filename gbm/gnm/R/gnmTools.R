@@ -85,11 +85,12 @@
         factorList <- parameterList <- unname(split(theta, factorAssign))
         for (i in seq(factorList)) {
             factorList[[i]] <-
-                switch(classID[[i]],
-                       "Exp" = exp(drop(termTools[[i]] %*%
-                       parameterList[[i]])),
+                switch(classID[i],
+                       "Exp" = exp(.Call("submatprod", baseMatrix,
+                       parameterList[[i]], first[a[i]], nr, nc[i])),
                        "Nonlin" = termTools[[i]]$predictor(parameterList[[i]]),
-                       drop(termTools[[i]] %*% parameterList[[i]]))
+                       .Call("submatprod", baseMatrix, parameterList[[i]],
+                             first[a[i]], nr, nc[i], PACKAGE = "gnm"))
         }
         factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
         if (term & classID[[1]] == "Linear")
@@ -142,7 +143,7 @@
                                                & (seq(multIndex) != fi)])
                    })
             if (exists("v")) {
-                    .Call("prod_M", X, baseMatrix, as.double(v),
+                    .Call("subprod", X, baseMatrix, as.double(v),
                           first[i1], last[i2], nr, PACKAGE = "gnm")
             }
         }

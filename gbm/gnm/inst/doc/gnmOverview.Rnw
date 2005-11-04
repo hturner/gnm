@@ -1559,7 +1559,7 @@ relationship between the response and the covariates in the model, but the
 scale of this association varies between categories and there is an additional
 category main effect or category-specific intercept:
 \[
-\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r \beta_{rc}x_{ir}.
+\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r \beta_{r}x_{ir}.
 \]
 This model can be estimated by re-expressing the categorical data as counts and
 using a \Rclass{gnm} model with a log link and poisson variance function.

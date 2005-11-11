@@ -1,6 +1,7 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.0  (2005-04-18), ISBN 3-900051-07-0
+Version 2.2.0  (2005-10-06 r35749)
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -21,8 +22,9 @@ Type 'q()' to quit R.
 > RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
 +                Nonlin(MultHomog(origin, destination)), family = poisson,
 +                data = occupationalStatus)
+Initialising
 Running start-up iterations..
-Running main iterations.......
+Running main iterations......
 Done
 > RChomog
 

@@ -1,6 +1,7 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
+Version 2.2.0  (2005-10-06 r35749)
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -23,7 +24,8 @@ Type 'q()' to quit R.
 > 
 > classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
 +                      family = binomial, data = voting)
-Running main iterations.......
+Initialising
+Running main iterations......
 Done
 > classMobility
 
@@ -53,7 +55,8 @@ Residual df:         19
 > socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
 +                                          formula = ~ 1 + downward + upward)),
 +                       family = binomial, data = voting)
-Running main iterations.......
+Initialising
+Running main iterations......
 Done
 > socialMobility
 

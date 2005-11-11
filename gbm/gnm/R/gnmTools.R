@@ -95,8 +95,7 @@
         }
         factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
         if (term & classID[[1]] == "Linear")
-            factorList[[1]] <- t(rowsum(t(termTools[[1]] %*%
-                                          diag(parameterList[[1]])),
+            factorList[[1]] <- t(rowsum(t(termTools[[1]]) * parameterList[[1]],
                                         linearAssign))
         unlistOneLevel(factorList)
     }

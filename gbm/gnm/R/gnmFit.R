@@ -89,11 +89,10 @@
                     eta <- offset + modelTools$predictor(factorList)
                     mu <- family$linkinv(eta)
                 }
-                if (control$trace) {
-                    dev[1] <- sum(family$dev.resids(y, mu, weights))
+                dev[1] <- sum(family$dev.resids(y, mu, weights))
+                if (control$trace)
                     cat("Start-up iteration ", iter, ". Deviance = ",
                         dev[1], "\n", sep = "")
-                }
                 else if (verbose)
                     cat(".")
                 if (status == "bad.param")
@@ -221,7 +220,7 @@
                                  + 2 * attr(VCOV, "rank"))
     fit <- list(coefficients = theta, eliminate = eliminate,
                 predictors = eta, fitted.values = mu, deviance = dev[1],
-                aic = modelAIC, iter = iter, conv = status == "converged",
+                aic = modelAIC, iter = iter - 1, conv = status == "converged",
                 weights = w, residuals = z,
                 df.residual = nObs - sum(weights == 0) - attr(VCOV,"rank"),
                 rank = attr(VCOV, "rank"))

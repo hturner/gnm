@@ -63,7 +63,7 @@
     if (classID[1] == "Linear")
         X[, factorAssign == 1] <- termTools[[1]]
     
-    if (x | termPredictors) {
+    if (x | termPredictors | classID[1] == "Linear") {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
         if (classID[1] == "Linear") {
             linearAssign <- attr(termTools[[1]], "assign")
@@ -90,7 +90,8 @@
                        parameterList[[i]], first[a[i]], nr, nc[i])),
                        "Nonlin" = termTools[[i]]$predictor(parameterList[[i]]),
                        .Call("submatprod", baseMatrix, parameterList[[i]],
-                             first[a[i]], nr, nc[i], PACKAGE = "gnm"))
+                             first[a[i]], nr, nc[i], PACKAGE = "gnm",
+                             NAOK = TRUE))
         }
         factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
         if (term & classID[[1]] == "Linear")
@@ -114,12 +115,9 @@
     
     localDesignFunction <- function(theta, factorList, ind = NULL) {
         if (!is.null(ind)) {
-            if (length(ind) > 1)
-                return(X[, ind])
-            else {
-                a <- ind
+            a <- ind
+            if (factorAssign[ind] > 1)
                 ind <- ind - z[factorAssign[ind] - 1]
-            }
         }
             
         for (i1 in a) {

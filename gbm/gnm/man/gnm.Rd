@@ -42,7 +42,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     \code{na.action} setting of \code{options}, and third,
     \code{na.fail}.}
   \item{method}{ the method to be used: either \code{"gnmFit"} to fit the
-    model, \code{"coef"} to return a character vector of names for the
+    model, \code{"coefNames"} to return a character vector of names for the
     coefficients in the model, or \code{"model.frame"} to return the
     model frame. }
   \item{offset}{ this can be used to specify an a priori known component to

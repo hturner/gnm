@@ -14,9 +14,23 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         else dispersion <- Inf
     }
     if (!"vcov" %in% names(object)){
-        cov.unscaled <- update(object, formula = formula(object), vcov = TRUE,
-                             start = coef(object), verbose = FALSE,
-                             trace = FALSE)$vcov
+        constrain <- object$constrain
+        eliminate <- object$eliminate
+        needToElim <- seq(sum(!constrain[seq(eliminate)]))[eliminate > 0]
+        X <- model.matrix(object)[, !constrain, drop = FALSE]
+        Info <- crossprod(X, as.vector(object$weights) * X)
+        if (eliminate)
+            constrain <- constrain[-seq(eliminate)]
+        if (sum(constrain) > 0) {
+            cov.unscaled <- array(0, dim = rep(length(theta), 2),
+                              dimnames = rep(list(names(theta)), 2))
+            cov.unscaled[!constrain, !constrain] <-
+                MPinv(Info, eliminate = needToElim, onlyNonElim = TRUE)
+        }
+        else
+            cov.unscaled <- MPinv(Info, eliminate = needToElim,
+                                  onlyNonElim = TRUE)
+        attr(cov.unscaled, "rank") <- NULL
     }
     else cov.unscaled  <- object$vcov
     cov.scaled <- dispersion * cov.unscaled

@@ -15,7 +15,13 @@
     dev <- numeric(2)
     if (verbose)
         width <- as.numeric(options("width"))
-    constrain[modelTools$unestimable] <- TRUE
+    theta <- seq(start)
+    X <- modelTools$localDesignFunction(theta, modelTools$factorList(theta))
+    if (eliminate)
+        if (nrow(unique(X[, seq(eliminate)])) > eliminate)
+            stop("'eliminate' formula is not equivalent to single factor")
+    unestimable <- apply(X == 0, 2, all)
+    constrain[unestimable] <- TRUE
     repeat {
         status <- "not.converged"
         if (any(is.na(start))) {
@@ -213,15 +219,14 @@
                 "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
     Info <- crossprod(X, WX)
-    VCOV <- try(MPinv(Info, eliminate = needToElim,
-                      onlyNonElim = TRUE), silent = TRUE)
+    VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = TRUE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
     fit <- list(coefficients = theta, eliminate = eliminate,
-                predictors = eta, fitted.values = mu, deviance = dev[1],
-                aic = modelAIC, iter = iter - 1, conv = status == "converged",
-                weights = w, residuals = z,
+                constrain = constrain, predictors = eta, fitted.values = mu,
+                deviance = dev[1], aic = modelAIC, iter = iter - 1,
+                conv = status == "converged", weights = w, residuals = z,
                 df.residual = nObs - sum(weights == 0) - attr(VCOV,"rank"),
                 rank = attr(VCOV, "rank"))
     if (x) {

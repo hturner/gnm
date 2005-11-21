@@ -15,6 +15,16 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                            as.list(modelData)[argPos],
                            drop.unused.levels = TRUE))
     modelData <- eval(modelData, parent.frame())
+    
+    if (method == "model.frame") {
+        attr(modelData, "terms") <- attr(modelTerms, "terms")
+        return(modelData)
+    }
+    else if (!method %in% c("gnmFit", "coefNames", "model.matrix")) {
+        warning("method = ", method, " is not supported. Using \"gnmFit\".",
+                call. = FALSE)
+        method <- "gnmFit"
+    }
 
     if (!is.null(eliminate)) {
         if (!inherits(eliminate, "formula")) {
@@ -31,17 +41,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         elimCols <- model.matrix(update.formula(eliminate, ~ -1 + .),
                                                 data = modelData)
         nElim <- ncol(elimCols)
-        if (nrow(unique(elimCols)) > nElim)
-            stop("'eliminate' formula is not equivalent to single factor")
     }
     else nElim <- 0
-    
-    if (method == "model.frame") {
-        attr(modelData, "terms") <- attr(modelTerms, "terms")
-        return(modelData)
-    }
-    else if (!method %in% c("gnmFit", "coefNames"))
-        warning("method = ", method, " is not supported. Using \"gnmFit\".")
     
     y <- model.response(modelData, "numeric")
     nObs <- NROW(y)
@@ -79,6 +80,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 
     if (is.empty.model(modelTerms)) {
         if (method == "coefNames") return(numeric(0))
+        else if (method == "model.matrix")
+            return(model.matrix(formula, data = modelData))
         if (!family$valideta(offset))
             stop("invalid predictor values in empty model")
         mu <- family$linkinv(offset)
@@ -93,11 +96,13 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                     aic = modelAIC, iter = 0, conv = NULL,
                     weights = weights*dmu^2/family$variance(mu),
                     residuals = (y - mu)/dmu, df.residual = nObs, rank = 0)
-        if (x) fit$x <- NULL
-        if (vcov) fit$vcov <- NULL
-        if (termPredictors) fit$termPredictors <- NULL
+        if (x) fit <- c(fit, x = NULL)
+        if (vcov) fit <- c(fit, vcov = NULL)
+        if (termPredictors) fit <- c(fit, termPredictors = NULL)
     }
     else {
+        if (method == "model.matrix") x <- TRUE
+        
         modelTools <- gnmTools(modelTerms, modelData, x, termPredictors)
         nParam <- length(modelTools$classID)
 
@@ -140,7 +145,16 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 stop("length(start) must either equal the no. of parameters\n",
                      "or the no. of non-eliminated parameters.")
         }
-            
+
+        if (method == "model.matrix") {
+            theta <- modelTools$start()
+            theta[!is.na(start)] <- start[!is.na(start)]
+            theta[constrain] <- 0
+            factorList <- modelTools$factorList(theta)
+            X <- modelTools$localDesignFunction(theta, factorList)
+            attr(X, "assign") <- modelTools$termAssign
+            return(X)
+        }            
         
         fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
                        offset, nObs = nObs, start = start,
@@ -151,9 +165,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         warning("Algorithm failed - no model could be estimated", call. = FALSE)
         return()
     }
-    fit <- c(list(call = call, formula = formula, constrain = constrain,
-                  family = family, prior.weights = weights,
-                  terms = attr(modelTerms, "terms"),
+    fit <- c(list(call = call, formula = formula, family = family,
+                  prior.weights = weights, terms = attr(modelTerms, "terms"),
                   na.action = attr(modelData, "na.action"),
                   xlevels = .getXlevels(attr(modelData, "terms"), modelData),
                   y = y, offset = offset, control = control), fit)

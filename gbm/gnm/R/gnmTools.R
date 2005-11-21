@@ -148,13 +148,8 @@
         else X
     }
 
-    theta <- seq(factorAssign)
-    unestimable <- apply(localDesignFunction(theta, factorList(theta)) == 0,
-                                             2, all)
-
-    toolList <- list(unestimable = unestimable, classID = thetaClassID,
-                     start = start, factorList = factorList,
-                     predictor = predictor,
+    toolList <- list(classID = thetaClassID, start = start,
+                     factorList = factorList, predictor = predictor,
                      localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign
     toolList

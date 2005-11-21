@@ -181,6 +181,22 @@
                         "\n", sep = "")
                 else if (verbose)
                     cat(".")
+                parameterList <- unname(split(nextTheta,
+                                                  modelTools$factorAssign))
+                for (ind in split(seq(factorList), modelTools$multIndex)) {
+                    if (length(ind) == 1) next
+                    # assume two factors for now and non Exp!
+                    irregular <- abs(factorList[[ind[1]]]/factorList[[ind[2]]])
+                    if (any(irregular > 4)) {
+                        ratio <- order(irregular)
+                        x <- (prod(abs(factorList[[ind[2]]][ratio[c(1, length(y))]]))/
+                            prod(abs(factorList[[ind[1]]][ratio[c(1, length(y))]])))^(1/4)
+                        parameterList[[ind[1]]] <- parameterList[[ind[1]]] * x
+                        parameterList[[ind[2]]] <- parameterList[[ind[2]]] / x
+                        nextTheta <- unlist(parameterList)
+                        factorList <- modelTools$factorList(nextTheta)
+                    }
+                }
                 theta <- nextTheta
             }
         }

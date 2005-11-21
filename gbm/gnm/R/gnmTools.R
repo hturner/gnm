@@ -153,8 +153,9 @@
                                              2, all)
 
     toolList <- list(unestimable = unestimable, classID = thetaClassID,
+                     factorAssign = factorAssign,
                      start = start, factorList = factorList,
-                     predictor = predictor,
+                     multIndex = multIndex, predictor = predictor,
                      localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign
     toolList

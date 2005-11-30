@@ -22,16 +22,16 @@ MultHomog <- function(...){
     }
 
     localDesignFunction <- function(coef, ind = NULL, ...) {
-        productList <- designList
+        X <- 0
+        vList <- lapply(designList, "%*%", coef)
         for (i in seq(designList)) {
             if (is.null(ind)) 
-                productList[[i]] <- designList[[i]] * 
-                    drop(do.call("pprod", lapply(designList[-i], "%*%", coef)))
+                X <- X + designList[[i]] * drop(do.call("pprod", vList[-i]))
             else
-                productList[[i]] <- designList[[i]][, ind] * 
-                    drop(do.call("pprod", lapply(designList[-i], "%*%", coef)))
+                X <- X + designList[[i]][, ind] *
+                    drop(do.call("pprod", vList[-i]))
         }
-        do.call("psum", productList)
+        X
     }
 
     list(labels = labels, predictor = predictor,

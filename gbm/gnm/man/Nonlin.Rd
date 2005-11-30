@@ -41,7 +41,10 @@ Nonlin(functionCall)
       \item{localDesignFunction}{a function which takes the
         arguments \code{coef} (a vector of parameter estimates) and 
         \code{predictor} (the result of the predictor function), and
-        returns the local design matrix.}
+        returns the local design matrix. If the plug-in function does
+	not return a 'start' component, this function must also take the
+	argument \Rfunarg{ind}, the index of a column to be returned
+	rather than the full matrix.}  
     }
     and optionally one further component
     \describe{

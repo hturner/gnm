@@ -1,3 +1,46 @@
+Changes in gnm 0.7-3
+=======================
+
+New Features
+------------
+
+    o	added method = "model.matrix" to gnm() so that model matrix can be
+	obtained much faster. The new method is used in model.matrix.gnm() and 
+	summary.gnm() (in the calculation of the variance-covariance matrix)
+
+Improvements
+------------
+
+    o	gnm() now takes less time to run due to improvements made in internal 
+	functions.
+
+Changes in Behaviour
+--------------------
+
+    o	start-up iterations now only update column of design matrix required in 
+	next iteration. Therefore plug-in functions using the default start-up 
+	procedure for nonlinear parameters need a localDesignFunction() with the 
+	argument 'ind' specifying the column that should be returned.
+
+    o	modified output given by gnm() when 'trace' = TRUE: now prints initial
+	deviance and the deviance at the end of each iteration.
+
+    o	modified updates of linear parameters in starting procedure: now offset 
+	contribution of fully specified terms only.
+
+Bug Fixes
+---------
+
+    o	fixed bug in summary.gnm(), anova.gnm(), termPredictors.gnm() and 
+	model.matrix.gnm() where search for model variables was incorrect. 
+
+    o	fixed bug preventing estimation of weights in Dref() terms.
+
+    o	corrected options for 'method' argument in gnm() help file: replaced 
+	method = "coef" with method = "coefNames".
+
+
+
 Changes in gnm 0.7-2
 =======================
 

@@ -511,8 +511,10 @@ three components:
 \item[\Robject{localDesignFunction}]
   a function which takes the specified
   arguments \Rfunarg{coef} (a vector of parameter estimates) and
-  \Rfunarg{predictor} (the result of the predictor function), and
-  returns the local design matrix.
+  \Rfunarg{predictor} (the result of the predictor function), and returns the
+  local design matrix. If the plug-in function does not return a 'start'
+  component, this function must also take the argument \Rfunarg{ind}, the index
+  of a column to be returned rather than the full matrix.    
 \end{description}
 and optionally one further component
 \begin{description}
@@ -521,8 +523,8 @@ and optionally one further component
   parameters. \Robject{NA} may be used to indicate parameters which
   may be treated as linear for the purpose of finding starting
   values, given the non-\Robject{NA} values. See Section \ref{start} for details of
-  how these starting values will be used if provided and the generic default
-  values that will be used otherwise. 
+  how these starting values will be used if provided and the starting procedure
+  for nonlinear parameters that will be used otherwise. 
 \end{description}
 
 As an example of a \Robject{start} component, \Rfunction{Dref} simply returns
@@ -553,18 +555,26 @@ homogeneous coefficients (in \Robject{coef}). This function takes advantage of
 The \Rfunction{localDesignFunction} created by \Rfunction{MultHomog}
 is slightly more complicated:
 \begin{alltt}
-    localDesignFunction <- function(coef, ...) \{
-        productList <- designList
-        for (i in seq(designList))
-            productList[[i]] <- designList[[i]] *
-                drop(do.call("pprod", lapply(designList[-i], "%*%", coef)))
-        do.call("psum", productList)
+    localDesignFunction <- function(coef, ind = NULL, ...) \{
+        X <- 0
+        vList <- lapply(designList, "%*%", coef)
+        for (i in seq(designList)) \{
+            if (is.null(ind)) 
+                X <- X + designList[[*]] * drop(do.call("pprod", vList[-i]))
+            else
+                X <- X + designList[[*]][, ind] *
+                    drop(do.call("pprod", vList[-i]))
+        \}
+        X
     \}
 \end{alltt}
-This function only uses the argument \Rfunarg{coef}, but since the
-local design function returned by a plug-in function must also accept the
-argument \Rfunarg{predictor}, further arguments are allowed by the use of the
-special argument `\Robject{...}'.
+Since the result of the predictor function is not needed here, the local design
+function does not have the specified argument \Rfunarg{predictor}, but allows such an
+argument to be passed to the function by the use of the special argument
+`\Robject{...}'. Since \Rfunction{MultHomog} does not return a \Robject{start}
+component, the local design function can optionally return a single column of
+the local design matrix as specified by \Rfunarg{ind}. This functionality is
+required by the default starting procedure for nonlinear parameters.
 
 \section{Controlling the Fitting Procedure}
 
@@ -652,15 +662,15 @@ Replace default starting values with any starting values specified by the
 Compute the \Rfunction{glm} estimate of any parameters that may be treated as
 linear (i.e. those in linear terms or those with a default starting value of
 \Robject{NA} set by a plug-in function), offsetting the contribution to
-the predictor of any parameters specified by \Rfunarg{start} or a plug-in
-function. 
+the predictor of any terms specified by \Rfunarg{start} or a plug-in function. 
 \item
 Run starting iterations: update one at a time any remaining nonlinear parameters
 not specified by \Rfunarg{start} or a plug-in function, updating \emph{all}
 parameters that may be treated as linear after each round of updates. 
 \end{enumerate}
-Note that no starting iterations (step 5) will be run if all
-parameters are specified by \Rfunarg{start} or a plug-in function.
+Note that no starting iterations (step 5) will be run if all parameters are
+linear, or if all nonlinear parameters are specified by \Rfunarg{start} or a
+plug-in function. 
 
 \subsection{Using \Rfunarg{constrain}}
 \label{constrain}
@@ -1695,22 +1705,35 @@ are given below. For bug fixes since the last release and the changes made in
 previous releases, see the CHANGES file in the package directory.
 
 \begin{verbatimtab}
-
-Changes in gnm 0.7-2
+Changes in gnm 0.7-3
 =======================
+
+New Features
+------------
+
+    o	added method = "model.matrix" to gnm() so that model matrix can be
+	obtained much faster. The new method is used in model.matrix.gnm() and 
+	summary.gnm() (in the calculation of the variance-covariance matrix)
 
 Improvements
 ------------
 
-    o	Extended use of the 'eliminate' argument of gnm() to allow crossed 
-	factors - this also fixes bug which occurred when interactions were 
-	eliminated in the presence of lower order terms involving other factors 
+    o	gnm() now takes less time to run due to improvements made in internal 
+	functions.
 
 Changes in Behaviour
 --------------------
 
-    o	'vcov' returned by gnm() now has no rank attribute (as before, the
-	rank is returned as the separate component 'rank').
+    o	start-up iterations now only update column of design matrix required in 
+	next iteration. Therefore plug-in functions using the default start-up 
+	procedure for nonlinear parameters need a localDesignFunction() with the 
+	argument 'ind' specifying the column that should be returned.
+
+    o	modified output given by gnm() when 'trace' = TRUE: now prints initial
+	deviance and the deviance at the end of each iteration.
+
+    o	modified updates of linear parameters in starting procedure: now offset 
+	contribution of fully specified terms only.
 \end{verbatimtab}
 
 \newpage

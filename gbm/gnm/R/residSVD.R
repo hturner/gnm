@@ -6,10 +6,10 @@ residSVD <- function(model, fac1, fac2, d = 1) {
     }
     fdata <- data.frame(fac1, fac2)
     if (!is.null(model$na.action)) fdata <- fdata[-model$na.action,]
-    X <- cbind(model$residuals * model$weights, model$weights)
-    X <- aggregate(X, fdata, sum, na.rm = TRUE)
-    X <- xtabs(V1/V2 ~ fac1 + fac2, X)
-    X <- svd(X, d, d)
+    X <- data.frame(rw = model$residuals * model$weights, w = model$weights)
+    X <- lapply(X, tapply, fdata, sum, simplify = TRUE)
+    X <- X$rw/X$w
+    X <- svd(naToZero(X), d, d)
     init <- c(t(sqrt(X$d[seq(d)]) * t(X$u)), t(sqrt(X$d[seq(d)]) * t(X$v)))
     names(init) <- rep(c(paste("fac1", levels(fac1), sep = "."),
                          paste("fac2", levels(fac2), sep = ".")), d)

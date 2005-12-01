@@ -1,7 +1,7 @@
 useDynLib(gnm)
 export(checkEstimable, Diag, Dref, Exp, getContrasts,
        getModelFrame, gnm, gnmControl, MPinv, Mult, MultHomog,
-       Nonlin, se, Symm, summary.gnm, termPredictors, Topo,
+       Nonlin, residSVD, se, Symm, summary.gnm, termPredictors, Topo,
        wedderburn)
 
 import(MASS, stats)

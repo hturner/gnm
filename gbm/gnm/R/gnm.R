@@ -175,8 +175,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
              "weights", "y", "offset")
     if (inherits(data, "table") & !is.empty.model(modelTerms)) {
         fit[asY] <- lapply(fit[asY], function(x) {
-            as.table(tapply(x,
-                            as.data.frame(data)[names(dimnames(data))], sum))})
+            as.table(tapply(x, as.data.frame(data)[-fit$na.action,
+                                                   names(dimnames(data))], I))})
     }
     else
         fit[asY] <- lapply(fit[asY],

@@ -174,13 +174,12 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")
     if (inherits(data, "table") & !is.empty.model(modelTerms)) {
-        fit[asY] <- lapply(fit[asY], function(x) {
-            as.table(tapply(x, as.data.frame(data)[-fit$na.action,
-                                                   names(dimnames(data))], I))})
+        fit[asY] <- lapply(fit[asY], replace,
+                           list = as.numeric(names(fit$y)), x = data)
+        if (!is.null(fit$na.action)) fit$na.action <- NULL
     }
     else
-        fit[asY] <- lapply(fit[asY],
-                           function(x, y) structure(x, names = names(y)), y)
+        fit[asY] <- lapply(fit[asY], structure, names = names(y))
     
     if (model) {
         attr(modelData, "terms") <- attr(modelTerms, "terms")

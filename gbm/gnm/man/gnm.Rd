@@ -117,7 +117,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{"fitted.values"}, \code{"residuals"}, \code{"prior.weights"},
   \code{"weights"}, \code{"y"} and \code{"offset"} components of
   the returned \code{gnm} fit will be tables with the same format as the
-  data.
+  data, completed with \code{NA}s where necessary.
 
   For binomial models, the \code{response} may be specified as a factor
   in which the first level denotes failure and all other levels denote

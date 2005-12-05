@@ -43,7 +43,7 @@ Nonlin(functionCall)
         \code{predictor} (the result of the predictor function), and
         returns the local design matrix. If the plug-in function does
 	not return a 'start' component, this function must also take the
-	argument \Rfunarg{ind}, the index of a column to be returned
+	argument \code{ind}, the index of a column to be returned
 	rather than the full matrix.}  
     }
     and optionally one further component

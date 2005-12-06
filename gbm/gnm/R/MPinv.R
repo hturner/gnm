@@ -1,5 +1,6 @@
 MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
-                     onlyNonElim = FALSE, tolerance = 100*.Machine$double.eps){
+                     onlyNonElim = FALSE, tolerance = 100*.Machine$double.eps,
+                     rank = NULL){
     ## Moore-Penrose pseudoinverse of a real-valued matrix.
     ## Patterned after ginv() from the MASS package of W N Venables
     ## and B D Ripley.
@@ -16,13 +17,17 @@ MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
         Rownames <- rownames(mat)
         Colnames <- colnames(mat)
         Svd <- svd(mat)
-        Positive <- Svd$d > max(tolerance * Svd$d[1], 0)
+        if (is.null(rank)) {
+            Positive <- Svd$d > max(tolerance * Svd$d[1], 0)
+        } else Positive <- c(rep(TRUE, rank),
+                             rep(FALSE, length(Svd$d) - rank))
+        print(c(rank, sum(Positive), nrow(mat)))
         result <- {
-            if (all(Positive)) 
+            if (all(Positive))
                 Svd$v %*% (1/Svd$d * t(Svd$u))
-            else if (!any(Positive)) 
+            else if (!any(Positive))
                 array(0, dim(mat)[2:1])
-            else Svd$v[, Positive, drop = FALSE] %*% ((1/Svd$d[Positive]) * 
+            else Svd$v[, Positive, drop = FALSE] %*% ((1/Svd$d[Positive]) *
                                     t(Svd$u[, Positive, drop = FALSE]))
         }
         attr(result, "rank") <- sum(Positive)

@@ -1,4 +1,4 @@
-plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted", 
+plot.glm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted", 
     "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage", 
     "Cook's distance vs Leverage"), panel = if (add.smooth) panel.smooth else points, 
     sub.caption = NULL, main = "", ask = prod(par("mfcol")) < 
@@ -8,10 +8,12 @@ plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
 {
     if (!is.numeric(which) || any(which < 1) || any(which > 6)) 
         stop("'which' must be in 1:6")
+    isGnm <- inherits(x, "gnm")
     show <- rep(FALSE, 6)
     show[which] <- TRUE
     r <- residuals(x)
-    yh <- naresid(x$na.action, na.omit(x$predictors))
+    if(isGnm) yh <- naresid(x$na.action, na.omit(x$predictors))
+    else yh <- predict(x)
     w <- weights(x)
     if (!is.null(w)) {
         wind <- w != 0
@@ -38,7 +40,7 @@ plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
     if (any(show[5:6])) {
         hatval <- hatvalues(x)
         r.hat <- range(hatval, na.rm = TRUE)
-        isConst.hat <- diff(r.hat) < 1e-10 * mean(hatval)
+        isConst.hat <- diff(r.hat) < 1e-10 * mean(hatval, na.rm = TRUE)
     }
     if (any(show[c(1, 3)])) 
         l.fit <- "Predicted values"
@@ -216,9 +218,9 @@ plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
         }
     }
     if (show[6]) {
-        ymx <- max(cook) * 1.025
+        ymx <- max(cook, na.rm = TRUE) * 1.025
         g <- hatval/(1 - hatval)
-        plot(g, cook, xlim = c(0, max(g)), ylim = c(0, ymx), 
+        plot(g, cook, xlim = c(0, max(g, na.rm = TRUE)), ylim = c(0, ymx), 
             main = main, xlab = "Leverage", ylab = "Cook's distance", 
             xaxt = "n", type = "n", ...)
         athat <- pretty(hatval)

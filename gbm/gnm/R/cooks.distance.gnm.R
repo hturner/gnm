@@ -1,4 +1,4 @@
-cooks.distance.gnm <- function(model, hat = hatvalues(model),
+cooks.distance.glm <- function(model, hat = hatvalues(model),
                                   dispersion = summary(model)$dispersion, ...){
     p <- model$rank
     res <- na.omit(residuals(model, type =

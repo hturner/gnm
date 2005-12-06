@@ -11,6 +11,7 @@
               vcov = FALSE,
               termPredictors = FALSE)
 {
+    eps <- 100*.Machine$double.eps
     attempt <- 1
     dev <- numeric(2)
     if (verbose)
@@ -63,15 +64,16 @@
                         cat("Running start-up iterations", "\n"[control$trace],
                             sep = "")
                     if ((iter + 25)%%width == (width - 1))
-                        cat("\n")                        
+                        cat("\n")
                 }
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
-                    w <- weights * dmu * dmu/vmu
+                    w <- weights * ifelse(abs(dmu) < eps, 0, dmu * dmu/vmu)
                     Xi <- modelTools$localDesignFunction(theta,
                                                          factorList, i)
-                    score <- crossprod((y - mu)/dmu, w * Xi)
+                    score <- crossprod(ifelse(abs(y - mu) < eps, 0, (y - mu)/dmu),
+                                       w * Xi)
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
                     if (!is.finite(theta[i])) {
@@ -132,9 +134,9 @@
                         cat("\n")
                 }
                 dmu <- family$mu.eta(eta)
-                z <- (y - mu)/dmu
+                z <- ifelse(abs(dmu) < eps, 0, (y - mu)/dmu)
                 vmu <- family$variance(mu)
-                w <- weights * dmu * dmu/vmu
+                w <- weights * ifelse(abs(dmu) < eps, 0, dmu * dmu/vmu)
                 if (any(!is.finite(w))) {
                     status <- "w.not.finite"
                     break
@@ -182,9 +184,10 @@
                     theChange <- theChange/2
                     j <- j + 1
                 }
-                if (control$trace)
+                if (control$trace){
                     cat("Iteration ", iter, ". Deviance = ", dev[1],
                         "\n", sep = "")
+                }
                 else if (verbose)
                     cat(".")
                 theta <- nextTheta
@@ -247,8 +250,7 @@
                               dimnames = rep(list(names(theta)), 2))
             fit$vcov[!constrain, !constrain] <- VCOV
         }
-        else
-            fit$vcov <- VCOV[, , drop = FALSE]       
+        else fit$vcov <- VCOV[, , drop = FALSE]
     }
     if (termPredictors) {
         theta[is.na(theta)] <- 0

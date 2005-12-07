@@ -21,7 +21,6 @@ MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
             Positive <- Svd$d > max(tolerance * Svd$d[1], 0)
         } else Positive <- c(rep(TRUE, rank),
                              rep(FALSE, length(Svd$d) - rank))
-        print(c(rank, sum(Positive), nrow(mat)))
         result <- {
             if (all(Positive))
                 Svd$v %*% (1/Svd$d * t(Svd$u))

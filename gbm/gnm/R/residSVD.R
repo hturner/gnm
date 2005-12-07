@@ -10,8 +10,9 @@ residSVD <- function(model, fac1, fac2, d = 1) {
     X <- lapply(X, tapply, Data, sum, simplify = TRUE)
     X <- X$rw/X$w
     X <- svd(naToZero(X), d, d)
-    init <- c(t(sqrt(X$d[seq(d)]) * t(X$u)), t(sqrt(X$d[seq(d)]) * t(X$v)))
-    names(init) <- rep(c(paste("fac1", levels(fac1), sep = "."),
-                         paste("fac2", levels(fac2), sep = ".")), d)
-    init
+    result <- rbind(t(sqrt(X$d[seq(d)]) * t(X$u)), t(sqrt(X$d[seq(d)]) * t(X$v)))
+    rownames(result) <- c(paste("fac1", levels(fac1), sep = "."),
+                         paste("fac2", levels(fac2), sep = "."))
+    colnames(result) <- 1:d
+    drop(result)
 }

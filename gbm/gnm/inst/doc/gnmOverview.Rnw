@@ -1714,28 +1714,43 @@ New Features
 ------------
 
     o	added method = "model.matrix" to gnm() so that model matrix can be
-	obtained much faster. The new method is used in model.matrix.gnm() and
+	obtained much faster. The new method is used in model.matrix.gnm() and 
 	summary.gnm() (in the calculation of the variance-covariance matrix)
+
+    o	added new utility function residSVD(), to facilitate the calculation
+        of good starting values for parameters in certain Mult() terms
+
+    o	added new dataset House2001, to illustrate the use of gnm in 
+        Rasch-type scaling of legislator votes
 
 Improvements
 ------------
 
-    o	gnm() now takes less time to run due to improvements made in internal
+    o	gnm() now takes less time to run due to improvements made in internal 
 	functions.
 
+    o   the fitting algorithm used by gnm() now copes better with zero-valued 
+        residuals 	
+	
 Changes in Behaviour
 --------------------
 
-    o	start-up iterations now only update column of design matrix required in
-	next iteration. Therefore plug-in functions using the default start-up
-	procedure for nonlinear parameters need a localDesignFunction() with the
+    o	start-up iterations now only update column of design matrix required in 
+	next iteration. Therefore plug-in functions using the default start-up 
+	procedure for nonlinear parameters need a localDesignFunction() with the 
 	argument 'ind' specifying the column that should be returned.
 
     o	modified output given by gnm() when 'trace' = TRUE: now prints initial
 	deviance and the deviance at the end of each iteration.
 
-    o	modified updates of linear parameters in starting procedure: now offset
+    o	modified updates of linear parameters in starting procedure: now offset 
 	contribution of fully specified terms only.
+
+    o	updated plot.gnm() to give same plots as plot.lm() in R >= 2.2.0.
+
+    o	hatvalues.gnm(), cooks.distance.gnm() and plot.gnm() replaced with 
+	methods for "glm" objects, in which hatvalues are set to NaN when 
+	calculated as being within rounding error of 1.
 \end{verbatimtab}
 
 \newpage

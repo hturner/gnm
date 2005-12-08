@@ -37,6 +37,12 @@ Changes in Behaviour
     o	modified updates of linear parameters in starting procedure: now offset 
 	contribution of fully specified terms only.
 
+    o	updated plot.gnm() to give same plots as plot.lm() in R >= 2.2.0.
+
+    o	hatvalues.gnm(), cooks.distance.gnm() and plot.gnm() replaced with 
+	methods for "glm" objects, in which hatvalues are set to NaN when 
+	calculated as being within rounding error of 1.
+
 Bug Fixes
 ---------
 
@@ -47,6 +53,13 @@ Bug Fixes
 
     o	corrected options for 'method' argument in gnm() help file: replaced 
 	method = "coef" with method = "coefNames".
+
+    o	fixed bug in gnm() so that it can handle tables with missing values when
+  	formatting components of fit.
+
+    o	hatvalues.gnm() now works for objects produced from table data
+
+    o	residuals.gnm() now returns table not matrix for 'type' = "deviance"
 
 
 

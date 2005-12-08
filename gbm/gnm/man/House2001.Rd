@@ -55,5 +55,57 @@ iterated singular value decomposition.  \emph{Computational Statistics
 \examples{
 data(House2001)
 summary(House2001)
+## Put the votes in a matrix, and discard members with too many NAs etc:
+House2001m <- as.matrix(House2001[-1])
+informative <- apply(House2001m, 1, function(row){
+    valid <- !is.na(row)
+    validSum <- if (any(valid)) sum(row[valid]) else 0
+    nValid <- sum(valid)
+    uninformative <- (validSum == nValid) || (validSum == 0) || (nValid < 10)
+    !uninformative})
+House2001m <- House2001m[informative, ]
+## Make a vector of colours, blue for Republican and red for Democrat:
+parties <- House2001$party[informative]
+partyColors <- rep("black", length(parties))
+partyColors <- ifelse(parties == "D", "red", partyColors)
+partyColors <- ifelse(parties == "R", "blue", partyColors)
+## Expand the data for statistical modelling:
+House2001v <- as.vector(House2001m)
+House2001f <- data.frame(member = rownames(House2001m),
+                         party = parties,
+                         rollCall = factor(rep((1:20),
+                                           rep(nrow(House2001m), 20))),
+                         vote = House2001v)
+## Now fit an "empty" model, in which all members vote identically:
+baseModel <- glm(vote ~ -1 + rollCall, family = binomial, data = House2001f)
+## From this, get starting values for a one-dimensional multiplicative term:
+Start <- residSVD(baseModel, rollCall, member)
+House2001model1 <- gnm(0.5 + 0.94*(vote - 0.5) ~ Mult(rollCall - 1, member - 1),
+              eliminate = ~ rollCall,
+              family = binomial, data = House2001f,
+              na.action = na.exclude, trace = TRUE,
+              start = -Start)
+## Deviance is 2234.847, df = 5574
+##
+## Plot the members' positions as estimated in the model:
+##
+plot(coef(House2001model1)[21:321], col = partyColors,
+     xlab = "Alphabetical index (Abercrombie 1 to Young 301)",
+     ylab = "Member's relative position, one-dimensional model")
+## Can do the same thing with two dimensions, but gnm takes around 50
+## slow iterations to converge (there are more than 600 parameters): 
+\dontrun{
+Start <- residSVD(baseModel, rollCall, member)
+House2001model2 <- gnm(0.5 + 0.94*(vote - 0.5) ~
+                          Mult(rollCall - 1, member - 1, multiplicity = 2),
+              eliminate = ~ rollCall,
+              family = binomial, data = House2001f,
+              na.action = na.exclude, trace = TRUE,
+              start = Start2)
+## Deviance is 1545.166, df = 5257
+##
+## The second dimension is mainly due to rollCall 12, which does not
+## correlate well with the rest.  (Look at the coefficients of House2001model1)
+}
 }
 \keyword{datasets}

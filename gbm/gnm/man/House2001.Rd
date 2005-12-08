@@ -80,10 +80,17 @@ House2001f <- data.frame(member = rownames(House2001m),
 baseModel <- glm(vote ~ -1 + rollCall, family = binomial, data = House2001f)
 ## From this, get starting values for a one-dimensional multiplicative term:
 Start <- residSVD(baseModel, rollCall, member)
-House2001model1 <- gnm(0.5 + 0.94*(vote - 0.5) ~ Mult(rollCall - 1, member - 1),
+##
+## Now fit the logistic model with one multiplicative term.
+## For the response variable, instead of vote=0,1 we use 0.03 and 0.97,
+## corresponding approximately to a bias-reducing adjustment of p/(2n),
+## where p is the number of parameters and n the number of observations.
+##
+voteAdj <- 0.5 + 0.94*(House2001f$vote - 0.5)
+House2001model1 <- gnm(voteAdj ~ Mult(rollCall - 1, member - 1),
               eliminate = ~ rollCall,
               family = binomial, data = House2001f,
-              na.action = na.exclude, trace = TRUE,
+              na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
               start = -Start)
 ## Deviance is 2234.847, df = 5574
 ##
@@ -92,20 +99,28 @@ House2001model1 <- gnm(0.5 + 0.94*(vote - 0.5) ~ Mult(rollCall - 1, member - 1),
 plot(coef(House2001model1)[21:321], col = partyColors,
      xlab = "Alphabetical index (Abercrombie 1 to Young 301)",
      ylab = "Member's relative position, one-dimensional model")
-## Can do the same thing with two dimensions, but gnm takes around 50
+## Can do the same thing with two dimensions, but gnm takes around 40
 ## slow iterations to converge (there are more than 600 parameters): 
 \dontrun{
-Start <- residSVD(baseModel, rollCall, member)
-House2001model2 <- gnm(0.5 + 0.94*(vote - 0.5) ~
-                          Mult(rollCall - 1, member - 1, multiplicity = 2),
+Start2 <- residSVD(baseModel, rollCall, member, d = 2)
+House2001model2 <- gnm(
+              voteAdj ~ Mult(rollCall - 1, member - 1, multiplicity = 2),
               eliminate = ~ rollCall,
               family = binomial, data = House2001f,
-              na.action = na.exclude, trace = TRUE,
+              na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
               start = Start2)
 ## Deviance is 1545.166, df = 5257
 ##
+plot(coef(House2001model2)[21:321], coef(House2001model2)[342:642],
+     col = partyColors,
+     xlab = "Dimension 1",
+     ylab = "Dimension 2",
+     main = "House2001 data: Member positions, 2-dimensional model")
+##
 ## The second dimension is mainly due to rollCall 12, which does not
-## correlate well with the rest.  (Look at the coefficients of House2001model1)
+## correlate well with the rest -- look at the coefficients of
+## House2001model1, or at
+cormat <- cor(na.omit(House2001m))
 }
 }
 \keyword{datasets}

@@ -103,7 +103,7 @@ While the main purpose of the \Rpackage{gnm} package is to extend the class of
 models to include nonlinear terms, some of the new functions and methods
 can be used also with the familiar \Rfunction{lm} and \Rfunction{glm}
 model-fitting functions.  These are: three new data-manipulation functions
-\Rfunction{Diag}, \Rfunction{Symm} and \Rfunction{Topo}, for setting up structured interactions between factors; a new \Rclass{family} function, 
+\Rfunction{Diag}, \Rfunction{Symm} and \Rfunction{Topo}, for setting up structured interactions between factors; a new \Rclass{family} function,
 \Rfunction{wedderburn},
 for modelling a response variable in $[0,1]$ with the variance function
 $V(\mu) = \mu^2(1-\mu)^2$ as in \citet{Wedd74};
@@ -151,19 +151,19 @@ two homologous factors.
 
 \subsection{\Rfunction{Topo}}
 
-More general structured interactions than those provided by \Rfunction{Diag} 
-and \Rfunction{Symm} can be specified using the function \Rfunction{Topo}.  
-(The name of this function is short for `topological interaction', 
+More general structured interactions than those provided by \Rfunction{Diag}
+and \Rfunction{Symm} can be specified using the function \Rfunction{Topo}.
+(The name of this function is short for `topological interaction',
 which is the nomenclature
 often used in sociology for factor interactions with structure derived from
 subject-matter theory.)
 
-The \Rfunction{Topo} function operates on any number ($k$, say) 
+The \Rfunction{Topo} function operates on any number ($k$, say)
 of input factors, and
 requires an argument named \Rfunarg{spec} which must be an array of
-dimension $L_1 \times \ldots \times L_k$, where $L_i$ is the number of 
+dimension $L_1 \times \ldots \times L_k$, where $L_i$ is the number of
 levels for the $i$th factor.  The \Rfunarg{spec} argument specifies
-the interaction level corresponding to every possible combination of 
+the interaction level corresponding to every possible combination of
 the input factors, and the result is a new factor representing the specified
 interaction.
 
@@ -180,7 +180,7 @@ levels(erikson$origin) <- levels(erikson$destination) <-
       rep(paste(lvl[4:5], collapse = " + "), 2), lvl[6:9])
 erikson <- xtabs(Freq ~ origin + destination + country, data = erikson)
 @
-From sociological theory --- for which see \citet{Erik82} or \citet{Xie92} --- 
+From sociological theory --- for which see \citet{Erik82} or \citet{Xie92} ---
 the log-linear interaction between origin and destination is assumed to have
 a particular structure:
 \newpage
@@ -192,7 +192,7 @@ a particular structure:
 +                         4, 4, 5, 6, 3, 4, 5,
 +                         5, 4, 5, 5, 3, 3, 5,
 +                         6, 6, 5, 3, 5, 4, 1), 7, 7, byrow = TRUE)
-\end{verbatim}  
+\end{verbatim}
 The models of table 3 of \citet{Xie92} can now be fitted as follows:
 \begin{verbatim}
 > ## Null association between origin and destination
@@ -216,24 +216,24 @@ Done
 +                        country:Topo(origin, destination, spec = levelMatrix))
 Running main iterations.
 Done
-> 
+>
 > anova(nullModel, commonTopo, multTopo, separateTopo)
 Analysis of Deviance Table
 
 Model 1: Freq ~ country:origin + country:destination
-Model 2: Freq ~ Topo(origin, destination, spec = levelMatrix) + country:origin + 
+Model 2: Freq ~ Topo(origin, destination, spec = levelMatrix) + country:origin +
     country:destination
-Model 3: Freq ~ Mult(country, Topo(origin, destination, spec = levelMatrix)) + 
+Model 3: Freq ~ Mult(country, Topo(origin, destination, spec = levelMatrix)) +
     country:origin + country:destination
-Model 4: Freq ~ country:origin + country:destination + country:Topo(origin, 
+Model 4: Freq ~ country:origin + country:destination + country:Topo(origin,
     destination, spec = levelMatrix)
   Resid. Df Resid. Dev  Df Deviance
-1       108     4860.0             
+1       108     4860.0
 2       103      244.3   5   4615.7
 3       101      216.4   2     28.0
 4        93      208.5   8      7.9
 \end{verbatim}
-Here we have used \Rfunction{gnm} to fit all of these log-link models; the 
+Here we have used \Rfunction{gnm} to fit all of these log-link models; the
 first, second and fourth are log-linear and could equally well have been fitted
 using \Rfunction{glm}.
 
@@ -296,8 +296,8 @@ Constituent multipliers\footnote{
 A note on terminology: the rather cumbersome phrase `constituent multiplier', or
 sometimes the abbreviation `multiplier', will
 be used throughout this document in preference to the more elegant and standard
-mathematical term `factor'.  This will avoid possible confusion with the 
-completely different meaning of the word `factor' --- that is, a categorical 
+mathematical term `factor'.  This will avoid possible confusion with the
+completely different meaning of the word `factor' --- that is, a categorical
 variable --- in R.
 }
 in
@@ -338,7 +338,7 @@ following `uniform difference' model \citep{Xie92, Erik92}
 \[
 \log \mu_{rct} = \alpha_{rt} + \beta_{ct} + e^{\gamma_t}\delta_{rc}.
 \]
-Exponentiated constituent multipliers 
+Exponentiated constituent multipliers
 are specified in \Rclass{gnm} models using the symbolic
 function \Rfunction{Exp}; for example, the uniform difference model above
 would be specified by the formula
@@ -352,7 +352,7 @@ Nonlinear terms which can not be specified using \Rfunction{Mult} may be
 specified using \Rfunction{Nonlin}. This symbolic function indicates a term
 which requires a plug-in function to estimate the associated
 parameters. \Rfunction{Nonlin} takes a single argument, which is a call to the
-relevant plug-in function.  
+relevant plug-in function.
 
 For example, in the formula
 \begin{alltt}
@@ -450,7 +450,7 @@ take.  However it is important that \Rfunction{Nonlin}, when given a call to the
 plug-in function, can determine the variables that are in the term, so that these
 variables can be added to the model frame. By default, expressions passed to
 unspecified arguments of the plug-in function are assumed to represent the
-variables in the term. 
+variables in the term.
 
 If the default action of \Rfunction{Nonlin} will not capture the required
 variables, a companion function must exist (in the environment of the
@@ -466,11 +466,11 @@ this function must be the name of the plug-in function suffixed with
 \end{verbatim}
 returning the expressions passed to unspecified arguments and the right-hand
 side of the formula passed to \Rfunarg{formula}, as character strings. For
-instance 
-@ 
+instance
+@
 <<DrefVariables_example>>=
 gnm:::DrefVariables(A, B, formula = ~ 1 + C)
-@ %def 
+@ %def
 from which \Rfunction{Nonlin} will know that \Robject{A}, \Robject{B} and
 \Robject{C} need to be added to the model frame.
 
@@ -483,7 +483,7 @@ which can be obtained using the function \Rfunction{getModelFrame}.
 
 For example, the factors in a \Rfunction{Dref} term are passed directly to
 unspecified arguments, so the dummy variables for these factors can be found as
-follows 
+follows
 \begin{alltt}
     # get design matrices for Dref factors
     designList <- lapply(list(...), class.ind)
@@ -494,10 +494,10 @@ be found in the context of the model frame
 \begin{alltt}
     ## get design matrix for local structure
     gnmData <- getModelFrame()
-    local <- model.matrix(formula, data = gnmData)   
+    local <- model.matrix(formula, data = gnmData)
 \end{alltt}
 
-The plug-in function should return a list with at least the following 
+The plug-in function should return a list with at least the following
 three components:
 \begin{description}
 \item[\Robject{labels}]
@@ -514,7 +514,7 @@ three components:
   \Rfunarg{predictor} (the result of the predictor function), and returns the
   local design matrix. If the plug-in function does not return a 'start'
   component, this function must also take the argument \Rfunarg{ind}, the index
-  of a column to be returned rather than the full matrix.    
+  of a column to be returned rather than the full matrix.
 \end{description}
 and optionally one further component
 \begin{description}
@@ -524,7 +524,7 @@ and optionally one further component
   may be treated as linear for the purpose of finding starting
   values, given the non-\Robject{NA} values. See Section \ref{start} for details of
   how these starting values will be used if provided and the starting procedure
-  for nonlinear parameters that will be used otherwise. 
+  for nonlinear parameters that will be used otherwise.
 \end{description}
 
 As an example of a \Robject{start} component, \Rfunction{Dref} simply returns
@@ -559,7 +559,7 @@ is slightly more complicated:
         X <- 0
         vList <- lapply(designList, "%*%", coef)
         for (i in seq(designList)) \{
-            if (is.null(ind)) 
+            if (is.null(ind))
                 X <- X + designList[[*]] * drop(do.call("pprod", vList[-i]))
             else
                 X <- X + designList[[*]][, ind] *
@@ -657,20 +657,20 @@ Replace generic starting values with default starting values set by plug-in
 functions, where applicable.
 \item
 Replace default starting values with any starting values specified by the
-\Rfunarg{start} argument of \Rfunction{gnm}. 
+\Rfunarg{start} argument of \Rfunction{gnm}.
 \item
 Compute the \Rfunction{glm} estimate of any parameters that may be treated as
 linear (i.e. those in linear terms or those with a default starting value of
 \Robject{NA} set by a plug-in function), offsetting the contribution to
-the predictor of any terms specified by \Rfunarg{start} or a plug-in function. 
+the predictor of any terms specified by \Rfunarg{start} or a plug-in function.
 \item
 Run starting iterations: update one at a time any remaining nonlinear parameters
 not specified by \Rfunarg{start} or a plug-in function, updating \emph{all}
-parameters that may be treated as linear after each round of updates. 
+parameters that may be treated as linear after each round of updates.
 \end{enumerate}
 Note that no starting iterations (step 5) will be run if all parameters are
 linear, or if all nonlinear parameters are specified by \Rfunarg{start} or a
-plug-in function. 
+plug-in function.
 
 \subsection{Using \Rfunarg{constrain}}
 \label{constrain}
@@ -781,8 +781,8 @@ the sufficient statistic involves a potentially large number of fixed
 multinomial row totals, and the corresponding parameters are of no
 substantive interest.  For an example see Section \ref{Stereotype} below.
 
-The  \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the 
-earlier work of \cite{Hatz04} to a broader class of models and to 
+The  \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
+earlier work of \cite{Hatz04} to a broader class of models and to
 over-parameterized model representations.
 
 \section{Methods and Accessor functions}
@@ -1047,7 +1047,7 @@ means are modelled as a function of the diagonal effects, i.e., the mean
 responses of the `diagonal' cells in which the levels of the row and
 column factors are the same.
 
-\subsubsection*{\Rfunction{Dref} example 1: Political consequences of 
+\subsubsection*{\Rfunction{Dref} example 1: Political consequences of
 social mobility}
 
 To illustrate the use of diagonal reference models we shall use the
@@ -1056,14 +1056,14 @@ general election and are the percentage voting Labour in groups cross-classified
 by the class of the head of household (\Robject{destination}) and the class of
 their father (\Robject{origin}). In order to weight these percentages by the
 group size, we first back-transform them to the counts of those voting Labour
-and those not voting Labour: 
-@ 
+and those not voting Labour:
+@
 <<Transform_to_counts>>=
 set.seed(1)
 data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
-@ %def 
+@ %def
 
 The grouped percentages may be modelled by a basic diagonal reference model, that
 is, a weighted sum of the diagonal effects for the corresponding origin and
@@ -1072,30 +1072,30 @@ destination classes. This model may be expressed as
 \mu_{od} = \frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
 \frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d .
 \]
-See Section \ref{NonlinDref} for more detail on the parameterisation. 
+See Section \ref{NonlinDref} for more detail on the parameterisation.
 
 The basic diagonal reference model may be fitted using \Rfunction{gnm} as
-follows 
-@ 
+follows
+@
 <<Class_mobility>>=
-classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
+classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)),
                        family = binomial, data = voting)
 classMobility
-@ %def 
+@ %def
 and the origin and destination weights can be evaluated as below
-@ 
+@
 <<Class_mobility_weights>>=
 prop.table(exp(coef(classMobility)[2:3]))
-@ %def 
-This model is slightly different from that reported by \citet{Clif93}.  The reason 
+@ %def
+This model is slightly different from that reported by \citet{Clif93}.  The reason
 for this is unclear: we are confident that the above results are correct for the
 data as given in \citet{Clif93}, but have not been able to confirm that the data
-as printed in the journal were exactly as used in Clifford and Heath's 
+as printed in the journal were exactly as used in Clifford and Heath's
 analysis.
 
 \citet{Clif93} suggest that movements in and out of the salariat (class 1)
 should be treated differently from movements between the lower classes (classes
-2 - 5), since the former has a greater effect on social status. Thus they 
+2 - 5), since the former has a greater effect on social status. Thus they
 propose the following model
 \begin{equation*}
 \mu_{od} = \begin{cases}
@@ -1112,23 +1112,23 @@ propose the following model
 \end{equation*}
 To fit this model we define factors indicating movement in (upward) and out
 (downward) of the salariat
-@ 
+@
 <<Salariat_factors>>=
 upward <- with(voting, origin != 1 & destination == 1)
 downward <- with(voting, origin == 1 & destination != 1)
-@ %def 
+@ %def
 Then the diagonal reference model with separate weights for socially mobile
 groups can be estimated as follows
-@ 
+@
 <<Social_mobility>>=
 socialMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
                                          formula = ~ 1 + downward + upward)),
                       family = binomial, data = voting)
 socialMobility
-@ %def 
+@ %def
 The weights for those moving into the salariat, those moving out of the
 salariat and those in any other group, can be evaluated as below
-@ 
+@
 <<social_mobility_weights>>=
 prop.table(exp(coef(socialMobility)[c(4, 7)] + coef(socialMobility)[c(2, 5)]))
 prop.table(exp(coef(socialMobility)[c(3, 6)] + coef(socialMobility)[c(2, 5)]))
@@ -1139,18 +1139,18 @@ the essence of the results is the same: the origin weight is much larger for the
 downwardly mobile groups than for the other groups. The weights for the upwardly
 mobile groups are very similar to the base level weights, so the model may be
 simplified by only fitting separate weights for the downwardly mobile groups:
-@ 
+@
 <<Downward_mobility>>=
 downwardMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination,
                                            formula = ~ 1 + downward)),
                         family = binomial, data = voting)
 downwardMobility
-prop.table(exp(coef(downwardMobility)[c(3, 5)] + 
+prop.table(exp(coef(downwardMobility)[c(3, 5)] +
                coef(downwardMobility)[c(2, 4)]))
 prop.table(exp(coef(downwardMobility)[c(2, 4)]))
-@ %def 
+@ %def
 
-\subsubsection*{\Rfunction{Dref} example 2: Conformity to parental rules} 
+\subsubsection*{\Rfunction{Dref} example 2: Conformity to parental rules}
 
 %\SweaveInput{vanDerSlikEg.Rnw}
 
@@ -1158,14 +1158,14 @@ Another application of diagonal reference models is given by
 \citet{Vand02}. The data from this paper are not publicly available\footnote{
 We thank Frans van der Slik for his kindness in sending us the data.}, but we
 shall show how the models presented in the paper may be estimated using
-\Rfunction{gnm}. 
+\Rfunction{gnm}.
 
 The data relate to the value parents place on their children conforming to their
 rules. There are two response variables: the mother's conformity score (MCFM)
 and the father's conformity score (FCFF). The data are cross-classified by two
 factors describing the education level of the mother (MOPLM) and the father
 (FOPLF), and there are six further covariates (AGEM, MRMM, FRMF, MWORK, MFCM and
-FFCF). 
+FFCF).
 
 In their baseline model for the mother's conformity score, \citet{Vand02}
 include five of the six covariates (leaving out the father's family conflict
@@ -1186,25 +1186,25 @@ The baseline model can be fitted as follows:
 > A
 
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
 Coefficients:
-                    AGEM                      MRMM                      FRMF  
-                 0.06364                  -0.32425                  -0.25324  
-                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
-                -0.06430                  -0.06043                   0.34389  
-Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
-                 0.65611                   4.95123                   4.86328  
-    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
-                 4.86458                   4.72342                   4.43516  
-    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
-                 4.18873                   4.43379  
+                    AGEM                      MRMM                      FRMF
+                 0.06364                  -0.32425                  -0.25324
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM
+                -0.06430                  -0.06043                   0.34389
+Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2
+                 0.65611                   4.95123                   4.86328
+    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5
+                 4.86458                   4.72342                   4.43516
+    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7
+                 4.18873                   4.43379
 
-Deviance:            425.3389 
-Pearson chi-squared: 425.3389 
+Deviance:            425.3389
+Pearson chi-squared: 425.3389
 Residual df:         576
 \end{alltt}
 Due to the constraints imposed on the weights in the diagonal reference term,
@@ -1214,8 +1214,8 @@ these estimates should correspond to those reported in Table 4 of
 follows:
 \begin{alltt}
 > prop.table(exp(coef(A)[6:7]))
-Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
-               0.4225734                0.5774266 
+Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF
+               0.4225734                0.5774266
 \end{alltt}
 giving the values reported by \citet{Vand02}. All the other coefficients of
 model A are the same as those reported by \citet{Vand02} except the coefficients
@@ -1236,25 +1236,25 @@ role factors as follows:
 > A
 
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM + 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
 Coefficients:
-                    AGEM                     MRMM2                     FRMF2  
-                 0.06364                   0.32425                   0.25324  
-                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
-                -0.06430                  -0.06043                   0.34389  
-Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
-                 0.65611                   4.37373                   4.28578  
-    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
-                 4.28708                   4.14593                   3.85766  
-    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
-                 3.61123                   3.85629  
+                    AGEM                     MRMM2                     FRMF2
+                 0.06364                   0.32425                   0.25324
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM
+                -0.06430                  -0.06043                   0.34389
+Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2
+                 0.65611                   4.37373                   4.28578
+    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5
+                 4.28708                   4.14593                   3.85766
+    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7
+                 3.61123                   3.85629
 
-Deviance:            425.3389 
-Pearson chi-squared: 425.3389 
+Deviance:            425.3389
+Pearson chi-squared: 425.3389
 Residual df:         576
 \end{alltt}
 The coefficients of the covariates are now as reported by \citet{Vand02}, but
@@ -1281,63 +1281,63 @@ role factors for ease of comparison to the results reported by \citet{Vand02},
 > F
 
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+    Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian,
     data = conformity, verbose = FALSE)
 
 
 Coefficients:
-                                                     AGEM  
-                                                  0.05818  
-                                                     MRMM  
-                                                 -0.32701  
-                                                     FRMF  
-                                                 -0.25772  
-                                                    MWORK  
-                                                 -0.07847  
-                                                     MFCM  
-                                                 -0.01694  
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)  
-                                                  1.03516  
-       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM  
-                                                 -1.77703  
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)  
-                                                 -0.03516  
-       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM  
-                                                  2.77703  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1  
-                                                  4.82477  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2  
-                                                  4.88066  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3  
-                                                  4.83969  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4  
-                                                  4.74849  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5  
-                                                  4.42019  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6  
-                                                  4.17956  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7  
-                                                  4.40819  
+                                                     AGEM
+                                                  0.05818
+                                                     MRMM
+                                                 -0.32701
+                                                     FRMF
+                                                 -0.25772
+                                                    MWORK
+                                                 -0.07847
+                                                     MFCM
+                                                 -0.01694
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)
+                                                  1.03516
+       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM
+                                                 -1.77703
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)
+                                                 -0.03516
+       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM
+                                                  2.77703
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1
+                                                  4.82477
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2
+                                                  4.88066
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3
+                                                  4.83969
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4
+                                                  4.74849
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5
+                                                  4.42019
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6
+                                                  4.17956
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7
+                                                  4.40819
 
-Deviance:            420.9022 
-Pearson chi-squared: 420.9022 
-Residual df:         575 
+Deviance:            420.9022
+Pearson chi-squared: 420.9022
+Residual df:         575
 \end{alltt}
 In this case there are two sets of weights, one for when the mother's conflict
 score is less than average (coded as zero) and one for when the score is greater
 than average (coded as one). These can be evaluated as follows:
 \begin{alltt}
 > prop.table(exp(coef(F))[c(6,8)])
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept) 
-                                                0.7446585 
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept) 
-                                                0.2553415 
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)
+                                                0.7446585
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)
+                                                0.2553415
 > prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)]))
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM 
-                                        0.02977851 
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM 
-                                        0.97022149 
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM
+                                        0.02977851
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM
+                                        0.97022149
 \end{alltt}
 giving the same weights as in Table 4 of \citet{Vand02}.
 
@@ -1355,8 +1355,8 @@ The $\gamma_{ij}$ represent a pattern of association that varies in strength
 over the dimension indexed by $k$, and $\exp(\delta_k)$ represents the relative
 strength of that association at level $k$.
 
-This model can be applied to the \Robject{yaish} data set 
-\citep{Yais98,Yais04}, 
+This model can be applied to the \Robject{yaish} data set
+\citep{Yais98,Yais04},
 which is a
 contingency table cross-classified by father's social class (\Robject{orig}),
 son's social
@@ -1391,7 +1391,7 @@ Four-way contingency tables may sometimes be described by a
 \]
 where the strengths of two, two-way associations with a common variable are
 estimated across the levels of the fourth variable.
-The \Robject{cautres} data set, from \citet{Caut98}, can be used to illustrate 
+The \Robject{cautres} data set, from \citet{Caut98}, can be used to illustrate
 the application of the
 double UNIDIFF model. This data set is classified by the variables vote, class,
 religion and election. Using a double UNIDIFF model, we can see how the
@@ -1694,6 +1694,8 @@ We list here, for easy reference, all of the user-level functions in the
                                            \Rfunction{gnm}	\\
     &	\Rfunction{MPinv}	&  Moore-Penrose pseudoinverse of a
                                    real-valued matrix	\\
+    &	\Rfunction{residSVD}	&  multiplicative approximation of
+                                   model residuals	\\
 \end{tabular*}
 \end{table}
 
@@ -1712,27 +1714,27 @@ New Features
 ------------
 
     o	added method = "model.matrix" to gnm() so that model matrix can be
-	obtained much faster. The new method is used in model.matrix.gnm() and 
+	obtained much faster. The new method is used in model.matrix.gnm() and
 	summary.gnm() (in the calculation of the variance-covariance matrix)
 
 Improvements
 ------------
 
-    o	gnm() now takes less time to run due to improvements made in internal 
+    o	gnm() now takes less time to run due to improvements made in internal
 	functions.
 
 Changes in Behaviour
 --------------------
 
-    o	start-up iterations now only update column of design matrix required in 
-	next iteration. Therefore plug-in functions using the default start-up 
-	procedure for nonlinear parameters need a localDesignFunction() with the 
+    o	start-up iterations now only update column of design matrix required in
+	next iteration. Therefore plug-in functions using the default start-up
+	procedure for nonlinear parameters need a localDesignFunction() with the
 	argument 'ind' specifying the column that should be returned.
 
     o	modified output given by gnm() when 'trace' = TRUE: now prints initial
 	deviance and the deviance at the end of each iteration.
 
-    o	modified updates of linear parameters in starting procedure: now offset 
+    o	modified updates of linear parameters in starting procedure: now offset
 	contribution of fully specified terms only.
 \end{verbatimtab}
 

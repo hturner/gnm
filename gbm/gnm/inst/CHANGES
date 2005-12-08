@@ -8,12 +8,21 @@ New Features
 	obtained much faster. The new method is used in model.matrix.gnm() and 
 	summary.gnm() (in the calculation of the variance-covariance matrix)
 
+    o	added new utility function residSVD(), to facilitate the calculation
+        of good starting values for parameters in certain Mult() terms
+
+    o	added new dataset House2001, to illustrate the use of gnm in 
+        Rasch-type scaling of legislator votes
+
 Improvements
 ------------
 
     o	gnm() now takes less time to run due to improvements made in internal 
 	functions.
 
+    o   the fitting algorithm used by gnm() now copes better with zero-valued 
+        residuals 	
+	
 Changes in Behaviour
 --------------------
 

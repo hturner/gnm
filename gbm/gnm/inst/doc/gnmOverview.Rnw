@@ -1100,14 +1100,14 @@ propose the following model
 \begin{equation*}
 \mu_{od} = \begin{cases}
 \dfrac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
-\dfrac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d & \text{if } i = 1\\
+\dfrac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d & \text{if } o = 1\\
 \\
 \dfrac{e^{\delta_3}}{e^{\delta_3} + e^{\delta_4}}\gamma_o +
-\dfrac{e^{\delta_4}}{e^{\delta_3} + e^{\delta_4}}\gamma_d & \text{if } j = 1\\
+\dfrac{e^{\delta_4}}{e^{\delta_3} + e^{\delta_4}}\gamma_d & \text{if } d = 1\\
 \\
 \dfrac{e^{\delta_5}}{e^{\delta_5} + e^{\delta_6}}\gamma_o +
-\dfrac{e^{\delta_6}}{e^{\delta_5} + e^{\delta_6}}\gamma_d & \text{if } i \ne 1
-\text{ and } j \ne 1
+\dfrac{e^{\delta_6}}{e^{\delta_5} + e^{\delta_6}}\gamma_d & \text{if } o \ne 1
+\text{ and } d \ne 1
 \end{cases}
 \end{equation*}
 To fit this model we define factors indicating movement in (upward) and out
@@ -1569,7 +1569,7 @@ relationship between the response and the covariates in the model, but the
 scale of this association varies between categories and there is an additional
 category main effect or category-specific intercept:
 \[
-\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r \beta_{r}x_{ir}.
+\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r \boldsymbol{\beta}_{r}\boldsymbol{x}_{ir}.
 \]
 This model can be estimated by re-expressing the categorical data as counts and
 using a \Rclass{gnm} model with a log link and poisson variance function.

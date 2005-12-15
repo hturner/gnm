@@ -27,7 +27,7 @@
         status <- "not.converged"
         if (any(is.na(start))) {
             if (verbose == TRUE)
-                cat("Initialising", "\n", sep = "")
+                prattle("Initialising", "\n", sep = "")
             theta <- modelTools$start()
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
@@ -56,13 +56,13 @@
             mu <- family$linkinv(eta)
             dev[1] <- sum(family$dev.resids(y, mu, weights))
             if (control$trace)
-                cat("Initial Deviance = ", dev[1], "\n", sep = "")
+                prattle("Initial Deviance = ", dev[1], "\n", sep = "")
             oneAtATime <- !linear & !specified
             for (iter in seq(length = control$iterStart * any(oneAtATime))) {
                 if (verbose) {
                     if (iter == 1)
-                        cat("Running start-up iterations", "\n"[control$trace],
-                            sep = "")
+                        prattle("Running start-up iterations", "\n"[control$trace],
+                                sep = "")
                     if ((iter + 25)%%width == (width - 1))
                         cat("\n")
                 }
@@ -99,10 +99,10 @@
                 }
                 dev[1] <- sum(family$dev.resids(y, mu, weights))
                 if (control$trace)
-                    cat("Start-up iteration ", iter, ". Deviance = ",
-                        dev[1], "\n", sep = "")
+                    prattle("Start-up iteration ", iter, ". Deviance = ",
+                            dev[1], "\n", sep = "")
                 else if (verbose)
-                    cat(".")
+                    prattle(".")
                 if (status == "bad.param")
                     break
                 cat("\n"[iter == control$iterStart & verbose &
@@ -121,15 +121,15 @@
             mu <- family$linkinv(eta)
             dev[1] <- sum(family$dev.resids(y, mu, weights))
             if (control$trace)
-                cat("Initial Deviance = ", dev, "\n", sep = "")
+                prattle("Initial Deviance = ", dev, "\n", sep = "")
         }
         if (status == "not.converged") {
             needToElim <- seq(sum(!constrain[seq(eliminate)]))[eliminate > 0]
             for (iter in seq(control$iterMax)) {
                 if (verbose) {
                     if (iter == 1)
-                        cat("Running main iterations", "\n"[control$trace],
-                            sep = "")
+                        prattle("Running main iterations", "\n"[control$trace],
+                                sep = "")
                     if ((iter + 21)%%width == (width - 1))
                         cat("\n")
                 }
@@ -185,17 +185,17 @@
                     j <- j + 1
                 }
                 if (control$trace){
-                    cat("Iteration ", iter, ". Deviance = ", dev[1],
-                        "\n", sep = "")
+                    prattle("Iteration ", iter, ". Deviance = ", dev[1],
+                            "\n", sep = "")
                 }
                 else if (verbose)
-                    cat(".")
+                    prattle(".")
                 theta <- nextTheta
             }
         }
         if (status %in% c("converged", "not.converged")) {
             if (verbose)
-                cat("\n"[!control$trace], "Done\n", sep = "")
+                prattle("\n"[!control$trace], "Done\n", sep = "")
             break
         }
         else {
@@ -222,7 +222,7 @@
                 "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
     Info <- crossprod(X, WX)
-    VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = TRUE)
+    VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
@@ -236,15 +236,13 @@
         if (sum(constrain) > 0) {
             fit$x <- array(0, dim = c(nrow(X), length(theta)),
                            dimnames = list(NULL, names(theta)))
-            attr(fit$x, "assign") <- modelTools$termAssign
             fit$x[, !constrain] <- X
+            attr(fit$x, "assign") <- modelTools$termAssign   
         }
         else
             fit$x <- structure(X, assign = modelTools$termAssign)
     }
     if (vcov) {
-        if (eliminate)
-            constrain <- constrain[-seq(eliminate)]
         if (sum(constrain) > 0) {
             fit$vcov <- array(0, dim = rep(length(theta), 2),
                               dimnames = rep(list(names(theta)), 2))

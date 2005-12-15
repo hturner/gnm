@@ -13,8 +13,13 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     
     if (length(coef(x))) {
         cat("\nCoefficients:\n")
-        print.default(format(coef(x), digits = digits), print.gap = 2,
-                      quote = FALSE)
+        if (attr(coef(x), "eliminate"))
+            print.default(format(coef(x)[-seq(attr(coef(x), "eliminate"))],
+                                 digits = digits), print.gap = 2,
+                          quote = FALSE)
+        else
+            print.default(format(coef(x), digits = digits), print.gap = 2,
+                          quote = FALSE)
     }
     else cat("\nNo coefficients\n\n")
     
@@ -26,6 +31,10 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
         "Number of iterations: ", x$iter, "\n", sep = "")
     correl <- x$correlation
     if (!is.null(correl)) {
+        if (attr(coef(x), "eliminate")) {
+            eliminate <- seq(attr(coef(x), "eliminate"))
+            correl <- correl[-eliminate, -eliminate]
+        }
         p <- NCOL(correl)
         if (p > 1) {
             cat("\nCorrelation of Coefficients:\n")

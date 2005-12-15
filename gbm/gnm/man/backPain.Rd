@@ -36,8 +36,8 @@ library(nnet)
 .incidence <- class.ind(backPain$pain)
 .counts <- as.vector(t(.incidence))
 .rowID <- factor(t(row(.incidence)))
-backPain <- backPain[.rowID, ]
-backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
+backPainLong <- backPain[.rowID, ]
+backPainLong$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
                           levels = levels(backPain$pain), ordered = TRUE),
                    treatment)
 
@@ -45,7 +45,7 @@ backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
 
 ### Logistic family models
 noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
-                      family = "poisson", data = backPain)
+                      family = "poisson", data = backPainLong)
 
 ## stereotype model
 oneDimensional <- update(noRelationship,
@@ -55,7 +55,7 @@ oneDimensional <- update(noRelationship,
 threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
 
 ### Models to determine distinguishability in stereotype model
-.pain <- backPain$pain
+.pain <- backPainLong$pain
 
 levels(.pain)[2:3] <- paste(levels(.pain)[2:3], collapse = " | ")
 fiveGroups <- update(noRelationship,

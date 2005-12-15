@@ -19,17 +19,15 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         needToElim <- seq(sum(!constrain[seq(eliminate)]))[eliminate > 0]
         X <- model.matrix(object)[, !constrain, drop = FALSE]
         Info <- crossprod(X, as.vector(object$weights) * X)
-        if (eliminate)
-            constrain <- constrain[-seq(eliminate)]
         if (sum(constrain) > 0) {
             cov.unscaled <- array(0, dim = rep(length(theta), 2),
                               dimnames = rep(list(names(theta)), 2))
             cov.unscaled[!constrain, !constrain] <-
-                MPinv(Info, eliminate = needToElim, onlyNonElim = TRUE)
+                MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE)
         }
         else
             cov.unscaled <- MPinv(Info, eliminate = needToElim,
-                                  onlyNonElim = TRUE)
+                                  onlyNonElim = FALSE)
         attr(cov.unscaled, "rank") <- NULL
     }
     else cov.unscaled  <- object$vcov

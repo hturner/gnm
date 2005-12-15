@@ -1,3 +1,4 @@
 vcov.gnm <-  function(object, ...){
-    summary(object, corr = FALSE, ...)$cov.scaled
+    structure(summary(object, corr = FALSE, ...)$cov.scaled,
+              eliminate = object$eliminate, class = "vcov.gnm")
 }

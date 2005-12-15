@@ -18,7 +18,8 @@ Mult <- function(..., multiplicity = 1){
     factorList <- lapply(factorList, function(x) {
         xTerms <- terms(as.formula(paste("~", x)))
         if (!is.null(attr(xTerms, "offset"))) {
-            structure(paste(attr(xTerms, "term.labels"), collapse = " + "),
+            structure(paste(c(attr(xTerms, "term.labels"),
+                              attr(xTerms, "intercept")), collapse = " + "),
                       offset = paste(sapply(lapply((attr(xTerms,
                       "variables")[-1])[attr(xTerms, "offset")], "[[", 2),
                       deparse), collapse = " + "))

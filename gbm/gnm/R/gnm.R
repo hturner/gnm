@@ -116,16 +116,13 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                     stop("constrain = \"pick\", and tcltk not installed")
                 if (!require(relimp))
                     stop("the relimp package from CRAN needs to be installed")
-                if (is.null(eliminate))
-                    choice <- names(modelTools$classID)
-                else
-                    choice <- names(modelTools$classID)[-seq(nElim)]
-                picked <- pickFrom(choice,
+                choice <- names(modelTools$classID)
+                picked <- pickFrom(choice[seq(choice) > nElim],
                               setlabels = "Coefficients to constrain",
                               title = "Constrain one or more gnm coefficients",
                               items.label = "Model coefficients:",
                               edit.setlabels = FALSE)
-                constrain <- is.element(choice, picked)
+                constrain <- is.element(choice, unlist(picked))
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")
             }

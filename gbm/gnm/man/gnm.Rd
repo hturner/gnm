@@ -17,11 +17,11 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{formula}{ a symbolic description of the nonlinear predictor. }
   \item{eliminate}{ an optional formula of the form \code{~ model},
     i.e., a formula with no response variable specified, to be included in the
-    predictor but excluded from the output of \code{print()},
-    \code{summary()}, \code{coef()}, etc.  See details. }
-  \item{constrain}{ coefficients to set to zero, specified by a numeric
-    vector of indices, a logical vector, or "pick" to select from a Tk
-    dialog. }
+    predictor but excluded from \code{print()} displays of the model
+    object or its components obtained using accessor functions. See details. }
+  \item{constrain}{ (non-\code{eliminate}d) coefficients to set to zero,
+    specified by a numeric vector of indices, a logical vector, or
+    "pick" to select from a Tk dialog. }
   \item{family}{ a specification of the error distribution and link function
     to be used in the model. This can be a character string naming
     a family function; a family function, or the result of a call
@@ -100,15 +100,16 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   The \code{eliminate} argument may be used to specify terms spanning
   the space of a single factor, so that these terms are included
   in the model, but the corresponding parameter estimates are excluded
-  from the standard model summaries. The terms in the \code{eliminate}
-  formula are included as the first terms in the model (since an
-  intercept is then redundant, none is fitted). The structure of these
-  terms is then exploited to improve computational efficiency  ---
-  substantially so if the number of eliminated parameters is large.  Use
-  of \code{eliminate} is designed for terms that are required in the
-  model but are not of direct interest (e.g., terms needed to fit
-  multinomial-response models as conditional Poisson models). See
-  \code{\link{backPain}} for an example. 
+  from \code{print}ed displays of the model object or its components
+  obtained using accessor functions such as \code{coef()} etc. The
+  terms in the \code{eliminate} formula are included as the first terms
+  in the model (since an intercept is then redundant, none is
+  fitted). The structure of these terms is then exploited to improve
+  computational efficiency  --- substantially so if the number of
+  eliminated parameters is large.  Use of \code{eliminate} is designed
+  for terms that are required in the model but are not of direct
+  interest (e.g., terms needed to fit multinomial-response models as
+  conditional Poisson models). See \code{\link{backPain}} for an example. 
 
   For contingency tables, the data may be provided as an object of class
   \code{"table"} from which the frequencies will be extracted to use
@@ -146,7 +147,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   If appropriate constraints are known in advance, or have been
   determined from a \code{gnm} fit, the model may be (re-)fitted using
   the \code{constrain} argument to specify coefficients which should be
-  set to zero. Constraints may only be applied to non-eliminated
+  set to zero. Constraints should only be specified for non-eliminated
   parameters. \code{\link{update}} provides a convenient way of re-fitting a 
   \code{gnm} model with new constraints.
 }

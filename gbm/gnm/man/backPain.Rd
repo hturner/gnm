@@ -49,12 +49,18 @@ noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
 
 ## stereotype model
 oneDimensional <- update(noRelationship,
-                         ~ . + Mult(pain - 1, x1 + x2 + x3 - 1),
-                         iterStart = 3)
+                         ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
 
+## multinomial logistic
 threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
 
 ### Models to determine distinguishability in stereotype model
+## constrain scale of category-specific slopes
+oneDimensional <- update(noRelationship,
+                         ~ . + Mult(pain - 1, offset(x1) + x2 + x3 - 1))
+## obtain identifiable contrasts & id possibly indistinguishable slopes
+getContrasts(oneDimensional, 11:6)
+
 .pain <- backPainLong$pain
 
 levels(.pain)[2:3] <- paste(levels(.pain)[2:3], collapse = " | ")

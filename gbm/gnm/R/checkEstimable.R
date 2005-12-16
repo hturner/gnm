@@ -10,11 +10,11 @@ checkEstimable <- function(model, coefMatrix, tolerance = 1e-8){
         coefMatrix <- rbind(extra.rows, coefMatrix)
     }
     Xt <- t(model.matrix(model))
-    coefMatrix <- scale(coefMatrix)
+    coefMatrix <- scale(coefMatrix, center = FALSE)
     resultNA <- apply(coefMatrix, 2, function(col) any(is.na(col)))
     result <- logical(ncol(coefMatrix))
     is.na(result) <- resultNA
-    resids <- qr.resid(qr(Xt), coefMatrix[, !resultNA, drop = FALSE]) 
+    resids <- qr.resid(qr(Xt), coefMatrix[, !resultNA, drop = FALSE])
     rss <- apply(resids, 2, var)
     result[!resultNA] <- rss < tolerance
     names(result) <- colnames(coefMatrix)

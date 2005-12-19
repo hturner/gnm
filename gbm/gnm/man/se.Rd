@@ -23,7 +23,7 @@ se(model, coefMatrix, checkEstimability = TRUE, ...)
 \value{
 A data frame with two columns:
   \item{estimate }{The estimated parameter combinations}
-  \item{se }{Their estimated standard errors}
+  \item{SE }{Their estimated standard errors}
 and row names the same as the column names (if any) of \code{coefMatrix}.
 }
 \author{ David Firth }

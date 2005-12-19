@@ -5,7 +5,7 @@ se <- function(model, coefMatrix, checkEstimability = TRUE, ...){
     coefMatrix <- as.matrix(coefMatrix)
     coefs <- coef(model)
     l <- length(coefs)
-    estimable <- rep(TRUE, ncol(coefMatrix)) 
+    estimable <- rep(TRUE, ncol(coefMatrix))
     if (nrow(coefMatrix) != l) stop(
           "nrow(coefMatrix) does not match length(coef(model))")
     comb <- drop(crossprod(coefMatrix, coefs))
@@ -15,5 +15,5 @@ se <- function(model, coefMatrix, checkEstimability = TRUE, ...){
     var <- crossprod(coefMatrix, crossprod(vcov(model), coefMatrix))
     sterr <- sqrt(diag(var))
     is.na(sterr[!estimable]) <- is.na(comb[!estimable]) <- TRUE
-    data.frame(estimate = comb, se = sterr, row.names = colnames(coefMatrix))
+    data.frame(estimate = comb, SE = sterr, row.names = colnames(coefMatrix))
 }

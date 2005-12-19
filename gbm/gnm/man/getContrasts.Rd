@@ -5,8 +5,9 @@
 \description{
 For each set in a specified list of sets of parameters from a
 \code{\link{gnm}} model, computes the estimated simple contrasts (i.e.,
-differences) with the last parameter in the set, and estimated standard
-errors for those estimated differences.
+differences) with the first parameter in the set, and estimated standard
+errors for those estimated differences.  Where possible, quasi standard
+errors are also computed.
 }
 \usage{
 getContrasts(model, sets = NULL, nSets = 1, ...)
@@ -14,7 +15,7 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}}
   \item{sets}{ a vector of indices (if \code{nSets} is 1) or
-    a list (of length \code{nSets}) of such vectors }
+    a list (of length \code{nSets}) of such vectors; or \code{NULL} }
   \item{nSets}{ the number of vectors of indices to use}
   \item{\dots}{ arguments to pass to other functions }
 }
@@ -23,25 +24,14 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
   \code{sets = NULL}, a Tk dialog is presented for the selection
   of indices (model coefficients).
 
-  For each set of coefficients selected, differences with the last
+  For each set of coefficients selected, differences with the first
   coefficient and their standard errors are computed.  
   A check is performed first on the estimability of all such
   differences.
 }
 \value{
-  A list (of length \code{nSets}) of 2-component lists.  The first
-  component, named \code{summary}, is a data frame containing variables
-  \code{estimate}, \code{se} and \code{quasi.se}.  The \code{quasi.se}
-  variable is
-  not present if either the \code{qvcalc} package is unavailable
-  or there are fewer than two estimable differences.  The second
-  component, named \code{relative.errors}, is a character vector
-  of length 2 containing the smallest and largest relative errors of the
-  quasi-standard-error approximation, in the set of all simple
-  contrasts; or \code{NULL} if quasi standard errors have not been
-  calculated. See Firth (2003) or Firth and Menezes (2004)
-  for details of quasi standard errors and their use.
-  
+  A list (normally of length \code{nSets}) of objects of class \code{qv} (see
+  \code{\link[qvcalc]{qvcalc}}).    
 }
 \author{ David Firth }
 \seealso{ \code{\link{gnm}}, \code{\link{se}},

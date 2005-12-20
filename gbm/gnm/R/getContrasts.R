@@ -6,17 +6,17 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
                "the relimp package from CRAN needs to be installed")
         sets <- pickFrom(names(coef(model)), nSets,...)
     }
+    coefs <- coef(model)
+    l <- length(coefs)
+    if (!is.list(sets)) sets <- list(sets)
     setLengths <- sapply(sets, length)
     if (all(setLengths == 0)) stop(
             "no non-empty parameter set specified")
     if (all(setLengths < 1.5)) stop(
             "for contrasts, at least 2 parameters are needed in a set")
-    sets <- sets[setLengths > 1.5]
+    if (is.list(sets)) sets <- sets[setLengths > 1.5]
     if (any(setLengths < 1.5)) warning(
             "Sets with fewer than 2 parameters were dropped,")
-    coefs <- coef(model)
-    l <- length(coefs)
-    if (!is.list(sets)) sets <- list(sets)
     nSets <- length(sets)
     sets <- lapply(sets, function(x){
         if (is.numeric(x)) x <- names(coefs)[x]

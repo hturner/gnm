@@ -10,7 +10,25 @@ backPain <- backPain[.rowID, ]
 backPain$pain <- factor(rep(levels(backPain$pain), nrow(.incidence)),
                         levels = levels(backPain$pain), ordered = TRUE)
 
-oneDimensional <- gnm(.counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
-                      eliminate = ~ .rowID, family = "poisson",
-                      data = backPain, iterStart = 3)
+noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
+                      family = "poisson", data = backPain)
+
+oneDimensional <- update(noRelationship,
+                         ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
 oneDimensional
+anova(oneDimensional)
+anova(noRelationship, oneDimensional)
+coef(oneDimensional)
+cooks.distance(oneDimensional)
+labels(oneDimensional)
+getContrasts(oneDimensional, 11:6)
+model.frame(oneDimensional)
+model.matrix(oneDimensional)
+plot(oneDimensional, ask = FALSE)
+residuals(oneDimensional)
+rstandard(oneDimensional)
+summary(oneDimensional)
+termPredictors(oneDimensional)
+variable.names(oneDimensional)
+vcov(oneDimensional)
+

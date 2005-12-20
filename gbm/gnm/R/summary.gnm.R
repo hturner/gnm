@@ -20,8 +20,8 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         X <- model.matrix(object)[, !constrain, drop = FALSE]
         Info <- crossprod(X, as.vector(object$weights) * X)
         if (sum(constrain) > 0) {
-            cov.unscaled <- array(0, dim = rep(length(theta), 2),
-                              dimnames = rep(list(names(theta)), 2))
+            cov.unscaled <- array(0, dim = rep(length(constrain), 2),
+                              dimnames = rep(list(names(coef(object))), 2))
             cov.unscaled[!constrain, !constrain] <-
                 MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE)
         }

@@ -126,11 +126,14 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 if (all(!constrain))
                     warning("no parameters were specified to constrain")
             }
-            else if (is.numeric(constrain))
-                constrain <- ifelse(is.element(seq(modelTools$classID) -
-                                      nElim, constrain), TRUE, FALSE)
-            else if (is.logical(constrain) & !is.null(eliminate))
-                constrain <- c(rep(FALSE, nElim), constrain)
+            else if (is.numeric(constrain)) {
+                if (!is.null(eliminate) & any(constrain < nElim))
+                    stop("'constrain' specifies one or more parameters",
+                         "in 'eliminate' term(s)")
+                constrain <- is.element(seq(nParam), constrain)
+            }
+            if (length(constrain) != nParam)
+                stop("length of 'constrain' not equal to number of parameters")
         }
 
         if (is.null(start))

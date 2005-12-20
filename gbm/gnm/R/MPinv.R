@@ -39,6 +39,8 @@ MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
     if (nrow(mat) != ncol(mat)) stop(
             "mat must be a symmetric matrix" ## no more check than this!!
             )
+
+
     n <- nrow(mat)
     elim <- 1:n %in% eliminate
     diag.indices <- (n*(0:(n-1)) + 1:n)
@@ -46,43 +48,54 @@ MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
     if (any(T == 0)) stop(
          "an eliminated submatrix must have all its diagonal entries non-zero."
          )
-    W <- mat[!elim, !elim, drop = FALSE]
-    U <- mat[elim, !elim, drop = FALSE]
     Ti <- 1/T
-    Ti.U <- Ti * U
-    V.Ti <- t(Ti.U)
-    Qmat <- W - crossprod(Ti.U, U)
-    Qi <- MPinv(Qmat, tolerance = tolerance)
-    rankQ <- attr(Qi, "rank")
-    k <- length(T)
-    result <- matrix(NA,
-                     if (onlyNonElim) n - k else n,
-                     if (onlyFirstCol) 1 else
+    ## Special case is when the whole matrix is "eliminated"
+    if (length(eliminate) == nrow(mat)) {
+        if (onlyFirstCol) {
+            result <- matrix(c(Ti[1], rep(0, n-1)), n, 1)
+        } else if (onlyNonElim) {
+            result <- matrix(numeric(0), 0, 0)
+        } else result <- diag(Ti)
+        attr(result, "rank") <- n
+    } else {
+        W <- mat[!elim, !elim, drop = FALSE]
+        U <- mat[elim, !elim, drop = FALSE]
+        Ti.U <- Ti * U
+        V.Ti <- t(Ti.U)
+        Qmat <- W - crossprod(Ti.U, U)
+        Qi <- MPinv(Qmat, tolerance = tolerance)
+        rankQ <- attr(Qi, "rank")
+        k <- length(T)
+        result <- matrix(NA,
+                         if (onlyNonElim) n - k else n,
+                         if (onlyFirstCol) 1 else
                          if (onlyNonElim) n - k else n)
-    cols.notElim <- if (onlyFirstCol) 1 else
-                        if (onlyNonElim) 1:(n - k) else
-                           !elim
-    rows.notElim <- if (onlyNonElim) 1:(n - k) else !elim
-    if (onlyFirstCol) Qi <- Qi[, 1, drop = FALSE]
-    result[rows.notElim, cols.notElim] <- Qi
-    if (!onlyNonElim){
-                         temp <- - crossprod(Qi, V.Ti)
-                         result[elim, cols.notElim] <- t(temp)
-                     }
-    if (!onlyFirstCol && !onlyNonElim){
-        result[!elim, elim] <- temp
-        temp <- crossprod(V.Ti, Qi) %*% V.Ti
-        diag.indices <- k*(0:(k-1)) + 1:k
-        temp[diag.indices] <- Ti + temp[diag.indices]
-        result[elim, elim] <- temp
+        cols.notElim <- if (onlyFirstCol) 1 else {
+            if (onlyNonElim) 1:(n - k) else !elim}
+        rows.notElim <- if (onlyNonElim) 1:(n - k) else !elim
+        if (onlyFirstCol) Qi <- Qi[, 1, drop = FALSE]
+        result[rows.notElim, cols.notElim] <- Qi
+        if (!onlyNonElim){
+            temp <- - crossprod(Qi, V.Ti)
+            result[elim, cols.notElim] <- t(temp)
+        }
+        if (!onlyFirstCol && !onlyNonElim){
+            result[!elim, elim] <- temp
+            temp <- crossprod(V.Ti, Qi) %*% V.Ti
+            diag.indices <- k*(0:(k-1)) + 1:k
+            temp[diag.indices] <- Ti + temp[diag.indices]
+            result[elim, elim] <- temp
+        }
+        attr(result, "rank") <- rankQ + k
     }
-    attr(result, "rank") <- rankQ + k
     theNames <- colnames(mat)
-    rownames(result) <- if (onlyNonElim) theNames[!elim]
-                        else theNames
-    colnames(result) <-
-        if (onlyFirstCol) theNames[!elim][1]
-        else if (onlyNonElim) theNames[!elim]
-             else theNames
-    result
+    if (length(result) > 0.5) { ## matrix is not 0 by 0
+        rownames(result) <- if (onlyNonElim) theNames[!elim]
+                            else theNames
+        colnames(result) <-
+            if (onlyFirstCol) theNames[!elim][1]
+            else if (onlyNonElim) theNames[!elim]
+            else theNames
+    }
+    return(result)
 }

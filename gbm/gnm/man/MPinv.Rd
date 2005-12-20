@@ -17,7 +17,8 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
   \item{eliminate}{ Numeric.  A vector of indices identifying
     rows/columns which form a diagonal submatrix of \code{mat}. }
   \item{onlyFirstCol}{ Logical.  If \code{TRUE}, return only the first
-    column of the generalized inverse matrix; otherwise the whole matrix.}
+    non-eliminated column of the generalized inverse matrix; otherwise
+    the whole matrix.}
   \item{onlyNonElim}{ Logical.  If \code{TRUE}, return only rows/columns that
     are in the complement of the set specified in \code{eliminate}.}
   \item{tolerance}{ A positive scalar which determines the tolerance for

@@ -65,6 +65,8 @@
     
     if (x | termPredictors | classID[1] == "Linear") {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
+        if (!is.null(attr(gnmTerms, "termsID")))
+            termAssign <- attr(gnmTerms, "termsID")[termAssign]
         if (classID[1] == "Linear") {
             linearAssign <- attr(termTools[[1]], "assign")
             termAssign <- termAssign + max(linearAssign) - 1
@@ -101,14 +103,19 @@
     }
     
     predictor <- function(factorList, term = FALSE) {
-        termPredictors <-
-            do.call("cbind", tapply(structure(factorList, class = "list"),
-                                    multIndex,
-                                    function(list) do.call("pprod", list)))
-        if (term) colnames(termPredictors) <-
-            c("(Intercept)"[attr(attr(gnmTerms, "terms"), "intercept")],
-              attr(gnmTerms, "termLabels"))
-        else termPredictors <- rowSums(termPredictors)
+        termPredictors <- lapply(split(factorList, multIndex), do.call,
+                                 what = pprod)
+        if (term) {
+            if (!is.null(attr(gnmTerms, "termsID")))
+                 termPredictors <- lapply(split(termPredictors,
+                                          attr(gnmTerms, "termsID")), do.call,
+                                          what = psum)
+            termPredictors <- do.call("cbind", termPredictors)
+            colnames(termPredictors) <-
+                c("(Intercept)"[attr(attr(gnmTerms, "terms"), "intercept")],
+                  attr(attr(gnmTerms, "terms"), "term.labels"))
+        }
+        else termPredictors <- rowSums(do.call("cbind", termPredictors))
         termPredictors
     }
     

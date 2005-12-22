@@ -17,22 +17,22 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
     x <- model.matrix(object)
     varlin <- length(attr(gnmTerms(object, NULL), "parsedLabels")[[1]]) -
         !attr(object$terms, "intercept")
-    varseq <- attr(x, "assign") + attr(object$terms, "intercept")
+    varseq <- attr(x, "assign") - (object$eliminate > 0)
     nvars <- max(0, varseq)
     resdev <- resdf <- fit <- NULL
     if (nvars > 0) {
-        for (i in seq(nvars - 1)) {
+        for (i in seq(nvars)) {
             if (i <= varlin){
-                fit <- glm.fit(x = x[, varseq <= i, drop = FALSE], 
+                fit <- glm.fit(x = x[, varseq < i, drop = FALSE], 
                 y = object$y, weights = object$prior.weights, 
                 start = object$start, offset = object$offset, 
                 family = object$family)
             }
             else {
-                constrain <- replace(object$constrain, varseq > i, TRUE)
-                fit <- update(object, formula = object$terms,
-                              eliminate = NULL, constrain = constrain,
-                              start = object$coef, verbose = FALSE)
+                constrain <- replace(object$constrain, varseq >= i, TRUE)
+                fit <- update(object, constrain = constrain,
+                              #start = object$coef,
+                              verbose = FALSE)
             }
             resdev <- c(resdev, fit$deviance)
             resdf <- c(resdf, fit$df.residual)

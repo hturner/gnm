@@ -6,7 +6,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     
     call <- match.call()
     
-    modelTerms <- gnmTerms(formula, eliminate)    
+    modelTerms <- gnmTerms(formula, substitute(eliminate))
     modelData <- match.call(expand.dots = FALSE)
     argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
                     names(modelData), 0)
@@ -27,20 +27,10 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     }
 
     if (!is.null(eliminate)) {
-        if (!inherits(eliminate, "formula")) {
-            stop("eliminate argument must be a formula")
-        }
-        elimTerms <- terms(eliminate)
-        if (attr(elimTerms, "response") == 1) {
-            stop("eliminate formula cannot have a response variable")
-        }
-        toElim <- attr(elimTerms, "factors")
-        if (any(attr(attr(modelData, "terms"),
-                     "dataClasses")[rownames(toElim)] != "factor"))
+        Elim <- modelData[[attr(attr(modelTerms, "terms"), "term.labels")[1]]]
+        if (!is.factor(Elim))
             stop("variables in 'eliminate' formula must be factors")
-        elimCols <- model.matrix(update.formula(eliminate, ~ -1 + .),
-                                                data = modelData)
-        nElim <- ncol(elimCols)
+        nElim <- nlevels(Elim)
     }
     else nElim <- 0
     
@@ -101,12 +91,16 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (termPredictors) fit <- c(fit, termPredictors = NULL)
     }
     else {
-        if (method == "model.matrix") x <- TRUE
-        
-        modelTools <- gnmTools(modelTerms, modelData, x, termPredictors)
-        nParam <- length(modelTools$classID)
-
-        if (method == "coefNames") return(names(modelTools$classID))
+        onlyLin <- identical(attr(modelTerms, "prefixLabels"), "")
+        if (onlyLin)
+            X <- model.matrix(modelTerms, modelData)
+        else {
+            modelTools <- gnmTools(modelTerms, modelData,
+                                   method == "model.matrix", termPredictors)
+            X <- matrix(modelTools$classID, 1)
+        }
+        if (method == "coefNames") return(colnames(X))
+        nParam <- ncol(X)
 
         if (is.null(constrain))
           constrain <- rep.int(FALSE, nParam)
@@ -146,30 +140,46 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                      "or the no. of non-eliminated parameters.")
         }
 
-        if (method == "model.matrix") {
-            theta <- modelTools$start()
+        if (onlyLin)
+            X[, constrain] <- 0
+        else {
+            theta <- seq(start)
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- 0
             factorList <- modelTools$factorList(theta)
             X <- modelTools$localDesignFunction(theta, factorList)
             attr(X, "assign") <- modelTools$termAssign
-            return(X)
-        }            
-        
-        fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
-                       offset, nObs = nObs, start = start,
-                       control = gnmControl(...), verbose, x, vcov,
-                       termPredictors)
+        }
+        if (method == "model.matrix") return(X)
+
+        if (onlyLin) {
+            if (any(is.na(start))) start <- NULL
+            fit <- glm.fit(X, y, family = family, weights = weights,
+                           offset = offset, start = start,
+                           control = do.call("glm.control",
+                           unname(gnmControl(...)[-2])),
+                           intercept = attr(attr(modelTerms, "terms"),
+                           "intercept"))
+            if (x) fit$x <- X
+            if (vcov) fit$vcov <- stats:::vcov.glm(fit)
+            fit <- fit[-c(4,5,7,12,17,20)]
+            names(fit)[6] <- "predictors"
+        }
+        else
+            fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
+                          offset, nObs = nObs, start = start,
+                          control = gnmControl(...), verbose, x, vcov,
+                          termPredictors)
     }
     if (is.null(fit)) {
         warning("Algorithm failed - no model could be estimated", call. = FALSE)
         return()
     }
-    fit <- c(list(call = call, formula = formula, family = family,
-                  prior.weights = weights, terms = attr(modelTerms, "terms"),
-                  na.action = attr(modelData, "na.action"),
+    fit <- c(list(call = call, formula = formula,
+                  terms = attr(modelTerms, "terms"), constrain = constrain,
+                  eliminate = nElim,  na.action = attr(modelData, "na.action"),
                   xlevels = .getXlevels(attr(modelData, "terms"), modelData),
-                  y = y, offset = offset, control = control), fit)
+                  offset = offset, control = control), fit)
 
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")

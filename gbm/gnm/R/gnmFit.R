@@ -1,10 +1,10 @@
 "gnmFit" <-
-    function (modelTools, y, constrain, eliminate,
+    function (modelTools, y, constrain = FALSE, eliminate = 0,
               family = poisson(),
               weights = rep.int(1, length(y)),
               offset = rep.int(0, length(y)),
               nObs = length(y),
-              start,
+              start = rep.int(NA, length(y)),
               control = gnmControl(...),
               verbose = FALSE,
               x = FALSE,
@@ -16,13 +16,6 @@
     dev <- numeric(2)
     if (verbose)
         width <- as.numeric(options("width"))
-    theta <- seq(start)
-    X <- modelTools$localDesignFunction(theta, modelTools$factorList(theta))
-    if (eliminate)
-        if (nrow(unique(X[, seq(eliminate)])) > eliminate)
-            stop("'eliminate' formula is not equivalent to single factor")
-    unestimable <- apply(X == 0, 2, all)
-    constrain[unestimable] <- TRUE
     repeat {
         status <- "not.converged"
         if (any(is.na(start))) {
@@ -226,12 +219,12 @@
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
-    fit <- list(coefficients = theta, eliminate = eliminate,
-                constrain = constrain, predictors = eta, fitted.values = mu,
-                deviance = dev[1], aic = modelAIC, iter = iter - 1,
-                conv = status == "converged", weights = w, residuals = z,
+    fit <- list(coefficients = theta, residuals = z, fitted.values = mu,
+                rank = attr(VCOV, "rank"), family = family,
+                predictors = eta, deviance = dev[1], aic = modelAIC,
+                iter = iter - 1, weights = w, prior.weights = weights,
                 df.residual = nObs - sum(weights == 0) - attr(VCOV,"rank"),
-                rank = attr(VCOV, "rank"))
+                y = y, converged = status == "converged")
     if (x) {
         if (sum(constrain) > 0) {
             fit$x <- array(0, dim = c(nrow(X), length(theta)),

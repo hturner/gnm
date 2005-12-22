@@ -1,9 +1,9 @@
 gnmTerms <- function(formula, eliminate)
 {
-    if (!is.null(eliminate)) {
+    if (!is.null(substitute(e, list(e = eliminate)))) {
         tmp <- .Internal(update.formula(formula,
-                                        substitute(~ -1 + e + .,
-                                                   list(e = eliminate[[2]]))))
+                                        substitute(~ -1 + I(e) + .,
+                                                   list(e = eliminate))))
         environment(tmp) <- environment(formula)
         formula <- formula(terms.formula(tmp, simplify = TRUE,
                                          keep.order = TRUE))
@@ -14,8 +14,6 @@ gnmTerms <- function(formula, eliminate)
 
     labelList <- attr(fullTerms, "term.labels")
     intercept <- attr(fullTerms, "intercept")
-    termLabels <- names(unlist(sapply(labelList, function(x)
-        numeric(prod(parse(text = x)[[1]]$multiplicity)), simplify = FALSE)))
     
     nonlinear <- is.element(seq(labelList),
                             grep("(Mult|Nonlin)[[:space:]]*\\(", labelList))
@@ -24,6 +22,12 @@ gnmTerms <- function(formula, eliminate)
                                   c(intercept, !nonlinear))],
                    lapply(labelList[nonlinear],
                           function(term) eval(parse(text = term))))
+    multiplicity <- sapply(labelList, function(x)
+                           ifelse(is.list(x), length(x), 1))
+    if (any(multiplicity > 1))
+        termsID <- rep(seq(multiplicity), multiplicity)
+    else
+        termsID <- NULL
     labelList <- prefixList <- unlistOneLevel(labelList)
     
     classIndex <- sapply(labelList, class)
@@ -39,7 +43,7 @@ gnmTerms <- function(formula, eliminate)
     labelList <- unlistOneLevel(labelList)
     offsetList <- lapply(labelList, attr, "offset")
 
-    if (attr(fullTerms, "response") < 1) response <- ""
+    if (attr(fullTerms, "response") < 1) response <- NULL
     else response <- evalq(attr(fullTerms, "variables")[[2]])
     
     predictorOffset <- sapply((attr(fullTerms,
@@ -49,7 +53,7 @@ gnmTerms <- function(formula, eliminate)
     structure(reformulate(c(unlist(labelList), unlist(offsetList),
                             predictorOffset), response),
               terms = fullTerms,
-              termLabels = termLabels,
+              termsID = termsID,
               offset = offsetList,
               parsedLabels = labelList,
               prefixLabels = unlist(prefixList),

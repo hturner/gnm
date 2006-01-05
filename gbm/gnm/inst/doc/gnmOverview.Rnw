@@ -805,15 +805,14 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
-              anova	&	hatvalues	&	residuals	\\
-              case.names	&	influence	&	rstandard	\\
-              coef	&	labels	&	summary	\\
-              cooks.distance	&	logLik	&	variable.names	\\
-              deviance	&	model.frame	&	vcov	\\
-              extractAIC	&	model.matrix	&	weights	\\
-              family	&	plot	&		\\
-              formula	&	print	&		\\
-
+              anova	&	hatvalues	&	rstandard	\\
+              case.names	&	labels	&	summary	\\
+              coef	&	logLik	&	variable.names	\\
+              cooks.distance	&	model.frame	&	vcov	\\
+              deviance	&	model.matrix	&	weights	\\
+              extractAIC	&	plot	&		\\
+              family	&	print	&		\\
+              formula	&	residuals	&		\\
           \end{tabular*}
         }
     \end{fbox}
@@ -830,10 +829,11 @@ those that are not implemented for \Rclass{gnm} objects.
           \begin{tabular*}{4.5cm}{@{\extracolsep{\fill}}ll@{\extracolsep{\fill}}}
               add1	&	dummy.coef	\\
               alias	&	effects	\\
-              confint	&	kappa	\\
-              dfbeta	&	predict	\\
-              dfbetas	&	proj	\\
-              drop1	&		\\
+              confint	&	influence	\\
+              dfbeta	&	kappa	\\
+              dfbetas	&	predict	\\
+              drop1	&	proj	\\
+
           \end{tabular*}
         }
     \end{fbox}
@@ -1597,7 +1597,7 @@ We can now fit the stereotype model to these data:
 @
 <<Stereotype_model>>=
 oneDimensional <- gnm(.counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
-                      eliminate = ~ .rowID, family = "poisson", data = backPain,
+                      eliminate = .rowID, family = "poisson", data = backPain,
                       iterStart = 3)
 oneDimensional
 @ %def
@@ -1610,7 +1610,7 @@ used for a qualitative categorical response:
 @
 <<Qualitative_model>>=
 threeDimensional  <- gnm(.counts ~ pain + pain:(x1 + x2 + x3),
-                         eliminate = ~ .rowID, family = "poisson",
+                         eliminate = .rowID, family = "poisson",
                          data = backPain)
 threeDimensional
 @ %def

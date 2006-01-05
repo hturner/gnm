@@ -88,7 +88,7 @@ Start <- residSVD(baseModel, rollCall, member)
 ##
 voteAdj <- 0.5 + 0.94*(House2001f$vote - 0.5)
 House2001model1 <- gnm(voteAdj ~ Mult(rollCall - 1, member - 1),
-              eliminate = ~ rollCall,
+              eliminate = rollCall,
               family = binomial, data = House2001f,
               na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
               start = -Start)
@@ -105,7 +105,7 @@ plot(coef(House2001model1)[21:321], col = partyColors,
 Start2 <- residSVD(baseModel, rollCall, member, d = 2)
 House2001model2 <- gnm(
               voteAdj ~ Mult(rollCall - 1, member - 1, multiplicity = 2),
-              eliminate = ~ rollCall,
+              eliminate = rollCall,
               family = binomial, data = House2001f,
               na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
               start = Start2)

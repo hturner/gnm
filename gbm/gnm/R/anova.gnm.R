@@ -24,9 +24,11 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
         for (i in seq(nvars)) {
             if (i <= varlin){
                 fit <- glm.fit(x = x[, varseq < i, drop = FALSE], 
-                y = object$y, weights = object$prior.weights, 
-                start = object$start, offset = object$offset, 
-                family = object$family)
+                               y = as.vector(object$y),
+                               offset = as.vector(object$offset), 
+                               start = object$start,
+                               weights = as.vector(object$prior.weights),
+                               family = object$family)
             }
             else {
                 constrain <- replace(object$constrain, varseq >= i, TRUE)

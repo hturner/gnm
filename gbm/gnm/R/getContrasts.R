@@ -1,13 +1,17 @@
 getContrasts <- function(model, sets = NULL, nSets = 1, ...){
+    coefs <- coef(model)
+    l <- length(coefs)
     if (is.null(sets)){
         if (!require(tcltk)) stop(
                "no parameter set specified, and tcltk not installed")
         if (!require(relimp)) stop(
                "the relimp package from CRAN needs to be installed")
-        sets <- pickFrom(names(coef(model)), nSets,...)
+        if (model$eliminate)
+            sets <- pickFrom(names(coefs[(eliminate + 1):l]), nSets,...)
+        else
+            sets <- pickFrom(names(coefs), nSets,...)
     }
-    coefs <- coef(model)
-    l <- length(coefs)
+    if (model$eliminate) sets <- sapply(sets, "+", model$eliminate)
     if (!is.list(sets)) sets <- list(sets)
     setLengths <- sapply(sets, length)
     if (all(setLengths == 0)) stop(

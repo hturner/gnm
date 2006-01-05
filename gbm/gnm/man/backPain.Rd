@@ -38,13 +38,13 @@ library(nnet)
 .rowID <- factor(t(row(.incidence)))
 backPainLong <- backPain[.rowID, ]
 backPainLong$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
-                          levels = levels(backPain$pain), ordered = TRUE),
-                   treatment)
+                              levels = levels(backPain$pain), ordered = TRUE),
+                       treatment)
 
 ### Fit models described in Table 5 of Anderson (1984)
 
 ### Logistic family models
-noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
+noRelationship <- gnm(.counts ~ pain, eliminate = .rowID,
                       family = "poisson", data = backPainLong)
 
 ## stereotype model

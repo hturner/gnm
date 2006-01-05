@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.0  (2005-10-06 r35749)
+Version 2.2.1  (2005-12-20 r36812)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -12,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > library(gnm)
@@ -163,16 +163,11 @@ Residual df:         144
 > getContrasts(unidiff, grep("Mult.*educ", names(coef(unidiff))))
 Loading required package: qvcalc
 [[1]]
-[[1]]$summary
-                    estimate        se   quasi.se
-Mult1.Factor1.educ1 2.237862 0.9411152 0.09743542
-Mult1.Factor1.educ2 2.021110 0.9435045 0.12813630
-Mult1.Factor1.educ3 1.506627 0.9535672 0.20930038
-Mult1.Factor1.educ4 1.207738 0.9780882 0.32517402
-Mult1.Factor1.educ5 0.000000 0.0000000 0.93130651
-
-[[1]]$relative.errors
-[1] "-0.9%" "1.4%" 
-
+                      estimate        SE    quasiSE   quasiVar
+Mult1.Factor1.educ1  0.0000000 0.0000000 0.09743542 0.00949366
+Mult1.Factor1.educ2 -0.2167514 0.1605287 0.12813630 0.01641891
+Mult1.Factor1.educ3 -0.7312351 0.2311500 0.20930038 0.04380665
+Mult1.Factor1.educ4 -1.0301237 0.3425339 0.32517402 0.10573814
+Mult1.Factor1.educ5 -2.2378618 0.9411152 0.93130651 0.86733182
 
 > 

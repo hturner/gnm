@@ -7,49 +7,16 @@ library(nnet)
 .counts <- as.vector(t(.incidence))
 .rowID <- factor(t(row(.incidence)))
 backPain <- backPain[.rowID, ]
-backPain$pain <- factor(rep(levels(backPain$pain), nrow(.incidence)),
-                        levels = levels(backPain$pain), ordered = TRUE)
+backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
+                          levels = levels(backPain$pain), ordered = TRUE),
+                   treatment)
 
-noRelationship <- gnm(.counts ~ pain, eliminate = ~ .rowID,
+noRelationship <- gnm(.counts ~ pain, eliminate = .rowID,
                       family = "poisson", data = backPain)
 
 oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
 oneDimensional
 
-add1(oneDimensional)
-addterm(oneDimensional)
-alias(oneDimensional)
-anova(oneDimensional, test = "F")
-anova(noRelationship, oneDimensional, test = "Chisq")
-boxcox(oneDimensional)
-coef(oneDimensional)
-confint(oneDimensional)
-cooks.distance(oneDimensional)
-dfbeta(oneDimensional)
-dfbetas(oneDimensional)
-drop1(oneDimensional)
-dropterm(oneDimensional)
-dummy.coef(oneDimensional)
-effects(oneDimensional)
-getContrasts(oneDimensional, 11:6)
-hatvalues(oneDimensional)
-kappa(oneDimensional)
-influence(oneDimensional)
-labels(oneDimensional)
-logtrans(oneDimensional)
-model.matrix(oneDimensional)
-model.frame(oneDimensional)
-plot(oneDimensional, ask = FALSE)
-predict(oneDimensional)
-print(oneDimensional)
-print(summary(oneDimensional))
-proj(oneDimensional)
-residuals(oneDimensional)
-rstandard(oneDimensional)
-rstudent(oneDimensional)
-summary(oneDimensional)
-termPredictors(oneDimensional)
-variable.names(oneDimensional)
-vcov(oneDimensional)
+
 

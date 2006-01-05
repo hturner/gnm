@@ -1,6 +1,5 @@
 se <- function(model, coefMatrix, checkEstimability = TRUE, ...){
-    if (!inherits(model, "gnm")) stop(
-                "model is not of class \"gnm\"")
+    if (!inherits(model, "gnm")) stop("model is not of class \"gnm\"")
     if (!is.numeric(coefMatrix)) stop("coefMatrix not numeric")
     coefMatrix <- as.matrix(coefMatrix)
     coefs <- coef(model)

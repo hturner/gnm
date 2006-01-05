@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.0  (2005-10-06 r35749)
+Version 2.2.1  (2005-12-20 r36812)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -12,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > library(gnm)
@@ -24,41 +24,46 @@ Type 'q()' to quit R.
 > .counts <- as.vector(t(.incidence))
 > .rowID <- factor(t(row(.incidence)))
 > backPain <- backPain[.rowID, ]
-> backPain$pain <- factor(rep(levels(backPain$pain), nrow(.incidence)),
-+                         levels = levels(backPain$pain), ordered = TRUE)
+> backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
++                           levels = levels(backPain$pain), ordered = TRUE),
++                    treatment)
 > 
-> oneDimensional <- gnm(.counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
-+                       eliminate = ~ .rowID, family = "poisson",
-+                       data = backPain, iterStart = 3)
+> noRelationship <- gnm(.counts ~ pain, eliminate = .rowID,
++                       family = "poisson", data = backPain)
+> 
+> oneDimensional <- update(noRelationship,
++                          ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
 Initialising
-Running start-up iterations...
-Running main iterations..........
+Running start-up iterations..
+Running main iterations...........
 Done
 > oneDimensional
 
 Call:
 gnm(formula = .counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 
-    1), eliminate = ~.rowID, family = "poisson", data = backPain, 
-    iterStart = 3)
+    1), eliminate = .rowID, family = "poisson", data = backPain)
 
 
 Coefficients:
-                                pain.L                                  pain.Q  
-                             13.907034                               -4.395852  
-                                pain.C                                  pain^4  
-                              7.076315                               -5.719667  
-                                pain^5                 Mult1.Factor1.painworse  
-                             -1.852921                               -2.499234  
+                              painsame                  painslight.improvement  
+                              16.15631                                15.68343  
+              painmoderate.improvement                  painmarked.improvement  
+                              12.45406                                19.91261  
+                   paincomplete.relief                 Mult1.Factor1.painworse  
+                              21.66420                                -2.10179  
                 Mult1.Factor1.painsame    Mult1.Factor1.painslight.improvement  
-                              0.137516                               -0.004642  
+                               0.14384                                 0.02276  
 Mult1.Factor1.painmoderate.improvement    Mult1.Factor1.painmarked.improvement  
-                             -0.627987                                0.778672  
+                              -0.50804                                 0.68983  
      Mult1.Factor1.paincomplete.relief                        Mult1.Factor2.x1  
-                              1.319279                               -1.406570  
+                               1.15014                                -1.65177  
                       Mult1.Factor2.x2                        Mult1.Factor2.x3  
-                             -0.806779                               -0.710535  
+                              -0.94741                                -0.83427  
 
 Deviance:            303.1003 
-Pearson chi-squared: 433.3762 
+Pearson chi-squared: 433.3743 
 Residual df:         493 
+> 
+> 
+> 
 > 

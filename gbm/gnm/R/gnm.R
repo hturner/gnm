@@ -26,7 +26,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         method <- "gnmFit"
     }
 
-    if (!is.null(eliminate)) {
+    if (!missing(eliminate)) {
         Elim <- modelData[[attr(attr(modelTerms, "terms"), "term.labels")[1]]]
         if (!is.factor(Elim))
             stop("variables in 'eliminate' formula must be factors")
@@ -121,7 +121,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                     warning("no parameters were specified to constrain")
             }
             else if (is.numeric(constrain)) {
-                if (!is.null(eliminate) & any(constrain < nElim))
+                if (!missing(eliminate) & any(constrain < nElim))
                     stop("'constrain' specifies one or more parameters",
                          "in 'eliminate' term(s)")
                 constrain <- is.element(seq(nParam), constrain)
@@ -133,7 +133,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (is.null(start))
             start <- rep.int(NA, nParam)
         else if (length(start) != nParam) {
-            if (!is.null(eliminate) & length(start) == (nParam - nElim))
+            if (!missing(eliminate) & length(start) == (nParam - nElim))
                 start <- c(rep(NA, nElim), start)
             else
                 stop("length(start) must either equal the no. of parameters\n",

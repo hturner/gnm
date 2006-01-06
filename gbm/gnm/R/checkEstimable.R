@@ -6,6 +6,8 @@ checkEstimable <- function(model, coefMatrix, tolerance = 1e-8){
     if (nrow(coefMatrix) != l) stop(
           "coefMatrix does not match coef(model)")
     Xt <- t(model.matrix(model))
+    Xt <- Xt[!is.na(coefs), ]
+    coefMatrix <- coefMatrix[!is.na(coefs), ]
     coefMatrix <- scale(coefMatrix, center = FALSE)
     resultNA <- apply(coefMatrix, 2, function(col) any(is.na(col)))
     result <- logical(ncol(coefMatrix))

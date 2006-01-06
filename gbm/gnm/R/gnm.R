@@ -92,15 +92,17 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     }
     else {
         onlyLin <- identical(attr(modelTerms, "prefixLabels"), "")
-        if (onlyLin)
+        if (onlyLin) {
             X <- model.matrix(modelTerms, modelData)
+            coefNames <- colnames(X)
+        }
         else {
             modelTools <- gnmTools(modelTerms, modelData,
                                    method == "model.matrix", termPredictors)
-            X <- matrix(modelTools$classID, 1)
+            coefNames <- names(modelTools$classID)
         }
-        if (method == "coefNames") return(colnames(X))
-        nParam <- ncol(X)
+        if (method == "coefNames") return(coefNames)
+        nParam <- length(coefNames)
 
         if (is.null(constrain))
           constrain <- rep.int(FALSE, nParam)
@@ -110,15 +112,21 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                     stop("constrain = \"pick\", and tcltk not installed")
                 if (!require(relimp))
                     stop("the relimp package from CRAN needs to be installed")
-                choice <- names(modelTools$classID)
-                picked <- pickFrom(choice[seq(choice) > nElim],
-                              setlabels = "Coefficients to constrain",
-                              title = "Constrain one or more gnm coefficients",
-                              items.label = "Model coefficients:",
-                              edit.setlabels = FALSE)
-                constrain <- is.element(choice, unlist(picked))
-                if (all(!constrain))
+                call$constrain <-
+                    pickFrom(coefNames[seq(coefNames) > nElim],
+                             setlabels = "Coefficients to constrain",
+                             title = "Constrain one or more gnm coefficients",
+                             items.label = "Model coefficients:",
+                             edit.setlabels = FALSE)
+                call$constrain <- unname(unlist(call$constrain))
+                if(!length(nchar(call$constrain))) {
                     warning("no parameters were specified to constrain")
+                    call$constrain <- NULL
+                }
+                constrain <- is.element(coefNames, call$constrain)
+            }
+            else if (is.character(constrain)) {
+                constrain <- is.element(coefNames, constrain)
             }
             else if (is.numeric(constrain)) {
                 if (!missing(eliminate) & any(constrain < nElim))

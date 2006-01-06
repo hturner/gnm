@@ -273,21 +273,23 @@ coef(doubleUnidiff)[coefs.of.interest]
 ##  Mult2.Factor1.election3 Mult2.Factor1.election4 
 ##               -0.1230682              -0.2105843
 
-##  Re-parameterize by setting Mult2.Factor1.election4 to zero
+##  Re-parameterize by setting Mult2.Factor1.election1 to zero
 getContrasts(doubleUnidiff, coefs.of.interest)
-##                            estimate        se
-##  Mult2.Factor1.election1 -0.3618399 0.2534762
-##  Mult2.Factor1.election2  0.3198951 0.1320034
-##  Mult2.Factor1.election3  0.0875308 0.1446842
-##  Mult2.Factor1.election4  0.0000000 0.0000000
+## [[1]]
+##                          estimate        SE    quasiSE    quasiVar
+## Mult2.Factor1.election1 0.0000000 0.0000000 0.22854380 0.052232270
+## Mult2.Factor1.election2 0.6817370 0.2401642 0.07395880 0.005469905
+## Mult2.Factor1.election3 0.4493740 0.2473519 0.09475932 0.008979329
+## Mult2.Factor1.election4 0.3618262 0.2534753 0.10934823 0.011957035
 
-##  Same thing but with election 1 as reference category:
+##  Same thing but with election 4 as reference category:
 getContrasts(doubleUnidiff, rev(coefs.of.interest))
-##                            estimate        se
-##  Mult2.Factor1.election4  0.3618399 0.2534746
-##  Mult2.Factor1.election3  0.4493707 0.2473524
-##  Mult2.Factor1.election2  0.6817351 0.2401645
-##  Mult2.Factor1.election1  0.0000000 0.0000000
+## [[1]]
+##                            estimate        SE    quasiSE    quasiVar
+## Mult2.Factor1.election4  0.00000000 0.0000000 0.10934823 0.011957035
+## Mult2.Factor1.election3  0.08754785 0.1446834 0.09475932 0.008979329
+## Mult2.Factor1.election2  0.31991082 0.1320023 0.07395880 0.005469905
+## Mult2.Factor1.election1 -0.36182617 0.2534753 0.22854380 0.052232270
 
 ##  Re-fit model with Mult2.Factor1.election1 set to zero
 doubleUnidiffConstrained <-

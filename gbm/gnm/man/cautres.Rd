@@ -38,6 +38,7 @@ coef(doubleUnidiff)[coefs.of.interest]
 ##               -0.5724370               0.1092972 
 ##  Mult2.Factor1.election3 Mult2.Factor1.election4 
 ##               -0.1230682              -0.2105843
+##  Re-parameterize by setting Mult2.Factor1.election1 to zero
 getContrasts(doubleUnidiff, coefs.of.interest)
 ## [[1]]
 ##                          estimate        SE    quasiSE    quasiVar

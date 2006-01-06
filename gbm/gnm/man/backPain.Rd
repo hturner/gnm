@@ -59,7 +59,7 @@ threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
 oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain - 1, offset(x1) + x2 + x3 - 1))
 ## obtain identifiable contrasts & id possibly indistinguishable slopes
-getContrasts(oneDimensional, 11:6)
+getContrasts(oneDimensional, 6:11)
 
 .pain <- backPainLong$pain
 

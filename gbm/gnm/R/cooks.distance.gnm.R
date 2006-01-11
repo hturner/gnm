@@ -4,7 +4,7 @@ cooks.distance.gnm <- function(model, hat = hatvalues(model),
     res <- na.omit(residuals(model, type =
                              "pearson"))[model$prior.weights != 0]
     res <- naresid(model$na.action, res)
-    (res/(1 - hat))^2 * hat/(dispersion * p)
+    res <- (res/(1 - hat))^2 * hat/(dispersion * p)
     res[is.infinite(res)] <- NaN
     res
 }

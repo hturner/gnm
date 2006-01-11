@@ -51,6 +51,6 @@ Dref <- function(..., formula = ~ 1) {
                                                         SIMPLIFY = FALSE))))))
     }
     
-    list(start = rep(0.5, length(labels)), labels = labels,
+    list(start = runif(length(labels)) - 0.5, labels = labels,
          predictor = predictor, localDesignFunction = localDesignFunction)
 }

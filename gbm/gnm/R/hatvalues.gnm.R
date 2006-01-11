@@ -4,7 +4,7 @@ hatvalues.gnm <- function(model, ...) {
               diag(as.vector(model$weights)))
     hat <- naresid(model$na.action, hat)
     hat[is.na(hat)] <- 0
-    hat[hat > 1 - 10 * .Machine$double.eps] <- 1
+    hat[hat > 1 - 100 * .Machine$double.eps] <- 1
     hat
 }
    

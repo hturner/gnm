@@ -1,7 +1,7 @@
 se <- function(model, estimate = "all", checkEstimability = TRUE, ...){
     if (!inherits(model, "gnm")) stop("model is not of class \"gnm\"")
     coefs <- coef(model)
-    coefs[is.na(coefs)] <- 0
+    #coefs[is.na(coefs)] <- 0
     coefNames <- names(coefs)
     l <- length(coefs)
     if (identical(estimate, "all"))

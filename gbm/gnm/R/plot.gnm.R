@@ -217,43 +217,6 @@ plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
             text.id(xx[show.r], y.id, show.r)
         }
     }
-    if (show[6]) {
-        ymx <- max(cook, na.rm = TRUE) * 1.025
-        g <- hatval/(1 - hatval)
-        plot(g, cook, xlim = c(0, max(g)), ylim = c(0, ymx), 
-            main = main, xlab = "Leverage", ylab = "Cook's distance", 
-            xaxt = "n", type = "n", ...)
-        athat <- pretty(hatval)
-        axis(1, at = athat/(1 - athat), labels = paste(athat))
-        panel(g, cook, ...)
-        if (one.fig) 
-            title(sub = sub.caption, ...)
-        p <- length(coef(x))
-        bval <- pretty(sqrt(p * cook/g), 5)
-        usr <- par("usr")
-        xmax <- usr[2]
-        ymax <- usr[4]
-        for (i in 1:length(bval)) {
-            bi2 <- bval[i]^2
-            if (ymax > bi2 * xmax) {
-                xi <- xmax + strwidth(" ")/3
-                yi <- bi2 * xi
-                abline(0, bi2, lty = 2)
-                text(xi, yi, paste(bval[i]), adj = 0, xpd = TRUE)
-            }
-            else {
-                yi <- ymax - 1.5 * strheight(" ")
-                xi <- yi/bi2
-                lines(c(0, xi), c(0, yi), lty = 2)
-                text(xi, ymax - 0.8 * strheight(" "), paste(bval[i]), 
-                  adj = 0.5, xpd = TRUE)
-            }
-        }
-        mtext(caption[6], 3, 0.25)
-        if (id.n > 0) 
-            show.r <- order(-cook)[iid]
-        text.id(g[show.r], cook[show.r], show.r)
-    }
     if (!one.fig && par("oma")[3] >= 1) 
         mtext(sub.caption, outer = TRUE, cex = 1.25)
     invisible()

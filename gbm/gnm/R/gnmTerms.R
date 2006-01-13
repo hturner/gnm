@@ -1,12 +1,13 @@
-gnmTerms <- function(formula, eliminate)
+gnmTerms <- function(formula, eliminate, data)
 {
     if (!is.null(substitute(e, list(e = eliminate)))) {
         tmp <- .Internal(update.formula(formula,
-                                        substitute(~ -1 + I(e) + .,
+                                        substitute(~ -1 + e + .,
                                                    list(e = eliminate))))
         environment(tmp) <- environment(formula)
+        data <- data[!names(data) %in% deparse(eliminate)]
         formula <- formula(terms.formula(tmp, simplify = TRUE,
-                                         keep.order = TRUE))
+                                         keep.order = TRUE, data = data))
     }
     fullTerms <- terms(formula, keep.order = TRUE)
     if (is.empty.model(fullTerms))

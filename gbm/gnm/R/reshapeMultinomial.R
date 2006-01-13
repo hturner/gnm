@@ -1,12 +1,12 @@
-reshapeMultinomial <- function(data, catvar, keep.as.ordered = FALSE,
-                                countvar = "count", idvar = "id") {
+reshapeMultinomial <- function(data, catvar, countvar = "count", idvar = "id",
+                               keep.as.ordered = FALSE) {
     n <- nrow(data)
     ncat <- nlevels(data[[catvar]])
-    tmpID <- gl(n, ncat)
-    newData <- data[tmpID, ]
+    caseID <- gl(n, ncat)
+    newData <- data[caseID, ]
     newData[[catvar]] <- gl(ncat, 1, n * ncat, labels = levels(data[[catvar]]),
                             ordered = keep.as.ordered)
-    newData[[idvar]] <- .rowID
     newData[[countvar]] <- as.vector(t(class.ind(data[[catvar]])))
+    newData[[idvar]] <- caseID
     newData
 }

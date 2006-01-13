@@ -30,21 +30,15 @@
 \examples{
 set.seed(1)
 data(backPain)
+summary(backPain)
 
 ### Re-express as count data
-library(nnet)
-.incidence <- class.ind(backPain$pain)
-.counts <- as.vector(t(.incidence))
-.rowID <- factor(t(row(.incidence)))
-backPainLong <- backPain[.rowID, ]
-backPainLong$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
-                              levels = levels(backPain$pain), ordered = TRUE),
-                       treatment)
+backPainLong <- reshapeMultinomial(backPain, "pain")
 
 ### Fit models described in Table 5 of Anderson (1984)
 
 ### Logistic family models
-noRelationship <- gnm(.counts ~ pain, eliminate = .rowID,
+noRelationship <- gnm(count ~ pain, eliminate = id,
                       family = "poisson", data = backPainLong)
 
 ## stereotype model

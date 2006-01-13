@@ -6,7 +6,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     
     call <- match.call()
     
-    modelTerms <- gnmTerms(formula, substitute(eliminate))
+    modelTerms <- gnmTerms(formula, substitute(eliminate), data)
     modelData <- match.call(expand.dots = FALSE)
     argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
                     names(modelData), 0)
@@ -15,6 +15,14 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                            as.list(modelData)[argPos],
                            drop.unused.levels = TRUE))
     modelData <- eval(modelData, parent.frame())
+
+    if (!missing(eliminate)) {
+        Elim <- modelData[[attr(attr(modelTerms, "terms"), "term.labels")[1]]]
+        if (!is.factor(Elim))
+            stop("variables in 'eliminate' formula must be factors")
+        nElim <- nlevels(Elim)
+    }
+    else nElim <- 0
     
     if (method == "model.frame") {
         attr(modelData, "terms") <- attr(modelTerms, "terms")
@@ -25,14 +33,6 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 call. = FALSE)
         method <- "gnmFit"
     }
-
-    if (!missing(eliminate)) {
-        Elim <- modelData[[attr(attr(modelTerms, "terms"), "term.labels")[1]]]
-        if (!is.factor(Elim))
-            stop("variables in 'eliminate' formula must be factors")
-        nElim <- nlevels(Elim)
-    }
-    else nElim <- 0
     
     y <- model.response(modelData, "numeric")
     nObs <- NROW(y)

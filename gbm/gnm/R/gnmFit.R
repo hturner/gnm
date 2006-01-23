@@ -5,7 +5,10 @@
               offset = rep.int(0, length(y)),
               nObs = length(y),
               start = rep.int(NA, length(y)),
-              control = gnmControl(...),
+              tolerance = 1e-4,
+              iterStart = 2,
+              iterMax = 500,
+              trace = FALSE,
               verbose = FALSE,
               x = FALSE,
               vcov = FALSE,
@@ -38,23 +41,25 @@
                 offsetSpecified <- offset + modelTools$predictor(factorList)
                 X <- modelTools$localDesignFunction(thetaOffset,
                                                     factorList)
-                theta[unspecifiedLin] <-
-                    suppressWarnings(naToZero(glm.fit(X[, unspecifiedLin], y,
-                                                      weights = weights,
-                                                      offset = offsetSpecified,
-                                                      family = family)$coef))
+                theta[unspecifiedLin] <- quick.glm.fit(X[, unspecifiedLin], y,
+                                                       weights = weights,
+                                                       offset = offsetSpecified,
+                                                       family = family,
+                                                       eliminate = eliminate)
+                constrain[is.na(theta)] <- TRUE
+                theta <- naToZero(theta)
             }
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
             mu <- family$linkinv(eta)
             dev[1] <- sum(family$dev.resids(y, mu, weights))
-            if (control$trace)
+            if (trace)
                 prattle("Initial Deviance = ", dev[1], "\n", sep = "")
             oneAtATime <- !linear & !specified
-            for (iter in seq(length = control$iterStart * any(oneAtATime))) {
+            for (iter in seq(length = iterStart * any(oneAtATime))) {
                 if (verbose) {
                     if (iter == 1)
-                        prattle("Running start-up iterations", "\n"[control$trace],
+                        prattle("Running start-up iterations", "\n"[trace],
                                 sep = "")
                     if ((iter + 25)%%width == (width - 1))
                         cat("\n")
@@ -77,7 +82,7 @@
                     eta <- offset + modelTools$predictor(factorList)
                     mu <- family$linkinv(eta)
                 }
-                if (status == "not.converged" & any(linear)) {
+                if (status == "not.converged" && any(linear)) {
                     if (iter == 1) {
                         which <- seq(theta)[linear & !constrain]
                         if(!exists("X"))
@@ -91,15 +96,14 @@
                     mu <- family$linkinv(eta)
                 }
                 dev[1] <- sum(family$dev.resids(y, mu, weights))
-                if (control$trace)
+                if (trace)
                     prattle("Start-up iteration ", iter, ". Deviance = ",
                             dev[1], "\n", sep = "")
                 else if (verbose)
                     prattle(".")
                 if (status == "bad.param")
                     break
-                cat("\n"[iter == control$iterStart & verbose &
-                         !control$trace])
+                cat("\n"[iter == iterStart & verbose & !trace])
             }
         }
         else {
@@ -113,15 +117,15 @@
             }
             mu <- family$linkinv(eta)
             dev[1] <- sum(family$dev.resids(y, mu, weights))
-            if (control$trace)
+            if (trace)
                 prattle("Initial Deviance = ", dev, "\n", sep = "")
         }
         if (status == "not.converged") {
-            needToElim <- seq(sum(!constrain[seq(eliminate)]))[eliminate > 0]
-            for (iter in seq(control$iterMax)) {
+            needToElim <- seq(sum(!constrain[seq(eliminate)])[eliminate > 0])
+            for (iter in seq(iterMax)) {
                 if (verbose) {
                     if (iter == 1)
-                        prattle("Running main iterations", "\n"[control$trace],
+                        prattle("Running main iterations", "\n"[trace],
                                 sep = "")
                     if ((iter + 21)%%width == (width - 1))
                         cat("\n")
@@ -139,12 +143,12 @@
                 WX <- w * X
                 score <- drop(crossprod(z, WX))
                 diagInfo <- colSums(X * WX)
-                if (all(abs(score) < control$tolerance * sqrt(diagInfo) |
-                        diagInfo < 1e-20)) {
+                if (diagInfo < 1e-20 ||
+                    all(abs(score) < tolerance * sqrt(diagInfo))) {
                     status <- "converged"
                     break
                 }
-                if (iter > 1 & abs(diff(dev)) < 1e-16) {
+                if (iter > 1 && abs(diff(dev)) < 1e-16) {
                     status <- "stuck"
                     break
                 }
@@ -159,7 +163,7 @@
                 theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] * znorm
                 dev[2] <- dev[1]
                 j <- 1
-                while (dev[1] >= dev[2] & j < 11) {
+                while (dev[1] >= dev[2] && j < 11) {
                     nextTheta <- replace(theta, !constrain,
                                          theta[!constrain] + theChange)
                     factorList <- modelTools$factorList(nextTheta)
@@ -177,7 +181,7 @@
                     theChange <- theChange/2
                     j <- j + 1
                 }
-                if (control$trace){
+                if (trace){
                     prattle("Iteration ", iter, ". Deviance = ", dev[1],
                             "\n", sep = "")
                 }
@@ -188,12 +192,12 @@
         }
         if (status %in% c("converged", "not.converged")) {
             if (verbose)
-                prattle("\n"[!control$trace], "Done\n", sep = "")
+                prattle("\n"[!trace], "Done\n", sep = "")
             break
         }
         else {
             if (verbose)
-                message("\n"[!control$trace],
+                message("\n"[!trace],
                         switch(status,
                                bad.param = "Bad parameterisation",
                                eta.not.finite = "Predictors are not all finite",
@@ -202,8 +206,8 @@
                                no.deviance = "Deviance is NaN",
                                stuck = "Iterations are not converging"))
             attempt <- attempt + 1
-            if (attempt > 5 | all(!is.na(start) | modelTools$classID %in%
-                                  c("Linear", "plugInStart")))
+            if (attempt > 5 || all(!is.na(start)) || modelTools$classID %in%
+                                  c("Linear", "plugInStart"))
                 return()
             else if (verbose)
                 message("Restarting")
@@ -219,8 +223,8 @@
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
-    fit <- list(coefficients = theta, residuals = z, fitted.values = mu,
-                rank = attr(VCOV, "rank"), family = family,
+    fit <- list(coefficients = theta, constrain = constrain, residuals = z,
+                fitted.values = mu, rank = attr(VCOV, "rank"), family = family,
                 predictors = eta, deviance = dev[1], aic = modelAIC,
                 iter = iter - 1, weights = w, prior.weights = weights,
                 df.residual = nObs - sum(weights == 0) - attr(VCOV,"rank"),

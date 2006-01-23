@@ -1,8 +1,8 @@
 useDynLib(gnm)
-export(checkEstimable, Diag, Dref, Exp, getContrasts,
+export(checkEstimable, Diag, Dref, Exp, expandCategorical, getContrasts,
        getModelFrame, gnm, gnmControl, MPinv, Mult, MultHomog,
-       Nonlin, reshapeMultinomial, residSVD, se, Symm, summary.gnm,
-       termPredictors, Topo, wedderburn)
+       Nonlin, residSVD, se, Symm, summary.gnm, termPredictors,
+       Topo, wedderburn)
 
 import(MASS, stats)
 importFrom(graphics, plot)

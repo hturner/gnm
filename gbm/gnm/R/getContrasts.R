@@ -1,17 +1,16 @@
 getContrasts <- function(model, sets = NULL, nSets = 1, ...){
     coefs <- coef(model)
     l <- length(coefs)
+    if (model$eliminate && model$eliminate == l)
+        stop("No non-eliminated coefficients")
+    coefNames <- names(coefs)[(model$eliminate + 1):l]
     if (is.null(sets)){
         if (!require(tcltk)) stop(
                "no parameter set specified, and tcltk not installed")
         if (!require(relimp)) stop(
                "the relimp package from CRAN needs to be installed")
-        if (model$eliminate)
-            sets <- pickFrom(names(coefs[(eliminate + 1):l]), nSets,...)
-        else
-            sets <- pickFrom(names(coefs), nSets,...)
+        sets <- pickFrom(coefNames, nSets,...)
     }
-    if (model$eliminate) sets <- sapply(sets, "+", model$eliminate)
     if (!is.list(sets)) sets <- list(sets)
     setLengths <- sapply(sets, length)
     if (all(setLengths == 0)) stop(
@@ -23,7 +22,7 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
             "Sets with fewer than 2 parameters were dropped,")
     nSets <- length(sets)
     sets <- lapply(sets, function(x){
-        if (is.numeric(x)) x <- names(coefs)[x]
+        if (is.numeric(x)) x <- coefNames[x]
         contr <- contr.sum(factor(x))
         rnames <- rownames(contr)
         contr <- rbind(contr[nrow(contr), ], contr[-nrow(contr), ])
@@ -33,8 +32,8 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
                    )
     coefMatrix <- lapply(sets, function(x){
         temp <- matrix(0, l, length(x$coefs))
-        rownames(temp) <- names(coefs)
-        temp[x$coefs, 2:ncol(temp)] <- x$contr
+        id <- match(x$coefs, coefNames) + model$eliminate
+        temp[id, 2:ncol(temp)] <- x$contr
         colnames(temp) <- x$coefs
         temp})
     lapply(coefMatrix, function(x)

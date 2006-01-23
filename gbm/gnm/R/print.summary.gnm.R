@@ -1,5 +1,6 @@
 print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
-                                symbolic.cor = x$symbolic.cor, ...) 
+                               signif.stars = getOption("show.signif.stars"),
+                               symbolic.cor = x$symbolic.cor, ...) 
 {
     cat("\nCall:\n", deparse(x$call), "\n\n", sep = "", fill = TRUE)
     
@@ -10,18 +11,24 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
             "Max")
     }
     print.default(x$deviance.resid, digits = digits, na = "", print.gap = 2)
+
+    coefs <- coef(x)
+    if (x$eliminate)
+        coefs <- coefs[-seq(x$eliminate), ]
     
-    if (length(coef(x))) {
+    if (nrow(coefs)) {
         cat("\nCoefficients:\n")
-        if (attr(coef(x), "eliminate"))
-            print.default(format(coef(x)[-seq(attr(coef(x), "eliminate"))],
-                                 digits = digits), print.gap = 2,
-                          quote = FALSE)
-        else
-            print.default(format(coef(x), digits = digits), print.gap = 2,
-                          quote = FALSE)
+        printCoefmat(coefs, digits = digits, signif.stars = signif.stars, 
+            na.print = "NA", ...)
+        if (any(!is.na(coefs[,2])))
+            cat("\n(Dispersion parameter for ", x$family$family,
+                " family taken to be ", format(x$dispersion), ")\n", sep = "")
+        if (any(is.na(coefs[,2])))
+            cat("\nStd. Error is NA where parameter has been constrained or",
+                "is unidentified\n")
     }
-    else cat("\nNo coefficients\n\n")
+    else cat("\nNo ", "non-eliminated "[attr(coefs, "eliminate") > 0],
+             "coefficients\n\n", sep = "")
     
     cat("\nResidual deviance: ", format(x$deviance,
                                         digits = max(5, digits + 1)),
@@ -31,8 +38,8 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
         "Number of iterations: ", x$iter, "\n", sep = "")
     correl <- x$correlation
     if (!is.null(correl)) {
-        if (attr(coef(x), "eliminate")) {
-            eliminate <- seq(attr(coef(x), "eliminate"))
+        if (attr(coefs, "eliminate")) {
+            eliminate <- seq(attr(coefs, "eliminate"))
             correl <- correl[-eliminate, -eliminate]
         }
         p <- NCOL(correl)

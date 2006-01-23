@@ -63,7 +63,7 @@
     if (classID[1] == "Linear")
         X[, factorAssign == 1] <- termTools[[1]]
     
-    if (x | termPredictors | classID[1] == "Linear") {
+    if (classID[1] == "Linear" || x || termPredictors) {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
         if (!is.null(attr(gnmTerms, "termsID")))
             termAssign <- attr(gnmTerms, "termsID")[termAssign]
@@ -96,7 +96,7 @@
                              NAOK = TRUE))
         }
         factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
-        if (term & classID[[1]] == "Linear")
+        if (term && classID[[1]] == "Linear")
             factorList[[1]] <- t(rowsum(t(termTools[[1]]) * parameterList[[1]],
                                         linearAssign))
         unlistOneLevel(factorList)

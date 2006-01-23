@@ -33,7 +33,7 @@ data(backPain)
 summary(backPain)
 
 ### Re-express as count data
-backPainLong <- reshapeMultinomial(backPain, "pain")
+backPainLong <- expandCategorical(backPain, "pain")
 
 ### Fit models described in Table 5 of Anderson (1984)
 
@@ -59,8 +59,7 @@ getContrasts(oneDimensional, 6:11)
 
 levels(.pain)[2:3] <- paste(levels(.pain)[2:3], collapse = " | ")
 fiveGroups <- update(noRelationship,
-                     ~ . + Mult(as.ordered(.pain) - 1,
-                                x1 + x2 + x3 - 1))
+                     ~ . + Mult(.pain - 1, x1 + x2 + x3 - 1))
 
 levels(.pain)[4:5] <- paste(levels(.pain)[4:5], collapse = " | ")
 fourGroups <- update(fiveGroups)

@@ -8,9 +8,7 @@
   generalized nonlinear model.  
 }
 \usage{
-vcov.gnm(object, ...)
-
-vcov(object)
+\method{vcov}{gnm}(object, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -58,8 +56,8 @@ educMultipliers <- getContrasts(unidiff, rev(ofInterest))[[1]]
 ## quadratic forms, by calling vcov() directly:
 cmat <- contr.sum(ofInterest)
 sterrs <- sqrt(diag(t(cmat)
-                     %*% vcov(unidiff)[ofInterest, ofInterest]
-                     %*% cmat))
+                     \%*\% vcov(unidiff)[ofInterest, ofInterest]
+                     \%*\% cmat))
 all(sterrs == (educMultipliers$SE)[-1]) ## TRUE
 }
 \keyword{ models }

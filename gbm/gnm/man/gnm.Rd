@@ -9,19 +9,19 @@
 }
 \usage{
 gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
-    data = NULL, subset, weights, na.action, method = "gnmFit", offset,
-    start = NULL, control = gnmControl(...), verbose = TRUE,
-    model = TRUE, x = FALSE, vcov = FALSE, termPredictors = FALSE, ...)
+    data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
+    start = NULL, tolerance = 1e-4, iterStart = 2, iterMax = 500,
+    trace = FALSE, verbose = TRUE, model = TRUE, x = FALSE,
+    vcov = FALSE, termPredictors = FALSE, ...)  
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
-  \item{eliminate}{ an optional formula of the form \code{~ model},
-    i.e., a formula with no response variable specified, to be included in the
-    predictor but excluded from \code{print()} displays of the model
-    object or its components obtained using accessor functions. See details. }
+  \item{eliminate}{ an optional factor to be included in the predictor
+    but excluded from \code{print()} displays of the model object or its
+    components obtained using accessor functions. See details. }
   \item{constrain}{ (non-\code{eliminate}d) coefficients to set to zero,
-    specified by a numeric vector of indices, a logical vector, or
-    "pick" to select from a Tk dialog. }
+    specified by a numeric vector of indices, a logical vector, a
+    character vector of names, or "pick" to select from a Tk dialog. }
   \item{family}{ a specification of the error distribution and link function
     to be used in the model. This can be a character string naming
     a family function; a family function, or the result of a call
@@ -56,6 +56,14 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     parameters. } 
   \item{control}{ a list of parameters for controlling the fitting process. See
     \code{gnmControl} for details.}
+  \item{tolerance}{ a positive numeric value specifying the tolerance level for
+    convergence. }
+  \item{iterStart}{ a positive integer specifying the number of start-up iterations
+    to perform. }
+  \item{iterMax}{ a positive integer specifying the maximum number of main
+    iterations to perform. }
+  \item{trace}{ a logical value indicating whether the deviance
+    should be printed after each iteration. }
   \item{verbose}{ logical: if \code{TRUE} progress indicators are
     printed as the model is fitted, including a diagnostic error message
     if the algorithm restarts. } 
@@ -97,16 +105,14 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   may also define their own plug-in functions, see \code{\link{Nonlin}}
   for details. 
 
-  The \code{eliminate} argument may be used to specify terms spanning
-  the space of a single factor, so that these terms are included
-  in the model, but the corresponding parameter estimates are excluded
-  from \code{print}ed displays of the model object or its components
-  obtained using accessor functions such as \code{coef()} etc. The
-  terms in the \code{eliminate} formula are included as the first terms
-  in the model (since an intercept is then redundant, none is
-  fitted). The structure of these terms is then exploited to improve
-  computational efficiency  --- substantially so if the number of
-  eliminated parameters is large.  Use of \code{eliminate} is designed
+  The \code{eliminate} argument may be used to specify a factor that
+  is to be included in the model, but excluded from \code{print()}
+  displays of the model object or its components obtained using accessor
+  functions such as \code{coef()} etc. The \code{eliminate}'d factor is
+  included as the first term in the model (since an intercept is then
+  redundant, none is fitted). The structure of the factor is exploited
+  to improve computational efficiency --- substantially so if the number
+  of eliminated parameters is large. Use of \code{eliminate} is designed
   for terms that are required in the model but are not of direct
   interest (e.g., terms needed to fit multinomial-response models as
   conditional Poisson models). See \code{\link{backPain}} for an example. 
@@ -126,12 +132,19 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   of successes and failures, or as a vector of the proportions of
   successes.
 
-  The \code{gnm} fitting process consists of two stages. In the start-up
+  The \code{gnm} fitting algorithm consists of two stages.  In the start-up
   iterations, any nonlinear parameters that are not specified by either the
-  \code{start} argument or a plug-in function are updated one parameter
-  at a time, then the linear parameters are jointly updated before the
-  next iteration. In the main iterations, all the parameters are jointly
-  updated. See \code{\link{gnmControl}} for more details.
+  \code{start} argument of \code{gnm} or a plug-in function are
+  updated one parameter at a time, then the linear parameters are
+  jointly updated before the next iteration. In the main iterations, all
+  the parameters are jointly updated, until convergence is reached or
+  the number or iterations reaches \code{iterMax}.
+
+  Convergence is judged by comparing the squared components of the score vector
+  with corresponding elements of the diagonal of the Fisher information
+  matrix. If, for all components of the score vector, the ratio is less
+  than \code{tolerance^2}, or the corresponding diagonal element of the
+  Fisher information matrix is less than 1e-20, iterations cease.
 
   By default, \code{gnm} uses an over-parameterized representation of
   the model that is being fitted. Only minimal identifiability constraints

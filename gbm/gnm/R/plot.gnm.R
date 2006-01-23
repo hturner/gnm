@@ -6,8 +6,8 @@ plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
     cex.id = 0.75, qqline = TRUE, cook.levels = c(0.5, 1), add.smooth = getOption("add.smooth"), 
     label.pos = c(4, 2)) 
 {
-    if (!is.numeric(which) || any(which < 1) || any(which > 6)) 
-        stop("'which' must be in 1:6")
+    if (!is.numeric(which) || any(which < 1) || any(which > 5)) 
+        stop("'which' must be in 1:5")
     show <- rep(FALSE, 6)
     show[which] <- TRUE
     r <- residuals(x)

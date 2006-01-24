@@ -145,8 +145,9 @@
                        v <- do.call("pprod",
                                     factorList[(multIndex == multIndex[fi])
                                                & (seq(multIndex) != fi)])
-                   })
-            if (exists("v")) {
+                   },
+                   v <- numeric(0))
+            if (length(v)) {
                     .Call("subprod", X, baseMatrix, as.double(v),
                           first[i1], last[i2], nr, PACKAGE = "gnm")
             }

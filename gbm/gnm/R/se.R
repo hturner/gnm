@@ -2,13 +2,14 @@ se <- function(model, estimate = "all", checkEstimability = TRUE, ...){
     if (!inherits(model, "gnm")) stop("model is not of class \"gnm\"")
     coefs <- coef(model)
     l <- length(coefs)
-    if (model$eliminate && model$eliminate == l)
+    eliminate <- model$eliminate
+    if (eliminate && eliminate == l)
         stop("No non-eliminated coefficients")
-    coefNames <- names(coefs)[(model$eliminate + 1):l]
+    coefNames <- names(coefs)[(eliminate + 1):l]
     if (identical(estimate, "all")) {
-        if (model$eliminate == 0)
+        if (eliminate == 0)
             return(data.frame(coef(summary(model)))[, 1:2])
-        return(data.frame(coef(summary(model)))[(model$eliminate + 1):l, 1:2])  
+        return(data.frame(coef(summary(model)))[(eliminate + 1):l, 1:2])
     }
     else {
         if (identical(estimate, "pick")) {
@@ -27,40 +28,45 @@ se <- function(model, estimate = "all", checkEstimability = TRUE, ...){
         }
         if (is.character(estimate))
             estimate <- match(estimate, coefNames)
-        if (is.vector(estimate)) {
+        if (is.vector(estimate) && all(estimate %in% seq(l - eliminate))) {
             if (!length(estimate))
                 stop("no coefficients specified by 'estimate' argument")
-            if (crossprod(estimate, estimate) == 1)
-                return(data.frame(coef(summary(model)))[estimate +
-                                                        model$eliminate, 1:2])
+            estimate <- estimate + eliminate
+            comb <- naToZero(coefs[estimate])
+            var <- vcov(model)[estimate, estimate]
+            coefMatrix <- matrix(0, l, length(comb))
+            coefMatrix[cbind(estimate, seq(comb))] <- 1
+            colnames(coefMatrix) <- names(comb)
+        }
+        else {
+            coefMatrix <- as.matrix(estimate)
+            if (!is.numeric(coefMatrix))
+                stop("'estimate' must specify parameters using ",
+                     "\"all\", \"pick\", or a vector of \n names/indices; ",
+                     "or specify linear combinations using ",
+                     "a numeric vector/matrix.")
+            if (eliminate && nrow(coefMatrix) == l - eliminate)
+                coefMatrix <- cbind(matrix(0, eliminate, ncol(coefMatrix)),
+                                    coefMatrix)                
+            if (nrow(coefMatrix) != l)
+                stop("NROW(estimate) should equal length(coef(model)) or \n",
+                     "length(coef(model)) - model$eliminate")
+            comb <- drop(crossprod(coefMatrix, naToZero(coefs)))
+            var <- crossprod(coefMatrix, crossprod(vcov(model), coefMatrix))
         }
     }
-    coefMatrix <- as.matrix(estimate)
-    if (!is.numeric(coefMatrix))
-        stop("'estimate' argument must be one of \"all\", \"pick\", a ",
-             "character vector of names \n or a matrix of linear ",
-             "combinations")
-    if (model$eliminate && nrow(coefMatrix) == l - model$eliminate)
-        coefMatrix <- cbind(matrix(0, eliminate, ncol(coefMatrix)),
-                            coefMatrix)                
-    if (nrow(coefMatrix) != l)
-        stop("nrow(estimate) should equal length(coef) or ",
-             "length(coef) - model$eliminate")
     estimable <- rep(TRUE, ncol(coefMatrix))
-    comb <- drop(crossprod(coefMatrix, naToZero(coefs)))
     if (checkEstimability) {
         estimable <- checkEstimable(model, coefMatrix, ...)
         if (any(!na.omit(estimable)))
-            cat("\nStd. Error is NA where estimate is fixed or unidentified\n")
+            cat("Std. Error is NA where estimate is fixed or unidentified\n")
     }
-    var <- crossprod(coefMatrix, crossprod(vcov(model), coefMatrix))
     sterr <- sqrt(diag(var))
-    is.na(sterr[estimable == FALSE | sterr == 0]) <-
-        is.na(comb[comb == 0]) <- TRUE
+    is.na(sterr[estimable %in% c(FALSE, NA)]) <- TRUE
     result <- data.frame(comb, sterr)
     rowNames <- colnames(coefMatrix)
     if (is.null(rowNames))
-        rowNames <- paste("Contrast", ncol(coefMatrix))
+        rowNames <- paste("Combination", ncol(coefMatrix))
     dimnames(result) <- list(rowNames, c("Estimate", "Std. Error"))
     result
 }

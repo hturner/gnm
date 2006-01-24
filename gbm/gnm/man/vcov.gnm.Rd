@@ -8,20 +8,28 @@
   generalized nonlinear model.  
 }
 \usage{
-\method{vcov}{gnm}(object, ...)
+\method{vcov}{gnm}(object, dispersion = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{ a model object of class \code{gnm} }
-  \item{\dots}{ as for \code{\link{vcov}} }
+  \item{object}{ a model object of class \code{gnm}. }
+  \item{dispersion} {the dispersion parameter for the fitting family. By
+    default it is obtained from \code{object}. }
+  \item{\dots}{ as for \code{\link{vcov}}. }
 }
 \details{
-The resultant matrix does not itself necessarily
+  The resultant matrix does not itself necessarily
   contain variances and covariances, since \code{gnm} typically works
   with over-parameterized model representations in which parameters are
   not all identified.  Rather, the resultant matrix is to be used as
   the kernel of quadratic forms which are the variances or
   covariances for estimable parameter combinations.
+ 
+  The matrix values are scaled by \code{dispersion}. If the dispersion
+  is not specified, it is taken as \code{1} for the \code{binomial} and
+  \code{Poisson} families, and otherwise estimated by the residual
+  Chi-squared statistic divided by the residual degrees of freedom. The
+  dispersion used is returned as an attribute of the matrix.
 }
 \value{
   A square matrix, with number of rows/columns equal to
@@ -35,7 +43,7 @@ in R: An overview of the gnm package.  At \url{http://cran.r-project.org}}
   behaviour of \code{vcov.gnm} differs from that of
   \code{\link{vcov.glm}} whenever \code{any(is.na(coef(object)))} is
   \code{TRUE}.  Whereas \code{vcov.glm} drops all rows and columns which
-  correspond to \code{NA} values in \code{coef(object)}, \code{vcov.glm}
+  correspond to \code{NA} values in \code{coef(object)}, \code{vcov.gnm}
   keeps those columns (which are full of zeros, since the \code{NA}
   represents a parameter which is fixed either by use of the
   \code{constrain} argument to \code{gnm} or by a convention to handle

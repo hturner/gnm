@@ -2,7 +2,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 offset, start = NULL, tolerance = 1e-4, iterStart = 2,
                 iterMax = 500, trace = FALSE, verbose = TRUE, model = TRUE,
-                x = FALSE, vcov = FALSE, termPredictors = FALSE, ...) {
+                x = FALSE, termPredictors = FALSE, ...) {
     
     call <- match.call()
     
@@ -90,7 +90,6 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                     family = family, prior.weights = weights, y = y,
                     converged = NA)
         if (x) fit <- c(fit, x = matrix(, nrow(modelData), 0))
-        if (vcov) fit <- c(fit, vcov = matrix(, 0, 0))
         if (termPredictors) fit <- c(fit, termPredictors =
                                      matrix(, nrow(modelData), 0))
     }
@@ -178,7 +177,6 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                            "intercept"))
             fit$constrain <- replace(constrain, is.na(coef(fit)), TRUE)
             if (x) fit$x <- X
-            if (vcov) fit$vcov <- stats:::vcov.glm(fit)
             fit <- fit[-c(4,5,7,12,17,20)]
             names(fit)[6] <- "predictors"
         }
@@ -186,11 +184,11 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
             fit <- do.call(method, list(modelTools, y, constrain, nElim, family,
                                         weights, offset, nObs, start, tolerance,
                                         iterStart, iterMax, trace, verbose, x,
-                                        vcov, termPredictors))
+                                        termPredictors))
         else
             fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
                           offset, nObs, start, tolerance, iterStart, iterMax,
-                          trace, verbose, x, vcov, termPredictors)
+                          trace, verbose, x, termPredictors)
     }
     if (is.null(fit)) {
         warning("Algorithm failed - no model could be estimated", call. = FALSE)

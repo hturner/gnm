@@ -11,7 +11,6 @@
               trace = FALSE,
               verbose = FALSE,
               x = FALSE,
-              vcov = FALSE,
               termPredictors = FALSE)
 {
     eps <- 100*.Machine$double.eps
@@ -238,14 +237,6 @@
         }
         else
             fit$x <- structure(X, assign = modelTools$termAssign)
-    }
-    if (vcov) {
-        if (sum(constrain) > 0) {
-            fit$vcov <- array(0, dim = rep(length(theta), 2),
-                              dimnames = rep(list(names(theta)), 2))
-            fit$vcov[!constrain, !constrain] <- VCOV
-        }
-        else fit$vcov <- VCOV[, , drop = FALSE]
     }
     if (termPredictors) {
         theta[is.na(theta)] <- 0

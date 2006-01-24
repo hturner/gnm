@@ -12,7 +12,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
     start = NULL, tolerance = 1e-4, iterStart = 2, iterMax = 500,
     trace = FALSE, verbose = TRUE, model = TRUE, x = FALSE,
-    vcov = FALSE, termPredictors = FALSE, ...)  
+    termPredictors = FALSE, ...)  
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -70,8 +70,6 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
   \item{x}{ logical: if \code{TRUE} the local design matrix from the last
     iteration is returned. }
-  \item{vcov}{ logical: if \code{TRUE} the variance-covariance matrix of the
-    model coefficients is returned. }
   \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor }
@@ -202,16 +200,16 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{ rank }{ the numeric rank of the fitted model. }
   
   The list may also contain the components \code{model}, \code{x},
-  \code{vcov}, or \code{termPredictors} if requested in the arguments to
-  \code{gnm}. 
+  or \code{termPredictors} if requested in the arguments to \code{gnm}. 
 
   If a binomial \code{gnm} model is specified by giving a two-column
   response, the weights returned by \code{prior.weights} are the total
   numbers of cases (factored by the supplied case weights) and the
   component \code{y} of the result is the proportion of successes.
   
-  The function \code{\link{summary}} may be used to obtain and print a summary
-  of the results.
+  The function \code{\link{summary.gnm}} may be used to obtain and print
+  a summary of the results, whilst \code{\link{plot.gnm}} may be used
+  for model diagnostics.
 
   The generic functions \code{\link{formula}}, \code{\link{family}},
   \code{\link{terms}}, \code{\link{coefficients}},

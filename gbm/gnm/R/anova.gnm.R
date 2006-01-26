@@ -55,7 +55,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
                    sep = "")
     df.dispersion <- Inf
     if (is.null(dispersion)) {
-        dispersion <- summary(object, dispersion = dispersion)$dispersion
+        dispersion <- attr(vcov(object), "dispersion")
         df.dispersion <- if (dispersion == 1) 
             Inf
         else object$df.residual

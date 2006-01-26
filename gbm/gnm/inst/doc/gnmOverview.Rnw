@@ -512,9 +512,10 @@ three components:
   a function which takes the specified
   arguments \Rfunarg{coef} (a vector of parameter estimates) and
   \Rfunarg{predictor} (the result of the predictor function), and returns the
-  local design matrix. If the plug-in function does not return a 'start'
-  component, this function must also take the argument \Rfunarg{ind}, the index
-  of a column to be returned rather than the full matrix.
+  local design matrix. If the plug-in function does not return a \Robject{start}
+  component (see below), the \Robject{localDesignFunction} must also take the
+  argument \Rfunarg{ind}, which specifies the index of a column to be returned
+  instead of the full matrix.
 \end{description}
 and optionally one further component
 \begin{description}
@@ -527,15 +528,15 @@ and optionally one further component
   for nonlinear parameters that will be used otherwise.
 \end{description}
 
-As an example of a \Robject{start} component, \Rfunction{Dref} simply returns
+As an example of a \Robject{start} component, \Rfunction{Dref} returns
 \begin{alltt}
-    rep(0.5, length(labels))
+    c(runif(nLocal) - 0.5, rep(0.5, nGlobal))
 \end{alltt}
-where \Robject{labels} is the vector of parameter labels to be returned as the
-\Robject{labels} component, for instance
-\begin{alltt}
-    c("A", "B", "1", "2", "3", "4", "5", "6", "7")
-\end{alltt}
+where \Robject{nLocal} is the number of weight parameters (parameters which are
+``local'' to a specific factor) and \Robject{nGlobal} is the number of diagonal
+effects (``global'' level effects across factors). The randomness in the
+starting values for the weight parameters ensures that arbitrariness of the
+final parameterization is emphasised.
 
 The \Rfunction{MultHomog} function provides a simple example of a
 \Robject{predictor} component:
@@ -562,7 +563,7 @@ is slightly more complicated:
             if (is.null(ind))
                 X <- X + designList[[*]] * drop(do.call("pprod", vList[-i]))
             else
-                X <- X + designList[[*]][, ind] *
+                X <- X + designList[[]][, ind] *
                     drop(do.call("pprod", vList[-i]))
         \}
         X
@@ -578,41 +579,37 @@ required by the default starting procedure for nonlinear parameters.
 
 \section{Controlling the Fitting Procedure}
 
-The \Rfunction{gnm} function has a number of arguments
-which affect the way a model will be
-fitted.  Basic control parameters and starting values can be set by
-\Rfunarg{control} and \Rfunarg{start} respectively. Parameters can be
-constrained
-to zero by specifying a \Rfunarg{constrain} argument. Finally parameters of a
-stratification factor can be handled more efficiently by specifying the term in
-an \Rfunarg{eliminate} argument. These options are described in more detail
-below.
+The \Rfunction{gnm} function has a number of arguments which affect the way a
+model will be fitted.  Basic control parameters can be set using the arguments
+\Rfunarg{tolerance}, \Rfunarg{iterStart} and \Rfunarg{iterMax}. Starting values
+for the parameter estimates can be set by \Rfunarg{start} and parameters can be
+constrained to zero by specifying a \Rfunarg{constrain} argument. Finally
+parameters of a stratification factor can be handled more efficiently by
+specifying the factor in an \Rfunarg{eliminate} argument. These options are
+described in more detail below. 
 
-\subsection{Using \Rfunarg{control} with \Rfunction{gnmControl}}
+\subsection{Basic control parameters}
 
-The \Rfunarg{control} argument provides a way to specify the tolerance level for
-convergence, the number of starting iterations and the maximum number of main
-iterations, as well as the option to trace the deviance throughout the fitting
-process.  By default, the \Rfunarg{control} argument is a call to
-\Rfunction{gnmControl} using any arguments passed on from
-\Rfunction{gnm}. The \Rfunction{gnmControl} function
-creates a list of the control
-parameters, including any at their default values. For example
-\begin{alltt}
-    gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C), tolerance = 1e-6,
-    iterStart = 3)
-\end{alltt}
-is equivalent to
-\begin{alltt}
-    gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C),
-        control = gnmControl(tolerance = 1e-6, iterStart = 3))
-\end{alltt}
-which is the same as
-\begin{alltt}
-    gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C),
-        control = list(tolerance = 1e-6, iterStart = 3, iterMax = 500,
-        trace = FALSE))
-\end{alltt}
+The arguments \Rfunarg{iterStart} and \Rfunarg{iterMax} control respectively the
+number of starting iterations (where applicable) and the number of main
+iterations used by the fitting algorithm. The progress of these iterations can
+be followed by setting either \Rfunarg{verbose} or \Rfunarg{trace} to \Robject{TRUE}.
+If \Rfunarg{verbose} is \Robject{TRUE} and \Rfunarg{trace} is \Robject{FALSE},
+which is the default setting, progress is indicated by printing the character
+``.'' at the beginning of each iteration.  If \Rfunarg{trace} is \Robject{TRUE},
+the deviance is printed at the beginning of each iteration (over-riding the
+printing of ``.'' if necessary). Whenever \Rfunarg{verbose} is \Robject{TRUE},
+additional messages indicate each stage of the fitting process and diagnose any
+errors that cause that cause the algorithm to restart.  
+
+The fitting algorithm will terminate before the number of main iterations has
+reached \Rfunarg{iterMax} if the convergence criteria have been met, with
+tolerance specified by \Rfunarg{tolerance}. Convergence is judged by comparing
+the squared components of the score vector with corresponding elements of the
+diagonal of the Fisher information matrix. If, for all components of the score
+vector, the ratio is less than \Robject{tolerance$^2$}, or the corresponding diagonal
+element of the Fisher information matrix is less than 1e-20, the algorithm is
+deemed to have converged.  
 
 \subsection{Using \Rfunarg{start}}
 \label{start}
@@ -620,11 +617,10 @@ which is the same as
 In some contexts, the default starting values may not be appropriate and the
 algorithm will fail to converge, or perhaps only converge after a large number
 of iterations. Alternative starting values may be passed on to \Rfunction{gnm}
-by
-specifying a \Rfunarg{start} argument. This should be a numeric vector of length
-equal to the number of parameters (or possibly the non-eliminated parameters,
-see Section \ref{eliminate}), however missing starting values (\Robject{NA}s)
-are allowed.
+by specifying a \Rfunarg{start} argument. This should be a numeric vector of
+length equal to the number of parameters (or possibly the non-eliminated
+parameters, see Section \ref{eliminate}), however missing starting values
+(\Robject{NA}s) are allowed.
 
 If there is no user-specified starting value for a parameter, the
 default value is used. This feature is particularly useful when adding terms to
@@ -635,10 +631,9 @@ values, as in this example:
     model2 <- gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C, multiplicity = 2),
                   start = c(coef(model1), rep(NA, 10))
 \end{alltt}
-The \Rfunction{gnm} call can be made with
-\texttt{method = "coef"} to identify the
-parameters of a model prior to estimation, to assist with the specification of
-arguments such as \Rfunarg{start}.
+The \Rfunction{gnm} call can be made with \texttt{method = "coefNames"} to
+identify the parameters of a model prior to estimation, to assist with the
+specification of arguments such as \Rfunarg{start}.
 
 The starting procedure used by \Rfunction{gnm} is as follows
 \begin{enumerate}
@@ -675,16 +670,11 @@ plug-in function.
 \subsection{Using \Rfunarg{constrain}}
 \label{constrain}
 
-By default, \Rfunction{gnm}
-only imposes identifiability constraints on any linear
-terms in the model to be fitted.
-For these terms, the constraints are determined
-in the same way as they would be in \Rfunction{glm}. Any nonlinear terms will
-usually be
-over-parameterized unless constraints are imposed by the defining plug-in
-function (as in the case of \Rfunction{Dref}, for example). For a model with
-nonlinear terms that are over-parameterized, \Rfunction{gnm}
-will return a random parameterisation.
+By default, \Rfunction{gnm} only imposes identifiability constraints according
+to the general conventions used by \Robject{R} to handle linear aliasing. Therefore
+models that have any nonlinear terms will be usually be over-parameterized and
+\Rfunction{gnm} will return a random parameterization for unidentified
+coefficients. 
 
 To illustrate this point, consider the following application of \Rfunction{gnm},
 discussed later in Section \ref{RCmodels}:
@@ -693,7 +683,7 @@ data(occupationalStatus)
 set.seed(1)
 RChomog1 <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Nonlin(MultHomog(origin, destination)), family = poisson,
-               data = occupationalStatus)
+               data = occupationalStatus, verbose = FALSE)
 @
 Running the analysis again from a different seed
 <<RC_homogeneous_model_2>>=
@@ -704,18 +694,25 @@ gives a different representation of the same model:
 <<Compare_coefficients>>=
 compareCoef <- cbind(coef(RChomog1), coef(RChomog2))
 colnames(compareCoef) <- c("RChomog1", "RChomog2")
-compareCoef
+round(compareCoef, 4)
 @
-Even though the linear terms are constrained, the parameter estimates for
-these terms still change, because these terms are aliased with the higher order
-multiplicative interaction, which is unconstrained.
+Even though the linear terms are constrained, the parameter estimates for the
+main effects of \Robject{origin} and \Robject{destination} still change, because
+these terms are aliased with the higher order multiplicative interaction, which
+is unconstrained. 
 
+Standard errors are only meaningful for identified parameters and hence the
+output of \Rfunction{summary.gnm} will show clearly which coefficients are
+estimable:
+<<Summarize_model>>=
+summary(RChomog2)
+@
+ 
 Additional constraints may be specified through the \Rfunarg{constrain} argument
 of \Rfunction{gnm}. This argument indicates parameters that are to be
-constrained
-to zero in the fitting process. Parameters can be indicated by a logical vector,
-a vector of indices or, if \texttt{constrain = "pick"} they can be selected
-through a \emph{Tk} dialog.
+constrained to zero in the fitting process. Parameters can be indicated by a 
+logical vector, a numeric vector of indices, a character vector of names or, 
+if \texttt{constrain = "pick"} they can be selected through a \emph{Tk} dialog.
 
 In the case above, constraining one level of the homogeneous multiplicative
 factor is sufficient to make the parameters of the nonlinear term
@@ -737,8 +734,7 @@ generalized nonlinear model. However, the simple constraints imposed by
 \Rfunarg{constrain} are often sufficient to make particular coefficients of
 interest identifiable. The functions \Rfunction{checkEstimable} or
 \Rfunction{getContrasts}, described in Section \ref{Methods},
-may be used to check
-whether particular contrasts are estimable.
+may be used to check whether particular contrasts are estimable.
 
 \subsection{Using \Rfunarg{eliminate}}
 \label{eliminate}
@@ -749,30 +745,23 @@ case that such factors have a large number of levels and though they are
 required in the model, are not of direct interest in themselves.
 
 The \Rfunarg{eliminate} argument of \Rfunction{gnm} can be used to specify a
-stratification factor in a model, so that the factor can be handled more
-efficiently. The factor should be specified by a formula with no response
-variable and with terms spanning the space of a single factor, i.e., a factor, an
-interaction between factors, or crossed factors, for example
+stratification factor in a model, so that this factor can be handled more
+efficiently. The factor should be specified by an expression, which is
+interpreted as the first term in the model formula, replacing any intercept
+term. So in terms of the structure of the model,
 \begin{alltt}
-    gnm(mu ~ -1 + strata1*strata2 + A + B + Mult(A, B), eliminate = ~ strata1*strata2)
+    gnm(mu ~ A + B + Mult(A, B), eliminate = strata1:strata2)
 \end{alltt}
-The use of \Rfunarg{eliminate} makes the specification of a
-stratification factor
-in the model formula redundant, so the above call is equivalent to
+is equivalent to 
 \begin{alltt}
-    gnm(mu ~ -1 + A + B + Mult(A, B), eliminate = ~ strata1*strata2)
+    gnm(mu ~ -1 + strata1:strata2 + A + B + Mult(A, B))
 \end{alltt}
-or even
-\begin{alltt}
-    gnm(mu ~ A + B + Mult(A, B), eliminate = ~ strata1*strata2)
-\end{alltt}
-since no intercept is fitted when a formula is passed to \Rfunarg{eliminate}.
-
-Specifying a stratification factor through \Rfunarg{eliminate} has two
-advantages. First, computational speed is improved --- substantially
-so if the number of eliminated parameters is large. Second, the eliminated
-parameters are excluded from summaries of the model so that they focus on the
-coefficients of interest.
+However specifying a stratification factor through \Rfunarg{eliminate} has two
+advantages over the standard specification. First, the structure of the
+eliminated factor is exploited so that computational speed is improved ---
+substantially so if the number of eliminated parameters is large. Second, the
+eliminated parameters are excluded from summaries of the model so that they
+focus on the coefficients of interest.
 
 The \Rfunarg{eliminate} feature is useful, for example, when
 multinomial-response models are fitted by using the well known equivalence
@@ -781,7 +770,7 @@ the sufficient statistic involves a potentially large number of fixed
 multinomial row totals, and the corresponding parameters are of no
 substantive interest.  For an example see Section \ref{Stereotype} below.
 
-The  \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
+The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
 over-parameterized model representations.
 
@@ -854,7 +843,7 @@ the predictor.  See Section \ref{glms} for an example of its use.
 Most of the methods listed in Figure \ref{glm.lm} can be used as they would be
 for \Rclass{glm} or \Rclass{lm} objects, however care must be taken with
 \Rmethod{vcov}, as the variance-covariance matrix will depend on the
-parameterisation of the model. In particular, standard errors calculated using
+parameterization of the model. In particular, standard errors calculated using
 the variance-covariance matrix will only be valid for parameters or contrasts
 that are estimable!
 
@@ -869,17 +858,22 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
                      data = cautres)
 @
 The effects of the first constituent multiplier in the first multiplicative
-interaction are identified when the estimate of one of these effects is constrained to
-zero, say for the effect of the last level. The parameters to be estimated are
-then the differences between each effect and the effect of the last level. These
-differences can be represented by a contrast matrix as follows:
+interaction are identified when the estimate of one of these effects is
+constrained to zero, say for the effect of the first level. The parameters to be
+estimated are then the differences between each effect and the effect of the
+first level. These differences can be represented by a contrast matrix as 
+follows:
 <<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
 contrCoefs <- coefs[grep("Mult1.Factor1", coefs)]
-contrMatrix <- matrix(0, length(coefs), length(contrCoefs),
+nContr <- length(contrCoefs)
+contrMatrix <- matrix(0, length(coefs), nContr,
                       dimnames = list(coefs, contrCoefs))
-contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)] <- contr.sum(contrCoefs)
-contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)]
+contr <- contr.sum(contrCoefs) 
+# switch round to contrast with first level
+contr <- rbind(contr[nContr, ], contr[-nContr, ])
+contrMatrix[contrCoefs, 2:nContr] <- contr
+contrMatrix[contrCoefs, 2:nContr]
 @
 Then their estimability can be checked using \Rfunction{checkEstimable}
 <<Check_estimability_1>>=
@@ -889,15 +883,16 @@ which confirms that the effects for the other three levels are estimable when
 the effect for the last level is set to zero.
 
 However, applying the equivalent constraint to the second constituent
-multiplier in the
-interaction is not sufficient to make the parameters in that multiplier
-estimable:
+multiplier in the interaction is not sufficient to make the parameters in that
+multiplier estimable:
 <<Check_estimability_2>>=
 coefs <- names(coef(doubleUnidiff))
 contrCoefs <- coefs[grep("Mult1.Factor2", coefs)]
+nContr <- length(contrCoefs)
 contrMatrix <- matrix(0, length(coefs), length(contrCoefs),
                       dimnames = list(coefs, contrCoefs))
-contrMatrix[contrCoefs, 1:(ncol(contrMatrix) - 1)] <- contr.sum(contrCoefs)
+contr <- contr.sum(contrCoefs) 
+contrMatrix[contrCoefs, 2:nContr] <- rbind(contr[nContr, ], contr[-nContr, ])
 checkEstimable(doubleUnidiff, contrMatrix)
 @
 
@@ -905,9 +900,8 @@ To investigate simple ``sum to zero'' contrasts such as those above, it
 is easiest to use the \Rfunction{getContrasts} function, which checks the
 estimability of the contrasts and returns the parameter estimates with their
 standard errors. Returning to the example of the first constituent multiplier
-in the first
-multiplicative interaction term, the differences between each election
-and the last can be obtained as follows:
+in the first multiplicative interaction term, the differences between each
+election and the first can be obtained as follows:
 <<Get_contrasts_1>>=
 coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
@@ -1072,7 +1066,7 @@ destination classes. This model may be expressed as
 \mu_{od} = \frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
 \frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d .
 \]
-See Section \ref{NonlinDref} for more detail on the parameterisation.
+See Section \ref{NonlinDref} for more detail on the parameterization.
 
 The basic diagonal reference model may be fitted using \Rfunction{gnm} as
 follows
@@ -1202,16 +1196,24 @@ Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2
                  4.86458                   4.72342                   4.43516
     Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7
                  4.18873                   4.43379
-
+ 
 Deviance:            425.3389
 Pearson chi-squared: 425.3389
 Residual df:         576
 \end{alltt}
-Due to the constraints imposed on the weights in the diagonal reference term,
-the coefficients of model \Robject{A} are the unique solutions. Therefore
-these estimates should correspond to those reported in Table 4 of
-\citet{Vand02}. The weights in the diagonal reference term can be evaluated as
-follows:
+The coefficients of the covariates are not aliased with the parameters of the
+diagonal reference term and thus the basic identifiability constraints that have
+been imposed are sufficient for these parameters to be identified. The diagonal
+effects do not need to be constrained as they represent contrasts with the
+off-diagonal cells.  Therefore the only unidentified parameters in this model
+are the weight parameters. This is confirmed in the summary of the model:
+@ 
+<<summary_dref>>=
+summary(A)
+@ %def 
+The over-parameterization of the weights is immaterial, since the weights have
+been constrained to sum to one as described earlier, so the weights themselves
+are estimable. The weights may be evaluated as follows:
 \begin{alltt}
 > prop.table(exp(coef(A)[6:7]))
 Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF
@@ -1223,10 +1225,9 @@ of the mother's gender role (MRMM) and the father's gender role
 (FRMF). \citet{Vand02} reversed the signs of the coefficients of these factors
 since they were coded in the direction of liberal values, unlike the other
 covariates. However, simply reversing the signs of these coefficients does not
-give the same model, since the estimates of these coefficients are not
-independent of the estimates of the diagonal effects. For consistent
-interpretation of the covariate coefficients, it is better to recode the gender
-role factors as follows:
+give the same model, since the estimates of the diagonal effects depend on the
+estimates of these coefficients. For consistent interpretation of the covariate
+coefficients, it is better to recode the gender role factors as follows:
 \begin{alltt}
 > MRMM2 <- as.numeric(!conformity$MRMM)
 > FRMF2 <- as.numeric(!conformity$FRMF)
@@ -1376,7 +1377,7 @@ coef(unidiff)[coefs.of.interest]
 @ %def
 The \Robject{coefs.of.interest} are the multipliers of the association between
 the social class of father and son. We can contrast each multiplier to that of
-the highest education level and obtain the standard errors for these parameters
+the lowest education level and obtain the standard errors for these parameters
 as follows:
 @
 <<Unidiff_contrasts>>=
@@ -1405,8 +1406,10 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
                      Mult(Exp(-1 + election), religion:vote) +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)
-getContrasts(doubleUnidiff, grep("Mult1.Factor1", names(coef(doubleUnidiff))))
-getContrasts(doubleUnidiff, grep("Mult2.Factor1", names(coef(doubleUnidiff))))
+getContrasts(doubleUnidiff, 
+             rev(grep("Mult1.Factor1", names(coef(doubleUnidiff)))))
+getContrasts(doubleUnidiff, 
+             rev(grep("Mult2.Factor1", names(coef(doubleUnidiff)))))
 @ %def
 
 \subsection{Generalized Additive Main Effects and
@@ -1569,10 +1572,13 @@ relationship between the response and the covariates in the model, but the
 scale of this association varies between categories and there is an additional
 category main effect or category-specific intercept:
 \[
-\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r \boldsymbol{\beta}_{r}\boldsymbol{x}_{ir}.
+\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r
+\boldsymbol{\beta}_{r}\boldsymbol{x}_{ir}. 
 \]
 This model can be estimated by re-expressing the categorical data as counts and
-using a \Rclass{gnm} model with a log link and poisson variance function.
+using a \Rclass{gnm} model with a log link and poisson variance function. The
+\Rpackage{gnm} package includes the utility function
+\Rfunction{expandCategorical} to facilitate the required data processing.
 
 For example, the \Robject{backPain} data set from \citet{Ande84} describes the
 progress of patients with back pain. The data set consists of an ordered factor
@@ -1583,35 +1589,25 @@ data can be re-expressed as follows:
 set.seed(1)
 data(backPain)
 backPain[1:2,]
-library(nnet)
-.incidence <- class.ind(backPain$pain)
-.counts <- as.vector(t(.incidence))
-.rowID <- factor(t(row(.incidence)))
-backPain <- backPain[.rowID, ]
-backPain$pain <- C(factor(rep(levels(backPain$pain), nrow(.incidence)),
-                          levels = levels(backPain$pain), ordered = TRUE),
-                   treatment)
-cbind(.rowID[1:12], .counts[1:12], backPain[1:12,4:1])
+backPainLong <- expandCategorical(backPain, "pain")
+backPainLong[1:12,]
 @ %def
 We can now fit the stereotype model to these data:
 @
 <<Stereotype_model>>=
-oneDimensional <- gnm(.counts ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
-                      eliminate = .rowID, family = "poisson", data = backPain,
-                      iterStart = 3)
+oneDimensional <- gnm(count ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
+                      eliminate = id, family = "poisson", data = backPainLong)
 oneDimensional
 @ %def
-using \Rfunarg{eliminate} to handle the \Robject{.rowID} so that
-these structural parameters do
-not appear in the returned coefficients. This model is one dimensional since it
-involves only one function of $\mathbf{x} = (x1, x2, x3)$. We can compare this
-model to one with category-specific coefficents of the $x$ variables, as may be
-used for a qualitative categorical response:
+using \Rfunarg{eliminate} to handle the \Robject{id} factor so that these
+structural parameters do not appear in the model summaries. This model is one
+dimensional since it involves only one function of $\mathbf{x} = (x1, x2,
+x3)$. We can compare this model to one with category-specific coefficents of the
+$x$ variables, as may be used for a qualitative categorical response:
 @
 <<Qualitative_model>>=
-threeDimensional  <- gnm(.counts ~ pain + pain:(x1 + x2 + x3),
-                         eliminate = .rowID, family = "poisson",
-                         data = backPain)
+threeDimensional  <- gnm(count ~ pain + pain:(x1 + x2 + x3), eliminate = id, 
+                         family = "poisson", data = backPainLong)
 threeDimensional
 @ %def
 This model has the maximum dimensionality of three (as determined by the number
@@ -1634,9 +1630,28 @@ t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom))
 @ %def
 which show that the \Robject{oneDimensional} model is adequate.
 
-
-
-
+To obtain estimates of the category-specific multipliers in the stereotype
+model, we need to constrain both the location and the scale of these
+parameters. The latter constraint can be imposed by fixing the slope of one of
+the covariates in the second multiplier to \Robject{1}, which may be achieved by
+specifying the covariate as an offset:
+@ 
+<<constrain_slopes>>=
+## before constraint
+summary(oneDimensional)
+oneDimensional <- update(noRelationship,
+                         ~ . + Mult(pain - 1, offset(x1) + x2 + x3 - 1))
+## after constraint
+summary(oneDimensional)
+@ %def 
+The location of the category-specific multipliers can constrained by setting one
+of the parameters to zero, either through the \Rfunarg{constrain} argument of
+\Rfunction{gnm} or with \Rfunction{getContrasts}:
+@ 
+<<get_slopes>>=
+getContrasts(oneDimensional, 6:11)
+@ %def 
+giving the required estimates.
 
 \newpage
 \appendix
@@ -1652,8 +1667,6 @@ We list here, for easy reference, all of the user-level functions in the
     \multicolumn{3}{l}{\textbf{Model Fitting}} 	\\
     \midrule
     &	\Rfunction{gnm}	&  fit generalized nonlinear models	\\
-    &	\Rfunction{gnmControl}	&  set control parameters for fitting
-                                   \Rclass{gnm} models	\\
     \midrule
     \multicolumn{3}{l}{\textbf{Model Specification}}			\\
     \midrule
@@ -1696,6 +1709,8 @@ We list here, for easy reference, all of the user-level functions in the
                                    real-valued matrix	\\
     &	\Rfunction{residSVD}	&  multiplicative approximation of
                                    model residuals	\\
+    &   \Rfunction{expandCategorical}   & expand a data frame by re-expressing
+                                          categorical data as counts \\
 \end{tabular*}
 \end{table}
 

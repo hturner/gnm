@@ -1,5 +1,5 @@
-cooks.distance.gnm <- function(model, hat = hatvalues(model),
-                                  dispersion = summary(model)$dispersion, ...){
+cooks.distance.gnm <- function(model, hat = hatvalues(model), dispersion =
+                               attr(vcov(model), "dispersion"), ...){
     p <- model$rank
     res <- na.omit(residuals(model, type =
                              "pearson"))[model$prior.weights != 0]

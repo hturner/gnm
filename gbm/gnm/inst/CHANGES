@@ -1,4 +1,4 @@
-Changes in gnm 0.7-3
+Changes in gnm 0.8-0
 =======================
 
 New Features
@@ -21,7 +21,10 @@ Improvements
 	functions.
 
     o   the fitting algorithm used by gnm() now copes better with zero-valued 
-        residuals 	
+        residuals.
+
+    o	output given by gnm() when 'trace' = TRUE or 'verbose' = TRUE is now 
+	displayed as it is generated on console-based versions of R. 	
 	
 Changes in Behaviour
 --------------------
@@ -37,11 +40,12 @@ Changes in Behaviour
     o	modified updates of linear parameters in starting procedure: now offset 
 	contribution of fully specified terms only.
 
-    o	updated plot.gnm() to give same plots as plot.lm() in R >= 2.2.0.
+    o	updated plot.gnm() to include option 'which' = 5 as in plot.lm() in 
+   	R >= 2.2.0. Now has separate help page.
 
-    o	hatvalues.gnm(), cooks.distance.gnm() and plot.gnm() replaced with 
-	methods for "glm" objects, in which hatvalues are set to NaN when 
-	calculated as being within rounding error of 1.
+    o	results of summary.gnm(), vcov.gnm() and coef.gnm() now include any 
+	eliminated parameters. Print methods have been added for vcov.gnm and 
+	coef.gnm objects so that any eliminated parameters are not shown.
 
 Bug Fixes
 ---------
@@ -57,10 +61,18 @@ Bug Fixes
     o	fixed bug in gnm() so that it can handle tables with missing values when
   	formatting components of fit.
 
-    o	hatvalues.gnm() now works for objects produced from table data
+    o	hatvalues.gnm() now works for objects produced from table data.
 
-    o	residuals.gnm() now returns table not matrix for 'type' = "deviance"
+    o	residuals.gnm() now returns table not matrix when 'type' = "deviance" 
+	for "gnm" objects produced from table data.
 
+    o	hatvalues.gnm(), cooks.distance.gnm() and plot.gnm() now handle cases 
+	which are fitted exactly (giving a hat value of 1).
+
+    o	example fitting proportional odds model in backPain help file now works.
+
+    o	fixed bug in Mult() terms so that an offset can be added to a constituent
+  	multiplier without an unspecified intercept being added also.
 
 
 Changes in gnm 0.7-2

@@ -41,11 +41,12 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     \code{na.action} attribute of \code{data}; second, any
     \code{na.action} setting of \code{options}, and third,
     \code{na.fail}.}
-  \item{method}{ the method to be used: either \code{"gnmFit"} to fit the
-    model, \code{"coefNames"} to return a character vector of names for the
-    coefficients in the model, \code{"model.matrix"} to return the
-    model matrix, or \code{"model.frame"} to return the
-    model frame. }
+  \item{method}{ the method to be used: either \code{"gnmFit"} to fit
+    the model using the default maximum likelihood algorithm,
+    \code{"coefNames"} to return a character vector of names for the
+    coefficients in the model, \code{"model.matrix"} to return the model
+    matrix, \code{"model.frame"} to return the model frame, or the name
+    of a function providing an alternative fitting algorithm. }
   \item{offset}{ this can be used to specify an a priori known component to
     be added to the predictor during fitting. \code{offset} terms
     can be included in the formula instead or as well, and if both
@@ -54,8 +55,6 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     model; if a starting value is \code{NA}, the default starting value
     will be used. Starting values need not be specified for eliminated
     parameters. } 
-  \item{control}{ a list of parameters for controlling the fitting process. See
-    \code{gnmControl} for details.}
   \item{tolerance}{ a positive numeric value specifying the tolerance level for
     convergence. }
   \item{iterStart}{ a positive integer specifying the number of start-up iterations
@@ -73,7 +72,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor }
-  \item{\dots}{ further arguments passed to or from other methods. }
+  \item{\dots}{ further arguments passed to the . }
 }
 \details{
   Models for \code{gnm} are specified by giving a symbolic description
@@ -178,7 +177,6 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{ xlevels }{ a record of the levels of the factors used in fitting. }
   \item{ y }{ the response used. }
   \item{ offset }{ the offset vector used. }
-  \item{ control }{ the value of the \code{control} argument used. }
   \item{ coefficients }{ a named vector of coefficients. }
   \item{ eliminate }{ the number of eliminated parameters. }
   \item{ predictors }{ the fitted values on the link scale. }

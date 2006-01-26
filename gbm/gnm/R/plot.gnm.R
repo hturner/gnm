@@ -1,14 +1,17 @@
-plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted", 
-    "Normal Q-Q", "Scale-Location", "Cook's distance", "Residuals vs Leverage", 
-    "Cook's distance vs Leverage"), panel = if (add.smooth) panel.smooth else points, 
-    sub.caption = NULL, main = "", ask = prod(par("mfcol")) < 
-        length(which) && dev.interactive(), ..., id.n = 3, labels.id = names(residuals(x)), 
-    cex.id = 0.75, qqline = TRUE, cook.levels = c(0.5, 1), add.smooth = getOption("add.smooth"), 
-    label.pos = c(4, 2)) 
+plot.gnm <- function (x, which = c(1:3, 5),
+                      caption = c("Residuals vs Fitted", "Normal Q-Q",
+                      "Scale-Location", "Cook's distance",
+                      "Residuals vs Leverage"),
+                      panel = if (add.smooth) panel.smooth else points, 
+                      sub.caption = NULL, main = "", ask = prod(par("mfcol")) <
+                      length(which) && dev.interactive(), ..., id.n = 3,
+                      labels.id = names(residuals(x)), cex.id = 0.75,
+                      qqline = TRUE, cook.levels = c(0.5, 1),
+                      add.smooth = getOption("add.smooth"), label.pos = c(4, 2))
 {
     if (!is.numeric(which) || any(which < 1) || any(which > 5)) 
         stop("'which' must be in 1:5")
-    show <- rep(FALSE, 6)
+    show <- rep(FALSE, 5)
     show[which] <- TRUE
     r <- residuals(x)
     yh <- naresid(x$na.action, na.omit(x$predictors))
@@ -21,10 +24,10 @@ plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
         labels.id <- labels.id[wind]
     }
     n <- length(r)
-    if (any(show[2:6])) {
+    if (any(show[2:5])) {
         s <- sqrt(deviance(x)/df.residual(x))
         hii <- hatvalues(x)
-        if (any(show[4:6])) {
+        if (any(show[4:5])) {
             cook <- cooks.distance(x)
         }
     }
@@ -36,7 +39,7 @@ plot.gnm <- function (x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
         rs <- r.w/(s * sqrt(1 - hii))
         rs[is.infinite(rs)] <- NaN
     }
-    if (any(show[5:6])) {
+    if (any(show[5])) {
         hatval <- hatvalues(x)
         r.hat <- range(hatval, na.rm = TRUE)
         isConst.hat <- diff(r.hat) < 1e-10 * mean(hatval)

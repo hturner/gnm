@@ -49,7 +49,7 @@ oneDimensional <- update(noRelationship,
 threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
 
 ### Models to determine distinguishability in stereotype model
-## constrain scale of category-specific slopes
+## constrain scale of category-specific multipliers
 oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain - 1, offset(x1) + x2 + x3 - 1))
 ## obtain identifiable contrasts & id possibly indistinguishable slopes

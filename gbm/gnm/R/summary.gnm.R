@@ -36,12 +36,13 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         cov.scaled <- matrix(, 0, 0)
     }
     df.f <- nrow(coef.table)
-    ans <- c(object[c("call", "terms", "family", "deviance", "aic",
+    ans <- c(object[c("call", "eliminate", "family", "deviance", "aic",
                       "df.residual", "iter")],
              list(deviance.resid = residuals(object, type = "deviance"), 
-                  coefficients = coef.table, 
+                  coefficients = coef.table,
+                  dispersion = attr(cov.scaled, "dispersion"),
                   df = c(object$rank, object$df.residual, df.f),
-                  cov.scaled = cov.scaled))
+                  cov.scaled = as.matrix(cov.scaled)))
     if (correlation & object$rank > 0) {
         dd <- sqrt(diag(cov.scaled))
         ans$correlation <- cov.scaled/outer(dd, dd)

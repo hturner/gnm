@@ -184,7 +184,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
             fit <- do.call(method, list(modelTools, y, constrain, nElim, family,
                                         weights, offset, nObs, start, tolerance,
                                         iterStart, iterMax, trace, verbose, x,
-                                        termPredictors))
+                                        termPredictors, ...))
         else
             fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
                           offset, nObs, start, tolerance, iterStart, iterMax,

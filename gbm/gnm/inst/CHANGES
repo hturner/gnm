@@ -4,15 +4,21 @@ Changes in gnm 0.8-0
 New Features
 ------------
 
-    o	added method = "model.matrix" to gnm() so that model matrix can be
-	obtained much faster. The new method is used in model.matrix.gnm() and 
-	summary.gnm() (in the calculation of the variance-covariance matrix)
+    o	added "model.matrix" option for 'method' argument of gnm() so that 
+	model matrix can be obtained much faster. The new method is used in 
+	model.matrix.gnm() and vcov.gnm().
 
     o	added new utility function residSVD(), to facilitate the calculation
-        of good starting values for parameters in certain Mult() terms
+        of good starting values for parameters in certain Mult() terms.
 
     o	added new dataset House2001, to illustrate the use of gnm in 
-        Rasch-type scaling of legislator votes
+        Rasch-type scaling of legislator votes.
+
+    o	added new utility function expandCategorical() for expanding data frame
+	on the basis of a categorical variable.
+
+    o	added formula.gnm() method - returns formula from "gnm" object excluding
+	the 'eliminate'd factor where necessary.
 
 Improvements
 ------------
@@ -24,7 +30,24 @@ Improvements
         residuals.
 
     o	output given by gnm() when 'trace' = TRUE or 'verbose' = TRUE is now 
-	displayed as it is generated on console-based versions of R. 	
+	displayed as it is generated on console-based versions of R. 
+
+    o	plot.gnm() now includes option 'which' = 5 as in plot.lm() in 
+   	R >= 2.2.0. Now has separate help page.	
+
+    o	the 'constrain' argument to gnm() now accepts the names of parameters.
+
+    o	the 'formula' argument to gnm() now accepts '.' as described in 
+	?terms.formula, ignoring eliminated factor if in 'data'.
+
+    o	interface for se() extended - can now use to find standard errors for 
+	all parameters or (a selection of) individual parameters in a gnm model.
+
+    o	made it possible to use gnm() with alternative fitting function.
+
+    o	".Environment" attribute now attached to "gnm" objects so that gnm package
+	loaded when workspace containing "gnm" objects is loaded.	
+
 	
 Changes in Behaviour
 --------------------
@@ -40,12 +63,33 @@ Changes in Behaviour
     o	modified updates of linear parameters in starting procedure: now offset 
 	contribution of fully specified terms only.
 
-    o	updated plot.gnm() to include option 'which' = 5 as in plot.lm() in 
-   	R >= 2.2.0. Now has separate help page.
-
     o	results of summary.gnm(), vcov.gnm() and coef.gnm() now include any 
 	eliminated parameters. Print methods have been added for vcov.gnm and 
 	coef.gnm objects so that any eliminated parameters are not shown.
+
+    o	Mult() terms are no longer split into components by anova.gnm(),
+  	termPredictors.gnm(), labels.gnm() or the "assign" attribute of the 
+	model matrix - consistent with terms() output. 
+
+    o	the 'eliminate' argument to gnm() must now be an expression that 
+	evaluates to a factor - this reverts the extension of 0.7-2.	
+
+    o	when using gnm() with 'constrain' = "pick", the name(s) of the chosen 
+	parameter(s) will replace "pick" in the reurned model call.
+
+    o	getContrasts() now uses first level of a factor as the reference level
+	(by default).
+
+    o	gnmControl() replaced by arguments to gnm().
+
+    o	gnm() now uses glm.fit() for linear models (with control parameters at 
+	the gnm() defaults).unless 'eliminate'is non-NULL.
+
+    o	vcov.gnm() and summary.gnm() now return variance-covariance matrices 
+	including any aliased parameters. v
+
+    o	summary.gnm() now returns standard errors with test statistics etc, 
+	where estimated parameters are identified.
 
 Bug Fixes
 ---------
@@ -53,10 +97,12 @@ Bug Fixes
     o	fixed bug in summary.gnm(), anova.gnm(), termPredictors.gnm() and 
 	model.matrix.gnm() where search for model variables was incorrect. 
 
-    o	fixed bug preventing estimation of weights in Dref() terms.
+    o	fixed bug preventing estimation of weight parameters in Dref() terms and 
+	changed default starting values so that these parameters no longer sum 
+	to one or appear to be estimable. 
 
     o	corrected options for 'method' argument in gnm() help file: replaced 
-	method = "coef" with method = "coefNames".
+	'method' = "coef" with 'method' = "coefNames".
 
     o	fixed bug in gnm() so that it can handle tables with missing values when
   	formatting components of fit.
@@ -73,6 +119,11 @@ Bug Fixes
 
     o	fixed bug in Mult() terms so that an offset can be added to a constituent
   	multiplier without an unspecified intercept being added also.
+
+    o	gnm() argument 'constrain' = "pick" now allows selection of more than 
+	one constraint and is compatible with use of 'eliminate'.
+
+    o	gnm() can now fit models which only have the term specified by 'eliminate'.
 
 
 Changes in gnm 0.7-2
@@ -97,7 +148,7 @@ Bug Fixes
     o	Changed the calculation of 'df.residual' returned by gnm() to 
 	correctly take account of zero-weighted observations (as in glm()).
 
-    o	When gnm() is called with arguments x = TRUE or VCOV = TRUE, the 
+    o	When gnm() is called with arguments 'x' = TRUE or 'VCOV' = TRUE, the 
 	returned matrices now include columns of zeros for constrained 
 	parameters.
 
@@ -106,7 +157,7 @@ Bug Fixes
 	evaluation of plug-in functions to be consistent with this, i.e. 
 	objects are taken from environment(formula) if not in model frame.
 
-    o	MPinv() now checks that the diagonal elements of an `eliminate'd 
+    o	MPinv() now checks that the diagonal elements of an 'eliminate'd 
 	submatrix are all non-zero and reports an error otherwise.
 
 

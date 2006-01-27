@@ -35,127 +35,127 @@ gnm(formula = Freq ~ educ:orig + educ:dest + Mult(Exp(-1 + educ),
 
 Coefficients:
               (Intercept)                educ1:orig1  
-                  0.14321                   -0.23445  
+                  0.34116                   -0.20586  
               educ2:orig1                educ3:orig1  
-                  0.18126                    1.65964  
+                  0.16571                    1.57073  
               educ4:orig1                educ5:orig1  
-                  2.06631                    4.62178  
+                  1.94923                    4.44799  
               educ1:orig2                educ2:orig2  
-                  0.55068                    1.18066  
+                  0.58881                    1.17278  
               educ3:orig2                educ4:orig2  
-                  1.56624                    2.21856  
+                  1.48192                    2.10488  
               educ5:orig2                educ1:orig3  
-                  3.83044                    3.16879  
+                  3.65767                    3.20676  
               educ2:orig3                educ3:orig3  
-                  2.62946                    3.14158  
+                  2.62146                    3.05719  
               educ4:orig3                educ5:orig3  
-                  3.58227                    4.81621  
+                  3.46854                    4.64343  
               educ1:orig4                educ2:orig4  
-                  0.51852                    0.17671  
+                  0.55790                    0.16984  
               educ3:orig4                educ4:orig4  
-                  1.00509                    2.17295  
+                  0.92137                    2.05972  
               educ5:orig4                educ1:orig5  
-                  3.54051                    1.98547  
+                  3.36788                    2.02323  
               educ2:orig5                educ3:orig5  
-                  2.17577                    2.45583  
+                  2.16759                    2.37132  
               educ4:orig5                educ5:orig5  
-                  3.34961                    4.22296  
+                  3.23580                    4.05015  
               educ1:orig6                educ2:orig6  
-                  2.14446                    2.11656  
+                  2.18284                    2.10889  
               educ3:orig6                educ4:orig6  
-                  2.27170                    3.08352  
+                  2.18750                    2.96993  
               educ5:orig6                educ1:orig7  
-                  4.28249                   -0.13866  
+                  4.10976                   -0.40577  
               educ2:orig7                educ3:orig7  
-                 -1.10261                   -0.08020  
+                 -1.35624                   -0.31144  
               educ4:orig7                educ5:orig7  
-                  0.95312                    0.20533  
+                  0.73048                         NA  
               educ1:dest2                educ2:dest2  
-                  0.97779                    0.96067  
+                  0.97596                    0.95920  
               educ3:dest2                educ4:dest2  
-                  0.69591                   -0.88799  
+                  0.69503                   -0.88864  
               educ5:dest2                educ1:dest3  
-                 -2.30409                    2.70188  
+                 -2.30428                    2.69944  
               educ2:dest3                educ3:dest3  
-                  1.88601                    1.16619  
+                  1.88404                    1.16502  
               educ4:dest3                educ5:dest3  
-                 -0.55281                   -2.33741  
+                 -0.55368                   -2.33767  
               educ1:dest4                educ2:dest4  
-                  0.15109                    0.10556  
+                  0.14880                    0.10371  
               educ3:dest4                educ4:dest4  
-                 -0.67215                   -3.12903  
+                 -0.67325                   -3.12985  
               educ5:dest4                educ1:dest5  
-                 -5.04841                    2.76747  
+                 -5.04866                    2.76545  
               educ2:dest5                educ3:dest5  
-                  2.15724                    1.14366  
+                  2.15561                    1.14268  
               educ4:dest5                educ5:dest5  
-                  0.46702                   -2.17698  
+                  0.46630                   -2.17719  
               educ1:dest6                educ2:dest6  
-                  2.45730                    1.11930  
+                  2.45537                    1.11774  
               educ3:dest6                educ4:dest6  
-                  0.63493                   -2.39975  
+                  0.63400                   -2.40044  
               educ5:dest6                educ1:dest7  
-                 -4.00419                   -3.23486  
+                 -4.00439                   -3.25373  
               educ2:dest7                educ3:dest7  
-                 -4.07298                   -3.54301  
+                 -4.08818                   -3.55209  
               educ4:dest7                educ5:dest7  
-                -27.89935                  -28.99077  
+                -27.90060                  -28.99369  
       Mult1.Factor1.educ1        Mult1.Factor1.educ2  
-                  1.08254                    0.86579  
+                  1.08019                    0.86344  
       Mult1.Factor1.educ3        Mult1.Factor1.educ4  
-                  0.35130                    0.05241  
+                  0.34896                    0.05007  
       Mult1.Factor1.educ5  Mult1.Factor2.(Intercept)  
-                 -1.15532                   -0.28564  
+                 -1.15767                   -0.34962  
 Mult1.Factor2.orig1:dest1  Mult1.Factor2.orig2:dest1  
-                  0.85153                    0.51119  
+                  0.83992                    0.49555  
 Mult1.Factor2.orig3:dest1  Mult1.Factor2.orig4:dest1  
-                  0.06964                    0.61931  
+                  0.05301                    0.60349  
 Mult1.Factor2.orig5:dest1  Mult1.Factor2.orig6:dest1  
-                 -0.25716                    0.16489  
+                 -0.27448                    0.14835  
 Mult1.Factor2.orig7:dest1  Mult1.Factor2.orig1:dest2  
-                  0.51368                    0.32259  
+                  0.60168                    0.31036  
 Mult1.Factor2.orig2:dest2  Mult1.Factor2.orig3:dest2  
-                  0.12486                    0.09537  
+                  0.10894                    0.07942  
 Mult1.Factor2.orig4:dest2  Mult1.Factor2.orig5:dest2  
-                  0.36426                   -0.04267  
+                  0.34847                   -0.05887  
 Mult1.Factor2.orig6:dest2  Mult1.Factor2.orig7:dest2  
-                  0.29720                    0.67001  
+                  0.28160                    0.75900  
 Mult1.Factor2.orig1:dest3  Mult1.Factor2.orig2:dest3  
-                  0.16264                   -0.38039  
+                  0.15024                   -0.39729  
 Mult1.Factor2.orig3:dest3  Mult1.Factor2.orig4:dest3  
-                 -0.08002                    0.41205  
+                 -0.09617                    0.39658  
 Mult1.Factor2.orig5:dest3  Mult1.Factor2.orig6:dest3  
-                 -0.26401                   -0.09864  
+                 -0.28051                   -0.11497  
 Mult1.Factor2.orig7:dest3  Mult1.Factor2.orig1:dest4  
-                 -0.05691                    0.54008  
+                  0.03058                    0.52852  
 Mult1.Factor2.orig2:dest4  Mult1.Factor2.orig3:dest4  
-                 -0.74010                   -0.32274  
+                 -0.75790                   -0.33951  
 Mult1.Factor2.orig4:dest4  Mult1.Factor2.orig5:dest4  
-                  1.06665                   -0.46381  
+                  1.05267                   -0.48083  
 Mult1.Factor2.orig6:dest4  Mult1.Factor2.orig7:dest4  
-                 -0.29270                    0.04871  
+                 -0.30954                    0.13640  
 Mult1.Factor2.orig1:dest5  Mult1.Factor2.orig2:dest5  
-                  0.21921                    0.03435  
+                  0.20681                    0.01827  
 Mult1.Factor2.orig3:dest5  Mult1.Factor2.orig4:dest5  
-                 -0.14002                    0.33519  
+                 -0.15645                    0.31940  
 Mult1.Factor2.orig5:dest5  Mult1.Factor2.orig6:dest5  
-                  0.10668                    0.15296  
+                  0.09091                    0.13709  
 Mult1.Factor2.orig7:dest5  Mult1.Factor2.orig1:dest6  
-                  0.28532                    0.34735  
+                  0.37348                    0.33521  
 Mult1.Factor2.orig2:dest6  Mult1.Factor2.orig3:dest6  
-                 -0.03371                   -0.09312  
+                 -0.04997                   -0.10947  
 Mult1.Factor2.orig4:dest6  Mult1.Factor2.orig5:dest6  
-                  0.64970                   -0.01041  
+                  0.63461                   -0.02649  
 Mult1.Factor2.orig6:dest6  Mult1.Factor2.orig7:dest6  
-                  0.20439                    0.28543  
+                  0.18860                    0.37355  
 Mult1.Factor2.orig1:dest7  Mult1.Factor2.orig2:dest7  
-                -17.01042                    0.64890  
+                -17.06748                    0.63999  
 Mult1.Factor2.orig3:dest7  Mult1.Factor2.orig4:dest7  
-                  0.07968                    1.05952  
+                  0.06949                    1.05115  
 Mult1.Factor2.orig5:dest7  Mult1.Factor2.orig6:dest7  
-                  0.15382                    0.67052  
+                  0.14387                    0.66158  
 Mult1.Factor2.orig7:dest7  
-                -16.16493  
+                -16.09681  
 
 Deviance:            208.3152 
 Pearson chi-squared: 195.0209 
@@ -163,11 +163,11 @@ Residual df:         144
 > getContrasts(unidiff, grep("Mult.*educ", names(coef(unidiff))))
 Loading required package: qvcalc
 [[1]]
-                      estimate        SE    quasiSE   quasiVar
-Mult1.Factor1.educ1  0.0000000 0.0000000 0.09743542 0.00949366
-Mult1.Factor1.educ2 -0.2167514 0.1605287 0.12813630 0.01641891
-Mult1.Factor1.educ3 -0.7312351 0.2311500 0.20930038 0.04380665
-Mult1.Factor1.educ4 -1.0301237 0.3425339 0.32517402 0.10573814
-Mult1.Factor1.educ5 -2.2378618 0.9411152 0.93130651 0.86733182
+                      Estimate Std. Error    quasiSE   quasiVar
+Mult1.Factor1.educ1  0.0000000  0.0000000 0.09743542 0.00949366
+Mult1.Factor1.educ2 -0.2167514  0.1605286 0.12813630 0.01641891
+Mult1.Factor1.educ3 -0.7312352  0.2311500 0.20930039 0.04380665
+Mult1.Factor1.educ4 -1.0301239  0.3425339 0.32517407 0.10573817
+Mult1.Factor1.educ5 -2.2378623  0.9411155 0.93130683 0.86733242
 
 > 

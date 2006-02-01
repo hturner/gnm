@@ -586,7 +586,7 @@ for the parameter estimates can be set by \Rfunarg{start} and parameters can be
 constrained to zero by specifying a \Rfunarg{constrain} argument. Finally
 parameters of a stratification factor can be handled more efficiently by
 specifying the factor in an \Rfunarg{eliminate} argument. These options are
-described in more detail below. 
+described in more detail below.
 
 \subsection{Basic control parameters}
 
@@ -600,7 +600,7 @@ which is the default setting, progress is indicated by printing the character
 the deviance is printed at the beginning of each iteration (over-riding the
 printing of ``.'' if necessary). Whenever \Rfunarg{verbose} is \Robject{TRUE},
 additional messages indicate each stage of the fitting process and diagnose any
-errors that cause that cause the algorithm to restart.  
+errors that cause that cause the algorithm to restart.
 
 The fitting algorithm will terminate before the number of main iterations has
 reached \Rfunarg{iterMax} if the convergence criteria have been met, with
@@ -609,7 +609,7 @@ the squared components of the score vector with corresponding elements of the
 diagonal of the Fisher information matrix. If, for all components of the score
 vector, the ratio is less than \Robject{tolerance$^2$}, or the corresponding diagonal
 element of the Fisher information matrix is less than 1e-20, the algorithm is
-deemed to have converged.  
+deemed to have converged.
 
 \subsection{Using \Rfunarg{start}}
 \label{start}
@@ -674,7 +674,7 @@ By default, \Rfunction{gnm} only imposes identifiability constraints according
 to the general conventions used by \Robject{R} to handle linear aliasing. Therefore
 models that have any nonlinear terms will be usually be over-parameterized and
 \Rfunction{gnm} will return a random parameterization for unidentified
-coefficients. 
+coefficients.
 
 To illustrate this point, consider the following application of \Rfunction{gnm},
 discussed later in Section \ref{RCmodels}:
@@ -699,7 +699,7 @@ round(compareCoef, 4)
 Even though the linear terms are constrained, the parameter estimates for the
 main effects of \Robject{origin} and \Robject{destination} still change, because
 these terms are aliased with the higher order multiplicative interaction, which
-is unconstrained. 
+is unconstrained.
 
 Standard errors are only meaningful for identified parameters and hence the
 output of \Rfunction{summary.gnm} will show clearly which coefficients are
@@ -707,11 +707,11 @@ estimable:
 <<Summarize_model>>=
 summary(RChomog2)
 @
- 
+
 Additional constraints may be specified through the \Rfunarg{constrain} argument
 of \Rfunction{gnm}. This argument indicates parameters that are to be
-constrained to zero in the fitting process. Parameters can be indicated by a 
-logical vector, a numeric vector of indices, a character vector of names or, 
+constrained to zero in the fitting process. Parameters can be indicated by a
+logical vector, a numeric vector of indices, a character vector of names or,
 if \texttt{constrain = "pick"} they can be selected through a \emph{Tk} dialog.
 
 In the case above, constraining one level of the homogeneous multiplicative
@@ -752,7 +752,7 @@ term. So in terms of the structure of the model,
 \begin{alltt}
     gnm(mu ~ A + B + Mult(A, B), eliminate = strata1:strata2)
 \end{alltt}
-is equivalent to 
+is equivalent to
 \begin{alltt}
     gnm(mu ~ -1 + strata1:strata2 + A + B + Mult(A, B))
 \end{alltt}
@@ -861,7 +861,7 @@ The effects of the first constituent multiplier in the first multiplicative
 interaction are identified when the estimate of one of these effects is
 constrained to zero, say for the effect of the first level. The parameters to be
 estimated are then the differences between each effect and the effect of the
-first level. These differences can be represented by a contrast matrix as 
+first level. These differences can be represented by a contrast matrix as
 follows:
 <<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
@@ -869,7 +869,7 @@ contrCoefs <- coefs[grep("Mult1.Factor1", coefs)]
 nContr <- length(contrCoefs)
 contrMatrix <- matrix(0, length(coefs), nContr,
                       dimnames = list(coefs, contrCoefs))
-contr <- contr.sum(contrCoefs) 
+contr <- contr.sum(contrCoefs)
 # switch round to contrast with first level
 contr <- rbind(contr[nContr, ], contr[-nContr, ])
 contrMatrix[contrCoefs, 2:nContr] <- contr
@@ -891,7 +891,7 @@ contrCoefs <- coefs[grep("Mult1.Factor2", coefs)]
 nContr <- length(contrCoefs)
 contrMatrix <- matrix(0, length(coefs), length(contrCoefs),
                       dimnames = list(coefs, contrCoefs))
-contr <- contr.sum(contrCoefs) 
+contr <- contr.sum(contrCoefs)
 contrMatrix[contrCoefs, 2:nContr] <- rbind(contr[nContr, ], contr[-nContr, ])
 checkEstimable(doubleUnidiff, contrMatrix)
 @
@@ -1180,26 +1180,26 @@ The baseline model can be fitted as follows:
 > A
 
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
 Coefficients:
-                    AGEM                      MRMM                      FRMF  
-                 0.06364                  -0.32425                  -0.25324  
-                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
-                -0.06430                  -0.06043                  -0.33730  
-Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
-                -0.02507                   4.95123                   4.86328  
-    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
-                 4.86458                   4.72343                   4.43516  
-    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
-                 4.18873                   4.43379  
+                    AGEM                      MRMM                      FRMF
+                 0.06364                  -0.32425                  -0.25324
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM
+                -0.06430                  -0.06043                  -0.33730
+Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2
+                -0.02507                   4.95123                   4.86328
+    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5
+                 4.86458                   4.72343                   4.43516
+    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7
+                 4.18873                   4.43379
 
-Deviance:            425.3389 
-Pearson chi-squared: 425.3389 
-Residual df:         576 
+Deviance:            425.3389
+Pearson chi-squared: 425.3389
+Residual df:         576
 \end{alltt}
 The coefficients of the covariates are not aliased with the parameters of the
 diagonal reference term and thus the basic identifiability constraints that have
@@ -1211,24 +1211,24 @@ are the weight parameters. This is confirmed in the summary of the model:
 > summary(A)
 
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
-Deviance Residuals: 
-     Min        1Q    Median        3Q       Max  
--3.63689  -0.50383   0.01714   0.56752   2.25140  
+Deviance Residuals:
+     Min        1Q    Median        3Q       Max
+-3.63689  -0.50383   0.01714   0.56752   2.25140
 
 Coefficients:
-                         Estimate Std. Error t value Pr(>|t|)    
-AGEM                      0.06364    0.07375   0.863  0.38859    
+                         Estimate Std. Error t value Pr(>|t|)
+AGEM                      0.06364    0.07375   0.863  0.38859
 MRMM                     -0.32425    0.07766  -4.175 3.44e-05 ***
-FRMF                     -0.25324    0.07681  -3.297  0.00104 ** 
-MWORK                    -0.06430    0.07431  -0.865  0.38727    
-MFCM                     -0.06043    0.07123  -0.848  0.39663    
-Dref(MOPLM, FOPLF).MOPLM -0.33730         NA      NA       NA    
-Dref(MOPLM, FOPLF).FOPLF -0.02507         NA      NA       NA    
+FRMF                     -0.25324    0.07681  -3.297  0.00104 **
+MWORK                    -0.06430    0.07431  -0.865  0.38727
+MFCM                     -0.06043    0.07123  -0.848  0.39663
+Dref(MOPLM, FOPLF).MOPLM -0.33730         NA      NA       NA
+Dref(MOPLM, FOPLF).FOPLF -0.02507         NA      NA       NA
 Dref(MOPLM, FOPLF).1      4.95123    0.16639  29.757  < 2e-16 ***
 Dref(MOPLM, FOPLF).2      4.86328    0.10436  46.601  < 2e-16 ***
 Dref(MOPLM, FOPLF).3      4.86458    0.12855  37.842  < 2e-16 ***
@@ -1237,7 +1237,7 @@ Dref(MOPLM, FOPLF).5      4.43516    0.19315  22.963  < 2e-16 ***
 Dref(MOPLM, FOPLF).6      4.18873    0.17142  24.435  < 2e-16 ***
 Dref(MOPLM, FOPLF).7      4.43379    0.16903  26.231  < 2e-16 ***
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for gaussian family taken to be 0.7384355)
 
@@ -1254,7 +1254,7 @@ been constrained to sum to one as described earlier, so the weights themselves
 are estimable. The weights may be evaluated as follows:
 \begin{alltt}
 > prop.table(exp(coef(A)[6:7]))
-Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
+Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF
                0.4225701                0.5774299
 \end{alltt}
 giving the values reported by \citet{Vand02}. All the other coefficients of
@@ -1275,26 +1275,26 @@ coefficients, it is better to recode the gender role factors as follows:
 > A
 
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM + 
-    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
+    Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
 Coefficients:
-                    AGEM                     MRMM2                     FRMF2  
-                 0.06364                   0.32425                   0.25324  
-                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM  
-                -0.06430                  -0.06043                  -0.08270  
-Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2  
-                 0.22955                   4.37372                   4.28579  
-    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5  
-                 4.28708                   4.14593                   3.85766  
-    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7  
-                 3.61123                   3.85629  
+                    AGEM                     MRMM2                     FRMF2
+                 0.06364                   0.32425                   0.25324
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF).MOPLM
+                -0.06430                  -0.06043                  -0.08270
+Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2
+                 0.22955                   4.37372                   4.28579
+    Dref(MOPLM, FOPLF).3      Dref(MOPLM, FOPLF).4      Dref(MOPLM, FOPLF).5
+                 4.28708                   4.14593                   3.85766
+    Dref(MOPLM, FOPLF).6      Dref(MOPLM, FOPLF).7
+                 3.61123                   3.85629
 
-Deviance:            425.3389 
-Pearson chi-squared: 425.3389 
-Residual df:         576 
+Deviance:            425.3389
+Pearson chi-squared: 425.3389
+Residual df:         576
 \end{alltt}
 The coefficients of the covariates are now as reported by \citet{Vand02}, but
 the diagonal effects have been adjusted appropriately.
@@ -1320,62 +1320,62 @@ role factors for ease of comparison to the results reported by \citet{Vand02},
 > F
 
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+    Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian,
     data = conformity, verbose = FALSE)
 
 
 Coefficients:
-                                                     AGEM  
-                                                  0.05818  
-                                                     MRMM  
-                                                 -0.32701  
-                                                     FRMF  
-                                                 -0.25772  
-                                                    MWORK  
-                                                 -0.07847  
-                                                     MFCM  
-                                                 -0.01694  
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)  
-                                                  0.79413  
-       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM  
-                                                 -2.51751  
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)  
-                                                 -0.27618  
-       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM  
-                                                  2.03673  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1  
-                                                  4.82477  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2  
-                                                  4.88066  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3  
-                                                  4.83969  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4  
-                                                  4.74849  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5  
-                                                  4.42019  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6  
-                                                  4.17956  
-                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7  
-                                                  4.40819  
+                                                     AGEM
+                                                  0.05818
+                                                     MRMM
+                                                 -0.32701
+                                                     FRMF
+                                                 -0.25772
+                                                    MWORK
+                                                 -0.07847
+                                                     MFCM
+                                                 -0.01694
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)
+                                                  0.79413
+       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM
+                                                 -2.51751
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)
+                                                 -0.27618
+       Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM
+                                                  2.03673
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).1
+                                                  4.82477
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).2
+                                                  4.88066
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).3
+                                                  4.83969
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).4
+                                                  4.74849
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).5
+                                                  4.42019
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).6
+                                                  4.17956
+                Dref(MOPLM, FOPLF, formula = ~1 + MFCM).7
+                                                  4.40819
 
-Deviance:            420.9022 
-Pearson chi-squared: 420.9022 
-Residual df:         575 
+Deviance:            420.9022
+Pearson chi-squared: 420.9022
+Residual df:         575
 \end{alltt}
 In this case there are two sets of weights, one for when the mother's conflict
 score is less than average (coded as zero) and one for when the score is greater
 than average (coded as one). These can be evaluated as follows:
 \begin{alltt}
 > prop.table(exp(coef(F))[c(6,8)])
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept) 
-                                                0.7446574 
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept) 
-                                                0.2553426 
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)
+                                                0.7446574
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)
+                                                0.2553426
 > prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)]))
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM 
-                                        0.02977308 
-Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM 
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM
+                                        0.02977308
+Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM
                                         0.97022692
 \end{alltt}
 giving the same weights as in Table 4 of \citet{Vand02}.
@@ -1440,13 +1440,13 @@ vote, differ between the most recent election and the other elections:
 <<double_UNIDIFF_model>>=
 set.seed(1)
 data(cautres)
-doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
+doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(-1 + election), religion:vote) +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)
-getContrasts(doubleUnidiff, 
+getContrasts(doubleUnidiff,
              rev(grep("Mult1.Factor1", names(coef(doubleUnidiff)))))
-getContrasts(doubleUnidiff, 
+getContrasts(doubleUnidiff,
              rev(grep("Mult2.Factor1", names(coef(doubleUnidiff)))))
 @ %def
 
@@ -1611,7 +1611,7 @@ scale of this association varies between categories and there is an additional
 category main effect or category-specific intercept:
 \[
 \log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r
-\boldsymbol{\beta}_{r}\boldsymbol{x}_{ir}. 
+\boldsymbol{\beta}_{r}\boldsymbol{x}_{ir}.
 \]
 This model can be estimated by re-expressing the categorical data as counts and
 using a \Rclass{gnm} model with a log link and poisson variance function. The
@@ -1644,7 +1644,7 @@ x3)$. We can compare this model to one with category-specific coefficents of the
 $x$ variables, as may be used for a qualitative categorical response:
 @
 <<Qualitative_model>>=
-threeDimensional  <- gnm(count ~ pain + pain:(x1 + x2 + x3), eliminate = id, 
+threeDimensional  <- gnm(count ~ pain + pain:(x1 + x2 + x3), eliminate = id,
                          family = "poisson", data = backPainLong)
 threeDimensional
 @ %def
@@ -1673,7 +1673,7 @@ model, we need to constrain both the location and the scale of these
 parameters. The latter constraint can be imposed by fixing the slope of one of
 the covariates in the second multiplier to \Robject{1}, which may be achieved by
 specifying the covariate as an offset:
-@ 
+@
 <<constrain_slopes>>=
 ## before constraint
 summary(oneDimensional)
@@ -1681,14 +1681,14 @@ oneDimensional <- gnm(count ~ pain + Mult(pain - 1, offset(x1) + x2 + x3 - 1),
                       eliminate = id, family = "poisson", data = backPainLong)
 ## after constraint
 summary(oneDimensional)
-@ %def 
+@ %def
 The location of the category-specific multipliers can constrained by setting one
 of the parameters to zero, either through the \Rfunarg{constrain} argument of
 \Rfunction{gnm} or with \Rfunction{getContrasts}:
-@ 
+@
 <<get_slopes>>=
 getContrasts(oneDimensional, 6:11)
-@ %def 
+@ %def
 giving the required estimates.
 
 \newpage
@@ -1766,14 +1766,14 @@ Changes in gnm 0.8-0
 New Features
 ------------
 
-    o	added "model.matrix" option for 'method' argument of gnm() so that 
-	model matrix can be obtained much faster. The new method is used in 
+    o	added "model.matrix" option for 'method' argument of gnm() so that
+	model matrix can be obtained much faster. The new method is used in
 	model.matrix.gnm() and vcov.gnm().
 
     o	added new utility function residSVD(), to facilitate the calculation
         of good starting values for parameters in certain Mult() terms.
 
-    o	added new dataset House2001, to illustrate the use of gnm in 
+    o	added new dataset House2001, to illustrate the use of gnm in
         Rasch-type scaling of legislator votes.
 
     o	added new utility function expandCategorical() for expanding data frame
@@ -1785,58 +1785,58 @@ New Features
 Improvements
 ------------
 
-    o	gnm() now takes less time to run due to improvements made in internal 
+    o	gnm() now takes less time to run due to improvements made in internal
 	functions.
 
-    o   the fitting algorithm used by gnm() now copes better with zero-valued 
+    o   the fitting algorithm used by gnm() now copes better with zero-valued
         residuals.
 
-    o	output given by gnm() when 'trace' = TRUE or 'verbose' = TRUE is now 
-	displayed as it is generated on console-based versions of R. 
+    o	output given by gnm() when 'trace' = TRUE or 'verbose' = TRUE is now
+	displayed as it is generated on console-based versions of R.
 
-    o	plot.gnm() now includes option 'which' = 5 as in plot.lm() in 
-   	R >= 2.2.0. Now has separate help page.	
+    o	plot.gnm() now includes option 'which' = 5 as in plot.lm() in
+   	R >= 2.2.0. Now has separate help page.
 
     o	the 'constrain' argument to gnm() now accepts the names of parameters.
 
-    o	the 'formula' argument to gnm() now accepts '.' as described in 
+    o	the 'formula' argument to gnm() now accepts '.' as described in
 	?terms.formula, ignoring eliminated factor if in 'data'.
 
-    o	interface for se() extended - can now use to find standard errors for 
+    o	interface for se() extended - can now use to find standard errors for
 	all parameters or (a selection of) individual parameters in a gnm model.
 
     o	made it possible to use gnm() with alternative fitting function.
 
     o	".Environment" attribute now attached to "gnm" objects so that gnm package
-	loaded when workspace containing "gnm" objects is loaded.	
+	loaded when workspace containing "gnm" objects is loaded.
 
-	
+
 Changes in Behaviour
 --------------------
 
-    o	start-up iterations now only update column of design matrix required in 
-	next iteration. Therefore plug-in functions using the default start-up 
-	procedure for nonlinear parameters need a localDesignFunction() with the 
+    o	start-up iterations now only update column of design matrix required in
+	next iteration. Therefore plug-in functions using the default start-up
+	procedure for nonlinear parameters need a localDesignFunction() with the
 	argument 'ind' specifying the column that should be returned.
 
     o	modified output given by gnm() when 'trace' = TRUE: now prints initial
 	deviance and the deviance at the end of each iteration.
 
-    o	modified updates of linear parameters in starting procedure: now offset 
+    o	modified updates of linear parameters in starting procedure: now offset
 	contribution of fully specified terms only.
 
-    o	results of summary.gnm(), vcov.gnm() and coef.gnm() now include any 
-	eliminated parameters. Print methods have been added for vcov.gnm and 
+    o	results of summary.gnm(), vcov.gnm() and coef.gnm() now include any
+	eliminated parameters. Print methods have been added for vcov.gnm and
 	coef.gnm objects so that any eliminated parameters are not shown.
 
     o	Mult() terms are no longer split into components by anova.gnm(),
-  	termPredictors.gnm(), labels.gnm() or the "assign" attribute of the 
-	model matrix - consistent with terms() output. 
+  	termPredictors.gnm(), labels.gnm() or the "assign" attribute of the
+	model matrix - consistent with terms() output.
 
-    o	the 'eliminate' argument to gnm() must now be an expression that 
-	evaluates to a factor - this reverts the extension of 0.7-2.	
+    o	the 'eliminate' argument to gnm() must now be an expression that
+	evaluates to a factor - this reverts the extension of 0.7-2.
 
-    o	when using gnm() with 'constrain' = "pick", the name(s) of the chosen 
+    o	when using gnm() with 'constrain' = "pick", the name(s) of the chosen
 	parameter(s) will replace "pick" in the reurned model call.
 
     o	getContrasts() now uses first level of a factor as the reference level
@@ -1844,26 +1844,26 @@ Changes in Behaviour
 
     o	gnmControl() replaced by arguments to gnm().
 
-    o	gnm() now uses glm.fit() for linear models (with control parameters at 
+    o	gnm() now uses glm.fit() for linear models (with control parameters at
 	the gnm() defaults).unless 'eliminate'is non-NULL.
 
-    o	vcov.gnm() and summary.gnm() now return variance-covariance matrices 
+    o	vcov.gnm() and summary.gnm() now return variance-covariance matrices
 	including any aliased parameters. v
 
-    o	summary.gnm() now returns standard errors with test statistics etc, 
+    o	summary.gnm() now returns standard errors with test statistics etc,
 	where estimated parameters are identified.
 
 Bug Fixes
 ---------
 
-    o	fixed bug in summary.gnm(), anova.gnm(), termPredictors.gnm() and 
-	model.matrix.gnm() where search for model variables was incorrect. 
+    o	fixed bug in summary.gnm(), anova.gnm(), termPredictors.gnm() and
+	model.matrix.gnm() where search for model variables was incorrect.
 
-    o	fixed bug preventing estimation of weight parameters in Dref() terms and 
-	changed default starting values so that these parameters no longer sum 
-	to one or appear to be estimable. 
+    o	fixed bug preventing estimation of weight parameters in Dref() terms and
+	changed default starting values so that these parameters no longer sum
+	to one or appear to be estimable.
 
-    o	corrected options for 'method' argument in gnm() help file: replaced 
+    o	corrected options for 'method' argument in gnm() help file: replaced
 	'method' = "coef" with 'method' = "coefNames".
 
     o	fixed bug in gnm() so that it can handle tables with missing values when
@@ -1871,10 +1871,10 @@ Bug Fixes
 
     o	hatvalues.gnm() now works for objects produced from table data.
 
-    o	residuals.gnm() now returns table not matrix when 'type' = "deviance" 
+    o	residuals.gnm() now returns table not matrix when 'type' = "deviance"
 	for "gnm" objects produced from table data.
 
-    o	hatvalues.gnm(), cooks.distance.gnm() and plot.gnm() now handle cases 
+    o	hatvalues.gnm(), cooks.distance.gnm() and plot.gnm() now handle cases
 	which are fitted exactly (giving a hat value of 1).
 
     o	example fitting proportional odds model in backPain help file now works.
@@ -1882,7 +1882,7 @@ Bug Fixes
     o	fixed bug in Mult() terms so that an offset can be added to a constituent
   	multiplier without an unspecified intercept being added also.
 
-    o	gnm() argument 'constrain' = "pick" now allows selection of more than 
+    o	gnm() argument 'constrain' = "pick" now allows selection of more than
 	one constraint and is compatible with use of 'eliminate'.
 
     o	gnm() can now fit models which only have the term specified by 'eliminate'.

@@ -25,7 +25,7 @@ data(cautres)
 
 ##  Fit a "double UNIDIFF" model with the religion-vote and class-vote
 ##  interactions both modulated by nonnegative election-specific multipliers
-doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
+doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(-1 + election), religion:vote) +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)

@@ -2,7 +2,7 @@ library(gnm)
 set.seed(1)
 data(cautres)
 
-doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
+doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(-1 + election), religion:vote) +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)

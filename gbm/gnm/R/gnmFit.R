@@ -11,8 +11,11 @@
               trace = FALSE,
               verbose = FALSE,
               x = FALSE,
-              termPredictors = FALSE)
+              termPredictors = FALSE,
+              lsMethod = "chol")
 {
+    if (!(lsMethod %in% c("chol", "qr", "svd"))) stop(
+                "lsMethod must be one of chol, qr, svd")
     eps <- 100*.Machine$double.eps
     attempt <- 1
     dev <- numeric(2)
@@ -41,10 +44,10 @@
                 X <- modelTools$localDesignFunction(thetaOffset,
                                                     factorList)
                 theta[unspecifiedLin] <- quick.glm.fit(X[, unspecifiedLin], y,
-                                                       weights = weights,
-                                                       offset = offsetSpecified,
-                                                       family = family,
-                                                       eliminate = eliminate)
+                                                    weights = weights,
+                                                    offset = offsetSpecified,
+                                                    family = family,
+                                                    eliminate = eliminate)
                 constrain[is.na(theta)] <- TRUE
                 theta <- naToZero(theta)
             }
@@ -69,7 +72,9 @@
                     w <- weights * ifelse(abs(dmu) < eps, 0, dmu * dmu/vmu)
                     Xi <- modelTools$localDesignFunction(theta,
                                                          factorList, i)
-                    score <- crossprod(ifelse(abs(y - mu) < eps, 0, (y - mu)/dmu),
+                    score <- crossprod(ifelse(abs(y - mu) < eps,
+                                              0,
+                                              (y - mu)/dmu),
                                        w * Xi)
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
@@ -121,6 +126,8 @@
         }
         if (status == "not.converged") {
             needToElim <- seq(sum(!constrain[seq(eliminate)])[eliminate > 0])
+            X <-  modelTools$localDesignFunction(theta, factorList)
+            rankX <- qr(X)$rank
             for (iter in seq(iterMax)) {
                 if (verbose) {
                     if (iter == 1)
@@ -151,15 +158,23 @@
                     status <- "stuck"
                     break
                 }
-                znorm <- sqrt(mean(z*z))
-                zscaled <- z/znorm
-                Z <- cbind(zscaled, X)
-                WZ <- w * Z
-                ZWZ <- crossprod(Z, WZ)
-                ZWZinv <- MPinv(ZWZ,
-                                eliminate = 1 + needToElim,
-                                onlyFirstCol = TRUE)
-                theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] * znorm
+                if (lsMethod %in% c("svd", "chol")) {
+                    znorm <- sqrt(mean(z*z))
+                    zscaled <- z/znorm
+                    Z <- cbind(zscaled, X)
+                    WZ <- w * Z
+                    ZWZ <- crossprod(Z, WZ)
+                    ZWZinv <- MPinv(ZWZ,
+                                    eliminate = 1 + needToElim,
+                                    onlyFirstCol = TRUE,
+                                    theRank = 1 + rankX,
+                                    method = lsMethod)
+                    theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] * znorm
+                }
+                if (lsMethod == "qr") {
+                    XWX <- qr(crossprod(X, WX))
+                    theChange <- naToZero(qr.coef(XWX, crossprod(WX, z)))
+                }
                 dev[2] <- dev[1]
                 j <- 1
                 while (dev[1] >= dev[2] && j < 11) {
@@ -199,9 +214,10 @@
                 message("\n"[!trace],
                         switch(status,
                                bad.param = "Bad parameterisation",
-                               eta.not.finite = "Predictors are not all finite",
+                               eta.not.finite =
+                                 "Predictors are not all finite",
                                w.not.finite =
-                               "Iterative weights are not all finite",
+                                 "Iterative weights are not all finite",
                                no.deviance = "Deviance is NaN",
                                stuck = "Iterations are not converging"))
             attempt <- attempt + 1
@@ -218,7 +234,8 @@
                 "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
     Info <- crossprod(X, WX)
-    VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE)
+    VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE,
+                  theRank = rankX, method = "chol")
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
@@ -233,7 +250,7 @@
             fit$x <- array(0, dim = c(nrow(X), length(theta)),
                            dimnames = list(NULL, names(theta)))
             fit$x[, !constrain] <- X
-            attr(fit$x, "assign") <- modelTools$termAssign   
+            attr(fit$x, "assign") <- modelTools$termAssign
         }
         else
             fit$x <- structure(X, assign = modelTools$termAssign)

@@ -1,101 +1,125 @@
-MPinv <- function(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
-                     onlyNonElim = FALSE, tolerance = 100*.Machine$double.eps,
-                     rank = NULL){
-    ## Moore-Penrose pseudoinverse of a real-valued matrix.
-    ## Patterned after ginv() from the MASS package of W N Venables
-    ## and B D Ripley.
-    ## This version retains any row and column names, and has a different
-    ## default tolerance for detection of zero eigenvalues.  It also adds
-    ## the computed rank as an attribute of the result.
-    ##
-    ## For symmetric matrices, there is the option of direct inversion
-    ## of an assumed-diagonal submatrix T (notation as in Harville 1997,
-    ## p121) to speed up the computation especially when T is large.
-    ##
-    if (length(eliminate) == 0){
-        if (!is.matrix(mat)) stop("mat is not a matrix")
+MPinv <- function (mat,
+                   eliminate = numeric(0),
+                   onlyFirstCol = FALSE,
+                   onlyNonElim = FALSE,
+                   tolerance = 100 * .Machine$double.eps,
+                   theRank = NULL,
+                   method = "svd")
+{
+    m <- nrow(mat)
+    n <- ncol(mat)
+    if (length(eliminate) == 0) { ## the basic routine, no eliminated submatrix
+        if (!is.matrix(mat))
+            stop("mat is not a matrix")
         Rownames <- rownames(mat)
         Colnames <- colnames(mat)
-        Svd <- svd(mat)
-        if (is.null(rank)) {
-            Positive <- Svd$d > max(tolerance * Svd$d[1], 0)
-        } else Positive <- c(rep(TRUE, rank),
-                             rep(FALSE, length(Svd$d) - rank))
-        result <- {
-            if (all(Positive))
-                Svd$v %*% (1/Svd$d * t(Svd$u))
-            else if (!any(Positive))
-                array(0, dim(mat)[2:1])
-            else Svd$v[, Positive, drop = FALSE] %*% ((1/Svd$d[Positive]) *
-                                    t(Svd$u[, Positive, drop = FALSE]))
+        if (method == "svd") {
+            Svd <- svd(mat)
+            Positive <- rep(FALSE, length(Svd$d))
+            if (is.null(theRank)) {
+                Positive <- Svd$d > max(tolerance * Svd$d[1], 0)
+            } else Positive[1:theRank] <- TRUE
+            result <- {
+                if (all(Positive))
+                    Svd$v %*% (1/Svd$d * t(Svd$u))
+                else if (!any(Positive))
+                    array(0, dim(mat)[2:1])
+                else Svd$v[, Positive, drop = FALSE] %*% ((1/Svd$d[Positive]) *
+                                       t(Svd$u[, Positive, drop = FALSE]))
+            }
+            attr(result, "rank") <- sum(Positive)
         }
-        attr(result, "rank") <- sum(Positive)
-        if (!is.null(Rownames)) colnames(result) <- Rownames
-        if (!is.null(Colnames)) rownames(result) <- Colnames
-        if (onlyFirstCol) result <- result[, 1, drop = FALSE]
+        if (method == "chol") {
+            ## Generalized inverse of a symmetric matrix using a
+            ## streamlined version of the "fast" method of
+            ## Courrieu, P. (2005).  Fast computation of Moore-Penrose
+            ## inverse matrices. Neural Information Processing 8, 25-29.
+            ##
+            ## No test for symmetry performed here!
+            if (!(m == n)) stop("the matrix is not symmetric")
+            if (is.null(theRank)) theRank <- qr(mat)$rank
+            if (theRank == ncol(mat)) { ## full-rank case
+                test <- try(result <- chol2inv(chol(mat)))
+                if (is.matrix(test)) {
+                    attr(result, "rank") <- theRank
+                    return(result)} else warning(
+                      "chol() does NOT agree that this is a full-rank matrix")
+            }
+            S <- chol(mat, pivot = TRUE) ## non-full-rank case
+            pivot <- attr(S, "pivot")
+            oPivot <- order(pivot)
+            Lt <- S[oPivot[oPivot %in% 1:theRank], oPivot]
+            L <- t(Lt)
+            LLinv <- chol2inv(chol(crossprod(L)))
+            result <- crossprod(Lt, crossprod(LLinv)) %*% Lt
+            attr(result, "rank") <- theRank
+        }
+        if (!is.null(Rownames))
+            colnames(result) <- Rownames
+        if (!is.null(Colnames))
+            rownames(result) <- Colnames
+        if (onlyFirstCol)
+            result <- result[, 1, drop = FALSE]
         return(result)
     }
-    ## The rest is for the case length(eliminate) > 0
-    if (nrow(mat) != ncol(mat)) stop(
-            "mat must be a symmetric matrix" ## no more check than this!!
-            )
-
-
+##  Now allow for the possibility of an eliminated submatrix
+    if (m != n)
+        stop("mat must be a symmetric matrix")
     n <- nrow(mat)
     elim <- 1:n %in% eliminate
-    diag.indices <- (n*(0:(n-1)) + 1:n)
+    diag.indices <- (n * (0:(n - 1)) + 1:n)
     T <- mat[diag.indices[eliminate]]
-    if (any(T == 0)) stop(
-         "an eliminated submatrix must have all its diagonal entries non-zero."
-         )
+    if (any(T == 0))
+      stop("an eliminated submatrix must have all diagonal entries non-zero.")
+    W <- mat[!elim, !elim, drop = FALSE]
+    U <- mat[elim, !elim, drop = FALSE]
     Ti <- 1/T
-    ## Special case is when the whole matrix is "eliminated"
-    if (length(eliminate) == nrow(mat)) {
-        if (onlyFirstCol) {
-            result <- matrix(c(Ti[1], rep(0, n-1)), n, 1)
-        } else if (onlyNonElim) {
-            result <- matrix(numeric(0), 0, 0)
-        } else result <- diag(Ti)
-        attr(result, "rank") <- n
-    } else {
-        W <- mat[!elim, !elim, drop = FALSE]
-        U <- mat[elim, !elim, drop = FALSE]
-        Ti.U <- Ti * U
-        V.Ti <- t(Ti.U)
-        Qmat <- W - crossprod(Ti.U, U)
-        Qi <- MPinv(Qmat, tolerance = tolerance)
-        rankQ <- attr(Qi, "rank")
-        k <- length(T)
-        result <- matrix(NA,
-                         if (onlyNonElim) n - k else n,
-                         if (onlyFirstCol) 1 else
-                         if (onlyNonElim) n - k else n)
-        cols.notElim <- if (onlyFirstCol) 1 else {
-            if (onlyNonElim) 1:(n - k) else !elim}
-        rows.notElim <- if (onlyNonElim) 1:(n - k) else !elim
-        if (onlyFirstCol) Qi <- Qi[, 1, drop = FALSE]
-        result[rows.notElim, cols.notElim] <- Qi
-        if (!onlyNonElim){
-            temp <- - crossprod(Qi, V.Ti)
-            result[elim, cols.notElim] <- t(temp)
-        }
-        if (!onlyFirstCol && !onlyNonElim){
-            result[!elim, elim] <- temp
-            temp <- crossprod(V.Ti, Qi) %*% V.Ti
-            diag.indices <- k*(0:(k-1)) + 1:k
-            temp[diag.indices] <- Ti + temp[diag.indices]
-            result[elim, elim] <- temp
-        }
-        attr(result, "rank") <- rankQ + k
+    k <- length(T)
+    Ti.U <- Ti * U
+    V.Ti <- t(Ti.U)
+    Qmat <- W - crossprod(Ti.U, U)
+    rankQ <- if (is.null(theRank)) NULL else theRank - length(T)
+    Qi <- MPinv(Qmat, tolerance = tolerance, theRank = rankQ,
+                method = method)
+    rankQ <- attr(Qi, "rank")
+    result <- matrix(NA, if (onlyNonElim)
+        n - k
+    else n, if (onlyFirstCol)
+        1
+    else if (onlyNonElim)
+        n - k
+    else n)
+    cols.notElim <- if (onlyFirstCol)
+        1
+    else if (onlyNonElim)
+        1:(n - k)
+    else !elim
+    rows.notElim <- if (onlyNonElim)
+        1:(n - k)
+    else !elim
+    if (onlyFirstCol)
+        Qi <- Qi[, 1, drop = FALSE]
+    result[rows.notElim, cols.notElim] <- Qi
+    if (!onlyNonElim) {
+        temp <- -crossprod(Qi, V.Ti)
+        result[elim, cols.notElim] <- t(temp)
     }
+    if (!onlyFirstCol && !onlyNonElim) {
+        result[!elim, elim] <- temp
+        temp <- crossprod(V.Ti, Qi) %*% V.Ti
+        diag.indices <- k * (0:(k - 1)) + 1:k
+        temp[diag.indices] <- Ti + temp[diag.indices]
+        result[elim, elim] <- temp
+    }
+    attr(result, "rank") <- rankQ + k
     theNames <- colnames(mat)
-    if (length(result) > 0.5) { ## matrix is not 0 by 0
-        rownames(result) <- if (onlyNonElim) theNames[!elim]
-                            else theNames
-        colnames(result) <-
-            if (onlyFirstCol) theNames[!elim][1]
-            else if (onlyNonElim) theNames[!elim]
-            else theNames
-    }
-    return(result)
+    rownames(result) <- if (onlyNonElim)
+        theNames[!elim]
+    else theNames
+    colnames(result) <- if (onlyFirstCol)
+        theNames[!elim][1]
+    else if (onlyNonElim)
+        theNames[!elim]
+    else theNames
+    result
 }

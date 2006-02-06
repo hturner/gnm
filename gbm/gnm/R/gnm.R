@@ -2,10 +2,10 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 offset, start = NULL, tolerance = 1e-4, iterStart = 2,
                 iterMax = 500, trace = FALSE, verbose = TRUE, model = TRUE,
-                x = FALSE, termPredictors = FALSE, ...) {
-    
+                x = FALSE, termPredictors = FALSE, lsMethod = "svd", ...) {
+
     call <- match.call()
-    
+
     modelTerms <- gnmTerms(formula, substitute(eliminate), data)
     modelData <- match.call(expand.dots = FALSE)
     argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
@@ -23,7 +23,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         nElim <- nlevels(Elim)
     }
     else nElim <- 0
-    
+
     if (method == "model.frame") {
         attr(modelData, "terms") <- attr(modelTerms, "terms")
         return(modelData)
@@ -34,7 +34,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 call. = FALSE)
         method <- "gnmFit"
     }
-    
+
     y <- model.response(modelData, "numeric")
     nObs <- NROW(y)
 
@@ -49,15 +49,15 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 
     if (!missing(family) && !exists(as.character(call$family)))
         stop("family object \"", as.character(call$family), "\" not found")
-    if (is.character(family)) 
+    if (is.character(family))
         family <- get(family, mode = "function", envir = parent.frame())
-    if (is.function(family)) 
+    if (is.function(family))
         family <- family()
     if (is.null(family$family)) {
         print(family)
         stop("`family' not recognized")
     }
-    
+
     if (family$family == "binomial") {
         if (is.factor(y) && NCOL(y) == 1)
             y <- y != levels(y)[1]
@@ -163,11 +163,11 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         }
         if (method == "model.matrix") return(X)
 
-        if (!is.numeric(tolerance) || tolerance <= 0) 
+        if (!is.numeric(tolerance) || tolerance <= 0)
             stop("value of 'tolerance' must be > 0")
-        if (!is.numeric(iterMax) || iterMax <= 0) 
+        if (!is.numeric(iterMax) || iterMax <= 0)
             stop("maximum number of iterations must be > 0")
-        
+
         if (onlyLin) {
             if (any(is.na(start))) start <- NULL
             fit <- glm.fit(X, y, family = family, weights = weights,
@@ -188,7 +188,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         else
             fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
                           offset, nObs, start, tolerance, iterStart, iterMax,
-                          trace, verbose, x, termPredictors)
+                          trace, verbose, x, termPredictors,
+                          lsMethod = lsMethod)
     }
     if (is.null(fit)) {
         warning("Algorithm failed - no model could be estimated", call. = FALSE)
@@ -210,7 +211,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     }
     else
         fit[asY] <- lapply(fit[asY], structure, names = names(y))
-    
+
     if (model) {
         attr(modelData, "terms") <- attr(modelTerms, "terms")
         fit$model <- modelData

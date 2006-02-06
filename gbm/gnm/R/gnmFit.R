@@ -235,7 +235,7 @@
     theta[constrain] <- NA
     Info <- crossprod(W.X)
     VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE,
-                  method = "chol")
+                  method = "svd")
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))

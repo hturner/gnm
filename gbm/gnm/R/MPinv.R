@@ -37,15 +37,8 @@ MPinv <- function (mat,
             ##
             ## No test for symmetry performed here!
             if (!(m == n)) stop("the matrix is not symmetric")
-            if (is.null(theRank) || theRank == n){
-                try({
-                    result <- chol2inv(chol(mat)) ## only works if full rank
-                    attr(result, "rank") <- n
-                    return(result)
-                }, silent = TRUE)
-            }
             S <- chol(mat, pivot = TRUE) ## non-full-rank case
-            if (is.null(theRank)) theRank <- attr(S, "rank")
+            if (is.null(theRank)) theRank <- qr(S)$rank
             pivot <- attr(S, "pivot")
             oPivot <- order(pivot)
             Lt <- S[oPivot[oPivot %in% 1:theRank], oPivot]
@@ -53,6 +46,7 @@ MPinv <- function (mat,
             LLinv <- chol2inv(chol(crossprod(L)))
             result <- crossprod(Lt, crossprod(LLinv)) %*% Lt
             attr(result, "rank") <- theRank
+
         }
         if (!is.null(Rownames))
             colnames(result) <- Rownames

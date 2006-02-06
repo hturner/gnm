@@ -12,7 +12,7 @@
               verbose = FALSE,
               x = FALSE,
               termPredictors = FALSE,
-              lsMethod = "chol")
+              lsMethod = "svd")
 {
     if (!(lsMethod %in% c("chol", "qr", "svd"))) stop(
                 "lsMethod must be one of chol, qr, svd")
@@ -147,6 +147,8 @@
                 X <- modelTools$localDesignFunction(theta, factorList)
                 X <- X[, !constrain, drop = FALSE]
                 WX <- w * X
+                wSqrt <- sqrt(w)
+                W.X <- wSqrt * X
                 score <- drop(crossprod(z, WX))
                 diagInfo <- colSums(X * WX)
                 if (diagInfo < 1e-20 ||
@@ -158,22 +160,20 @@
                     status <- "stuck"
                     break
                 }
+                w.z <- wSqrt * z
                 if (lsMethod %in% c("svd", "chol")) {
-                    znorm <- sqrt(mean(z*z))
-                    zscaled <- z/znorm
-                    Z <- cbind(zscaled, X)
-                    WZ <- w * Z
-                    ZWZ <- crossprod(Z, WZ)
-                    ZWZinv <- MPinv(ZWZ,
+                    W.Z <- cbind(w.z, W.X)
+                    ZWZ <- crossprod(W.Z)
+                    ZWZinv <- MPinv((ZWZ),
                                     eliminate = 1 + needToElim,
                                     onlyFirstCol = TRUE,
-                                    theRank = 1 + rankX,
+                                #    theRank = 1 + rankX,
                                     method = lsMethod)
-                    theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] * znorm
+                    theChange <- -ZWZinv[-1]/ZWZinv[1]
                 }
                 if (lsMethod == "qr") {
-                    XWX <- qr(crossprod(X, WX))
-                    theChange <- naToZero(qr.coef(XWX, crossprod(WX, z)))
+                    XWX <- crossprod(W.X)
+                    theChange <- naToZero(qrSolve(XWX, crossprod(W.X, w.z)))
                 }
                 dev[2] <- dev[1]
                 j <- 1
@@ -233,9 +233,9 @@
                 "to a non-solution of the likelihood equations: re-start \n",
                 "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
-    Info <- crossprod(X, WX)
+    Info <- crossprod(W.X)
     VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE,
-                  theRank = rankX, method = "chol")
+                  method = "chol")
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))

@@ -1,5 +1,5 @@
 summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
-                          symbolic.cor = FALSE, ...) 
+                          symbolic.cor = FALSE, ...)
 {
     est.disp <- (!object$family$family %in% c("poisson", "binomial") &&
                  is.null(dispersion) && object$df.residual > 0)
@@ -8,7 +8,8 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         cov.scaled <- vcov(object)
         estimable <- checkEstimable(object, diag(length(coefs)), ...)
         estimable[is.na(estimable)] <- FALSE
-        sterr <- sqrt(diag(cov.scaled))
+        tidy.zeros <- function(vec) ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
+        sterr <- sqrt(tidy.zeros(diag(cov.scaled)))
         is.na(sterr[!estimable]) <- TRUE
         tvalue <- coefs/sterr
         dn <- c("Estimate", "Std. Error")
@@ -31,14 +32,14 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
     }
     else {
         coef.table <- matrix(, 0, 4)
-        dimnames(coef.table) <- list(NULL, c("Estimate", "Std. Error", 
+        dimnames(coef.table) <- list(NULL, c("Estimate", "Std. Error",
             "t value", "Pr(>|t|)"))
         cov.scaled <- matrix(, 0, 0)
     }
     df.f <- nrow(coef.table)
     ans <- c(object[c("call", "eliminate", "family", "deviance", "aic",
                       "df.residual", "iter")],
-             list(deviance.resid = residuals(object, type = "deviance"), 
+             list(deviance.resid = residuals(object, type = "deviance"),
                   coefficients = coef.table,
                   dispersion = attr(cov.scaled, "dispersion"),
                   df = c(object$rank, object$df.residual, df.f),

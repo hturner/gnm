@@ -12,7 +12,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
     start = NULL, tolerance = 1e-4, iterStart = 2, iterMax = 500,
     trace = FALSE, verbose = TRUE, model = TRUE, x = FALSE,
-    termPredictors = FALSE, ...)  
+    termPredictors = FALSE, lsMethod = "svd", ...)  
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -72,7 +72,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor }
-  \item{\dots}{ further arguments passed to the . }
+  \item{lsMethod}{ character: must be one of "svd", "chol" or "qr".}
+  \item{\dots}{ further arguments passed to other functions }
 }
 \details{
   Models for \code{gnm} are specified by giving a symbolic description
@@ -135,7 +136,13 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   updated one parameter at a time, then the linear parameters are
   jointly updated before the next iteration. In the main iterations, all
   the parameters are jointly updated, until convergence is reached or
-  the number or iterations reaches \code{iterMax}.
+  the number or iterations reaches \code{iterMax}.    The
+  \code{lsMethod} argument specifies
+  what numerical method is to be used to solve the
+  (typically rank-deficient) least squares problem at the heart of the
+  \code{gnm} fitting algorithm: the options are two methods which
+  directly calculate the Moore-Penrose inverse (\code{"svd", "chol"}),
+  and direct solution using a double QR decomposition (\code{"qr"}).
 
   Convergence is judged by comparing the squared components of the score vector
   with corresponding elements of the diagonal of the Fisher information

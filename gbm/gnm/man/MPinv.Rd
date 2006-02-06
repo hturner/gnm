@@ -9,7 +9,7 @@
 \usage{
 MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
       onlyNonElim = FALSE, tolerance = 100*.Machine$double.eps,
-      rank = NULL)
+      theRank = NULL, method = "svd")
 }
 \arguments{
   \item{mat}{ A real matrix, which should be symmetric unless
@@ -23,10 +23,11 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
     are in the complement of the set specified in \code{eliminate}.}
   \item{tolerance}{ A positive scalar which determines the tolerance for
     detecting zeroes among the singular values. }
-  \item{rank}{Either \code{NULL}, in which case the rank of \code{mat} is
+  \item{theRank}{Either \code{NULL}, in which case the rank of \code{mat} is
     determined numerically; or an integer specifying the rank of
     \code{mat} if it is known.  No check is made on the validity of any
     non-\code{NULL} value.}
+  \item{method}{Character, one of \code{"svd", "chol"}}
 }
 \details{
   Real-valuedness is not checked, neither is symmetry, nor the
@@ -38,6 +39,9 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
   The purpose of the \code{eliminate} argument is a substantial
   reduction of the computational burden when the number of `eliminated'
   rows/columns is large.
+
+  The specification \code{method = "chol"} is valid only for
+  symmetric matrices.
 }
 \value{
   A matrix, with an additional attribute named \code{"rank"} containing
@@ -56,6 +60,11 @@ A \%*\% B \%*\% A - A  # essentially zero
 B \%*\% A \%*\% B - B  # essentially zero
 attr(B, "rank")    # here 2
 
+## demonstration that "svd" and "chol" deliver essentially the same
+## results for symmetric matrices:
+A <- crossprod(A)
+MPinv(A) - MPinv(A, method = "chol") ##  (essentially zero) 
+
 ## now a symmetric example with diagonal submatrix to `eliminate'
 A <- matrix(c(1, 0, 2,
               0, 2, 3,
@@ -63,7 +72,7 @@ A <- matrix(c(1, 0, 2,
 B <- MPinv(A, eliminate = 1:2)
 A \%*\% B \%*\% A - A  # essentially zero
 B \%*\% A \%*\% B - B  # essentially zero
-attr(B, "rank")        # here 3
+attr(B, "rank")        # here 3  
 
 \dontrun{
 ## demo that eliminate can give substantial speed gains
@@ -71,9 +80,9 @@ A <- diag(rnorm(100))
 A <- cbind(A, matrix(rnorm(200), 100, 2))
 A <- rbind(A, cbind(t(A[, 101:102]), matrix(c(1, 2, 2, 1), 2, 2)))
 system.time(for (i in 1:1000) B <-  MPinv(A))
-##  [1] 26.83 10.24 39.76  0.00  0.00
+##  [1] 30.85  0.06 30.91  0.00  0.00
 system.time(for (i in 1:1000) B <-  MPinv(A, eliminate = 1:100))
-##  [1] 3.49 1.37 5.04 0.00 0.00
+##  [1] 3.10 0.00 3.11 0.00 0.00
 }
 }
 \keyword{ array }

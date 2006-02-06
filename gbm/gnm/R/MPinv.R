@@ -46,7 +46,6 @@ MPinv <- function (mat,
             LLinv <- chol2inv(chol(crossprod(L)))
             result <- crossprod(Lt, crossprod(LLinv)) %*% Lt
             attr(result, "rank") <- theRank
-
         }
         if (!is.null(Rownames))
             colnames(result) <- Rownames

@@ -43,14 +43,14 @@ erikson <- xtabs(Freq ~ origin + destination + country, data = erikson)
 ### Fit the models given in first half of Table 3 of Xie (1992)
 
 ## Null association between origin and destination
-nullModel <- gnm(Freq ~ country:origin + country:destination,
+nullModel <- gnm(Freq ~ country*origin + country*destination,
                  family = poisson, data = erikson)
 
 ## Full interaction, common to all countries
 commonInteraction <- update(nullModel, ~ . + origin:destination)
 
 ## Full Interaction, different multiplier for each country
-multInteraction <- update(nullModel, ~ . + Mult(country, origin:destination))
+multInteraction <- update(nullModel, ~ . + Mult(Exp(-1 + country), -1 + origin:destination))
 
 ### Create array of interaction levels as in Table 2 of Xie (1992)
 
@@ -70,7 +70,7 @@ commonTopo <- update(nullModel, ~ . +
 
 ## Interaction specified by levelMatrix, different multiplier for each country
 multTopo <- update(nullModel, ~ . +
-                   Mult(country, Topo(origin, destination, spec = levelMatrix)))
+                   Mult(Exp(-1 + country), -1 + Topo(origin, destination, spec = levelMatrix)))
 
 ## Interaction specified by levelMatrix, different effects for each country
 separateTopo <- update(nullModel, ~ . +

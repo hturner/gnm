@@ -24,10 +24,9 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
         for (i in seq(nvars)) {
             if (i <= varlin){
                 fit <- glm.fit(x = x[, varseq < i, drop = FALSE], 
-                               y = as.vector(object$y),
-                               offset = as.vector(object$offset), 
+                               y = c(object$y), offset = c(object$offset), 
                                start = object$start,
-                               weights = as.vector(object$prior.weights),
+                               weights = c(object$prior.weights),
                                family = object$family)
             }
             else {

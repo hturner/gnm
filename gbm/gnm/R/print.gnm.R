@@ -14,7 +14,7 @@ print.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...) {
              sep = "")
     cat("\nDeviance:           ", format(x$deviance, digits),
         "\nPearson chi-squared:",
-        format(sum(na.omit(residuals(x,type = "pearson"))^2), digits),
+        format(sum(na.omit(c(residuals(x, type = "pearson")))^2), digits),
         "\nResidual df:        ", x$df.residual, "\n")
     invisible(x)
 }

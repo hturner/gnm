@@ -14,6 +14,11 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                            formula = modelTerms,
                            as.list(modelData)[argPos],
                            drop.unused.levels = TRUE))
+    if (inherits(data, "table") && !is.empty.model(modelTerms)) {
+        xFactors <- modelData
+        xFactors$formula <- Freq ~ .
+        xFactors <- eval(xFactors, parent.frame())[, -1]
+    }
     modelData <- eval(modelData, parent.frame())
 
     if (!missing(eliminate)) {
@@ -204,9 +209,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")
-    if (inherits(data, "table") && !is.empty.model(modelTerms)) {
-        fit[asY] <- lapply(fit[asY], replace,
-                           list = as.numeric(names(fit$y)), x = data)
+    if (exists("xFactors", inherits = FALSE)) {
+        fit[asY] <- lapply(fit[asY], tapply, xFactors, sum)
         if (!is.null(fit$na.action)) fit$na.action <- NULL
     }
     else

@@ -15,7 +15,7 @@ vcov.gnm <-  function(object, dispersion = NULL, ...){
     eliminate <- object$eliminate
     needToElim <- seq(sum(!constrain[seq(eliminate)])[eliminate > 0])
     X <- model.matrix(object)[, !constrain, drop = FALSE]
-    Info <- crossprod(X, as.vector(object$weights) * X)
+    Info <- crossprod(X, c(object$weights) * X)
     if (sum(constrain) > 0) {
         cov.unscaled <- array(0, dim = rep(length(constrain), 2),
                               dimnames = rep(list(names(coef(object))), 2))

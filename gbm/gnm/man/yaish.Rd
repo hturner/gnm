@@ -25,32 +25,37 @@ A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
 set.seed(1)
 data(yaish)
 
-## Fit the "UNIDIFF" mobility model across education levels
-
-unidiff <- gnm(Freq ~ educ:orig + educ:dest +
-                     Mult(Exp(-1 + educ), orig:dest), family = poisson,
-                     data = yaish)
-## Deviance should be 208.3
-
-##  Look at the multipliers of the orig:dest association:
+## Fit the "UNIDIFF" mobility model across education levels, leaving out
+## the uninformative subtable for dest == 7:
+##
+unidiff <- gnm(Freq ~ educ*orig + educ*dest +
+                     Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
+                     data = yaish, subset = (dest != 7))
+## Deviance should be 200.3, 116 d.f.
+##
+## Look at the multipliers of the orig:dest association:
 coefs.of.interest <- grep("Mult1.*educ", names(coef(unidiff)))
 coef(unidiff)[coefs.of.interest]
-## Mult1.Factor1.educ1 Mult1.Factor1.educ2 Mult1.Factor1.educ3 
-##           1.9853067           1.7685557           1.2540751 
-## Mult1.Factor1.educ4 Mult1.Factor1.educ5 
-##           0.9551895          -0.2525413
-
-## Get standard errors for contrasts with educ1
+##
+## Mult1.Factor1.educ1 Mult1.Factor1.educ2 Mult1.Factor1.educ3 Mult1.Factor1.educ4 
+##          -0.8150195          -1.0403857          -1.5584007          -1.8538570 
+## Mult1.Factor1.educ5 
+##          -3.0643114
+##
+## Get standard errors for the contrasts with educ1:
+##
 getContrasts(unidiff, coefs.of.interest)
+##
 ## [[1]]
-##                       estimate        SE   quasiSE    quasiVar
-## Mult1.Factor1.educ1  0.0000000 0.0000000 0.0974357 0.009493714
-## Mult1.Factor1.educ2 -0.2167488 0.1605291 0.1281367 0.016419027
-## Mult1.Factor1.educ3 -0.7312150 0.2311479 0.2092979 0.043805616
-## Mult1.Factor1.educ4 -1.0300838 0.3425260 0.3251657 0.105732710
-## Mult1.Factor1.educ5 -2.2377782 0.9410555 0.9312462 0.867219422
-
-## Table of model residuals
+##                       Estimate Std. Error   quasiSE   quasiVar
+## Mult1.Factor1.educ1  0.0000000  0.0000000 0.0975751 0.00952090
+## Mult1.Factor1.educ2 -0.2253661  0.1611886 0.1288595 0.01660478
+## Mult1.Factor1.educ3 -0.7433812  0.2335042 0.2118164 0.04486617
+## Mult1.Factor1.educ4 -1.0388374  0.3434049 0.3260719 0.10632288
+## Mult1.Factor1.educ5 -2.2492918  0.9452228 0.9354512 0.87506893
+##
+## Table of model residuals:
+##
 residuals(unidiff)
 }
 \author{David Firth}

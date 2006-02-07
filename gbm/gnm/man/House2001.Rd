@@ -96,7 +96,8 @@ House2001model1 <- gnm(voteAdj ~ Mult(rollCall - 1, member - 1),
 ##
 ## Plot the members' positions as estimated in the model:
 ##
-plot(coef(House2001model1)[21:321], col = partyColors,
+memberParameters <- grep("member", names(coef(House2001model1)))
+plot(coef(House2001model1)[memberParameters], col = partyColors,
      xlab = "Alphabetical index (Abercrombie 1 to Young 301)",
      ylab = "Member's relative position, one-dimensional model")
 ## Can do the same thing with two dimensions, but gnm takes around 40
@@ -108,10 +109,13 @@ House2001model2 <- gnm(
               eliminate = rollCall,
               family = binomial, data = House2001f,
               na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
-              start = Start2)
+              start = Start2, lsMethod = "qr")
 ## Deviance is 1545.166, df = 5257
 ##
-plot(coef(House2001model2)[21:321], coef(House2001model2)[342:642],
+memberParameters1 <- grep("Mult1.*member", names(coef(House2001model2)))
+memberParameters2 <- grep("Mult2.*member", names(coef(House2001model2)))
+plot(coef(House2001model2)[memberParameters1],
+     coef(House2001model2)[memberParameters2],
      col = partyColors,
      xlab = "Dimension 1",
      ylab = "Dimension 2",

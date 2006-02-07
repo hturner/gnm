@@ -53,6 +53,7 @@ through a Professorial Fellowship.}\\
 
 \section{Introduction}
 
+
 The \Rpackage{gnm} package provides facilities for fitting
 \emph{generalized nonlinear models}, i.e., regression models in which the
 link-transformed mean is described as a sum of predictor terms, some of
@@ -432,7 +433,7 @@ For example, the formula
 specifies the following diagonal reference model
 \[
 \mu_{rc} = \beta_Xx + \frac{e^{\xi_1 + \beta_1x}}{e^{\xi_1 + \beta_1x} + e^{\xi_2 + \beta_2x}}\gamma_r +
-\frac{e^{\xi_2 + \beta_2x}}{e^{\xi_1 + \beta_x} + e^{\xi_2 + \beta_2x}}\gamma_c,
+\frac{e^{\xi_2 + \beta_2x}}{e^{\xi_1 + \beta_x} + e^{\xi_2 + \beta_2x}}\gamma_c.
 \]
 The default value of \Rfunarg{formula} is \Robject{\twiddle 1}, so that
 constant weights are estimated. The coefficients returned by \Rfunction{gnm} are
@@ -1223,21 +1224,19 @@ Deviance Residuals:
 Coefficients:
                          Estimate Std. Error t value Pr(>|t|)
 AGEM                      0.06364    0.07375   0.863  0.38859
-MRMM                     -0.32425    0.07766  -4.175 3.44e-05 ***
-FRMF                     -0.25324    0.07681  -3.297  0.00104 **
+MRMM                     -0.32425    0.07766  -4.175 3.44e-05
+FRMF                     -0.25324    0.07681  -3.297  0.00104
 MWORK                    -0.06430    0.07431  -0.865  0.38727
 MFCM                     -0.06043    0.07123  -0.848  0.39663
 Dref(MOPLM, FOPLF).MOPLM -0.33730         NA      NA       NA
 Dref(MOPLM, FOPLF).FOPLF -0.02507         NA      NA       NA
-Dref(MOPLM, FOPLF).1      4.95123    0.16639  29.757  < 2e-16 ***
-Dref(MOPLM, FOPLF).2      4.86328    0.10436  46.601  < 2e-16 ***
-Dref(MOPLM, FOPLF).3      4.86458    0.12855  37.842  < 2e-16 ***
-Dref(MOPLM, FOPLF).4      4.72343    0.13523  34.928  < 2e-16 ***
-Dref(MOPLM, FOPLF).5      4.43516    0.19315  22.963  < 2e-16 ***
-Dref(MOPLM, FOPLF).6      4.18873    0.17142  24.435  < 2e-16 ***
-Dref(MOPLM, FOPLF).7      4.43379    0.16903  26.231  < 2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Dref(MOPLM, FOPLF).1      4.95123    0.16639  29.757  < 2e-16
+Dref(MOPLM, FOPLF).2      4.86328    0.10436  46.601  < 2e-16
+Dref(MOPLM, FOPLF).3      4.86458    0.12855  37.842  < 2e-16
+Dref(MOPLM, FOPLF).4      4.72343    0.13523  34.928  < 2e-16
+Dref(MOPLM, FOPLF).5      4.43516    0.19315  22.963  < 2e-16
+Dref(MOPLM, FOPLF).6      4.18873    0.17142  24.435  < 2e-16
+Dref(MOPLM, FOPLF).7      4.43379    0.16903  26.231  < 2e-16
 
 (Dispersion parameter for gaussian family taken to be 0.7384355)
 
@@ -1402,14 +1401,15 @@ son's social
 class (\Robject{dest}) and son's education level (\Robject{educ}).
 In this case, we can consider the
 importance of the association between the social class of father and son across
-the education levels:
+the education levels.  We omit the sub-table which corresponds to level 7 of
+\Robject{dest}, because its information content is negligible:
 @
 <<UNIDIFF_model>>=
 set.seed(1)
 data(yaish)
-unidiff <- gnm(Freq ~ educ:orig + educ:dest +
-               Mult(Exp(-1 + educ), orig:dest), family = poisson,
-               data = yaish)
+unidiff <- gnm(Freq ~ educ*orig + educ*dest +
+               Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
+               data = yaish, subset = (dest != 7))
 coefs.of.interest <- grep("Mult1.Factor1", names(coef(unidiff)))
 coef(unidiff)[coefs.of.interest]
 @ %def
@@ -1745,6 +1745,7 @@ We list here, for easy reference, all of the user-level functions in the
                                            \Rfunction{gnm}	\\
     &	\Rfunction{MPinv}	&  Moore-Penrose pseudoinverse of a
                                    real-valued matrix	\\
+    &	\Rfunction{qrSolve}	&  Minimum-length solution of a linear system\\
     &	\Rfunction{residSVD}	&  multiplicative approximation of
                                    model residuals	\\
     &   \Rfunction{expandCategorical}   & expand a data frame by re-expressing
@@ -1757,101 +1758,44 @@ We list here, for easy reference, all of the user-level functions in the
 
 The new features, improvements and changes in behaviour since the last release
 are given below. For bug fixes since the last release and the changes made in
-previous releases, see the CHANGES file in the package directory.
+previous releases, see the CHANGES file in the \texttt{inst} directory of
+the package.
 
 \begin{verbatimtab}
-Changes in gnm 0.8-0
-=======================
+Changes in gnm 0.8-1
+====================
 
 New Features
 ------------
 
-    o	added "model.matrix" option for 'method' argument of gnm() so that
-	model matrix can be obtained much faster. The new method is used in
-	model.matrix.gnm() and vcov.gnm().
+    o	added the `method' argument to MPinv(), to allow the method of
+	calculation to be specified.  Permitted values are "svd" to
+	compute the pseudo-inverse by singular value decomposition,
+	and "chol" to use the Cholesky decomposition instead.  The latter
+	is valid only for symmetric matrices, but is usually faster
+    	and more accurate.
 
-    o	added new utility function residSVD(), to facilitate the calculation
-        of good starting values for parameters in certain Mult() terms.
+    o	added the `lsMethod' argument to gnm(), to allow specification of
+	the numerical method used for least-squares calculations in the
+	core of the iterative algorithm.  Permitted options are "svd",
+	"chol" and "qr".
 
-    o	added new dataset House2001, to illustrate the use of gnm in
-        Rasch-type scaling of legislator votes.
-
-    o	added new utility function expandCategorical() for expanding data frame
-	on the basis of a categorical variable.
-
-    o	added formula.gnm() method - returns formula from "gnm" object excluding
-	the 'eliminate'd factor where necessary.
+    o	added new function qrSolve(), which behaves like base::qr.coef but
+        in the non-full-rank case gives the minimum-length solution rather
+        than an arbitrary solution determined by the pivot sequence.
 
 Improvements
 ------------
 
-    o	gnm() now takes less time to run due to improvements made in internal
-	functions.
+    o	gnm() now takes less time to run due to improvements made in the
+	iterative algorithm.
 
-    o   the fitting algorithm used by gnm() now copes better with zero-valued
-        residuals.
-
-    o	output given by gnm() when 'trace' = TRUE or 'verbose' = TRUE is now
-	displayed as it is generated on console-based versions of R.
-
-    o	plot.gnm() now includes option 'which' = 5 as in plot.lm() in
-   	R >= 2.2.0. Now has separate help page.
-
-    o	the 'constrain' argument to gnm() now accepts the names of parameters.
-
-    o	the 'formula' argument to gnm() now accepts '.' as described in
-	?terms.formula, ignoring eliminated factor if in 'data'.
-
-    o	interface for se() extended - can now use to find standard errors for
-	all parameters or (a selection of) individual parameters in a gnm model.
-
-    o	made it possible to use gnm() with alternative fitting function.
-
-    o	".Environment" attribute now attached to "gnm" objects so that gnm package
-	loaded when workspace containing "gnm" objects is loaded.
-
+    o	fixed gnm() so that 'subset' works with table data
 
 Changes in Behaviour
 --------------------
 
-    o	start-up iterations now only update column of design matrix required in
-	next iteration. Therefore plug-in functions using the default start-up
-	procedure for nonlinear parameters need a localDesignFunction() with the
-	argument 'ind' specifying the column that should be returned.
-
-    o	modified output given by gnm() when 'trace' = TRUE: now prints initial
-	deviance and the deviance at the end of each iteration.
-
-    o	modified updates of linear parameters in starting procedure: now offset
-	contribution of fully specified terms only.
-
-    o	results of summary.gnm(), vcov.gnm() and coef.gnm() now include any
-	eliminated parameters. Print methods have been added for vcov.gnm and
-	coef.gnm objects so that any eliminated parameters are not shown.
-
-    o	Mult() terms are no longer split into components by anova.gnm(),
-  	termPredictors.gnm(), labels.gnm() or the "assign" attribute of the
-	model matrix - consistent with terms() output.
-
-    o	the 'eliminate' argument to gnm() must now be an expression that
-	evaluates to a factor - this reverts the extension of 0.7-2.
-
-    o	when using gnm() with 'constrain' = "pick", the name(s) of the chosen
-	parameter(s) will replace "pick" in the reurned model call.
-
-    o	getContrasts() now uses first level of a factor as the reference level
-	(by default).
-
-    o	gnmControl() replaced by arguments to gnm().
-
-    o	gnm() now uses glm.fit() for linear models (with control parameters at
-	the gnm() defaults).unless 'eliminate'is non-NULL.
-
-    o	vcov.gnm() and summary.gnm() now return variance-covariance matrices
-	including any aliased parameters. v
-
-    o	summary.gnm() now returns standard errors with test statistics etc,
-	where estimated parameters are identified.
+	none
 \end{verbatimtab}
 
 \newpage

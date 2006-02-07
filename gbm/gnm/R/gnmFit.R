@@ -167,7 +167,6 @@
                     ZWZinv <- MPinv((ZWZ),
                                     eliminate = 1 + needToElim,
                                     onlyFirstCol = TRUE,
-                                #    theRank = 1 + rankX,
                                     method = lsMethod)
                     theChange <- -ZWZinv[-1]/ZWZinv[1]
                 }

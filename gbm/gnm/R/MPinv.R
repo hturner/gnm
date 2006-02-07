@@ -3,9 +3,10 @@ MPinv <- function (mat,
                    onlyFirstCol = FALSE,
                    onlyNonElim = FALSE,
                    tolerance = 100 * .Machine$double.eps,
-                   theRank = NULL,
+                   rank = NULL,
                    method = "svd")
 {
+    theRank <- rank
     m <- nrow(mat)
     n <- ncol(mat)
     if (length(eliminate) == 0) { ## the basic routine, no eliminated submatrix
@@ -72,7 +73,7 @@ MPinv <- function (mat,
     V.Ti <- t(Ti.U)
     Qmat <- W - crossprod(Ti.U, U)
     rankQ <- if (is.null(theRank)) NULL else theRank - length(T)
-    Qi <- MPinv(Qmat, tolerance = tolerance, theRank = rankQ,
+    Qi <- MPinv(Qmat, tolerance = tolerance, rank = rankQ,
                 method = method)
     rankQ <- attr(Qi, "rank")
     result <- matrix(NA, if (onlyNonElim)

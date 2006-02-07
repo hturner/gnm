@@ -9,7 +9,7 @@
 \usage{
 MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
       onlyNonElim = FALSE, tolerance = 100*.Machine$double.eps,
-      theRank = NULL, method = "svd")
+      rank = NULL, method = "svd")
 }
 \arguments{
   \item{mat}{ A real matrix, which should be symmetric unless
@@ -23,7 +23,7 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
     are in the complement of the set specified in \code{eliminate}.}
   \item{tolerance}{ A positive scalar which determines the tolerance for
     detecting zeroes among the singular values. }
-  \item{theRank}{Either \code{NULL}, in which case the rank of \code{mat} is
+  \item{rank}{Either \code{NULL}, in which case the rank of \code{mat} is
     determined numerically; or an integer specifying the rank of
     \code{mat} if it is known.  No check is made on the validity of any
     non-\code{NULL} value.}
@@ -41,7 +41,7 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
   rows/columns is large.
 
   The specification \code{method = "chol"} is valid only for
-  symmetric matrices.
+  symmetric matrices.  No check for symmetry is made.
 }
 \value{
   A matrix, with an additional attribute named \code{"rank"} containing

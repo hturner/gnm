@@ -160,7 +160,9 @@
                     status <- "stuck"
                     break
                 }
-                w.z <- wSqrt * z
+                znorm <- sqrt(mean(z * z))#
+                zscaled <- z/znorm#
+                w.z <- wSqrt * zscaled#
                 if (lsMethod %in% c("svd", "chol")) {
                     W.Z <- cbind(w.z, W.X)
                     ZWZ <- crossprod(W.Z)
@@ -168,7 +170,8 @@
                                     eliminate = 1 + needToElim,
                                     onlyFirstCol = TRUE,
                                     method = lsMethod)
-                    theChange <- -ZWZinv[-1]/ZWZinv[1]
+                    theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] * 
+                  znorm#
                 }
                 if (lsMethod == "qr") {
                     XWX <- crossprod(W.X)

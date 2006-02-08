@@ -164,19 +164,19 @@
                 zscaled <- z/znorm#
                 w.z <- wSqrt * zscaled#
                 if (lsMethod %in% c("svd", "chol")) {
-                    W.X.scaled <- scale(W.X, center = FALSE)
-                    W.Z <- cbind(w.z, W.X.scaled)
+                    W.Z <- cbind(w.z, W.X)
                     ZWZ <- crossprod(W.Z)
                     ZWZinv <- MPinv((ZWZ),
                                     eliminate = 1 + needToElim,
                                     onlyFirstCol = TRUE,
                                     method = lsMethod)
                     theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] *
-                  znorm / attr(W.X.scaled, "scaled:scale")#
+                  znorm#
                 }
                 if (lsMethod == "qr") {
                     XWX <- crossprod(W.X)
-                    theChange <- naToZero(qrSolve(XWX, crossprod(W.X, w.z))) * znorm
+                    theChange <- naToZero(qrSolve(XWX,
+                                     crossprod(W.X, w.z))) * znorm#
                 }
                 dev[2] <- dev[1]
                 j <- 1

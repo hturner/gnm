@@ -39,7 +39,8 @@ MPinv <- function (mat,
             ## No test for symmetry performed here!
             if (!(m == n)) stop("the matrix is not symmetric")
             S <- chol(mat, pivot = TRUE) ## non-full-rank case
-            if (is.null(theRank)) theRank <- qr(S)$rank
+            if (is.null(theRank)) theRank <- qr(S)$rank ## fails only on the bwt.po example
+               # theRank <- attr(S, "rank") ## seems less reliable in general
             pivot <- attr(S, "pivot")
             oPivot <- order(pivot)
             Lt <- S[oPivot[oPivot %in% 1:theRank], oPivot]

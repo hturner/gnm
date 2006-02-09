@@ -9,7 +9,7 @@
 \usepackage{alltt}
 \usepackage{amsmath}
 \usepackage{times}
-\usepackage{courier}
+\usepackage[scaled]{couriers}
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,top=3cm,nohead]{geometry}
@@ -1765,19 +1765,19 @@ the package.
 New Features
 ------------
 
-    o	added the `method' argument to MPinv(), to allow the method of 
+    o	added the `method' argument to MPinv(), to allow the method of
 	calculation to be specified.  Permitted values are "svd" to
-	compute the pseudo-inverse by singular value decomposition, 
+	compute the pseudo-inverse by singular value decomposition,
 	and "chol" to use the Cholseky decomposition instead.  The latter
 	is valid only for symmetric matrices, but is usually faster
     	and more accurate.
 
-    o	added the `lsMethod' argument to gnm(), to allow specification of 
+    o	added the `lsMethod' argument to gnm(), to allow specification of
 	the numerical method used for least-squares calculations in the
 	core of the iterative algorithm.  Permitted options are "svd",
 	"chol" and "qr".
 
-    o	added new function qrSolve(), which behaves like base::qr.coef but 
+    o	added new function qrSolve(), which behaves like base::qr.coef but
         in the non-full-rank case gives the minimum-length solution rather
         than an arbitrary solution determined by pivoting.
 

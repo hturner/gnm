@@ -9,7 +9,7 @@ gnmTerms <- function(formula, eliminate, data)
         formula <- formula(terms.formula(tmp, simplify = TRUE,
                                          keep.order = TRUE, data = data))
     }
-    fullTerms <- terms(formula, keep.order = TRUE)
+    fullTerms <- terms(formula, keep.order = TRUE, data = data)
     if (is.empty.model(fullTerms))
         return(structure(formula, terms = fullTerms))
 

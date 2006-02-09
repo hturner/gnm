@@ -26,10 +26,15 @@ Improvements
     o	gnm() now takes less time to run due to improvements made in the
 	iterative algorithm.
 
-Changes in Behaviour
---------------------
+Bug Fixes
+---------
 
-	none
+    o	fixed bug in gnm() so that 'subset' now works with table data.
+
+    o	fixed bug in model.matrix.gnm() so can construct model matrix from "gnm" 
+	object even when original call not made in .GlobalEnv.
+
+    o	fixed bug in the examples on help page for House2001 data.
 
 Changes in gnm 0.8-0
 =======================
@@ -119,7 +124,7 @@ Changes in Behaviour
 	the gnm() defaults).unless 'eliminate'is non-NULL.
 
     o	vcov.gnm() and summary.gnm() now return variance-covariance matrices 
-	including any aliased parameters. v
+	including any aliased parameters.
 
     o	summary.gnm() now returns standard errors with test statistics etc, 
 	where estimated parameters are identified.

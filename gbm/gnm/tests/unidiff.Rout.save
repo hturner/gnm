@@ -35,41 +35,41 @@ gnm(formula = Freq ~ educ:orig + educ:dest + Mult(Exp(-1 + educ),
 
 Coefficients:
               (Intercept)                educ1:orig1  
-                  0.34116                   -0.20586  
+                  0.34120                   -0.20580  
               educ2:orig1                educ3:orig1  
-                  0.16571                    1.57073  
+                  0.16575                    1.57074  
               educ4:orig1                educ5:orig1  
-                  1.94923                    4.44799  
+                  1.94923                    4.44797  
               educ1:orig2                educ2:orig2  
-                  0.58881                    1.17278  
+                  0.58888                    1.17283  
               educ3:orig2                educ4:orig2  
-                  1.48192                    2.10488  
+                  1.48193                    2.10488  
               educ5:orig2                educ1:orig3  
-                  3.65767                    3.20676  
+                  3.65765                    3.20683  
               educ2:orig3                educ3:orig3  
-                  2.62146                    3.05719  
+                  2.62150                    3.05720  
               educ4:orig3                educ5:orig3  
-                  3.46854                    4.64343  
+                  3.46854                    4.64340  
               educ1:orig4                educ2:orig4  
-                  0.55790                    0.16984  
+                  0.55796                    0.16988  
               educ3:orig4                educ4:orig4  
-                  0.92137                    2.05972  
+                  0.92138                    2.05972  
               educ5:orig4                educ1:orig5  
-                  3.36788                    2.02323  
+                  3.36785                    2.02330  
               educ2:orig5                educ3:orig5  
-                  2.16759                    2.37132  
+                  2.16764                    2.37134  
               educ4:orig5                educ5:orig5  
-                  3.23580                    4.05015  
+                  3.23580                    4.05013  
               educ1:orig6                educ2:orig6  
-                  2.18284                    2.10889  
+                  2.18290                    2.10894  
               educ3:orig6                educ4:orig6  
-                  2.18750                    2.96993  
+                  2.18751                    2.96993  
               educ5:orig6                educ1:orig7  
-                  4.10976                   -0.40577  
+                  4.10973                   -0.40545  
               educ2:orig7                educ3:orig7  
-                 -1.35624                   -0.31144  
+                 -1.35599                   -0.31130  
               educ4:orig7                educ5:orig7  
-                  0.73048                         NA  
+                  0.73057                         NA  
               educ1:dest2                educ2:dest2  
                   0.97596                    0.95920  
               educ3:dest2                educ4:dest2  
@@ -87,7 +87,7 @@ Coefficients:
               educ5:dest4                educ1:dest5  
                  -5.04866                    2.76545  
               educ2:dest5                educ3:dest5  
-                  2.15561                    1.14268  
+                  2.15561                    1.14269  
               educ4:dest5                educ5:dest5  
                   0.46630                   -2.17719  
               educ1:dest6                educ2:dest6  
@@ -97,7 +97,7 @@ Coefficients:
               educ5:dest6                educ1:dest7  
                  -4.00439                   -3.25373  
               educ2:dest7                educ3:dest7  
-                 -4.08818                   -3.55209  
+                 -4.08817                   -3.55209  
               educ4:dest7                educ5:dest7  
                 -27.90060                  -28.99369  
       Mult1.Factor1.educ1        Mult1.Factor1.educ2  
@@ -105,57 +105,57 @@ Coefficients:
       Mult1.Factor1.educ3        Mult1.Factor1.educ4  
                   0.34896                    0.05007  
       Mult1.Factor1.educ5  Mult1.Factor2.(Intercept)  
-                 -1.15767                   -0.34962  
+                 -1.15767                   -0.34967  
 Mult1.Factor2.orig1:dest1  Mult1.Factor2.orig2:dest1  
-                  0.83992                    0.49555  
+                  0.83994                    0.49556  
 Mult1.Factor2.orig3:dest1  Mult1.Factor2.orig4:dest1  
-                  0.05301                    0.60349  
+                  0.05303                    0.60351  
 Mult1.Factor2.orig5:dest1  Mult1.Factor2.orig6:dest1  
-                 -0.27448                    0.14835  
+                 -0.27446                    0.14836  
 Mult1.Factor2.orig7:dest1  Mult1.Factor2.orig1:dest2  
-                  0.60168                    0.31036  
+                  0.60161                    0.31038  
 Mult1.Factor2.orig2:dest2  Mult1.Factor2.orig3:dest2  
-                  0.10894                    0.07942  
+                  0.10895                    0.07944  
 Mult1.Factor2.orig4:dest2  Mult1.Factor2.orig5:dest2  
-                  0.34847                   -0.05887  
+                  0.34848                   -0.05885  
 Mult1.Factor2.orig6:dest2  Mult1.Factor2.orig7:dest2  
-                  0.28160                    0.75900  
+                  0.28161                    0.75893  
 Mult1.Factor2.orig1:dest3  Mult1.Factor2.orig2:dest3  
-                  0.15024                   -0.39729  
+                  0.15026                   -0.39728  
 Mult1.Factor2.orig3:dest3  Mult1.Factor2.orig4:dest3  
-                 -0.09617                    0.39658  
+                 -0.09616                    0.39659  
 Mult1.Factor2.orig5:dest3  Mult1.Factor2.orig6:dest3  
-                 -0.28051                   -0.11497  
+                 -0.28050                   -0.11496  
 Mult1.Factor2.orig7:dest3  Mult1.Factor2.orig1:dest4  
-                  0.03058                    0.52852  
+                  0.03051                    0.52854  
 Mult1.Factor2.orig2:dest4  Mult1.Factor2.orig3:dest4  
-                 -0.75790                   -0.33951  
+                 -0.75788                   -0.33949  
 Mult1.Factor2.orig4:dest4  Mult1.Factor2.orig5:dest4  
-                  1.05267                   -0.48083  
+                  1.05268                   -0.48082  
 Mult1.Factor2.orig6:dest4  Mult1.Factor2.orig7:dest4  
-                 -0.30954                    0.13640  
+                 -0.30952                    0.13633  
 Mult1.Factor2.orig1:dest5  Mult1.Factor2.orig2:dest5  
-                  0.20681                    0.01827  
+                  0.20682                    0.01828  
 Mult1.Factor2.orig3:dest5  Mult1.Factor2.orig4:dest5  
-                 -0.15645                    0.31940  
+                 -0.15644                    0.31941  
 Mult1.Factor2.orig5:dest5  Mult1.Factor2.orig6:dest5  
-                  0.09091                    0.13709  
+                  0.09092                    0.13710  
 Mult1.Factor2.orig7:dest5  Mult1.Factor2.orig1:dest6  
-                  0.37348                    0.33521  
+                  0.37340                    0.33523  
 Mult1.Factor2.orig2:dest6  Mult1.Factor2.orig3:dest6  
-                 -0.04997                   -0.10947  
+                 -0.04996                   -0.10945  
 Mult1.Factor2.orig4:dest6  Mult1.Factor2.orig5:dest6  
-                  0.63461                   -0.02649  
+                  0.63463                   -0.02648  
 Mult1.Factor2.orig6:dest6  Mult1.Factor2.orig7:dest6  
-                  0.18860                    0.37355  
+                  0.18861                    0.37348  
 Mult1.Factor2.orig1:dest7  Mult1.Factor2.orig2:dest7  
-                -17.06748                    0.63999  
+                -17.06743                    0.63999  
 Mult1.Factor2.orig3:dest7  Mult1.Factor2.orig4:dest7  
-                  0.06949                    1.05115  
+                  0.06950                    1.05116  
 Mult1.Factor2.orig5:dest7  Mult1.Factor2.orig6:dest7  
-                  0.14387                    0.66158  
+                  0.14388                    0.66159  
 Mult1.Factor2.orig7:dest7  
-                -16.09681  
+                -16.09687  
 
 Deviance:            208.3152 
 Pearson chi-squared: 195.0209 

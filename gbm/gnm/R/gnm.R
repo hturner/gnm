@@ -52,8 +52,6 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     if (is.null(offset))
         offset <- rep.int(0, nObs)
 
-    if (!missing(family) && !exists(as.character(call$family)))
-        stop("family object \"", as.character(call$family), "\" not found")
     if (is.character(family))
         family <- get(family, mode = "function", envir = parent.frame())
     if (is.function(family))

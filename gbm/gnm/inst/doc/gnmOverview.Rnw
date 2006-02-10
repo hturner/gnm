@@ -8,8 +8,9 @@
 \usepackage{Sweave}
 \usepackage{alltt}
 \usepackage{amsmath}
-\usepackage{times}
-\usepackage[scaled]{couriers}
+%\usepackage{times}
+%\usepackage[scaled]{couriers}
+\usepackage{txfonts} % Times, with Belleek math font and txtt for monospaced
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,top=3cm,nohead]{geometry}

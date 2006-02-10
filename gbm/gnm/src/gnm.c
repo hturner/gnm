@@ -2,6 +2,15 @@
 
 # include <Rinternals.h> /* for length */
 # include <R_ext/Applic.h> /* for dgemm */
+# include <R_ext/Lapack.h> /* for dgelsy */
+
+/* for dgelsy */
+# ifndef max
+#    define max(a, b) ((a > b)? a:b)
+# endif
+# ifndef min
+#    define min(a, b) ((a < b)? a:b)
+# endif
 
 /* copied from src/main/array.c */
 static void matprod(double *x, int nrx, int ncx,
@@ -31,7 +40,8 @@ static void matprod(double *x, int nrx, int ncx,
 		}
 	} else
 	    F77_CALL(dgemm)(transa, transb, &nrx, &ncy, &ncx, &one,
-			    x, &nrx, y, &nry, &zero, z, &nrx);
+		
+	    x, &nrx, y, &nry, &zero, z, &nrx);
     } else /* zero-extent operations should return zeroes */
 	for(i = 0; i < nrx*ncy; i++) z[i] = 0;
 }
@@ -74,4 +84,14 @@ SEXP nonlin(SEXP X, SEXP a, SEXP z, SEXP expr, SEXP rho) {
   }
   UNPROTECT(1);
   return(X);
+}
+
+/* solves Ax = b using Fortran routine dgelsy */
+void dgelsy(int *m, int *n, int *nrhs, double *a, double *b, double *rcond) {
+  int lda = max(1, *m), ldb = max(lda, *n), jpvt[*n], rank = 1, mn = min(*m, *n),
+    lwork = max(mn + 3 * *n + 1, 2 * mn + *nrhs), info = 1;
+  double work[lwork];
+
+  F77_CALL(dgelsy)(m, n, nrhs, a, &lda, b, &ldb, jpvt, rcond, &rank, work, &lwork, 
+		   &info);
 }

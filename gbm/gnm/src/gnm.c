@@ -8,9 +8,6 @@
 # ifndef max
 #    define max(a, b) ((a > b)? a:b)
 # endif
-# ifndef min
-#    define min(a, b) ((a < b)? a:b)
-# endif
 
 /* copied from src/main/array.c */
 static void matprod(double *x, int nrx, int ncx,
@@ -87,13 +84,12 @@ SEXP nonlin(SEXP X, SEXP a, SEXP z, SEXP expr, SEXP rho) {
 
 /* solves Ax = b using Fortran routine dgelsy */
 void dgelsy(int *m, int *n, int *nrhs, double *a, double *b, double *rcond, 
-	    int *rank, double *ans) {
-  int i, j, ldb = max(*m, *n), jpvt[*n], mn = min(*m, *n), lwork = max(mn + 3 * *n + 1, 2 * mn + *nrhs), 
-    info = 1;
-  double work[lwork];
+	    int *rank, double *work, int *lwork, double *ans) {
+  int i, j, ldb = max(*m, *n), jpvt[*n], info = 1;
 
-  F77_CALL(dgelsy)(m, n, nrhs, a, m, b, &ldb, jpvt, rcond, rank, work, &lwork, 
+  F77_CALL(dgelsy)(m, n, nrhs, a, m, b, &ldb, jpvt, rcond, rank, work, lwork, 
 		   &info);
+
   for(i = 0; i < *n; i++) {
     for(j = 0; j < *nrhs; j++)
       ans[i + *n * j] = b[i + *m * j];

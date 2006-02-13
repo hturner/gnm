@@ -1,15 +1,16 @@
 model.matrix.gnm <- function(object, ...) {
     if (!"x" %in% names(object)) {
-        args <- object$call
-        args$method <- "model.matrix"
-        args$constrain <- object$constrain
-        args$start <- coef(object)
-        args$verbose <- args$trace <- FALSE
-        args[[1]] <- as.name("list")
+        xcall <- object$call
+        xcall$method <- "model.matrix"
+        xcall$constrain <- object$constrain
+        xcall$start <- coef(object)
+        xcall$verbose <- xcall$trace <- FALSE
         env <- environment(formula(object))
         if (is.null(env)) 
             env <- parent.frame()
-        do.call("gnm", eval(args, env))
+        if (!is.null(xcall$data))
+            Data <- eval(xcall$data, env)
+        eval(xcall, as.data.frame(Data), env)
     }
     else object[[match("x", names(object))]]
 }

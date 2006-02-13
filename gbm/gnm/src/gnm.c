@@ -40,8 +40,7 @@ static void matprod(double *x, int nrx, int ncx,
 		}
 	} else
 	    F77_CALL(dgemm)(transa, transb, &nrx, &ncy, &ncx, &one,
-		
-	    x, &nrx, y, &nry, &zero, z, &nrx);
+			    x, &nrx, y, &nry, &zero, z, &nrx);
     } else /* zero-extent operations should return zeroes */
 	for(i = 0; i < nrx*ncy; i++) z[i] = 0;
 }
@@ -87,11 +86,17 @@ SEXP nonlin(SEXP X, SEXP a, SEXP z, SEXP expr, SEXP rho) {
 }
 
 /* solves Ax = b using Fortran routine dgelsy */
-void dgelsy(int *m, int *n, int *nrhs, double *a, double *b, double *rcond) {
-  int lda = max(1, *m), ldb = max(lda, *n), jpvt[*n], rank = 1, mn = min(*m, *n),
-    lwork = max(mn + 3 * *n + 1, 2 * mn + *nrhs), info = 1;
+void dgelsy(int *m, int *n, int *nrhs, double *a, double *b, double *rcond, 
+	    int *rank, double *ans) {
+  int i, j, ldb = max(*m, *n), jpvt[*n], mn = min(*m, *n), lwork = max(mn + 3 * *n + 1, 2 * mn + *nrhs), 
+    info = 1;
   double work[lwork];
 
-  F77_CALL(dgelsy)(m, n, nrhs, a, &lda, b, &ldb, jpvt, rcond, &rank, work, &lwork, 
+  F77_CALL(dgelsy)(m, n, nrhs, a, m, b, &ldb, jpvt, rcond, rank, work, &lwork, 
 		   &info);
+  for(i = 0; i < *n; i++) {
+    for(j = 0; j < *nrhs; j++)
+      ans[i + *n * j] = b[i + *m * j];
+  }
 }
+

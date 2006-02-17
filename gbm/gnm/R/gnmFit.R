@@ -14,7 +14,7 @@
               termPredictors = FALSE,
               lsMethod = "svd")
 {
-    if (!(lsMethod %in% c("chol", "qr", "qr2", "svd"))) stop(
+    if (!(lsMethod %in% c("chol", "qr", "svd"))) stop(
                 "lsMethod must be one of chol, qr, svd")
     eps <- 100*.Machine$double.eps
     attempt <- 1
@@ -173,15 +173,9 @@
                     theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] *
                   znorm#
                 }
-                browser()
                 if (lsMethod == "qr") {
                     XWX <- crossprod(W.X)
                     theChange <- naToZero(qrSolve(XWX,
-                                     crossprod(W.X, w.z))) * znorm#
-                }
-                if (lsMethod == "qr2") {
-                    XWX <- crossprod(W.X)
-                    theChange <- naToZero(qrSolve2(XWX,
                                      crossprod(W.X, w.z))) * znorm#
                 }
                 dev[2] <- dev[1]

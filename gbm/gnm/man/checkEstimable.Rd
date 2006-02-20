@@ -31,9 +31,9 @@ data(yaish)
 set.seed(1)
 
 ## Fit the "UNIDIFF" mobility model across education levels
-unidiff <- gnm(Freq ~ educ:orig + educ:dest +
-               Mult(Exp(educ), orig:dest), family = poisson,
-               data = yaish)
+unidiff <- gnm(Freq ~ educ*orig + educ*dest +
+               Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
+               data = yaish, subset = (dest != 7))
 
 ## Check whether Mult1.Factor1.educ4 - Mult1.Factor1.educ5 is estimable
 educ4.pos <- grep("Mult1.Factor1.educ4", names(coef(unidiff)))
@@ -41,7 +41,7 @@ checkEstimable(unidiff, c(rep(0, educ4.pos - 1), 1, -1,
                           rep(0, length(coef(unidiff)) - educ4.pos - 1)))
 ## should be TRUE
 
-## Check whether Mult1.Factor1.educ4 is estimable
+## Check whether Mult1.Factor1.educ4 itself is estimable
 checkEstimable(unidiff, c(rep(0, educ4.pos - 1), 1, 0,
                           rep(0, length(coef(unidiff)) - educ4.pos - 1)))
 ## should be FALSE -- only *differences* are identified here

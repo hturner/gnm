@@ -57,6 +57,7 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
             QVs <- qvcalc(V)
             quasiSE <- sqrt(QVs$qvframe$quasiVar)
             result <- cbind(result, quasiSE)
+            names(result)[1:2] <- c("estimate", "SE")
             result$quasiVar <- QVs$qvframe$quasiVar
             relerrs <- QVs$relerrs
 

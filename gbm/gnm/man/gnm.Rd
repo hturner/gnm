@@ -71,9 +71,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     iteration is returned. }
   \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
-    contribution of that term to the predictor }
+    contribution of that term to the predictor. }
   \item{lsMethod}{ character: must be one of "svd", "chol" or "qr".}
-  \item{\dots}{ further arguments passed to other functions }
+  \item{\dots}{ further arguments passed to fitting function. }
 }
 \details{
   Models for \code{gnm} are specified by giving a symbolic description

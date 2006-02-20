@@ -1,7 +1,7 @@
 \name{vcov.gnm}
 \alias{vcov.gnm}
-\title{ Variance-covariance matrix for 
-  parameters in a generalized nonlinear model }
+\title{ Variance-covariance Matrix for 
+  Parameters in a Generalized Nonlinear Model }
 \description{
   This method extracts or computes a variance-covariance matrix for
   use in approximate inference on estimable parameter combinations in a

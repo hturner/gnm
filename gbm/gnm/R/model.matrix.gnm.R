@@ -1,5 +1,5 @@
 model.matrix.gnm <- function(object, coef = NULL, ...) {
-    if (!"x" %in% names(object)) {
+    if (!"x" %in% names(object) || !is.null(coef)) {
         xcall <- object$call
         xcall$method <- "model.matrix"
         xcall$constrain <- object$constrain
@@ -8,11 +8,19 @@ model.matrix.gnm <- function(object, coef = NULL, ...) {
             xcall$start <- coef
         else
             xcall$start <- coef(object)
+        extras <- match.call(gnm, xcall, expand.dots = FALSE)$...
+        if (length(extras) > 0) {
+            existing <- !is.na(match(names(extras), names(xcall)))
+            for (a in names(extras)[existing]) xcall[[a]] <- extras[[a]]
+            if (any(!existing)) {
+                call <- c(as.list(call), extras[!existing])
+                call <- as.call(call)
+            }
+        }
         env <- environment(formula(object))
         if (is.null(env)) 
             env <- parent.frame()
-        if (!is.null(xcall$data))
-            Data <- eval(xcall$data, env)
+        Data <- eval(xcall$data, env)   
         eval(xcall, as.data.frame(Data), env)
     }
     else object[[match("x", names(object))]]

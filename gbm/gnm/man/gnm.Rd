@@ -10,9 +10,9 @@
 \usage{
 gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
-    start = NULL, tolerance = 1e-4, iterStart = 2, iterMax = 500,
+    start = NULL, tolerance = 1e-6, iterStart = 2, iterMax = 500,
     trace = FALSE, verbose = TRUE, model = TRUE, x = FALSE,
-    termPredictors = FALSE, lsMethod = "svd", ...)  
+    termPredictors = FALSE, lsMethod = "qr", ...)  
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -72,7 +72,7 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor. }
-  \item{lsMethod}{ character: must be one of "svd", "chol" or "qr".}
+  \item{lsMethod}{ character: must be one of "chol" or "qr".}
   \item{\dots}{ further arguments passed to fitting function. }
 }
 \details{
@@ -140,9 +140,14 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{lsMethod} argument specifies
   what numerical method is to be used to solve the
   (typically rank-deficient) least squares problem at the heart of the
-  \code{gnm} fitting algorithm: the options are two methods which
-  directly calculate the Moore-Penrose inverse (\code{"svd", "chol"}),
-  and direct solution using a double QR decomposition (\code{"qr"}).
+  \code{gnm} fitting algorithm: the options are 
+  direct solution using a QR decomposition (\code{"qr"}), and matrix
+  inversion via Cholesky decomposition (\code{"chol"}).  In both cases,
+  the design matrix is standardized and regularized (in the
+  Levenberg-Marquardt sense) prior to solving.  If \code{lsMethod} is
+  left unspecified, the default is \code{"qr"}, unless \code{eliminate}
+  is used in which case the default \code{lsMethod} used is \code{"chol"}. 
+  
 
   Convergence is judged by comparing the squared components of the score vector
   with corresponding elements of the diagonal of the Fisher information
@@ -158,8 +163,8 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   
   \code{\link{getContrasts}} may be used to obtain estimates of specified
   contrasts, if these contrasts are identifiable. In particular,
-  \code{getContrasts} may be used to estimate the contrast between the
-  first \code{k - 1} levels of a factor and level \code{k}.
+  \code{getContrasts} may be used to estimate the contrasts between the
+  first level of a factor and the rest, and obtain standard errors.
 
   If appropriate constraints are known in advance, or have been
   determined from a \code{gnm} fit, the model may be (re-)fitted using

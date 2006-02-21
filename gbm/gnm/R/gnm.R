@@ -1,8 +1,8 @@
 gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
-                offset, start = NULL, tolerance = 1e-4, iterStart = 2,
+                offset, start = NULL, tolerance = 1e-6, iterStart = 2,
                 iterMax = 500, trace = FALSE, verbose = TRUE, model = TRUE,
-                x = FALSE, termPredictors = FALSE, lsMethod = "svd", ...) {
+                x = FALSE, termPredictors = FALSE, lsMethod = "qr", ...) {
 
     call <- match.call()
 
@@ -26,6 +26,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (!is.factor(Elim))
             stop("variables in 'eliminate' formula must be factors")
         nElim <- nlevels(Elim)
+        if (missing(lsMethod)) lsMethod <- "chol"
     }
     else nElim <- 0
 

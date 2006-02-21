@@ -12,10 +12,10 @@
               verbose = FALSE,
               x = FALSE,
               termPredictors = FALSE,
-              lsMethod = "svd")
+              lsMethod = "qr")
 {
-    if (!(lsMethod %in% c("chol", "qr", "svd"))) stop(
-                "lsMethod must be one of chol, qr, svd")
+    if (!(lsMethod %in% c("chol", "qr"))) stop(
+                "lsMethod must be chol or qr")
     eps <- 100*.Machine$double.eps
     attempt <- 1
     dev <- numeric(2)
@@ -127,7 +127,9 @@
         if (status == "not.converged") {
             needToElim <- seq(sum(!constrain[seq(eliminate)])[eliminate > 0])
             X <-  modelTools$localDesignFunction(theta, factorList)
-            rankX <- qr(X)$rank
+            X <- X[, !constrain, drop = FALSE]
+            pns <- rep(nrow(X), ncol(X))
+            ridge <- c(0, rep(1e-5, ncol(X)))
             for (iter in seq(iterMax)) {
                 if (verbose) {
                     if (iter == 1)
@@ -144,15 +146,17 @@
                     status <- "w.not.finite"
                     break
                 }
-                X <- modelTools$localDesignFunction(theta, factorList)
-                X <- X[, !constrain, drop = FALSE]
-                WX <- w * X
+
                 wSqrt <- sqrt(w)
                 W.X <- wSqrt * X
-                score <- drop(crossprod(z, WX))
-                diagInfo <- colSums(X * WX)
-                if (diagInfo < 1e-20 ||
-                    all(abs(score) < tolerance * sqrt(diagInfo))) {
+                w.z <- wSqrt * z
+                score <- drop(crossprod(w.z, W.X))
+                diagInfo <- colSums(W.X * W.X)
+                Xscales <- pmax(1e-3, sqrt(diagInfo)) ## to allow for zeros!
+                W.X.scaled <- W.X / rep(Xscales, pns)
+                if (all(diagInfo < 1e-20) ||
+                    all(abs(score) <
+                        tolerance * sqrt(tolerance + diagInfo))) {
                     status <- "converged"
                     break
                 }
@@ -160,23 +164,23 @@
                     status <- "stuck"
                     break
                 }
-                znorm <- sqrt(mean(z * z))#
-                zscaled <- z/znorm#
-                w.z <- wSqrt * zscaled#
-                if (lsMethod %in% c("svd", "chol")) {
-                    W.Z <- cbind(w.z, W.X)
+                znorm <- sqrt(sum(w.z * w.z))
+                w.z <- w.z/znorm
+                if (lsMethod == "chol") {
+                    W.Z <- cbind(w.z, W.X.scaled)
                     ZWZ <- crossprod(W.Z)
-                    ZWZinv <- MPinv((ZWZ),
-                                    eliminate = 1 + needToElim,
-                                    onlyFirstCol = TRUE,
-                                    method = lsMethod)
+                    theDiagonal <- diag(ZWZ)
+                    diag(ZWZ) <- theDiagonal + ridge
+                    ZWZinv <- cholInv(ZWZ, eliminate = 1 + needToElim,
+                                      onlyFirstCol = TRUE)
                     theChange <- -(ZWZinv[, 1]/ZWZinv[1, 1])[-1] *
-                  znorm#
-                }
-                if (lsMethod == "qr") {
-                    XWX <- crossprod(W.X)
-                    theChange <- naToZero(qrSolve(XWX,
-                                     crossprod(W.X, w.z))) * znorm#
+                        znorm / Xscales
+                } else { ## lsMethod is "qr"
+                    XWX <- crossprod(W.X.scaled)
+                    theDiagonal <- diag(XWX)
+                    diag(XWX) <- theDiagonal + ridge[-1]
+                    theChange <- solve(qr(XWX), crossprod(W.X.scaled, w.z)) *
+                        znorm / Xscales
                 }
                 dev[2] <- dev[1]
                 j <- 1
@@ -205,6 +209,8 @@
                 else if (verbose)
                     prattle(".")
                 theta <- nextTheta
+                X <- modelTools$localDesignFunction(theta, factorList)
+                X <- X[, !constrain, drop = FALSE]
             }
         }
         if (status %in% c("converged", "not.converged")) {
@@ -246,7 +252,7 @@
                 fitted.values = mu, rank = attr(VCOV, "rank"), family = family,
                 predictors = eta, deviance = dev[1], aic = modelAIC,
                 iter = iter - 1, weights = w, prior.weights = weights,
-                df.residual = nObs - sum(weights == 0) - attr(VCOV,"rank"),
+                df.residual = nObs - attr(VCOV,"rank"), # - sum(weights == 0),
                 y = y, converged = status == "converged")
     if (x) {
         if (sum(constrain) > 0) {

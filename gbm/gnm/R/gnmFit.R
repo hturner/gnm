@@ -251,7 +251,8 @@
     fit <- list(coefficients = theta, constrain = constrain, residuals = z,
                 fitted.values = mu, rank = attr(VCOV, "rank"), family = family,
                 predictors = eta, deviance = dev[1], aic = modelAIC,
-                iter = iter - 1, weights = w, prior.weights = weights,
+                iter = iter - (iter != iterMax), weights = w,
+                prior.weights = weights,
                 df.residual = nObs - attr(VCOV,"rank"), # - sum(weights == 0),
                 y = y, converged = status == "converged")
     if (x) {

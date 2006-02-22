@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.0  (2005-10-06 r35749)
+Version 2.2.1  (2005-12-20 r36812)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -12,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > library(gnm)
@@ -24,7 +24,7 @@ Type 'q()' to quit R.
 Initialising
 Running start-up iterations..
 Running main iterations.........................................................
-........................
+..........................................................................
 Done
 > biplotModel
 
@@ -35,45 +35,45 @@ gnm(formula = y ~ -1 + Mult(site, variety, multiplicity = 2),
 
 Coefficients:
 Mult1.Factor1.(Intercept)        Mult1.Factor1.siteB  
-                  5.21920                   -1.98148  
+                  7.59553                   -2.90332  
       Mult1.Factor1.siteC        Mult1.Factor1.siteD  
-                 -3.22980                   -1.65920  
+                 -4.68184                   -2.30363  
       Mult1.Factor1.siteE        Mult1.Factor1.siteF  
-                 -2.94856                   -2.51170  
+                 -4.23080                   -3.54394  
       Mult1.Factor1.siteG        Mult1.Factor1.siteH  
-                 -1.90226                   -0.62021  
+                 -2.58752                   -0.56755  
       Mult1.Factor1.siteI  Mult1.Factor2.(Intercept)  
-                 -0.11771                   -1.00458  
+                  0.29551                   -0.65911  
    Mult1.Factor2.variety2     Mult1.Factor2.variety3  
-                 -0.33544                   -0.26672  
+                 -0.21459                   -0.16874  
    Mult1.Factor2.variety4     Mult1.Factor2.variety5  
-                  0.18140                    0.34949  
+                  0.12113                    0.23319  
    Mult1.Factor2.variety6     Mult1.Factor2.variety7  
-                  0.39448                    0.58270  
+                  0.27066                    0.38807  
    Mult1.Factor2.variety8     Mult1.Factor2.variety9  
-                  0.83474                    0.80335  
+                  0.55694                    0.53741  
    Mult1.Factor2.varietyX  Mult2.Factor1.(Intercept)  
-                  0.97502                   -1.98559  
+                  0.64978                   -1.94044  
       Mult2.Factor1.siteB        Mult2.Factor1.siteC  
-                  0.59621                    1.39749  
+                  0.58666                    1.36123  
       Mult2.Factor1.siteD        Mult2.Factor1.siteE  
-                  1.61678                    1.66018  
+                  1.55398                    1.60817  
       Mult2.Factor1.siteF        Mult2.Factor1.siteG  
-                  1.94579                    2.32478  
+                  1.87535                    2.22960  
       Mult2.Factor1.siteH        Mult2.Factor1.siteI  
-                  3.19906                    4.16954  
+                  3.04803                    3.96577  
 Mult2.Factor2.(Intercept)     Mult2.Factor2.variety2  
-                  1.53468                    1.30673  
+                  1.69248                    1.40023  
    Mult2.Factor2.variety3     Mult2.Factor2.variety4  
-                  1.31026                    0.02419  
+                  1.39848                    0.01106  
    Mult2.Factor2.variety5     Mult2.Factor2.variety6  
-                  0.01803                    1.07698  
+                 -0.00878                    1.10045  
    Mult2.Factor2.variety7     Mult2.Factor2.variety8  
-                 -0.07253                    0.03885  
+                 -0.12244                   -0.02545  
    Mult2.Factor2.variety9     Mult2.Factor2.varietyX  
-                  0.23639                   -0.06137  
+                  0.18464                   -0.14194  
 
 Deviance:            41.02424 
-Pearson chi-squared: 54.29148 
+Pearson chi-squared: 54.29363 
 Residual df:         56 
 > 

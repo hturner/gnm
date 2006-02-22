@@ -31,14 +31,14 @@ Type 'q()' to quit R.
 > noRelationship <- gnm(.counts ~ pain, eliminate = .rowID,
 +                       family = "poisson", data = backPain)
 Initialising
-Running main iterations...
+Running main iterations....
 Done
 > 
 > oneDimensional <- update(noRelationship,
 +                          ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
 Initialising
 Running start-up iterations..
-Running main iterations...............
+Running main iterations.....................
 Done
 > oneDimensional
 
@@ -49,22 +49,22 @@ gnm(formula = .counts ~ pain + Mult(pain - 1, x1 + x2 + x3 -
 
 Coefficients:
                               painsame                  painslight.improvement  
-                              16.15615                                15.68327  
+                               16.1578                                 15.6848  
               painmoderate.improvement                  painmarked.improvement  
-                              12.45391                                19.91245  
+                               12.4556                                 19.9140  
                    paincomplete.relief                 Mult1.Factor1.painworse  
-                              21.66408                                 4.27832  
+                               21.6653                                  0.8260  
                 Mult1.Factor1.painsame    Mult1.Factor1.painslight.improvement  
-                              -0.23224                                 0.01096  
+                               -3.5319                                 -3.2969  
 Mult1.Factor1.painmoderate.improvement    Mult1.Factor1.painmarked.improvement  
-                               1.07714                                -1.32893  
+                               -2.2670                                 -4.5913  
      Mult1.Factor1.paincomplete.relief                        Mult1.Factor2.x1  
-                              -2.25353                                 0.82234  
+                               -5.4844                                  0.8513  
                       Mult1.Factor2.x2                        Mult1.Factor2.x3  
-                               0.47167                                 0.41535  
+                                0.4883                                  0.4299  
 
 Deviance:            303.1003 
-Pearson chi-squared: 433.3745 
+Pearson chi-squared: 433.3727 
 Residual df:         493 
 > 
 > 

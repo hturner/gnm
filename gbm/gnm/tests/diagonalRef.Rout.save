@@ -25,7 +25,7 @@ Type 'q()' to quit R.
 > classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
 +                      family = binomial, data = voting)
 Initialising
-Running main iterations......
+Running main iterations........
 Done
 > classMobility
 
@@ -37,13 +37,13 @@ gnm(formula = yvar ~ Nonlin(Dref(origin, destination)), family = binomial,
 
 Coefficients:
                           (Intercept)       Dref(origin, destination).origin  
-                             -1.60548                               -0.30735  
+                             -1.34325                               -0.30736  
 Dref(origin, destination).destination            Dref(origin, destination).1  
-                             -0.05501                               -0.57232  
+                             -0.05501                               -0.83455  
           Dref(origin, destination).2            Dref(origin, destination).3  
-                              0.47288                               -0.34936  
+                              0.21066                               -0.61159  
           Dref(origin, destination).4            Dref(origin, destination).5  
-                              1.02723                                1.64593  
+                              0.76500                                1.38370  
 
 Deviance:            21.22093 
 Pearson chi-squared: 18.95311 
@@ -56,7 +56,7 @@ Residual df:         19
 +                                          formula = ~ 1 + downward + upward)),
 +                       family = binomial, data = voting)
 Initialising
-Running main iterations.......
+Running main iterations..........
 Done
 > socialMobility
 
@@ -67,31 +67,31 @@ gnm(formula = yvar ~ Nonlin(Dref(origin, destination, formula = ~1 +
 
 Coefficients:
                                                                          (Intercept)  
-                                                                            -1.58441  
+                                                                            -1.31739  
       Dref(origin, destination, formula = ~1 + downward + upward).origin.(Intercept)  
-                                                                            -0.39835  
+                                                                            -0.39834  
      Dref(origin, destination, formula = ~1 + downward + upward).origin.downwardTRUE  
-                                                                             0.37857  
+                                                                             0.37858  
        Dref(origin, destination, formula = ~1 + downward + upward).origin.upwardTRUE  
-                                                                             0.06226  
+                                                                             0.06225  
  Dref(origin, destination, formula = ~1 + downward + upward).destination.(Intercept)  
-                                                                            -0.01157  
+                                                                            -0.01158  
 Dref(origin, destination, formula = ~1 + downward + upward).destination.downwardTRUE  
                                                                             -0.43218  
   Dref(origin, destination, formula = ~1 + downward + upward).destination.upwardTRUE  
-                                                                             0.12246  
+                                                                             0.12247  
                        Dref(origin, destination, formula = ~1 + downward + upward).1  
-                                                                            -0.47318  
+                                                                            -0.74021  
                        Dref(origin, destination, formula = ~1 + downward + upward).2  
-                                                                             0.47171  
+                                                                             0.20469  
                        Dref(origin, destination, formula = ~1 + downward + upward).3  
-                                                                            -0.41037  
+                                                                            -0.67740  
                        Dref(origin, destination, formula = ~1 + downward + upward).4  
-                                                                             1.01526  
+                                                                             0.74824  
                        Dref(origin, destination, formula = ~1 + downward + upward).5  
-                                                                             1.64200  
+                                                                             1.37497  
 
 Deviance:            18.97407 
-Pearson chi-squared: 17.07492 
+Pearson chi-squared: 17.07493 
 Residual df:         17 
 > 

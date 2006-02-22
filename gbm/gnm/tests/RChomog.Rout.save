@@ -1,6 +1,6 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.0  (2005-10-06 r35749)
+Version 2.2.1  (2005-12-20 r36812)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -12,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > library(gnm)
@@ -24,7 +24,7 @@ Type 'q()' to quit R.
 +                data = occupationalStatus)
 Initialising
 Running start-up iterations..
-Running main iterations......
+Running main iterations........
 Done
 > RChomog
 
@@ -36,39 +36,39 @@ gnm(formula = Freq ~ origin + destination + Diag(origin, destination) +
 
 Coefficients:
                      (Intercept)                           origin2  
-                         0.01031                           0.52684  
+                        -0.13044                           0.53667  
                          origin3                           origin4  
-                         1.65525                           1.99637  
+                         1.69200                           2.05939  
                          origin5                           origin6  
-                         0.77768                           2.85899  
+                         0.84147                           2.94582  
                          origin7                           origin8  
-                         1.54821                           1.29563  
+                         1.65377                           1.41215  
                     destination2                      destination3  
-                         0.94586                           1.99967  
+                         0.95568                           2.03642  
                     destination4                      destination5  
-                         2.28480                           1.67709  
+                         2.34783                           1.74089  
                     destination6                      destination7  
-                         3.16246                           2.29980  
+                         3.24930                           2.40537  
                     destination8        Diag(origin, destination)1  
-                         1.87101                           1.52667  
+                         1.98753                           1.52667  
       Diag(origin, destination)2        Diag(origin, destination)3  
-                         0.45601                          -0.01597  
+                         0.45600                          -0.01598  
       Diag(origin, destination)4        Diag(origin, destination)5  
-                         0.38918                           0.73851  
+                         0.38918                           0.73852  
       Diag(origin, destination)6        Diag(origin, destination)7  
-                         0.13474                           0.45763  
+                         0.13474                           0.45764  
       Diag(origin, destination)8  MultHomog(origin, destination).1  
-                         0.38848                          -1.54112  
+                         0.38847                          -1.58612  
 MultHomog(origin, destination).2  MultHomog(origin, destination).3  
-                        -1.32283                          -0.72465  
+                        -1.36783                          -0.76966  
 MultHomog(origin, destination).4  MultHomog(origin, destination).5  
-                        -0.14078                          -0.12361  
+                        -0.18578                          -0.16862  
 MultHomog(origin, destination).6  MultHomog(origin, destination).7  
-                         0.38815                           0.80429  
+                         0.34314                           0.75928  
 MultHomog(origin, destination).8  
-                         1.04786  
+                         1.00286  
 
 Deviance:            32.56098 
-Pearson chi-squared: 31.20718 
+Pearson chi-squared: 31.20716 
 Residual df:         34 
 > 

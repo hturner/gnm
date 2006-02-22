@@ -779,6 +779,9 @@ over-parameterized model representations.
 \section{Methods and Accessor functions}
 \label{Methods}
 
+\subsection{Methods}
+\label{specificMethods}
+
 The \Rfunction{gnm} function returns
 an object of class \Robject{c("gnm", "glm", "lm")}. There
 are several methods that have been written for objects of class \Rclass{glm}
@@ -849,7 +852,11 @@ parameterization of the model. In particular, standard errors calculated using
 the variance-covariance matrix will only be valid for parameters or contrasts
 that are estimable!
 
-The \Rfunction{checkEstimable} function can be used to check the estimability of
+\subsection{\Rfunction{checkEstimable}}
+\label{checkEstimable}
+
+The \Rfunction{checkEstimable} function can be used to check the
+estimability of
 contrasts. Consider the following model, that is described later in Section
 \ref{Unidiff}:
 <<Double_UNIDIFF_model>>=
@@ -898,6 +905,9 @@ contrMatrix[contrCoefs, 2:nContr] <- rbind(contr[nContr, ], contr[-nContr, ])
 checkEstimable(doubleUnidiff, contrMatrix)
 @
 
+\subsection{\Rfunction{getContrasts}, \Rfunction{se}}
+\label{getContrasts}
+
 To investigate simple ``sum to zero'' contrasts such as those above, it
 is easiest to use the \Rfunction{getContrasts} function, which checks the
 estimability of the contrasts and returns the parameter estimates with their
@@ -914,6 +924,50 @@ following result:
 <<Get_contrasts_2>>=
 coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
 getContrasts(doubleUnidiff, coefs.of.interest)
+@ %def
+
+For approximate inference on more general linear combinations of parameters,
+the lower-level \Rfunction{se} function (which is called internally by
+\Rfunction{getContrasts} and by the \Rmethod{summary} method)
+can be used directly.  See \texttt{help(se)} for details.
+
+\subsection{\Rfunction{residSVD}}
+\label{residSVD}
+Sometimes it is useful to operate on the residuals of a model in order
+to create informative summaries of residual variation, or to obtain good
+starting values for additional parameters in a more elaborate model.  The
+relevant arithmetical operations are weighted means of the so-called
+\emph{working residuals}.
+
+The \Rfunction{residSVD} function facilitates one particular residual
+analysis that is often useful when considering multiplicative interaction
+between factors as a model elaboration: in effect, \Rfunction{residSVD}
+provides a crude, direct estimate of the parameters of such an interaction, by
+performing an appropriately weighted singular value decomposition on the
+working residuals.
+
+As an illustration, consider the biplot model described in
+Section~\ref{biplot} below.  We can proceed by fitting a smaller model,
+then use \Rfunction{residSVD} to obtain starting values for the parameters
+in the bilinear term:
+<<residSVD>>=
+emptyModel <- gnm(y ~ -1, family = wedderburn, data = barley)
+biplotStart <- residSVD(emptyModel, barley$site, barley$variety, 2)
+biplotModel <- gnm(y ~ -1 + Mult(-1 + site, -1 + variety, multiplicity = 2), family = wedderburn, data = barley, start =  biplotStart)
+@ %def
+In this instance, where the number of parameters was fairly small, the
+use of purposive (as opposed to random) starting values had little effect
+(for example, the number of iterations needed to fit the model is largely
+unaffected).  In other situations, where the number of parameters is much
+larger, the use of \Rfunction{residSVD} may be crucial to success in
+fitting the model: an example can be seen in \texttt{help(House2001)}, where
+the number of multiplicative parameters is in the hundreds.
+
+The \Rfunction{residSVD} result provides a crude approximation to the MLE
+of the enlarged model, as can be seen in this plot:
+<<residSVDplot fig=TRUE>>=
+plot(coef(biplotModel), as.vector(biplotStart), main = "Comparison of
+residSVD and MLE for a 2-dimensional biplot model")
 @ %def
 
 \section{Examples}
@@ -1508,6 +1562,7 @@ giving the same results as in Table 1 of \citet{Varg01} (up to error caused by
 rounding).
 
 \subsection{Biplot Models}
+\label{biplot}
 
 Biplots are used to display two-dimensional data transformed into a space
 spanned by linearly independent vectors, such as the principal components or
@@ -1735,6 +1790,8 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rfunction{checkEstimable}	&  check whether one or more parameter
                                            combinations in a
                                            \Rclass{gnm} model is identified \\
+    &	\Rfunction{residSVD}	&  multiplicative approximation of
+                                   model residuals	\\
     &	\Rfunction{se}	&  get standard errors of linear parameter
                            combinations in \Rclass{gnm} models	\\
     &	\Rfunction{termPredictors}	&  (\emph{generic}) extract term
@@ -1747,8 +1804,6 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rfunction{MPinv}	&  Moore-Penrose pseudoinverse of a
                                    real-valued matrix	\\
     &	\Rfunction{qrSolve}	&  Minimum-length solution of a linear system\\
-    &	\Rfunction{residSVD}	&  multiplicative approximation of
-                                   model residuals	\\
     &   \Rfunction{expandCategorical}   & expand a data frame by re-expressing
                                           categorical data as counts \\
 \end{tabular*}

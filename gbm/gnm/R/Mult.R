@@ -6,10 +6,7 @@ Mult <- function(..., multiplicity = 1){
         culprit <- gsub(".default", "",
                         as.character(sys.calls()
                                      [[min(badCall[!is.na(badCall)])]][[1]]))
-        stop(paste(culprit,
-                   "has called Mult() from the gnm package.\n", culprit,
-                   "can only handle Mult terms",
-                   "as part of the formula of a gnm object."))
+        stop(paste("Mult terms are only valid in gnm models."))
     }
     
     factorList <- as.list(as.character((match.call(expand.dots = FALSE))[[2]]))

@@ -174,6 +174,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 
         if (onlyLin) {
             if (any(is.na(start))) start <- NULL
+            if (verbose) cat("Linear predictor - using glm.fit")
             fit <- glm.fit(X, y, family = family, weights = weights,
                            offset = offset, start = start,
                            control = glm.control(tolerance, iterMax, trace),

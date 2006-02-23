@@ -63,21 +63,19 @@ yield.scaled <- wheat$yield * sqrt(3/1000)
 aov(yield.scaled ~ year*tillage*summerCrop*manure*N, data = wheat)
 treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
                          wheat$N, sep = "")
-mainEffects <- glm(yield.scaled ~ year + treatment, family = gaussian,
+mainEffects <- gnm(yield.scaled ~ year + treatment, family = gaussian,
                    data = wheat)
-bilinear1 <- gnm(yield.scaled ~ year + treatment + Mult(year, treatment),
-                 family = gaussian, data = wheat)
-anova(mainEffects, bilinear1)
-\dontrun{
-    ## The next two take a lot of iterations to converge...
-    bilinear2 <- gnm(yield.scaled ~ year + treatment +
-                     Mult(year, treatment, multiplicity = 2),
-                     family = gaussian, data = wheat)
-    bilinear3 <- gnm(yield.scaled ~ year + treatment +
-                     Mult(year, treatment, multiplicity = 3),
-                     family = gaussian, data = wheat)
-    anova(mainEffects, bilinear1, bilinear2, bilinear3)
-}
+svdStart <- residSVD(mainEffects, year, treatment, 3)
+bilinear1 <- update(mainEffects, . ~ . + 
+                    Mult(year - 1, treatment - 1),
+                    start = c(coef(mainEffects), svdStart[,1]))
+bilinear2 <- update(mainEffects, . ~ . + 
+                    Mult(year - 1, treatment - 1, multiplicity = 2),
+                    start = c(coef(mainEffects), svdStart[,1:2]))
+bilinear3 <- update(mainEffects, . ~ . + 
+                    Mult(year - 1, treatment - 1, multiplicity = 3),
+                    start = c(coef(mainEffects), svdStart[,1:3]))
+anova(mainEffects, bilinear1, bilinear2, bilinear3)
 
 ##  Examine the extent to which, say, mTF explains the first bilinear term
 bilinear1mTF <- gnm(yield.scaled ~ year + treatment + Mult(1 + mTF, treatment),

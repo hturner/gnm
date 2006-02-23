@@ -160,10 +160,6 @@
                     status <- "converged"
                     break
                 }
-                if (iter > 1 && abs(diff(dev)) < 1e-16) {
-                    status <- "stuck"
-                    break
-                }
                 znorm <- sqrt(sum(w.z * w.z))
                 w.z <- w.z/znorm
                 if (lsMethod == "chol") {
@@ -227,8 +223,7 @@
                                  "Predictors are not all finite",
                                w.not.finite =
                                  "Iterative weights are not all finite",
-                               no.deviance = "Deviance is NaN",
-                               stuck = "Iterations are not converging"))
+                               no.deviance = "Deviance is NaN"))
             attempt <- attempt + 1
             if (attempt > 5 || all(!is.na(start)) || modelTools$classID %in%
                                   c("Linear", "plugInStart"))
@@ -237,10 +232,6 @@
                 message("Restarting")
         }
     }
-    if (status == "not.converged")
-        warning("fitting algorithm has either not converged or converged\n",
-                "to a non-solution of the likelihood equations: re-start \n",
-                "gnm with coefficients of returned model\n")
     theta[constrain] <- NA
     Info <- crossprod(W.X)
     VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE,
@@ -254,7 +245,18 @@
                 iter = iter - (iter != iterMax), weights = w,
                 prior.weights = weights,
                 df.residual = nObs - attr(VCOV,"rank"), # - sum(weights == 0),
-                y = y, converged = status == "converged")
+                y = y)
+    if (status == "not.converged") {
+        warning("fitting algorithm has either not converged or converged\n",
+                "to a non-solution of the likelihood equations.\n",
+                "Use exitInfo() for numerical details.")
+        fit$converged <- structure(FALSE,
+                                   score = abs(score)[abs(score) >= tolerance *
+                                   sqrt(tolerance + diagInfo)])
+    }
+    else
+        fit$converged <- TRUE
+        
     if (x) {
         if (sum(constrain) > 0) {
             fit$x <- array(0, dim = c(nrow(X), length(theta)),

@@ -63,16 +63,15 @@ yield.scaled <- wheat$yield * sqrt(3/1000)
 aov(yield.scaled ~ year*tillage*summerCrop*manure*N, data = wheat)
 treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
                          wheat$N, sep = "")
-mainEffects <- gnm(yield.scaled ~ year + treatment, family = gaussian,
-                   data = wheat)
+mainEffects <- lm(yield.scaled ~ year + treatment, data = wheat)
 svdStart <- residSVD(mainEffects, year, treatment, 3)
-bilinear1 <- update(mainEffects, . ~ . + 
+bilinear1 <- update(asGnm(mainEffects), . ~ . + 
                     Mult(year - 1, treatment - 1),
                     start = c(coef(mainEffects), svdStart[,1]))
-bilinear2 <- update(mainEffects, . ~ . + 
+bilinear2 <- update(asGnm(mainEffects), . ~ . + 
                     Mult(year - 1, treatment - 1, multiplicity = 2),
                     start = c(coef(mainEffects), svdStart[,1:2]))
-bilinear3 <- update(mainEffects, . ~ . + 
+bilinear3 <- update(asGnm(mainEffects), . ~ . + 
                     Mult(year - 1, treatment - 1, multiplicity = 3),
                     start = c(coef(mainEffects), svdStart[,1:3]))
 anova(mainEffects, bilinear1, bilinear2, bilinear3)

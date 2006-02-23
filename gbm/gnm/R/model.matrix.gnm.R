@@ -8,13 +8,13 @@ model.matrix.gnm <- function(object, coef = NULL, ...) {
             xcall$start <- coef
         else
             xcall$start <- coef(object)
-        extras <- match.call(gnm, xcall, expand.dots = FALSE)$...
+        extras <- match.call(gnm, expand.dots = FALSE)$...
         if (length(extras) > 0) {
             existing <- !is.na(match(names(extras), names(xcall)))
             for (a in names(extras)[existing]) xcall[[a]] <- extras[[a]]
             if (any(!existing)) {
-                call <- c(as.list(call), extras[!existing])
-                call <- as.call(call)
+                xcall <- c(as.list(xcall), extras[!existing])
+                xcall <- as.call(xcall)
             }
         }
         env <- environment(formula(object))

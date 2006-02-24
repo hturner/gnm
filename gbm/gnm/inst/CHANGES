@@ -20,11 +20,25 @@ New Features
         in the non-full-rank case gives the minimum-length solution rather
         than an arbitrary solution determined by pivoting.
 
+    o	added .onUnload() so that compiled code is unloaded when namespace of 
+	package is unloaded using unloadNamespace().
+
+    o	added 'coef' argument to model.matrix.gnm() so that the model matrix can
+	be evaluated at any specified value of the parameter vector. 
+
+    o	added asGnm() generic to coerce linear model objects to gnm objects.
+
+    o	added exitInfo() for printing numerical details of last iteration on 
+	non-convergence of gnm().
+
 Improvements
 ------------
 
     o	gnm() now takes less time to run due to improvements made in the
 	iterative algorithm.
+
+    o	modified model.matrix.gnm() so it can be used when only the namespace of
+	gnm is loaded.
 
 Bug Fixes
 ---------
@@ -35,6 +49,10 @@ Bug Fixes
 	object even when original call not made in .GlobalEnv.
 
     o	fixed bug in the examples on help page for House2001 data.
+
+    o	fixed bug so that 'formula' in gnm() now accepts '.' in formulae even when
+	'eliminate = NULL'.
+
 
 Changes in gnm 0.8-0
 =======================

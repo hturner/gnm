@@ -16,7 +16,7 @@
 \source{
   Goodman, L. A. (1979) Simple Models for the Analysis of Association in
   Cross-Classifications having Ordered
-  Categories. \emph{J. Am. Stat. Assoc.}, \bold{74(367)}, 537-552.
+  Categories. \emph{J. Am. Stat. Assoc.}, \bold{74(367)}, 537--552.
 }
 \examples{
 set.seed(1)

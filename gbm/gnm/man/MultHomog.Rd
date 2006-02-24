@@ -59,23 +59,19 @@ MultHomog(...)
   \code{gnm} formulae.}
 \examples{
 set.seed(1)
-data(occupationalStatus)
+data(friend)
 
 ##  Fit an association model with homogeneous row-column effects
-RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               Nonlin(MultHomog(origin, destination)), family = poisson,
-               data = occupationalStatus)
-## Deviance is 32.56, 34 d.f.
+rc1 <- gnm(Freq ~ r + c + Diag(r,c) + Nonlin(MultHomog(r, c)),
+           family = poisson, data = friend)
+rc1
 
 ##  Extend to two-component interaction (using workaround)
-##  THIS DOESN'T WORK!
-#original <- as.data.frame(occupationalStatus)
-#origin2 <- original$origin
-#destination2 <- original$destination
-#RChomog2 <- update(RChomog, . ~ . +
-#                   Nonlin(MultHomog(origin2, destination2)),
-#                   iterMax = 2000, trace = TRUE)
-
+original <- as.data.frame(friend)
+r2 <- original$r
+c2 <- original$c
+rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r2, c2)))
+rc2
 }
 \keyword{ models }
 \keyword{ regression }

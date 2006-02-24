@@ -247,12 +247,11 @@
                 df.residual = nObs - attr(VCOV,"rank"), # - sum(weights == 0),
                 y = y)
     if (status == "not.converged") {
-        warning("fitting algorithm has either not converged or converged\n",
+        warning("Fitting algorithm has either not converged or converged\n",
                 "to a non-solution of the likelihood equations.\n",
-                "Use exitInfo() for numerical details.")
-        fit$converged <- structure(FALSE,
-                                   score = abs(score)[abs(score) >= tolerance *
-                                   sqrt(tolerance + diagInfo)])
+                "Use exitInfo() for numerical details of last iteration.\n")
+        fit$converged <- structure(FALSE, score = score, criterion =
+                                   tolerance * sqrt(tolerance + diagInfo))
     }
     else
         fit$converged <- TRUE

@@ -3,7 +3,7 @@
 \title{ Check Whether One or More Parameter Combinations in a gnm Model
  are Identified }
 \description{
-  For each of a specified set of combinations of parameters from a
+  For each of a specified set of linear combinations of parameters from a
   \code{\link{gnm}} model, checks numerically whether the combination's
   estimate is invariant to re-parameterization of the model.
 }
@@ -26,6 +26,10 @@ checkEstimable(model, coefMatrix, tolerance = 1e-8)
   \code{\link{se}},
   \code{\link{getContrasts}}
 }
+\references{
+  Catchpole, E.A. and Morgan, B.J.T. (1997).  Detecting parameter
+  redundancy. \emph{Biometrika}, \bold{84}, 187--196.
+  }
 \examples{
 data(yaish)
 set.seed(1)

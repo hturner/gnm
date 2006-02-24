@@ -31,6 +31,9 @@ New Features
     o	added exitInfo() for printing numerical details of last iteration on 
 	non-convergence of gnm().
 
+    o	added new dataset, friend, to illustrate a workaround to fit a
+	homogeneous RC(2) using gnm() - documented in help file for MultHomog().
+
 Improvements
 ------------
 

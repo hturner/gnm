@@ -925,17 +925,27 @@ in the first multiplicative interaction term, the differences between each
 election and the first can be obtained as follows:
 <<Get_contrasts_1>>=
 coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
-getContrasts(doubleUnidiff, coefs.of.interest)
+print(myContrasts <- getContrasts(doubleUnidiff, coefs.of.interest))
 @ %def
-Attempting to obtain the equivalent contrasts for the second
-(religion-vote association) multiplier produces the
-following result:
-<<Get_contrasts_2>>=
-coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
-getContrasts(doubleUnidiff, coefs.of.interest)
-@ %def
+Visualization of estimated contrasts using
+`quasi standard errors' \citep{Firt03,FirtMene04} is achieved by plotting
+the resulting object:
+\begin{center}
+<<qvplot, fig = TRUE>>=
+plot(myContrasts[[1]], levelNames = paste("election", c(1,2,3,4)),
+  main = "Relative strength of religion-vote association, log scale")
+@
+\end{center}
+%Attempting to obtain the equivalent contrasts for the second
+%(religion-vote association) multiplier produces the
+%following result:
+%<<Get_contrasts_2>>=
+%coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
+%getContrasts(doubleUnidiff, coefs.of.interest)
+%@ %def
 
-For approximate inference on more general linear combinations of parameters,
+For more general linear combinations of parameters
+than contrasts,
 the lower-level \Rfunction{se} function (which is called internally by
 \Rfunction{getContrasts} and by the \Rmethod{summary} method)
 can be used directly.  See \texttt{help(se)} for details.

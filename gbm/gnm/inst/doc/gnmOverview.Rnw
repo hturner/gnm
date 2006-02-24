@@ -617,7 +617,7 @@ reached \Rfunarg{iterMax} if the convergence criteria have been met, with
 tolerance specified by \Rfunarg{tolerance}. Convergence is judged by comparing
 the squared components of the score vector with corresponding elements of the
 diagonal of the Fisher information matrix. If, for all components of the score
-vector, the ratio is less than \Robject{tolerance$^2$}, or the corresponding diagonal
+vector, the ratio is less than \texttt{tolerance\^{}2}, or the corresponding diagonal
 element of the Fisher information matrix is less than 1e-20, the algorithm is
 deemed to have converged.
 
@@ -1830,6 +1830,8 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rfunction{checkEstimable}	&  check whether one or more parameter
                                            combinations in a
                                            \Rclass{gnm} model is identified \\
+    &   \Rfunction{exitInfo}    &  print numerical details of last iteration
+                                   when  \Rfunction{gnm} has not converged \\
     &	\Rfunction{residSVD}	&  multiplicative approximation of
                                    model residuals	\\
     &	\Rfunction{se}	&  get standard errors of linear parameter
@@ -1861,30 +1863,56 @@ previous releases, see the CHANGES file in the \texttt{inst} directory of
 the package.
 
 \begin{verbatimtab}
+Changes in gnm 0.8-1
+====================
+
 New Features
 ------------
 
-    o	added the `method' argument to MPinv(), to allow the method of
+    o	added the `method' argument to MPinv(), to allow the method of 
 	calculation to be specified.  Permitted values are "svd" to
-	compute the pseudo-inverse by singular value decomposition,
+	compute the pseudo-inverse by singular value decomposition, 
 	and "chol" to use the Cholseky decomposition instead.  The latter
 	is valid only for symmetric matrices, but is usually faster
     	and more accurate.
 
-    o	added the `lsMethod' argument to gnm(), to allow specification of
+    o	added the `lsMethod' argument to gnm(), to allow specification of 
 	the numerical method used for least-squares calculations in the
-	core of the iterative algorithm.  Permitted options are ""chol" and
-	"qr".
+	core of the iterative algorithm.  Permitted options are "chol" and 
+        "qr".
 
-    o	added new function qrSolve(), which behaves like base::qr.coef but
+    o	added new function qrSolve(), which behaves like base::qr.coef but 
         in the non-full-rank case gives the minimum-length solution rather
         than an arbitrary solution determined by pivoting.
+
+    o	added .onUnload() so that compiled code is unloaded when namespace of 
+	package is unloaded using unloadNamespace().
+
+    o	added 'coef' argument to model.matrix.gnm() so that the model matrix 
+        can be evaluated at any specified value of the parameter vector. 
+
+    o	added asGnm() generic to coerce linear model objects to gnm objects.
+
+    o	added exitInfo() for printing numerical details of last iteration on 
+	non-convergence of gnm().
+
+    o	added new dataset, friend, to illustrate a workaround to fit a
+	homogeneous RC(2) using gnm() - documented in help file for MultHomog().
 
 Improvements
 ------------
 
-    o	gnm() now takes less time to run due to improvements made in the
-	iterative algorithm.
+    o	gnm() now takes less time per (main) iteration, due to improvements 
+        made internally in the iterative algorithm.  These include 
+        pre-scaling of the local design matrix, and Levenberg-Marquardt 
+        adjustment of the least-squares solvers so that rank determination
+        is no longer necessary.  
+
+    o	the default convergence tolerance has been tightened (from 1e-4 to 1e-6)
+
+    o	modified model.matrix.gnm() so it can be used when only the namespace 
+        of gnm is loaded.
+
 \end{verbatimtab}
 
 \newpage

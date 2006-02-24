@@ -43,8 +43,7 @@ Improvements
         adjustment of the least-squares solvers so that rank determination
         is no longer necessary.  
 
-    o	the default convergence tolerance has been tightened (from 1e-4 to 
-	1e-6)
+    o	the default convergence tolerance has been tightened (from 1e-4 to 1e-6)
 
     o	modified model.matrix.gnm() so it can be used when only the namespace 
         of gnm is loaded.
@@ -64,7 +63,7 @@ Bug Fixes
 
     o	fixed bug in getContrasts(), so that the first two columns
         of the qvframe component of each element of the result list
-        are correctly named as "estimate" and "SE", as resuired for
+        are correctly named as "estimate" and "SE", as required for
         objects of class "qv".
 
 

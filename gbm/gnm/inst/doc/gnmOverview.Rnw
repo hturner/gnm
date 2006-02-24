@@ -865,8 +865,13 @@ that are estimable!
 \label{checkEstimable}
 
 The \Rfunction{checkEstimable} function can be used to check the
-estimability of
-contrasts. Consider the following model, that is described later in Section
+estimability of a linear combination of parameters.  For non-linear
+combinations the same function can be used to check estimability based on
+the (local) vector of partial derivatives.  The \Rfunction{checkEstimable}
+function provides a numerical version of the sort of algebraic test
+described in \citet{CatcMorg97}.
+
+Consider the following model, that is described later in Section
 \ref{Unidiff}:
 <<Double_UNIDIFF_model>>=
 data(cautres)

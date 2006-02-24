@@ -13,8 +13,8 @@ New Features
 
     o	added the `lsMethod' argument to gnm(), to allow specification of 
 	the numerical method used for least-squares calculations in the
-	core of the iterative algorithm.  Permitted options are "svd",
-	"chol" and "qr".
+	core of the iterative algorithm.  Permitted options are "chol" and 
+        "qr".
 
     o	added new function qrSolve(), which behaves like base::qr.coef but 
         in the non-full-rank case gives the minimum-length solution rather
@@ -23,8 +23,8 @@ New Features
     o	added .onUnload() so that compiled code is unloaded when namespace of 
 	package is unloaded using unloadNamespace().
 
-    o	added 'coef' argument to model.matrix.gnm() so that the model matrix can
-	be evaluated at any specified value of the parameter vector. 
+    o	added 'coef' argument to model.matrix.gnm() so that the model matrix 
+        can be evaluated at any specified value of the parameter vector. 
 
     o	added asGnm() generic to coerce linear model objects to gnm objects.
 
@@ -37,11 +37,17 @@ New Features
 Improvements
 ------------
 
-    o	gnm() now takes less time to run due to improvements made in the
-	iterative algorithm.
+    o	gnm() now takes less time per (main) iteration, due to improvements 
+        made internally in the iterative algorithm.  These include 
+        pre-scaling of the local design matrix, and Levenberg-Marquardt 
+        adjustment of the least-squares solvers so that rank determination
+        is no longer necessary.  
 
-    o	modified model.matrix.gnm() so it can be used when only the namespace of
-	gnm is loaded.
+    o	the default convergence tolerance has been tightened (from 1e-4 to 
+	1e-6)
+
+    o	modified model.matrix.gnm() so it can be used when only the namespace 
+        of gnm is loaded.
 
 Bug Fixes
 ---------
@@ -53,8 +59,13 @@ Bug Fixes
 
     o	fixed bug in the examples on help page for House2001 data.
 
-    o	fixed bug so that 'formula' in gnm() now accepts '.' in formulae even when
-	'eliminate = NULL'.
+    o	fixed bug so that 'formula' in gnm() now accepts '.' in formulae 
+        even when 'eliminate = NULL'.
+
+    o	fixed bug in getContrasts(), so that the first two columns
+        of the qvframe component of each element of the result list
+        are correctly named as "estimate" and "SE", as resuired for
+        objects of class "qv".
 
 
 Changes in gnm 0.8-0

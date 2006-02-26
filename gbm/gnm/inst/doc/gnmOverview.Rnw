@@ -617,7 +617,8 @@ reached \Rfunarg{iterMax} if the convergence criteria have been met, with
 tolerance specified by \Rfunarg{tolerance}. Convergence is judged by comparing
 the squared components of the score vector with corresponding elements of the
 diagonal of the Fisher information matrix. If, for all components of the score
-vector, the ratio is less than \texttt{tolerance\^{}2}, or the corresponding diagonal
+vector, the ratio is less than \texttt{tolerance\^{}2},
+or the corresponding diagonal
 element of the Fisher information matrix is less than 1e-20, the algorithm is
 deemed to have converged.
 
@@ -779,7 +780,54 @@ multinomial-response models are fitted by using the well known equivalence
 between multinomial and (conditional) Poisson likelihoods.  In such situations
 the sufficient statistic involves a potentially large number of fixed
 multinomial row totals, and the corresponding parameters are of no
-substantive interest.  For an example see Section \ref{Stereotype} below.
+substantive interest.  For an application see Section \ref{Stereotype} below.
+Here we give an artificial illustration: 500 randomly-generated trinomial
+responses, and a single predictor variable (whose effect on the data generation
+is null):
+<<eliminate1>>=
+set.seed(1)
+n <- 500
+x <- rep(rnorm(n), rep(3, n))
+counts <- as.vector(rmultinom(n, 10, c(0.7, 0.1, 0.2)))
+rowID <- factor(rep(1:n, rep(3, n)))
+resp <- factor(rep(1:3, n))
+@
+The logistic model for dependence on \Robject{x} can be fitted as a Poisson
+log-linear model\footnote{For this particular example, of course, it would be
+more economical to fit the model directly using \Rfunction{multinom} (from the
+recommended package \Rpackage{nnet}).  But fitting as here via the
+`Poisson trick' allows the model to be elaborated within the \Rpackage{gnm}
+framework using \Rfunction{Mult} or \Rfunction{Nonlin} terms.}, using
+either \Rfunction{glm} or \Rfunction{gnm}:
+<<eliminate2>>=
+system.time(temp.glm <- glm(counts ~ rowID + resp + resp:x, family = poisson))
+system.time(temp.gnm <- gnm(counts ~ resp + resp:x, eliminate = rowID, family = poisson))
+c(deviance(temp.glm), deviance(temp.gnm))
+@
+Here the use of \Rfunarg{eliminate} causes the \Rfunction{gnm} calculations to
+run more quickly than \Rfunction{glm}.  The speed advantage\footnote{In fact
+\Rfunarg{eliminate} is, in principle, capable of much bigger time savings
+than this: its
+implementation in the current version of \Rpackage{gnm} is really just a proof
+of concept, and it has not yet been optimized for speed.} increases with
+the number of eliminated parameters (here 500).  The eliminated parameters do
+not appear in printed model summaries:
+<<eliminate3>>=
+summary(temp.gnm)
+@
+As usual, \Rfunction{gnm} has worked here with an over-parameterized
+representation of the model.  The parameterization used by \Rfunction{glm}
+can be seen from
+<<eliminate4>>=
+coef(temp.glm)[-(1:500)]
+@
+(we will not print the full summary of \Robject{temp.glm} here, since it gives
+details of all 505 parameters!), which easily can be obtained, if required,
+by using
+\Rfunction{getContrasts}:
+<<eliminate5>>=
+getContrasts(temp.gnm, 5:3)
+@
 
 The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
@@ -1869,31 +1917,31 @@ Changes in gnm 0.8-1
 New Features
 ------------
 
-    o	added the `method' argument to MPinv(), to allow the method of 
+    o	added the `method' argument to MPinv(), to allow the method of
 	calculation to be specified.  Permitted values are "svd" to
-	compute the pseudo-inverse by singular value decomposition, 
+	compute the pseudo-inverse by singular value decomposition,
 	and "chol" to use the Cholseky decomposition instead.  The latter
 	is valid only for symmetric matrices, but is usually faster
     	and more accurate.
 
-    o	added the `lsMethod' argument to gnm(), to allow specification of 
+    o	added the `lsMethod' argument to gnm(), to allow specification of
 	the numerical method used for least-squares calculations in the
-	core of the iterative algorithm.  Permitted options are "chol" and 
+	core of the iterative algorithm.  Permitted options are "chol" and
         "qr".
 
-    o	added new function qrSolve(), which behaves like base::qr.coef but 
+    o	added new function qrSolve(), which behaves like base::qr.coef but
         in the non-full-rank case gives the minimum-length solution rather
         than an arbitrary solution determined by pivoting.
 
-    o	added .onUnload() so that compiled code is unloaded when namespace of 
+    o	added .onUnload() so that compiled code is unloaded when namespace of
 	package is unloaded using unloadNamespace().
 
-    o	added 'coef' argument to model.matrix.gnm() so that the model matrix 
-        can be evaluated at any specified value of the parameter vector. 
+    o	added 'coef' argument to model.matrix.gnm() so that the model matrix
+        can be evaluated at any specified value of the parameter vector.
 
     o	added asGnm() generic to coerce linear model objects to gnm objects.
 
-    o	added exitInfo() for printing numerical details of last iteration on 
+    o	added exitInfo() for printing numerical details of last iteration on
 	non-convergence of gnm().
 
     o	added new dataset, friend, to illustrate a workaround to fit a
@@ -1902,15 +1950,15 @@ New Features
 Improvements
 ------------
 
-    o	gnm() now takes less time per (main) iteration, due to improvements 
-        made internally in the iterative algorithm.  These include 
-        pre-scaling of the local design matrix, and Levenberg-Marquardt 
+    o	gnm() now takes less time per (main) iteration, due to improvements
+        made internally in the iterative algorithm.  These include
+        pre-scaling of the local design matrix, and Levenberg-Marquardt
         adjustment of the least-squares solvers so that rank determination
-        is no longer necessary.  
+        is no longer necessary.
 
     o	the default convergence tolerance has been tightened (from 1e-4 to 1e-6)
 
-    o	modified model.matrix.gnm() so it can be used when only the namespace 
+    o	modified model.matrix.gnm() so it can be used when only the namespace
         of gnm is loaded.
 
 \end{verbatimtab}

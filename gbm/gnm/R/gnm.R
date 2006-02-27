@@ -36,7 +36,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     }
     else if (!method %in% c("gnmFit", "coefNames", "model.matrix") &&
              !is.function(get(method))) {
-        warning("function ", method, " can not be found. Using \"gnmFit\".",
+        warning("function ", method, " can not be found. Using \"gnmFit\".\n",
                 call. = FALSE)
         method <- "gnmFit"
     }

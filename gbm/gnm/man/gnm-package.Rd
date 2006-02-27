@@ -28,8 +28,8 @@ models.
   The following documentation provides further information on the
   \code{gnm} package:
   \describe{
-    \item{gnmOverview} {\code{vignette("gnmOverview", package = "gnm")}}
-    \item{CHANGES} {\code{file.show(system.file("CHANGES", package = "gnm"))}}
+    \item{gnmOverview}{\code{vignette("gnmOverview", package = "gnm")}}
+    \item{CHANGES}{\code{file.show(system.file("CHANGES", package = "gnm"))}}
   }
 }
 \author{

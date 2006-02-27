@@ -147,13 +147,15 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   Levenberg-Marquardt sense) prior to solving.  If \code{lsMethod} is
   left unspecified, the default is \code{"qr"}, unless \code{eliminate}
   is used in which case the default \code{lsMethod} used is \code{"chol"}. 
-  
 
   Convergence is judged by comparing the squared components of the score vector
   with corresponding elements of the diagonal of the Fisher information
   matrix. If, for all components of the score vector, the ratio is less
   than \code{tolerance^2}, or the corresponding diagonal element of the
-  Fisher information matrix is less than 1e-20, iterations cease.
+  Fisher information matrix is less than 1e-20, iterations cease. If the
+  algorithm has not converged by \code{iterMax} iterations,
+  \code{\link{exitInfo}} can be used to print information on the
+  parameters which failed the convergence criteria at the last iteration.
 
   By default, \code{gnm} uses an over-parameterized representation of
   the model that is being fitted. Only minimal identifiability constraints
@@ -201,7 +203,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     maximized log-likelihood plus twice the number of parameters (so assuming
     that the dispersion is known).}
   \item{ iter }{ the number of main iterations.}
-  \item{ conv }{ logical indicating whether the main iterations converged. }
+  \item{ conv }{ logical indicating whether the main iterations
+    converged, with an attribute for use by \code{\link{exitInfo}} if
+    \code{FALSE}. } 
   \item{ weights }{ the \emph{working} weights, that is, the weights used in
     the last iteration.}
   \item{ residuals }{ the \emph{working} residuals, that is, the residuals
@@ -268,6 +272,9 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \code{\link{residuals.glm}} and the generic functions
   \code{\link{coef}}, \code{\link{fitted}}, etc. for extracting
   components from \code{gnm} objects.
+
+  \code{\link{exitInfo}} to print more information on last iteration
+  when \code{gnm} has not converged.
 
   \code{\link{getContrasts}} to estimate (identifiable) contrasts from a
   \code{gnm} model.

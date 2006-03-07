@@ -2,7 +2,8 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
                                signif.stars = getOption("show.signif.stars"),
                                symbolic.cor = x$symbolic.cor, ...) 
 {
-    cat("\nCall:\n", deparse(x$call), "\n\n", sep = "", fill = TRUE)
+    cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), 
+        "\n\n", sep = "")
     
     cat("Deviance Residuals: \n")
     if (x$df.residual > 5) {

@@ -18,7 +18,7 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
         W <- rep(1, n)
     OriginalDeviance <- deviance(fitted)
     DispersionParameter <- summ$dispersion
-    X <- model.matrix(fitted)
+    #X <- model.matrix(fitted)
     fam <- family(fitted)
     switch(fam$family, binomial = {
         if (!is.null(dim(Y))) {
@@ -50,26 +50,28 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
                   1)/2 + 1], "\n")
             step <- 0
             z <- 0
-            LP <- coef(fitted)
+            init <- coef(fitted)
             while ((step <- step + 1) < maxsteps && abs(z) < 
                 zmax) {
                 bi <- B0[i] + sgn * step * del * std.err[i]
-                o <- O + X[, i] * bi
+                #o <- O + X[, i] * bi
                 fm <- try(update(fitted, constrain = rbind(origConstrain,
                                          data.frame(constrain = i, value = bi)),
-                                 trace = FALSE, verbose = FALSE, start = LP),
+                                 trace = FALSE, verbose = FALSE,
+                                 start = init),#, offset = o),
                           silent = TRUE)
                 if (is.null(fm))
                     fm <- try(update(fitted, constrain = rbind(origConstrain,
                                              data.frame(constrain = i,
                                                         value = bi)),
                                      trace = FALSE, verbose = FALSE),
+                                     #offset = o),
                               silent = TRUE)
                 if (is.null(fm)) {
                     message("Could not complete profile for", pi, "\n")
                     break
                 }
-                LP <- coef(fm)
+                init <- coef(fm)
                 ri <- pv0
                 ri[, names(coef(fm))] <- coef(fm)
                 ri[, pi] <- bi

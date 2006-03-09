@@ -2,12 +2,8 @@ Mult <- function(..., multiplicity = 1){
     badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
                            sapply(sys.calls(),
                                   function(x) as.character(x[[1]])[1]))
-    if (!all(is.na(badCall))) {
-        culprit <- gsub(".default", "",
-                        as.character(sys.calls()
-                                     [[min(badCall[!is.na(badCall)])]][[1]]))
+    if (any(!is.na(badCall)))
         stop(paste("Mult terms are only valid in gnm models."))
-    }
     
     factorList <- as.list(as.character((match.call(expand.dots = FALSE))[[2]]))
     for (i in grep("Exp[[:space:]]*\\(", unlist(factorList)))

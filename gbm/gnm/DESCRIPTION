@@ -4,7 +4,7 @@ Version: 0.8-2
 Date: 2006-02-26
 Author: Heather Turner and David Firth
 Description: Functions to specify and fit generalized nonlinear models, including models with multiplicative interaction terms such as the UNIDIFF model from sociology and the AMMI model from crop science, and many others.  Over-parameterized representations of models are used throughout; functions are provided for inference on estimable parameter combinations, as well as standard methods for diagnostics etc.
-Maintainer: Heather Turner <h.turner@warwick.ac.uk>
+Maintainer: Heather Turner <Heather.Turner@warwick.ac.uk>
 URL: http://www.warwick.ac.uk/go/heatherturner/gnm
 License: GPL version 2 or later
 Depends: R (>= 2.0.0)

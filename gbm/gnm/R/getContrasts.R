@@ -5,11 +5,11 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
         stop("No non-eliminated coefficients")
     coefNames <- names(coefs)[(model$eliminate + 1):l]
     if (is.null(sets)){
-        if (!require(tcltk)) stop(
+        if (!require("tcltk")) stop(
                "no parameter set specified, and tcltk not installed")
-        if (!require(relimp)) stop(
+        if (!require("relimp")) stop(
                "the relimp package from CRAN needs to be installed")
-        sets <- pickFrom(coefNames, nSets,...)
+        sets <- relimp:::pickFrom(coefNames, nSets,...)
     }
     if (!is.list(sets)) sets <- list(sets)
     setLengths <- sapply(sets, length)
@@ -53,7 +53,7 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
             estimable.names <- names(not.unestimable)[not.unestimable]
             V <- vcov(model)[estimable.names, estimable.names, drop = FALSE]
         }
-        if (sum(not.unestimable) > 2 && require(qvcalc)) {
+        if (sum(not.unestimable) > 2 && require("qvcalc")) {
             QVs <- qvcalc(V)
             quasiSE <- sqrt(QVs$qvframe$quasiVar)
             result <- cbind(result, quasiSE)

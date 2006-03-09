@@ -1,5 +1,4 @@
 MultHomog <- function(...){
-    labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
     designList <- lapply(list(...), class.ind)
 
     ## get labels for all levels

@@ -13,16 +13,18 @@ se <- function(model, estimate = "all", checkEstimability = TRUE, ...){
     }
     else {
         if (identical(estimate, "pick")) {
-            if (!require(tcltk))
+            if (!require("tcltk"))
                 stop("estimate = \"pick\", and tcltk not installed")
-            if (!require(relimp))
+            if (!require("relimp"))
                 stop("the relimp package from CRAN needs to be installed")
             estimate <-
-                unlist(pickFrom(coefNames, setlabels = "Selected coefficients",
-                                title = paste("Estimate standard errors",
-                                "for one or more gnm coefficients"),
-                                items.label = "Model coefficients:",
-                                edit.setlabels = FALSE))
+                unlist(relimp:::pickFrom(coefNames,
+                                         setlabels = "Selected coefficients",
+                                         title =
+                                         paste("Estimate standard errors",
+                                         "for one or more gnm coefficients"),
+                                         items.label = "Model coefficients:",
+                                         edit.setlabels = FALSE))
             if(!length(nchar(estimate)))
                 stop("no parameters were selected")
         }

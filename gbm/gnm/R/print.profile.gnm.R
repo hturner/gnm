@@ -1,6 +1,5 @@
 print.profile.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...)
 {
-    val <- x[[1]]
     #if (attr(x, "eliminate"))
        # coefs <- coefs[-seq(attr(x$cov.scaled, "eliminate")), ]
     

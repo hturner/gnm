@@ -11,7 +11,7 @@ asGnm.lm <- function(object, ...) {
                      y = model.response(modelData)), object)
     object$weights <- object$prior.weights <- rep.int(1, length(object$y))
     object$aic <- 2 * object$rank +
-        object$family$aic(y, object$weights, object$fitted.values,
+        object$family$aic(object$y, object$weights, object$fitted.values,
                           object$weights, object$deviance)
     if (is.null(object$offset))
         object$offset <- rep.int(0, length(coef(object)))

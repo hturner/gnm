@@ -10,7 +10,7 @@ Symm <- function(...){
     nLevels <- length(Levels)
     combs <- gtools:::combinations(nLevels, length(dots), Levels,
                                    repeats.allowed = TRUE)
-    resultLevels <- apply(combs, 1, function(row) paste(row, collapse = ""))
+#    resultLevels <- apply(combs, 1, function(row) paste(row, collapse = ""))
     result <- factor(apply(facMatrix, 1,
                            function(row){
                                string <- paste(sort(row), collapse = "")

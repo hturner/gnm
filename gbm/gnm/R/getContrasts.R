@@ -54,7 +54,7 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
             V <- vcov(model)[estimable.names, estimable.names, drop = FALSE]
         }
         if (sum(not.unestimable) > 2 && require("qvcalc")) {
-            QVs <- qvcalc(V)
+            QVs <- qvcalc:::qvcalc(V)
             quasiSE <- sqrt(QVs$qvframe$quasiVar)
             result <- cbind(result, quasiSE)
             names(result)[1:2] <- c("estimate", "SE")

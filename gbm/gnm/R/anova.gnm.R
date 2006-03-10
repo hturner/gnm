@@ -20,6 +20,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
     varseq <- attr(x, "assign") - (object$eliminate > 0)
     nvars <- max(0, varseq)
     resdev <- resdf <- fit <- NULL
+    origConstrain <- object$constrain
     if (nvars > 0) {
         for (i in seq(nvars)) {
             if (i <= varlin){
@@ -30,7 +31,10 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
                                family = object$family)
             }
             else {
-                constrain <- replace(object$constrain, varseq >= i, TRUE)
+                constrain <- rbind(origConstrain,
+                                   data.frame(constrain =
+                                              seq(varseq)[varseq >= i],
+                                              value = 0))
                 fit <- update(object, constrain = constrain,
                               #start = object$coef,
                               verbose = FALSE)

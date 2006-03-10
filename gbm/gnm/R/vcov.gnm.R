@@ -13,14 +13,13 @@ vcov.gnm <-  function(object, dispersion = NULL, ...){
     }
     constrain <- object$constrain
     eliminate <- object$eliminate
-    needToElim <- seq(length.out = eliminate - sum(constrain[,1] < eliminate))
-    isConstrained <- is.element(seq(coef(object)), constrain[,1])
-    X <- model.matrix(object)[, !isConstrained, drop = FALSE]
+    needToElim <- seq(sum(!constrain[seq(eliminate)])[eliminate > 0])
+    X <- model.matrix(object)[, !constrain, drop = FALSE]
     Info <- crossprod(X, c(object$weights) * X)
     if (sum(constrain) > 0) {
-        cov.unscaled <- array(0, dim = rep(length(isConstrained), 2),
+        cov.unscaled <- array(0, dim = rep(length(constrain), 2),
                               dimnames = rep(list(names(coef(object))), 2))
-        cov.unscaled[!isConstrained, !isConstrained] <-
+        cov.unscaled[!constrain, !constrain] <-
             MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE)
     }
     else

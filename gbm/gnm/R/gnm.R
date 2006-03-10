@@ -85,7 +85,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         dev <- sum(family$dev.resids(y, mu, weights))
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
-        fit <- list(coefficients = numeric(0), constrain = constrain,
+        fit <- list(coefficients = numeric(0), constrain = logical(0),
                     eliminate = 0, predictors = offset,
                     fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0, conv = NULL,
@@ -111,13 +111,15 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (method == "coefNames") return(coefNames)
         nParam <- length(coefNames)
 
-        if (!is.data.frame(constrain)) {
+        if (is.null(constrain))
+          constrain <- rep.int(FALSE, nParam)
+        else {
             if (identical(constrain, "pick")) {
                 call$constrain <-
                     relimp:::pickFrom(coefNames[seq(coefNames) > nElim],
                                       setlabels = "Coefficients to constrain",
-                                      title =
-                                      "Constrain one or more gnm coefficients",
+                                      title = "Constrain one or more gnm",
+                                      "coefficients",
                                       items.label = "Model coefficients:",
                                       edit.setlabels = FALSE)
                 call$constrain <- unname(unlist(call$constrain))
@@ -125,27 +127,21 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                     warning("no parameters were specified to constrain")
                     call$constrain <- NULL
                 }
+                constrain <- is.element(coefNames, call$constrain)
             }
-            if (is.character(constrain)) {
-                constrain <- match(constrain, coefNames)
+            else if (is.character(constrain)) {
+                constrain <- is.element(coefNames, constrain)
             }
-            if (is.numeric(constrain)) {
+            else if (is.numeric(constrain)) {
                 if (any(constrain < nElim))
                     stop("'constrain' specifies one or more parameters",
                          "in 'eliminate' term(s)")
-                constrain <- data.frame(constrain = constrain, value = 0)
+                constrain <- is.element(seq(nParam), constrain)
             }
-            # dropped logical option  
+            if (length(constrain) != nParam)
+                stop("length of 'constrain' not equal to number of parameters")
         }
-        else if (!is.null(constrain) &&
-                 !identical(names(constrain), c("constrain", "value"))) {
-            rename <- try(names(constrain) <- c("constrain", "value"))
-            if (class(rename) == "try-error")
-                stop("data.frame passed to 'constrain' should have two",
-                     "variables: \n parameter indices and corresponding",
-                     "constrained values")
-        }
-        
+
         if (is.null(start))
             start <- rep.int(NA, nParam)
         else if (length(start) != nParam) {
@@ -155,16 +151,13 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                 stop("length(start) must either equal the no. of parameters\n",
                      "or the no. of non-eliminated parameters.")
         }
-        
-        if (onlyLin) {
-            offset <- offset +
-                X[, constrain[,1], drop = FALSE] %*% as.numeric(constrain[,2])
-            X[, constrain[,1]] <- 0
-        }
+
+        if (onlyLin)
+            X[, constrain] <- 0
         else {
             theta <- seq(start)
             theta[!is.na(start)] <- start[!is.na(start)]
-            theta[constrain[,1]] <- as.numeric(constrain[,2])
+            theta[constrain] <- 0
             factorList <- modelTools$factorList(theta)
             X <- modelTools$localDesignFunction(theta, factorList)
             attr(X, "assign") <- modelTools$termAssign
@@ -184,12 +177,7 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                            control = glm.control(tolerance, iterMax, trace),
                            intercept = attr(attr(modelTerms, "terms"),
                            "intercept"))
-            if (sum(is.na(coef(fit))) > NROW(constrain)) {
-                extra <- setdiff(which(is.na(coef(fit))), constrain[,1])
-                constrain <- rbind(constrain, data.frame(constrain = extra,
-                                                         value = 0))
-            }
-            fit$constrain <- constrain
+            fit$constrain <- replace(constrain, is.na(coef(fit)), TRUE)
             if (x) fit$x <- X
             fit <- fit[-c(4,5,7,12,17,20)]
             names(fit)[6] <- "predictors"

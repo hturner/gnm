@@ -1,3 +1,35 @@
+Changes in gnm 0.8-3
+====================
+
+Improvements
+------------
+
+    o	improved use of functions from other packages
+
+Bug Fixes
+---------
+
+    o	fixed bug in asGnm.lm() where object not fully identified
+
+    o	corrected maintainer address in DESCRIPTION!
+
+
+Changes in gnm 0.8-2
+====================
+
+New Features
+------------
+
+    o	added demonstration script to run using demo()
+
+    o	added package help file, opened by package?gnm
+
+Improvements
+------------
+
+    o	improved existing documentation
+
+
 Changes in gnm 0.8-1
 ====================
 

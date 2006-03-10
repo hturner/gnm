@@ -113,10 +113,6 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
 
         if (!is.data.frame(constrain)) {
             if (identical(constrain, "pick")) {
-                if (!require("tcltk"))
-                    stop("constrain = \"pick\", and tcltk not installed")
-                if (!require("relimp"))
-                    stop("the relimp package from CRAN needs to be installed")
                 call$constrain <-
                     relimp:::pickFrom(coefNames[seq(coefNames) > nElim],
                                       setlabels = "Coefficients to constrain",

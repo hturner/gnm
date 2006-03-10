@@ -18,7 +18,6 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
         W <- rep(1, n)
     OriginalDeviance <- deviance(fitted)
     DispersionParameter <- summ$dispersion
-    #X <- model.matrix(fitted)
     fam <- family(fitted)
     switch(fam$family, binomial = {
         if (!is.null(dim(Y))) {
@@ -58,14 +57,13 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
                 fm <- try(update(fitted, constrain = rbind(origConstrain,
                                          data.frame(constrain = i, value = bi)),
                                  trace = FALSE, verbose = FALSE,
-                                 start = init),#, offset = o),
+                                 start = init),
                           silent = TRUE)
                 if (is.null(fm))
                     fm <- try(update(fitted, constrain = rbind(origConstrain,
                                              data.frame(constrain = i,
                                                         value = bi)),
                                      trace = FALSE, verbose = FALSE),
-                                     #offset = o),
                               silent = TRUE)
                 if (is.null(fm)) {
                     message("Could not complete profile for", pi, "\n")

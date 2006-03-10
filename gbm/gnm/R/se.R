@@ -13,10 +13,6 @@ se <- function(model, estimate = "all", checkEstimability = TRUE, ...){
     }
     else {
         if (identical(estimate, "pick")) {
-            if (!require("tcltk"))
-                stop("estimate = \"pick\", and tcltk not installed")
-            if (!require("relimp"))
-                stop("the relimp package from CRAN needs to be installed")
             estimate <-
                 unlist(relimp:::pickFrom(coefNames,
                                          setlabels = "Selected coefficients",

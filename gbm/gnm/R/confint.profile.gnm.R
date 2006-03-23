@@ -11,7 +11,7 @@ confint.profile.gnm <- function (object, parm = seq(along = pnames),
         pct))
     cutoff <- qnorm(a)
     std.err <- attr(object, "summary")$coefficients[, "Std. Error"]
-    parm <- parm[!is.na(std.err)]
+    parm <- parm[!is.na(std.err)[parm]]
     for (pm in parm) {
         pro <- object[[pnames[pm]]]
         if (length(pnames) > 1) 

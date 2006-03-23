@@ -3,13 +3,14 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
 {
     Pnames <- names(B0 <- coefficients(fitted))
     pv0 <- t(as.matrix(B0))
-    p <- length(Pnames)
+    rnk <- fitted$rank
     if (is.character(which)) 
         which <- match(which, Pnames)
     summ <- summary(fitted)
     std.err <- summ$coefficients[, "Std. Error"]
     mf <- update(fitted, method = "model.frame")
     n <- length(Y <- model.response(mf))
+    resdf <- fitted$df.residual
     O <- model.offset(mf)
     if (!length(O)) 
         O <- rep(0, n)
@@ -25,20 +26,21 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
             O <- O[1:n]
             Y <- Y[, 1]/(W <- drop(Y %*% c(1, 1)))
         }
-        zmax <- sqrt(qchisq(1 - alpha/2, p))
+        zmax <- sqrt(qchisq(1 - alpha/2, rnk))
         profName <- "z"
     }, poisson = , "Negative Binomial" = {
-        zmax <- sqrt(qchisq(1 - alpha/2, p))
+        zmax <- sqrt(qchisq(1 - alpha/2, rnk))
         profName <- "z"
     }, gaussian = , quasi = , inverse.gaussian = , quasibinomial = , 
         quasipoisson = , {
-            zmax <- sqrt(p * qf(1 - alpha/2, p, n - p))
+            zmax <- sqrt(rnk * qf(1 - alpha/2, rnk, resdf))
             profName <- "tau"
         })
     origConstrain <- fitted$constrain
     prof <-  as.list(rep(NA, length(which)))
     names(prof) <- Pnames[which]
-    which <- which[!is.na(std.err)]
+    which <- which[!is.na(std.err)[which]]
+    keep.del <- del
     for (i in which) {
         zi <- 0
         pvi <- pv0
@@ -50,21 +52,30 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
             step <- 0
             z <- 0
             init <- coef(fitted)
+            del <- keep.del
+            keep.pvi <- pvi
+            keep.zi <- zi
+            check <- 0
             while ((step <- step + 1) < maxsteps && abs(z) < 
                 zmax) {
                 bi <- B0[i] + sgn * step * del * std.err[i]
-                #o <- O + X[, i] * bi
                 fm <- try(update(fitted, constrain = rbind(origConstrain,
                                          data.frame(constrain = i, value = bi)),
                                  trace = FALSE, verbose = FALSE,
                                  start = init),
                           silent = TRUE)
-                if (is.null(fm))
-                    fm <- try(update(fitted, constrain = rbind(origConstrain,
-                                             data.frame(constrain = i,
-                                                        value = bi)),
-                                     trace = FALSE, verbose = FALSE),
-                              silent = TRUE)
+                if(is.null(fm) & !is.null(fm)) {
+                    del <- del/2
+                    step <- 0
+                    init <- coef(fitted)
+                    print(del)
+                    pvi <- keep.pvi
+                    zi <- keep.zi
+                    check <- check + 1
+                    if (check == 10)
+                        break
+                    next
+                }
                 if (is.null(fm)) {
                     message("Could not complete profile for", pi, "\n")
                     break
@@ -80,6 +91,8 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
                 else stop("profiling has found a better solution, so original fit had not converged")
                 z <- sgn * sqrt(zz)
                 zi <- c(zi, z)
+                print(data.frame(step = step, val = bi, deviance = fm$deviance,
+                                 zstat = z))
             }
         }
         si <- order(zi)

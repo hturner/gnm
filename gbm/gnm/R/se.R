@@ -59,7 +59,10 @@ se <- function(model, estimate = "all", checkEstimability = TRUE, ...){
         if (any(!na.omit(estimable)))
             cat("Std. Error is NA where estimate is fixed or unidentified\n")
     }
-    sterr <- sqrt(diag(var))
+    if (is.matrix(var))
+        sterr <- sqrt(diag(var))
+    else
+        sterr <- sqrt(var)
     is.na(sterr[estimable %in% c(FALSE, NA)]) <- TRUE
     result <- data.frame(comb, sterr)
     rowNames <- colnames(coefMatrix)

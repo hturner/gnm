@@ -3,6 +3,7 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
 {
     Pnames <- names(B0 <- coefficients(fitted))
     pv0 <- t(as.matrix(B0))
+    p <- length(Pnames)
     rnk <- fitted$rank
     if (is.character(which)) 
         which <- match(which, Pnames)
@@ -64,18 +65,6 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del =
                                  trace = FALSE, verbose = FALSE,
                                  start = init),
                           silent = TRUE)
-                if(is.null(fm) & !is.null(fm)) {
-                    del <- del/2
-                    step <- 0
-                    init <- coef(fitted)
-                    print(del)
-                    pvi <- keep.pvi
-                    zi <- keep.zi
-                    check <- check + 1
-                    if (check == 10)
-                        break
-                    next
-                }
                 if (is.null(fm)) {
                     message("Could not complete profile for", pi, "\n")
                     break

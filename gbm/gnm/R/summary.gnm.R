@@ -8,9 +8,8 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         cov.scaled <- vcov(object)
         estimable <- checkEstimable(object, diag(length(coefs)), ...)
         estimable[is.na(estimable)] <- FALSE
-        tidy.zeros <- function(vec) ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
         if (is.matrix(cov.scaled))
-            sterr <- sqrt(tidy.zeros(diag(cov.scaled)))
+            sterr <- sqrt(diag(cov.scaled))
         else
             sterr <- diag(cov..scaled)
         is.na(sterr[!estimable]) <- TRUE

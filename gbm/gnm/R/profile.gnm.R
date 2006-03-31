@@ -1,92 +1,127 @@
-profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10, del = zmax/5, 
-    trace = FALSE, ...) 
+profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10,
+                         stepsize = NULL, trace = FALSE, ...) 
 {
-    Pnames <- names(B0 <- coefficients(fitted))
-    pv0 <- t(as.matrix(B0))
-    p <- length(Pnames)
-    rnk <- fitted$rank
+    fittedCoef <- parameters(fitted)
+    coefNames <- names(fittedCoef)
+    p <- length(coefNames)
     if (is.character(which)) 
-        which <- match(which, Pnames)
+        which <- match(which, coefNames)
     summ <- summary(fitted)
-    std.err <- summ$coefficients[, "Std. Error"]
-    mf <- update(fitted, method = "model.frame")
-    n <- length(Y <- model.response(mf))
-    resdf <- fitted$df.residual
-    O <- model.offset(mf)
-    if (!length(O)) 
-        O <- rep(0, n)
-    W <- model.weights(mf)
-    if (length(W) == 0) 
-        W <- rep(1, n)
-    OriginalDeviance <- deviance(fitted)
-    DispersionParameter <- summ$dispersion
-    fam <- family(fitted)
-    switch(fam$family, binomial = {
-        if (!is.null(dim(Y))) {
-            n <- n/2
-            O <- O[1:n]
-            Y <- Y[, 1]/(W <- drop(Y %*% c(1, 1)))
-        }
-        zmax <- sqrt(qchisq(1 - alpha/2, rnk))
-        profName <- "z"
-    }, poisson = , "Negative Binomial" = {
-        zmax <- sqrt(qchisq(1 - alpha/2, rnk))
-        profName <- "z"
-    }, gaussian = , quasi = , inverse.gaussian = , quasibinomial = , 
-        quasipoisson = , {
-            zmax <- sqrt(rnk * qf(1 - alpha/2, rnk, resdf))
-            profName <- "tau"
-        })
-    origConstrain <- fitted$constrain
+    sterr <- summ$coefficients[, "Std. Error"]
+    offst <- fitted$offset
+    wts <- fitted$prior.weights
+    fittedDev <- deviance(fitted)
+    disp <- summ$dispersion
+    ## use z cutoffs as in confint.profile.gnm
+    zmax <- abs(qnorm(alpha/2))
+    fittedConstrain <- fitted$constrain
+    if (is.null(stepsize))
+        auto <- TRUE
     prof <-  as.list(rep(NA, length(which)))
-    names(prof) <- Pnames[which]
-    which <- which[!is.na(std.err)[which]]
-    keep.del <- del
+    names(prof) <- coefNames[which]
+    z <- as.list(numeric(which))
+    which <- which[!is.na(sterr)[which]]
     for (i in which) {
-        zi <- 0
-        pvi <- pv0
-        pi <- Pnames[i]
-        for (sgn in c(-1, 1)) {
-            if (trace) 
-                cat("\nParameter:", pi, c("down", "up")[(sgn + 
-                  1)/2 + 1], "\n")
-            step <- 0
-            z <- 0
-            init <- coef(fitted)
-            del <- keep.del
-            keep.pvi <- pvi
-            keep.zi <- zi
-            check <- 0
-            while ((step <- step + 1) < maxsteps && abs(z) < 
-                zmax) {
-                bi <- B0[i] + sgn * step * del * std.err[i]
-                fm <- try(update(fitted, constrain = rbind(origConstrain,
-                                         data.frame(constrain = i, value = bi)),
-                                 trace = FALSE, verbose = FALSE,
-                                 start = init),
-                          silent = TRUE)
-                if (is.null(fm)) {
-                    message("Could not complete profile for", pi, "\n")
+        par <- coefNames[i]
+        z[[i]] <- numeric(2 * maxsteps - 1)
+        par.vals <- matrix(nrow = 2 * maxsteps - 1, ncol = p,
+                           dimnames = list(NULL, coefNames))
+        par.vals[maxsteps,] <- fittedCoef
+        asymptote <- c(FALSE, FALSE)
+        if (auto) {
+            ## set defaults
+            sub <- 3 # no. of steps from MLE to zmax*se
+            stepsize <- c(zmax/sub * sterr[i], zmax/sub * sterr[i])
+            ## estimate quadratic in the region MLE +/- zmax*se
+            margin <- zmax * sterr[i]
+            updatedDev <- numeric(2)
+            for (sgn in c(-1, 1)) { 
+                val <- fittedCoef[i] + sgn * margin
+                updated <- try(update(fitted,
+                                      constrain = rbind(fittedConstrain,
+                                      data.frame(constrain = i, value = val)),
+                                      trace = FALSE, verbose = FALSE,
+                                      start = fittedCoef),
+                               silent = TRUE)
+                if (identical(class(updated), "try-error"))
                     break
+                updatedDev[(sgn + 1)/2 + 1] <- deviance(updated)
+                z[[i]][maxsteps + sgn * sub] <-
+                    sgn * sqrt((deviance(updated) - fittedDev)/disp)
+                par.vals[maxsteps + sgn * sub,] <- parameters(updated)
+            }
+            if (identical(class(updated), "try-error"))
+                    break
+            quad <- (sum(updatedDev) - 2 * fittedDev)/(2 * margin^2)
+            lin <- (fittedDev - updatedDev[1])/margin +
+                quad * (margin - 2 * fittedCoef[i])
+            int <- fittedDev - lin * fittedCoef[i] - quad * fittedCoef[i]^2
+            ## adjust so roots approx where deviance gives z = zmax
+            int.adj <- int - zmax^2 * disp - fittedDev
+            for (sgn in c(-1, 1)) {
+                dir <- (sgn + 1)/2 + 1
+                root <- (-lin + sgn * sqrt(lin^2 - 4 * int.adj * quad))/
+                    (2 * quad)
+                firstApprox <- par.vals[maxsteps + sgn * sub, i]
+                ## if likelihood approx quadratic use default stepsize, else
+                if (sgn * (root - firstApprox) > stepsize[dir]) {
+                    ## not gone out far enough, check for asymptote
+                    val <- 1000 * fittedCoef[i]
+                    updated <- try(update(fitted,
+                                          constrain = rbind(fittedConstrain,
+                                          data.frame(constrain = i,
+                                                     value = val)),
+                                          trace = FALSE, verbose = FALSE,
+                                          start = fittedCoef), silent = TRUE)
+                    if (!identical(class(updated), "try-error") &&
+                        sqrt((deviance(updated) - fittedDev)/disp) < zmax)
+                        asymptote[dir] <- TRUE   
                 }
-                init <- coef(fm)
-                ri <- pv0
-                ri[, names(coef(fm))] <- coef(fm)
-                ri[, pi] <- bi
-                pvi <- rbind(pvi, ri)
-                zz <- (fm$deviance - OriginalDeviance)/DispersionParameter
-                if (zz > -0.001) 
-                  zz <- max(zz, 0)
-                else stop("profiling has found a better solution, so original fit had not converged")
-                z <- sgn * sqrt(zz)
-                zi <- c(zi, z)
-                print(data.frame(step = step, val = bi, deviance = fm$deviance,
-                                 zstat = z))
+                if (abs(root - firstApprox) > stepsize[dir] &&
+                    !asymptote[dir]) {
+                    z[[i]][maxsteps + sgn * sub] <- 0
+                    par.vals[maxsteps + sgn * sub, ] <- NA
+                    stepsize[dir] <- abs(root - fittedCoef[i])/sub
+                }
             }
         }
-        si <- order(zi)
-        prof[[pi]] <- structure(data.frame(zi[si]), names = profName)
-        prof[[pi]]$par.vals <- pvi[si, ]
+        for (sgn in c(-1, 1)) {
+            if (trace) 
+                cat("\nParameter:", par, c("down", "up")[(sgn + 1)/2 + 1], "\n")
+            step <- 0
+            init <- parameters(fitted)
+            while ((step <- step + 1) < maxsteps) {
+                if (step > 2 &&
+                    abs(z[[i]][maxsteps + sgn * (step - 2)]) > zmax)
+                    break
+                if (z[[i]][maxsteps + sgn * step] != 0)
+                    next
+                val <- fittedCoef[i] + sgn * step * stepsize[(sgn + 1)/2 + 1]
+                updated <- try(update(fitted, constrain = rbind(fittedConstrain,
+                                              data.frame(constrain = i,
+                                                         value = val)),
+                                      trace = FALSE, verbose = FALSE,
+                                      start = init), silent = TRUE)
+                if (identical(class(updated), "try-error")) {
+                    message("Could not complete profile for", par, "\n")
+                    break
+                }
+                init <- parameters(updated)
+                zz <- (deviance(updated) - fittedDev)/disp
+                if (zz > -0.001) 
+                  zz <- max(zz, 0)
+                else stop("profiling has found a better solution, ",
+                          "so original fit had not converged")
+                z[[i]][maxsteps + sgn * step] <- sgn * sqrt(zz)
+                par.vals[maxsteps + sgn * step,] <- init
+                #print(data.frame(step = step, val = bi, deviance = fm$deviance,
+                                 #zstat = z))
+            }
+        }
+        prof[[par]] <- structure(data.frame(z[[i]][!is.na(par.vals[,1])]),
+                                 names = "z")
+        prof[[par]]$par.vals <- par.vals[!is.na(par.vals[,1]),]
+        attr(prof[[par]], "asymptote") <- asymptote
     }
     val <- structure(prof, original.fit = fitted, summary = summ)
     class(val) <- c("profile.gnm", "profile.glm", "profile")

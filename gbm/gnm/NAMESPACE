@@ -1,8 +1,8 @@
 useDynLib(gnm)
 export(asGnm, checkEstimable, Diag, Dref, exitInfo, Exp, expandCategorical,
        getContrasts, getModelFrame, gnm, MPinv, Mult, MultHomog, Nonlin,
-       qrSolve, residSVD, se, Symm, summary.gnm, termPredictors, Topo,
-       wedderburn)
+       parameters, qrSolve, residSVD, se, Symm, summary.gnm, termPredictors,
+       Topo, wedderburn)
 
 import(MASS, stats)
 importFrom(graphics, plot)

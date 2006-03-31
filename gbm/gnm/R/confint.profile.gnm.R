@@ -1,4 +1,4 @@
-confint.profile.gnm <- function (object, parm = seq(along = pnames),
+confint.profile.gnm <- function (object, parm = names(object),
                                  level = 0.95, ...)  {
     of <- attr(object, "original.fit")
     pnames <- names(coef(of))
@@ -13,12 +13,14 @@ confint.profile.gnm <- function (object, parm = seq(along = pnames),
     std.err <- attr(object, "summary")$coefficients[, "Std. Error"]
     parm <- parm[!is.na(std.err)[parm]]
     for (pm in parm) {
-        pro <- object[[pnames[pm]]]
+        pro <- object[[pnames[pm]]]   
         if (length(pnames) > 1) 
             sp <- spline(x = pro[, "par.vals"][, pm], y = pro[, 
                 1])
         else sp <- spline(x = pro[, "par.vals"], y = pro[, 1])
-        ci[pnames[pm], ] <- approx(sp$y, sp$x, xout = cutoff)$y
+        est <- approx(sp$y, sp$x, xout = cutoff)$y
+        ci[pnames[pm], ] <- ifelse(is.na(est) & attr(pro, "asymptote"),
+                                   c(-Inf, Inf), est)
     }
     drop(ci)
 }

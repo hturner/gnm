@@ -31,11 +31,8 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
                                family = object$family)
             }
             else {
-                constrain <- rbind(origConstrain,
-                                   data.frame(constrain =
-                                              seq(varseq)[varseq >= i],
-                                              value = 0))
-                fit <- update(object, constrain = constrain,
+                fit <- update(object, constrain = c(origConstrain,
+                                      seq(varseq)[varseq >= i]),
                               #start = object$coef,
                               verbose = FALSE)
             }

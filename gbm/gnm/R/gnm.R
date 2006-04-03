@@ -1,4 +1,5 @@
-gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
+gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
+                constrainTo = numeric(length(constrain)), family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 offset, start = NULL, tolerance = 1e-6, iterStart = 2,
                 iterMax = 500, trace = FALSE, verbose = TRUE, model = TRUE,
@@ -86,8 +87,8 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
         fit <- list(coefficients = numeric(0), constrain = constrain,
-                    eliminate = 0, predictors = offset,
-                    fitted.values = mu, deviance = dev,
+                    constrainTo = constrainTo, eliminate = 0,
+                    predictors = offset, fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0, conv = NULL,
                     weights = weights*dmu^2/family$variance(mu),
                     residuals = (y - mu)/dmu, df.residual = nObs, rank = 0,
@@ -111,40 +112,25 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         if (method == "coefNames") return(coefNames)
         nParam <- length(coefNames)
 
-        if (!is.data.frame(constrain)) {
-            if (identical(constrain, "pick")) {
-                call$constrain <-
-                    relimp:::pickFrom(coefNames[seq(coefNames) > nElim],
-                                      setlabels = "Coefficients to constrain",
-                                      title =
-                                      "Constrain one or more gnm coefficients",
-                                      items.label = "Model coefficients:",
-                                      edit.setlabels = FALSE)
-                call$constrain <- unname(unlist(call$constrain))
-                if(!length(nchar(call$constrain))) {
-                    warning("no parameters were specified to constrain")
-                    call$constrain <- NULL
-                }
+        if (is.numeric(constrain))
+            constrain <- constrain + nElim
+        if (identical(constrain, "pick")) {
+            call$constrain <-
+                relimp:::pickFrom(coefNames[seq(coefNames) > nElim],
+                                  setlabels = "Coefficients to constrain",
+                                  title =
+                                  "Constrain one or more gnm coefficients",
+                                  items.label = "Model coefficients:",
+                                  edit.setlabels = FALSE)
+            call$constrain <- unname(unlist(call$constrain))
+            if(!length(nchar(call$constrain))) {
+                warning("no parameters were specified to constrain")
+                call$constrain <- NULL
             }
-            if (is.character(constrain)) {
-                constrain <- match(constrain, coefNames)
-            }
-            if (is.numeric(constrain)) {
-                if (any(constrain < nElim))
-                    stop("'constrain' specifies one or more parameters",
-                         "in 'eliminate' term(s)")
-                constrain <- data.frame(constrain = constrain, value = 0)
-            }
-            # dropped logical option  
         }
-        else if (!is.null(constrain) &&
-                 !identical(names(constrain), c("constrain", "value"))) {
-            rename <- try(names(constrain) <- c("constrain", "value"))
-            if (class(rename) == "try-error")
-                stop("data.frame passed to 'constrain' should have two",
-                     "variables: \n parameter indices and corresponding",
-                     "constrained values")
-        }
+        if (is.character(constrain))
+            constrain <- match(constrain, coefNames)
+        ## dropped logical option  
         
         if (is.null(start))
             start <- rep.int(NA, nParam)
@@ -157,14 +143,13 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
         }
         
         if (onlyLin) {
-            offset <- offset +
-                X[, constrain[,1], drop = FALSE] %*% as.numeric(constrain[,2])
-            X[, constrain[,1]] <- 0
+            offset <- offset + X[, constrain, drop = FALSE] %*% constrainTo
+            X[, constrain] <- 0
         }
         else {
             theta <- seq(start)
             theta[!is.na(start)] <- start[!is.na(start)]
-            theta[constrain[,1]] <- as.numeric(constrain[,2])
+            theta[constrain] <- constrainTo
             factorList <- modelTools$factorList(theta)
             X <- modelTools$localDesignFunction(theta, factorList)
             attr(X, "assign") <- modelTools$termAssign
@@ -184,25 +169,27 @@ gnm <- function(formula, eliminate = NULL, constrain = NULL, family = gaussian,
                            control = glm.control(tolerance, iterMax, trace),
                            intercept = attr(attr(modelTerms, "terms"),
                            "intercept"))
-            if (sum(is.na(coef(fit))) > NROW(constrain)) {
-                extra <- setdiff(which(is.na(coef(fit))), constrain[,1])
-                constrain <- rbind(constrain, data.frame(constrain = extra,
-                                                         value = 0))
+            if (sum(is.na(coef(fit))) > length(constrain)) {
+                extra <- setdiff(which(is.na(coef(fit))), constrain)
+                ind <- order(c(constrain, extra))
+                constrain <- c(constrain, extra)[ind]
+                constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
             }
             fit$constrain <- constrain
+            fit$constrainTo <- constrainTo
             if (x) fit$x <- X
             fit <- fit[-c(4,5,7,12,17,20)]
             names(fit)[6] <- "predictors"
         }
         else if (method != "gnmFit")
-            fit <- do.call(method, list(modelTools, y, constrain, nElim, family,
-                                        weights, offset, nObs, start, tolerance,
-                                        iterStart, iterMax, trace, verbose, x,
-                                        termPredictors, ...))
+            fit <- do.call(method, list(modelTools, y, constrain, constrainTo,
+                                        nElim, family, weights, offset, nObs,
+                                        start, tolerance, iterStart, iterMax,
+                                        trace, verbose, x, termPredictors, ...))
         else
-            fit <- gnmFit(modelTools, y, constrain, nElim, family, weights,
-                          offset, nObs, start, tolerance, iterStart, iterMax,
-                          trace, verbose, x, termPredictors,
+            fit <- gnmFit(modelTools, y, constrain, constrainTo, nElim, family,
+                          weights, offset, nObs, start, tolerance, iterStart,
+                          iterMax, trace, verbose, x, termPredictors,
                           lsMethod = lsMethod)
     }
     if (is.null(fit)) {

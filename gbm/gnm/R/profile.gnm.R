@@ -1,10 +1,14 @@
-profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10,
+profile.gnm <- function (fitted, which = NULL, alpha = 0.01, maxsteps = 10,
                          stepsize = NULL, trace = FALSE, ...) 
 {
     fittedCoef <- parameters(fitted)
     coefNames <- names(fittedCoef)
     p <- length(coefNames)
-    if (is.character(which)) 
+    if (is.null(which))
+        which <- (fitted$eliminate + 1):p
+    else if (is.numeric(which))
+        which <- which + fitted$eliminate
+    else if (is.character(which)) 
         which <- match(which, coefNames)
     summ <- summary(fitted)
     sterr <- summ$coefficients[, "Std. Error"]
@@ -14,16 +18,16 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10,
     disp <- summ$dispersion
     ## use z cutoffs as in confint.profile.gnm
     zmax <- abs(qnorm(alpha/2))
-    fittedConstrain <- fitted$constrain
+    fittedConstrain <- coefNames[fitted$constrain + fitted$eliminate]
+    fittedConstrainTo <- fitted$constrainTo
     if (is.null(stepsize))
         auto <- TRUE
+    which <- which[!is.na(sterr)[which]]
     prof <-  as.list(rep(NA, length(which)))
     names(prof) <- coefNames[which]
-    z <- as.list(numeric(which))
-    which <- which[!is.na(sterr)[which]]
     for (i in which) {
         par <- coefNames[i]
-        z[[i]] <- numeric(2 * maxsteps - 1)
+        prof[[par]] <- numeric(2 * maxsteps - 1)
         par.vals <- matrix(nrow = 2 * maxsteps - 1, ncol = p,
                            dimnames = list(NULL, coefNames))
         par.vals[maxsteps,] <- fittedCoef
@@ -38,15 +42,15 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10,
             for (sgn in c(-1, 1)) { 
                 val <- fittedCoef[i] + sgn * margin
                 updated <- try(update(fitted,
-                                      constrain = rbind(fittedConstrain,
-                                      data.frame(constrain = i, value = val)),
+                                      constrain = c(fittedConstrain, par),
+                                      constrainTo = c(fittedConstrainTo, val),
                                       trace = FALSE, verbose = FALSE,
                                       start = fittedCoef),
                                silent = TRUE)
                 if (identical(class(updated), "try-error"))
                     break
                 updatedDev[(sgn + 1)/2 + 1] <- deviance(updated)
-                z[[i]][maxsteps + sgn * sub] <-
+                prof[[par]][maxsteps + sgn * sub] <-
                     sgn * sqrt((deviance(updated) - fittedDev)/disp)
                 par.vals[maxsteps + sgn * sub,] <- parameters(updated)
             }
@@ -66,22 +70,21 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10,
                 ## if likelihood approx quadratic use default stepsize, else
                 if (sgn * (root - firstApprox) > stepsize[dir]) {
                     ## not gone out far enough, check for asymptote
-                    val <- 1000 * fittedCoef[i]
-                    updated <- try(update(fitted,
-                                          constrain = rbind(fittedConstrain,
-                                          data.frame(constrain = i,
-                                                     value = val)),
-                                          trace = FALSE, verbose = FALSE,
-                                          start = fittedCoef), silent = TRUE)
+                    val <- fittedCoef[i] + sgn * 1000
+                    updated <-
+                        try(update(fitted, constrain = c(fittedConstrain, par),
+                                   constrainTo = c(fittedConstrainTo, val),
+                                   trace = FALSE, verbose = FALSE,
+                                   start = fittedCoef), silent = TRUE)
                     if (!identical(class(updated), "try-error") &&
                         sqrt((deviance(updated) - fittedDev)/disp) < zmax)
                         asymptote[dir] <- TRUE   
                 }
                 if (abs(root - firstApprox) > stepsize[dir] &&
                     !asymptote[dir]) {
-                    z[[i]][maxsteps + sgn * sub] <- 0
+                    prof[[par]][maxsteps + sgn * sub] <- 0
                     par.vals[maxsteps + sgn * sub, ] <- NA
-                    stepsize[dir] <- abs(root - fittedCoef[i])/sub
+                    stepsize[dir] <- abs(root - fittedCoef[i])/(maxsteps/2)
                 }
             }
         }
@@ -92,14 +95,14 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10,
             init <- parameters(fitted)
             while ((step <- step + 1) < maxsteps) {
                 if (step > 2 &&
-                    abs(z[[i]][maxsteps + sgn * (step - 2)]) > zmax)
+                    abs(prof[[par]][maxsteps + sgn * (step - 2)]) > zmax)
                     break
-                if (z[[i]][maxsteps + sgn * step] != 0)
+                if (prof[[par]][maxsteps + sgn * step] != 0)
                     next
                 val <- fittedCoef[i] + sgn * step * stepsize[(sgn + 1)/2 + 1]
-                updated <- try(update(fitted, constrain = rbind(fittedConstrain,
-                                              data.frame(constrain = i,
-                                                         value = val)),
+                updated <- try(update(fitted,
+                                      constrain = c(fittedConstrain, par),
+                                      constrainTo = c(fittedConstrainTo, val),
                                       trace = FALSE, verbose = FALSE,
                                       start = init), silent = TRUE)
                 if (identical(class(updated), "try-error")) {
@@ -112,13 +115,13 @@ profile.gnm <- function (fitted, which = 1:p, alpha = 0.01, maxsteps = 10,
                   zz <- max(zz, 0)
                 else stop("profiling has found a better solution, ",
                           "so original fit had not converged")
-                z[[i]][maxsteps + sgn * step] <- sgn * sqrt(zz)
+                prof[[par]][maxsteps + sgn * step] <- sgn * sqrt(zz)
                 par.vals[maxsteps + sgn * step,] <- init
                 #print(data.frame(step = step, val = bi, deviance = fm$deviance,
                                  #zstat = z))
             }
         }
-        prof[[par]] <- structure(data.frame(z[[i]][!is.na(par.vals[,1])]),
+        prof[[par]] <- structure(data.frame(prof[[par]][!is.na(par.vals[,1])]),
                                  names = "z")
         prof[[par]]$par.vals <- par.vals[!is.na(par.vals[,1]),]
         attr(prof[[par]], "asymptote") <- asymptote

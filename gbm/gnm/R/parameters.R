@@ -1,5 +1,3 @@
-parameters <- function(object) {
-    coefs <- coef(object)
-    coefs[object$constrain[,1]] <- object$constrain[,2]
-    coefs
-}
+parameters <- function(object)
+    replace(coef(object), object$constrain + object$eliminate,
+            object$constrainTo)

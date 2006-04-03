@@ -1,5 +1,8 @@
 "gnmFit" <-
-    function (modelTools, y, constrain = NULL, eliminate = 0,
+    function (modelTools, y,
+              constrain = numeric(0),
+              constrainTo = numeric(length(constrain)),
+              eliminate = 0,
               family = poisson(),
               weights = rep.int(1, length(y)),
               offset = rep.int(0, length(y)),
@@ -21,7 +24,7 @@
     dev <- numeric(2)
     if (verbose)
         width <- as.numeric(options("width"))
-    isConstrained <- is.element(seq(start), constrain[,1])
+    isConstrained <- is.element(seq(start), constrain)
     repeat {
         status <- "not.converged"
         if (any(is.na(start))) {
@@ -29,7 +32,7 @@
                 prattle("Initialising", "\n", sep = "")
             theta <- modelTools$start()
             theta[!is.na(start)] <- start[!is.na(start)]
-            theta[constrain[,1]] <- as.numeric(constrain[,2])
+            theta[constrain] <- constrainTo
             modelTools$classID[is.na(theta)] <- "Linear"
             linear <- modelTools$classID == "Linear"
             specified <- !is.na(start) | modelTools$classID ==
@@ -49,11 +52,12 @@
                                                     offset = offsetSpecified,
                                                     family = family,
                                                     eliminate = eliminate)
-                if (sum(is.na(theta)) > NROW(constrain)) {
-                    extra <- setdiff(which(is.na(theta)), constrain[,1])
+                if (sum(is.na(theta)) > length(constrain)) {
+                    extra <- setdiff(which(is.na(theta)), constrain)
                     isConstrained[extra] <- TRUE
-                    constrain <- rbind(constrain, data.frame(constrain = extra,
-                                                         value = 0))
+                    ind <- order(c(constrain, extra))
+                    constrain <- c(constrain, extra)[ind]
+                    constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
                 }
                 theta <- naToZero(theta)
             }
@@ -117,8 +121,7 @@
             }
         }
         else {
-            theta <- structure(replace(start, constrain[,1],
-                                       as.numeric(constrain[,2])),
+            theta <- structure(replace(start, constrain, constrainTo),
                                names = names(modelTools$classID))
             factorList <- modelTools$factorList(theta)
             eta <- offset + modelTools$predictor(factorList)
@@ -132,8 +135,7 @@
                 prattle("Initial Deviance = ", dev, "\n", sep = "")
         }
         if (status == "not.converged") {
-            needToElim <- seq(length.out = eliminate -
-                              sum(constrain[,1] < eliminate))
+            needToElim <- seq(length.out = eliminate)
             X <-  modelTools$localDesignFunction(theta, factorList)
             X <- X[, !isConstrained, drop = FALSE]
             pns <- rep(nrow(X), ncol(X))
@@ -240,16 +242,17 @@
                 message("Restarting")
         }
     }
-    theta[constrain[,1]] <- NA
+    theta[constrain] <- NA
     Info <- crossprod(W.X)
     VCOV <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE,
                   method = "svd")
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
-    fit <- list(coefficients = theta, constrain = constrain, residuals = z,
-                fitted.values = mu, rank = attr(VCOV, "rank"), family = family,
-                predictors = eta, deviance = dev[1], aic = modelAIC,
+    fit <- list(coefficients = theta, constrain = constrain - eliminate,
+                constrainTo = constrainTo, residuals = z, fitted.values = mu,
+                rank = attr(VCOV, "rank"), family = family, predictors = eta,
+                deviance = dev[1], aic = modelAIC,
                 iter = iter - (iter != iterMax), weights = w,
                 prior.weights = weights,
                 df.residual = nObs - attr(VCOV,"rank"), # - sum(weights == 0),
@@ -265,7 +268,7 @@
         fit$converged <- TRUE
         
     if (x) {
-        if (nrow(constrain) > 0) {
+        if (length(constrain) > 0) {
             fit$x <- array(0, dim = c(nrow(X), length(theta)),
                            dimnames = list(NULL, names(theta)))
             fit$x[, !isConstrained] <- X

@@ -33,7 +33,7 @@ se <- function(model, estimate = "all", checkEstimability = TRUE, ...){
             comb <- naToZero(coefs[estimate])
             var <- vcov(model)[estimate, estimate]
             coefMatrix <- matrix(0, l, length(comb))
-            coefMatrix[cbind(estimate, seq(comb))] <- 1
+            coefMatrix[cbind(estimate, seq(length(comb)))] <- 1
             colnames(coefMatrix) <- names(comb)
         }
         else {

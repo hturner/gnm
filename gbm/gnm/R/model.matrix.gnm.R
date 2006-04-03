@@ -3,6 +3,7 @@ model.matrix.gnm <- function(object, coef = NULL, ...) {
         xcall <- object$call
         xcall$method <- "model.matrix"
         xcall$constrain <- object$constrain
+        xcall$constrainTo <- object$constrainTo
         xcall$verbose <- xcall$trace <- FALSE
         if (!is.null(coef))
             xcall$start <- coef

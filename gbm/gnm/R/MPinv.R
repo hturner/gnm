@@ -39,8 +39,10 @@ MPinv <- function (mat,
             ## No test for symmetry performed here!
             if (!(m == n)) stop("the matrix is not symmetric")
             S <- chol(mat, pivot = TRUE) ## non-full-rank case
-            if (is.null(theRank)) theRank <- qr(S)$rank ## fails only on the bwt.po example
+            if (is.null(theRank)) {
+                theRank <- qr(S)$rank ## fails only on the bwt.po example
                # theRank <- attr(S, "rank") ## seems less reliable in general
+            }
             pivot <- attr(S, "pivot")
             oPivot <- order(pivot)
             Lt <- S[oPivot[oPivot %in% 1:theRank], oPivot]
@@ -66,55 +68,56 @@ MPinv <- function (mat,
     T <- mat[diag.indices[eliminate]]
     if (any(T == 0))
       stop("an eliminated submatrix must have all diagonal entries non-zero.")
-    W <- mat[!elim, !elim, drop = FALSE]
-    U <- mat[elim, !elim, drop = FALSE]
-    Ti <- 1/T
-    k <- length(T)
-    Ti.U <- Ti * U
-    V.Ti <- t(Ti.U)
-    Qmat <- W - crossprod(Ti.U, U)
-    rankQ <- if (is.null(theRank)) NULL else theRank - length(T)
-    Qi <- MPinv(Qmat, tolerance = tolerance, rank = rankQ,
-                method = method)
-    rankQ <- attr(Qi, "rank")
-    result <- matrix(NA, if (onlyNonElim)
-        n - k
-    else n, if (onlyFirstCol)
-        1
-    else if (onlyNonElim)
-        n - k
-    else n)
-    cols.notElim <- if (onlyFirstCol)
-        1
-    else if (onlyNonElim)
-        1:(n - k)
-    else !elim
-    rows.notElim <- if (onlyNonElim)
-        1:(n - k)
-    else !elim
-    if (onlyFirstCol)
-        Qi <- Qi[, 1, drop = FALSE]
-    result[rows.notElim, cols.notElim] <- Qi
-    if (!onlyNonElim) {
-        temp <- -crossprod(Qi, V.Ti)
-        result[elim, cols.notElim] <- t(temp)
+    if (all(elim)) {
+    ## Are *all* rows/cols eliminated (ie matrix is diagonal)?
+        if (onlyNonElim || onlyFirstCol) {
+            stop("there are no non-eliminated rows/columns")
+        }
+        result <- diag(1/T)
+        attr(result, "rank") <- m
     }
-    if (!onlyFirstCol && !onlyNonElim) {
-        result[!elim, elim] <- temp
-        temp <- crossprod(V.Ti, Qi) %*% V.Ti
-        diag.indices <- k * (0:(k - 1)) + 1:k
-        temp[diag.indices] <- Ti + temp[diag.indices]
-        result[elim, elim] <- temp
+    else {
+        W <- mat[!elim, !elim, drop = FALSE]
+        U <- mat[elim, !elim, drop = FALSE]
+        Ti <- 1/T
+        k <- length(T)
+        Ti.U <- Ti * U
+        V.Ti <- t(Ti.U)
+        Qmat <- W - crossprod(Ti.U, U)
+        rankQ <- if (is.null(theRank)) NULL else theRank - length(T)
+        Qi <- MPinv(Qmat, tolerance = tolerance, rank = rankQ,
+                    method = method)
+        rankQ <- attr(Qi, "rank")
+        result <- matrix(NA,
+                         if (onlyNonElim) n - k else n,
+                         if (onlyFirstCol) 1 else {
+                             if (onlyNonElim) n - k else n
+                             }
+                         )
+        cols.notElim <- if (onlyFirstCol) 1 else {
+            if (onlyNonElim) 1:(n - k) else !elim
+        }
+        rows.notElim <- if (onlyNonElim) 1:(n - k) else !elim
+        if (onlyFirstCol)
+            Qi <- Qi[, 1, drop = FALSE]
+        result[rows.notElim, cols.notElim] <- Qi
+        if (!onlyNonElim) {
+            temp <- -crossprod(Qi, V.Ti)
+            result[elim, cols.notElim] <- t(temp)
+        }
+        if (!onlyFirstCol && !onlyNonElim) {
+            result[!elim, elim] <- temp
+            temp <- crossprod(V.Ti, Qi) %*% V.Ti
+            diag.indices <- k * (0:(k - 1)) + 1:k
+            temp[diag.indices] <- Ti + temp[diag.indices]
+            result[elim, elim] <- temp
+        }
+        attr(result, "rank") <- rankQ + k
     }
-    attr(result, "rank") <- rankQ + k
     theNames <- colnames(mat)
-    rownames(result) <- if (onlyNonElim)
-        theNames[!elim]
-    else theNames
-    colnames(result) <- if (onlyFirstCol)
-        theNames[!elim][1]
-    else if (onlyNonElim)
-        theNames[!elim]
-    else theNames
+    rownames(result) <- if (onlyNonElim) theNames[!elim] else theNames
+    colnames(result) <- if (onlyFirstCol) theNames[!elim][1] else {
+        if (onlyNonElim) theNames[!elim] else theNames
+    }
     result
 }

@@ -86,8 +86,8 @@ gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
         dev <- sum(family$dev.resids(y, mu, weights))
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
-        fit <- list(coefficients = numeric(0), constrain = constrain,
-                    constrainTo = constrainTo, eliminate = 0,
+        fit <- list(coefficients = numeric(0), constrain = character(0),
+                    constrainTo = numeric(0), eliminate = 0,
                     predictors = offset, fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0, conv = NULL,
                     weights = weights*dmu^2/family$variance(mu),
@@ -175,7 +175,7 @@ gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
                 constrain <- c(constrain, extra)[ind]
                 constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
             }
-            fit$constrain <- constrain
+            fit$constrain <- coefNames[constrain]
             fit$constrainTo <- constrainTo
             if (x) fit$x <- X
             fit <- fit[-c(4,5,7,12,17,20)]

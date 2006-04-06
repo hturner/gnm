@@ -8,7 +8,8 @@
   types of nonlinear effects via \dQuote{plug-in} functions (see details).
 }
 \usage{
-gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
+gnm(formula, eliminate = NULL, constrain = numeric(0),
+    constrainTo = numeric(length(constrain)), family = gaussian, 
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
     start = NULL, tolerance = 1e-6, iterStart = 2, iterMax = 500,
     trace = FALSE, verbose = TRUE, model = TRUE, x = FALSE,
@@ -20,8 +21,11 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
     but excluded from \code{print()} displays of the model object or its
     components obtained using accessor functions. See details. }
   \item{constrain}{ (non-\code{eliminate}d) coefficients to set to zero,
-    specified by a numeric vector of indices, a logical vector, a
-    character vector of names, or "pick" to select from a Tk dialog. }
+    specified by a numeric vector of indices, a character vector of
+    names, or "pick" to select from a Tk dialog. }
+  \item{constrainTo}{ a numeric vector of the same length as
+    \code{constrain} specifying the values to constrain to. By default
+    constrained parameters will be set to zero. } 
   \item{family}{ a specification of the error distribution and link function
     to be used in the model. This can be a character string naming
     a family function; a family function, or the result of a call
@@ -184,6 +188,15 @@ gnm(formula, eliminate = NULL, constrain = NULL, family = gaussian,
   \item{ formula }{ the formula supplied. }
   \item{ constrain }{ a logical vector, indicating any coefficients that were
     constrained to zero in the fitting process. }
+  
+  \item{ constrainTo }{ a logical vector, indicating any coefficients that were
+    constrained to zero in the fitting process. }
+  \item{constrain}{ a character vector specifying the names of any
+    (non-\code{eliminate}d) coefficients that were constrained in the
+    fitting process. }
+  \item{constrainTo}{ a numeric vector of the same length as
+    \code{constrain} specifying the values which constrained parameters
+    were set to. }  
   \item{ family }{ the \code{family} object used. }
   \item{ prior.weights }{ the case weights initially supplied. }
   \item{ terms }{ the \code{terms} object used. }

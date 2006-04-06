@@ -5,6 +5,7 @@ print.coef.gnm <- function(x, ...) {
         else
             cat("No non-eliminated coefficients\n")
     }
-    else
-        print.default(x)
+    else {
+        print.default(format(x), quote = FALSE)
+    }
 }

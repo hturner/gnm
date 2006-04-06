@@ -1,7 +1,8 @@
 useDynLib(gnm)
-export(asGnm, checkEstimable, Diag, Dref, exitInfo, Exp, expandCategorical,
-       getContrasts, getModelFrame, gnm, MPinv, Mult, MultHomog, Nonlin,
-       parameters, qrSolve, residSVD, se, Symm, summary.gnm, termPredictors,
+export(asGnm, checkEstimable, confint.gnm, confint.profile.gnm, Diag, Dref,
+       exitInfo, Exp, expandCategorical, getContrasts, getModelFrame, gnm,
+       MPinv, Mult, MultHomog, Nonlin, parameters, plot.profile.gnm,
+       profile.gnm,qrSolve, residSVD, se, Symm, summary.gnm, termPredictors,
        Topo, wedderburn)
 
 import(MASS, stats)
@@ -18,6 +19,8 @@ S3method(asGnm, default)
 S3method(boxcox, gnm)
 S3method(coef, gnm)
 S3method(cooks.distance, gnm)
+S3method(confint, gnm)
+S3method(confint, profile.gnm)
 S3method(dfbeta, gnm)
 S3method(dfbetas, gnm)
 S3method(drop1, gnm)
@@ -33,6 +36,7 @@ S3method(logtrans, gnm)
 S3method(model.matrix, gnm)
 S3method(model.frame, gnm)
 S3method(plot, gnm)
+S3method(plot, profile.gnm)
 S3method(predict, gnm)
 S3method(print, gnm)
 S3method(print, coef.gnm)

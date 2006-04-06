@@ -13,11 +13,21 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
     if (length(dotargs) > 0) 
         return(anova.glmlist(c(list(object), dotargs), dispersion = dispersion, 
             test = test))
-    varlist <- labels(object)
     x <- model.matrix(object)
-    varlin <- length(attr(gnmTerms(object, NULL), "parsedLabels")[[1]]) -
-        !attr(object$terms, "intercept")
-    varseq <- attr(x, "assign") - (object$eliminate > 0)
+    if (object$eliminate) {
+        varlist <- labels(object)[-1]
+        #varlin <- 0
+        varlin <- length(attr(gnmTerms(object, NULL), "parsedLabels")[[1]]) -
+            !attr(object$terms, "intercept")
+        varseq <- attr(x, "assign") - 1
+    }
+    else {
+        varlist <- labels(object)
+        varlin <- length(attr(gnmTerms(object, NULL), "parsedLabels")[[1]]) -
+            !attr(object$terms, "intercept")
+        varseq <- attr(x, "assign")
+    }
+    coefNames <- names(coef(object))
     nvars <- max(0, varseq)
     resdev <- resdf <- fit <- NULL
     origConstrain <- object$constrain
@@ -32,7 +42,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
             }
             else {
                 fit <- update(object, constrain = c(origConstrain,
-                                      seq(varseq)[varseq >= i]),
+                                      coefNames[varseq >= i]),
                               #start = object$coef,
                               verbose = FALSE)
             }

@@ -249,7 +249,7 @@
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * attr(VCOV, "rank"))
-    fit <- list(coefficients = theta, constrain = names(theta)[constrain],
+    fit <- list(coefficients = theta, constrain = constrain,
                 constrainTo = constrainTo, residuals = z, fitted.values = mu,
                 rank = attr(VCOV, "rank"), family = family, predictors = eta,
                 deviance = dev[1], aic = modelAIC,

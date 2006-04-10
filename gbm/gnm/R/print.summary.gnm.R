@@ -14,11 +14,12 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
 
     tidy.zeros <- function(vec) ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
     coefs <- tidy.zeros(coef(x))
-    if (attr(x$cov.scaled, "eliminate"))
-        coefs <- coefs[-seq(attr(x$cov.scaled, "eliminate")), ]
+    if (length(ofInterest(x)))
+        coefs <- coefs[ofInterest(x), ]
     
     if (nrow(coefs)) {
-        cat("\nCoefficients:\n")
+        cat("\nCoefficients", " of interest"[!is.null(ofInterest(x))], ":\n",
+            sep = "")
         printCoefmat(coefs, digits = digits, signif.stars = signif.stars, 
             na.print = "NA", ...)
         if (any(!is.na(coefs[,2])))

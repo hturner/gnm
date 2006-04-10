@@ -1,4 +1,4 @@
-getContrasts <- function(model, sets = NULL, nSets = 1, ...){
+getContrasts <- function(model, sets = ofInterest(model), nSets = 1, ...){
     coefs <- coef(model)
     l <- length(coefs)
     if (model$eliminate && model$eliminate == l)

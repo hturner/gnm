@@ -27,7 +27,6 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
             !attr(object$terms, "intercept")
         varseq <- attr(x, "assign")
     }
-    coefNames <- names(coef(object))
     nvars <- max(0, varseq)
     resdev <- resdf <- fit <- NULL
     origConstrain <- object$constrain
@@ -42,7 +41,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
             }
             else {
                 fit <- update(object, constrain = c(origConstrain,
-                                      coefNames[varseq >= i]),
+                                      seq(varseq)[varseq >= i]),
                               #start = object$coef,
                               verbose = FALSE)
             }

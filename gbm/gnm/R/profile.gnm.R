@@ -1,13 +1,13 @@
-profile.gnm <- function (fitted, which = NULL, alpha = 0.05, maxsteps = 10,
-                         stepsize = NULL, trace = FALSE, ...) 
+profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
+                         maxsteps = 10, stepsize = NULL, trace = FALSE, ...) 
 {
     fittedCoef <- parameters(fitted)
     coefNames <- names(fittedCoef)
     p <- length(coefNames)
     if (is.null(which))
-        which <- (fitted$eliminate + 1):p
+        which <- 1:p
     else if (is.numeric(which))
-        which <- which + fitted$eliminate
+        which <- which
     else if (is.character(which)) 
         which <- match(which, coefNames)
     summ <- summary(fitted)
@@ -44,7 +44,7 @@ profile.gnm <- function (fitted, which = NULL, alpha = 0.05, maxsteps = 10,
                 val <- fittedCoef[i] + sgn * margin
                 updated <-
                     suppressWarnings(update(fitted, constrain =
-                                            c(fittedConstrain, par),
+                                            c(fittedConstrain, i),
                                             constrainTo =
                                             c(fittedConstrainTo, val),
                                             trace = FALSE, verbose = FALSE,
@@ -74,7 +74,7 @@ profile.gnm <- function (fitted, which = NULL, alpha = 0.05, maxsteps = 10,
                         val <- fittedCoef[i] + sgn * 1000
                         updated <-
                             suppressWarnings(update(fitted, constrain =
-                                                    c(fittedConstrain, par),
+                                                    c(fittedConstrain, i),
                                                     constrainTo =
                                                     c(fittedConstrainTo, val),
                                                     trace = FALSE,
@@ -107,7 +107,7 @@ profile.gnm <- function (fitted, which = NULL, alpha = 0.05, maxsteps = 10,
                 val <- fittedCoef[i] + sgn * step * stepsize[(sgn + 1)/2 + 1]
                 updated <-
                     suppressWarnings(update(fitted, constrain =
-                                            c(fittedConstrain, par),
+                                            c(fittedConstrain, i),
                                             constrainTo =
                                             c(fittedConstrainTo, val),
                                             trace = FALSE, verbose = FALSE,

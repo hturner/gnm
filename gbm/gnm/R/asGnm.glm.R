@@ -4,10 +4,11 @@ asGnm.glm <- function(object, ...) {
     modelData <- model.frame(object)
     object[glmExtra] <- NULL
     object$call[[1]] <- as.name("gnm")
-    constrained <- is.na(coef(object))
-    object <- c(list(eliminate = 0, na.action = na.action(modelData),
-                     constrain = names(constrained)[constrained]),
-                     constrainTo = sum(constrained), object)
+    constrain <- which(is.na(coef(object)))
+    object <- c(list(eliminate = 0, ofInterest = NULL,
+                     na.action = na.action(modelData),
+                     constrain = constrain, constrainTo = numeric(constrain)),
+                object)
     names(object)[match("linear.predictors", names(object))] <- "predictors"
     if (is.null(object$offset))
         object$offset <- rep.int(0, length(coef(object)))

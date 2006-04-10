@@ -15,7 +15,7 @@ vcov.gnm <-  function(object, dispersion = NULL, ...){
     constrain <- object$constrain
     eliminate <- object$eliminate
     needToElim <- seq(length.out = eliminate)
-    isConstrained <- is.element(coefNames, constrain)
+    isConstrained <- is.element(seq(coefNames), constrain)
     X <- model.matrix(object)[, !isConstrained, drop = FALSE]
     Info <- crossprod(X, c(object$weights) * X)
     if (length(constrain) > 0) {

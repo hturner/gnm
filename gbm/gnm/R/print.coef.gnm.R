@@ -1,11 +1,8 @@
 print.coef.gnm <- function(x, ...) {
-    if (attr(x, "eliminate")) {
-        if (attr(x, "eliminate") < length(x))
-            print.default(x[(attr(x, "eliminate") + 1):length(x)])
-        else
-            cat("No non-eliminated coefficients\n")
-    }
-    else {
+    cat("Coefficients", " of interest"[!is.null(ofInterest(x))], ":\n",
+            sep = "")
+    if (!is.null(ofInterest(x)))
+        print.default(format(x[ofInterest(x)]), quote = FALSE)
+    else
         print.default(format(x), quote = FALSE)
-    }
 }

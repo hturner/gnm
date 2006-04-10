@@ -1,4 +1,5 @@
-confint.gnm <- function (object, parm, level = 0.95, trace = FALSE, ...) 
+confint.gnm <- function (object, parm = ofInterest(object), level = 0.95,
+                         trace = FALSE, ...) 
 {
     pnames <- names(coef(object))
     if (missing(parm)) 

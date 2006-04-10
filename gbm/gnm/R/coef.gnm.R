@@ -1,4 +1,4 @@
 coef.gnm <- function(object, ...) {  
-    structure(object$coefficients, eliminate = object$eliminate,
+    structure(object$coefficients, ofInterest = object$ofInterest,
               class = "coef.gnm")
 }

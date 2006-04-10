@@ -1,4 +1,5 @@
-gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
+gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
+                constrain = numeric(0),
                 constrainTo = numeric(length(constrain)), family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 offset, start = NULL, tolerance = 1e-6, iterStart = 2,
@@ -86,7 +87,7 @@ gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
         dev <- sum(family$dev.resids(y, mu, weights))
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
-        fit <- list(coefficients = numeric(0), constrain = character(0),
+        fit <- list(coefficients = numeric(0), constrain = numeric(0),
                     constrainTo = numeric(0), eliminate = 0,
                     predictors = offset, fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0, conv = NULL,
@@ -112,8 +113,6 @@ gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
         if (method == "coefNames") return(coefNames)
         nParam <- length(coefNames)
 
-        if (is.numeric(constrain))
-            constrain <- constrain + nElim
         if (identical(constrain, "pick")) {
             call$constrain <-
                 relimp:::pickFrom(coefNames[seq(coefNames) > nElim],
@@ -125,12 +124,40 @@ gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
             call$constrain <- unname(unlist(call$constrain))
             if(!length(nchar(call$constrain))) {
                 warning("no parameters were specified to constrain")
-                call$constrain <- NULL
+                call$constrain <- numeric(0)
             }
+            constrain <- match(call$constrain, coefNames)
         }
         if (is.character(constrain))
             constrain <- match(constrain, coefNames)
-        ## dropped logical option  
+        ## dropped logical option
+        if (any(constrain < nElim))
+            stop("'constrain' specifies one or more parameters",
+                 "in the 'eliminate' term.")
+        if (!all(constrain %in% seq(coefNames)))
+            stop(" 'constrain' specifies non-existant parameters.")
+
+        if (is.null(ofInterest) && !is.null(eliminate))
+            ofInterest <- (nElim + 1):length(coefNames)
+        if (identical(ofInterest, "pick")) {
+            call$ofInterest <-
+                relimp:::pickFrom(coefNames,
+                                  setlabels = "Coefficients of interest",
+                                  title = "Select coefficients of interest",
+                                  items.label = "Model coefficients:",
+                                  edit.setlabels = FALSE)
+            call$ofInterest <- unname(unlist(call$ofInterest))
+            if(!length(nchar(call$ofInterest))) {
+                warning("No subset of coefficients selected ",
+                        "- assuming all are of interest. ")
+                call$ofInterest <- NULL
+            }
+            ofInterest <- match(call$ofInterest, coefNames)
+        }
+        if (is.character(ofInterest))
+            ofInterest <- grep(ofInterest, coefNames)
+        if (!is.null(ofInterest) && !any(ofInterest %in% seq(coefNames))) 
+            stop("'ofInterest' does not specify a subset of the coefficients.")
         
         if (is.null(start))
             start <- rep.int(NA, nParam)
@@ -175,7 +202,7 @@ gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
                 constrain <- c(constrain, extra)[ind]
                 constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
             }
-            fit$constrain <- coefNames[constrain]
+            fit$constrain <- constrain
             fit$constrainTo <- constrainTo
             if (x) fit$x <- X
             fit <- fit[-c(4,5,7,12,17,20)]
@@ -197,8 +224,9 @@ gnm <- function(formula, eliminate = NULL, constrain = numeric(0),
         return()
     }
     fit <- c(list(call = call, formula = formula,
-                  terms = attr(modelTerms, "terms"),
-                  eliminate = nElim,  na.action = attr(modelData, "na.action"),
+                  terms = attr(modelTerms, "terms"), eliminate = nElim,
+                  ofInterest = ofInterest,
+                  na.action = attr(modelData, "na.action"),
                   xlevels = .getXlevels(attr(modelData, "terms"), modelData),
                   offset = offset, tolerance = tolerance, iterStart = iterStart,
                   iterMax = iterMax), fit)

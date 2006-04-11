@@ -6,7 +6,8 @@ asGnm.lm <- function(object, ...) {
     constrain <- which(is.na(coef(object)))
     object <- c(list(formula = formula(object), eliminate = 0,
                      ofInterest = NULL, na.action = na.action(modelData),
-                     constrain = constrain, constrainTo = numeric(constrain),
+                     constrain = constrain,
+                     constrainTo = numeric(length(constrain)),
                      family = gaussian(), predictors = fitted.values(object),
                      deviance = deviance(object),
                      y = model.response(modelData)), object)

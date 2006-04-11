@@ -7,7 +7,8 @@
   generalized nonlinear model, based on the profiled deviance. 
 }
 \usage{
-\method{confint}{gnm}(object, parm, level = 0.95, trace = FALSE, ...)
+\method{confint}{gnm}(object, parm = ofInterest(object), level = 0.95,
+    trace = FALSE, ...)
 
 \method{confint}{profile.gnm}(object, parm = names(object), level = 0.95, ...)
 }
@@ -15,11 +16,8 @@
   \item{object}{ an object of class \code{"gnm"} or \code{"profile.gnm"}}
   \item{parm}{ (optional) either a numeric vector of indices or a
     character vector of names, specifying the parameters for which
-    confidence intervals are to be estimated. For \code{"gnm"} objects,
-    indices refer to the (non-\code{eliminate}d) parameters, whereas
-    for \code{"profile.gnm"} objects, indices refer to a subset of
-    the profiled parameters. If \code{parm} is missing, confidence
-    intervals are found for all parameters.} 
+    confidence intervals are to be estimated. If \code{parm} is missing,
+    confidence intervals are found for all parameters.} 
   \item{level}{ the confidence level required. }
   \item{trace}{ a logical value indicating whether profiling should be
     traced. }
@@ -39,8 +37,8 @@
   for more details.
 
   If a \code{"profile.gnm"} object is passed directly to \code{confint},
-  \code{parm} may be used to select a subset of the profiled
-  parameters for which confidence intervals are to be found.
+  parametrs specified by \code{parm} must be a subset of the profiled
+  parameters.
   
   For unidentified parameters a confidence interval cannot be calculated
   and the limits will be returned as \code{NA}. If the deviance curve
@@ -62,11 +60,12 @@
 \examples{
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
-               data = yaish, parm = (dest != 7), constrain = 61)
+               Mult(Exp(-1 + educ), -1 + orig:dest), 
+               ofInterest = "Mult.*educ", constrain = "Mult.*educ1",
+               family = poisson, data = yaish, subset = (dest != 7))
 
 ## Letting 'confint' compute profile
-confint(unidiff, 61:65, trace = TRUE)
+confint(unidiff, trace = TRUE)
 ##                          2.5 \%     97.5 \%
 ## Mult1.Factor1.educ1         NA         NA
 ## Mult1.Factor1.educ2 -0.5978901  0.1022447
@@ -75,8 +74,8 @@ confint(unidiff, 61:65, trace = TRUE)
 ## Mult1.Factor1.educ5       -Inf -0.7007616
 
 ## Creating profile object first with user-specified stepsize
-prof <- profile(unidiff, 61:65, trace = TRUE, stepsize = 0.1)
-confint(prof, 2:5)
+prof <- profile(unidiff, trace = TRUE, stepsize = 0.1)
+confint(prof, ofInterest(unidiff)[2:5])
 ##                          2.5 \%     97.5 \%
 ## Mult1.Factor1.educ2 -0.5978324  0.1022441
 ## Mult1.Factor1.educ3 -1.4834753 -0.2362138

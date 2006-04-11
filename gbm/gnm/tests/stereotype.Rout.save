@@ -47,7 +47,7 @@ gnm(formula = .counts ~ pain + Mult(pain - 1, x1 + x2 + x3 -
     1), eliminate = .rowID, family = "poisson", data = backPain)
 
 
-Coefficients:
+Coefficients of interest:
                               painsame                  painslight.improvement  
                                16.1578                                 15.6848  
               painmoderate.improvement                  painmarked.improvement  

@@ -128,8 +128,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             }
             constrain <- match(call$constrain, coefNames)
         }
-        if (is.character(constrain))
-            constrain <- match(constrain, coefNames)
+        if (is.character(constrain)) {
+            if (length(constrain) > 1)
+                constrain <- match(constrain, coefNames)
+            else
+                constrain <- grep(constrain, coefNames)
+        }
         ## dropped logical option
         if (any(constrain < nElim))
             stop("'constrain' specifies one or more parameters",
@@ -137,7 +141,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (!all(constrain %in% seq(coefNames)))
             stop(" 'constrain' specifies non-existant parameters.")
 
-        if (is.null(ofInterest) && !is.null(eliminate))
+        if (is.null(ofInterest) && !missing(eliminate))
             ofInterest <- (nElim + 1):length(coefNames)
         if (identical(ofInterest, "pick")) {
             call$ofInterest <-
@@ -154,10 +158,18 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             }
             ofInterest <- match(call$ofInterest, coefNames)
         }
-        if (is.character(ofInterest))
-            ofInterest <- grep(ofInterest, coefNames)
-        if (!is.null(ofInterest) && !any(ofInterest %in% seq(coefNames))) 
-            stop("'ofInterest' does not specify a subset of the coefficients.")
+        if (is.character(ofInterest)) {
+            if (length(ofInterest) > 1)
+                ofInterest <- match(ofInterest, coefNames)
+            else
+                ofInterest <- grep(ofInterest, coefNames)
+        }
+        if (!is.null(ofInterest)) {
+            if (!any(ofInterest %in% seq(coefNames))) 
+                stop("'ofInterest' does not specify a subset of the ",
+                     "coefficients.")
+            names(ofInterest) <- coefNames[ofInterest]
+        }
         
         if (is.null(start))
             start <- rep.int(NA, nParam)

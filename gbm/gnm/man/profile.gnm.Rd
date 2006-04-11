@@ -7,16 +7,15 @@
   the deviance over a range of values about the fitted estimate.
 }
 \usage{
-profile.gnm(fitted, which = NULL, alpha = 0.05, maxsteps = 10,
+profile.gnm(fitted, which = ofInterest(fitted), alpha = 0.05, maxsteps = 10,
             stepsize = NULL, trace = FALSE, ...) 
 }
 \arguments{
   \item{fitted}{ an object of class \code{"gnm"}. }
   \item{which}{ (optional) either a numeric vector of indices or a
-    character vector of names, specifying the (non-\code{eliminate}d)
-    parameters over which the deviance is to be profiled. If missing,
-    the deviance is profiled over all (non-\code{eliminate}d)
-    parameters. }  
+    character vector of names, specifying the parameters over which the
+    deviance is to be profiled. If missing, the deviance is profiled
+    over all parameters. }  
   \item{alpha}{ the significance level of the z statistic, indicating
     the range that the profile must cover (see details). }
   \item{maxsteps}{ the maximum number of steps to take either side of
@@ -91,21 +90,22 @@ profile.gnm(fitted, which = NULL, alpha = 0.05, maxsteps = 10,
 \references{
   Chambers, J. M. and Hastie, T. J. (1992) \emph{Statistical Models in S} }
 \author{ Heather Turner }
-\seealso{ \code{\link{confint.gnm}},  \code{\link{gnm}}, \code{\link[MASS]{profile.glm}}}
+\seealso{ \code{\link{confint.gnm}},  \code{\link{gnm}},
+  \code{\link[MASS]{profile.glm}}, \code{\link{ofInterest}}
+}
   \examples{
 ## Example in which deviance is near quadratic
 data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               Nonlin(MultHomog(origin, destination)), family = poisson,
-               data = occupationalStatus,
-               constrain = "MultHomog(origin, destination).1")
-prof <- profile(RChomog, 24:31, trace = TRUE)
+               Nonlin(MultHomog(origin, destination)),
+               ofInterest = "MultHomog", constrain = "MultHomog.*1",
+               family = poisson, data = occupationalStatus)
+prof <- profile(RChomog, trace = TRUE)
 plot(prof)
 ## confint similar to MLE +/- 1.96*s.e. 
 confint(prof)
-coefs <- coef(RChomog)[24:31]
-sterr <- se(RChomog, 24:31)[,2]
-cbind(coefs - 1.96 * sterr, coefs + 1.96 * sterr)
+coefData <- se(RChomog)
+cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ## Another near quadratic example, with more complex constraints
 data(voting)
@@ -113,46 +113,44 @@ count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
                      family = binomial, data = voting)
-constr <- prop.table(exp(coef(classMobility)[2:3]))
-classMobility <- update(classMobility, constrain = c(2, 4),
-                        constrainTo = c(log(1- constr[2]), 0))
-exp(coef(classMobility))[3] + constr[1] #=1
+wts <- prop.table(exp(coef(classMobility)[2:3]))
+classMobility <- update(classMobility, constrain = "Dref.*[.]origin|1",
+                        constrainTo = c(log(wts[1]), 0))
+sum(exp(parameters(classMobility))[2:3]) #=1
 prof <- profile(classMobility, trace = TRUE)
 plot(prof)
 ## confint similar to MLE +/- 1.96*s.e. 
 confint(prof, trace = TRUE)
-coefs <- coef(classMobility)
-sterr <- se(classMobility)[,2]
-cbind(coefs - 1.96 * sterr, coefs + 1.96 * sterr)
+coefData <- se(RChomog)
+cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ## An example showing asymptotic deviance
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
-               data = yaish, subset = (dest != 7), constrain = 61)
-prof <- profile(unidiff, 61:65, trace = TRUE)
+               Mult(Exp(-1 + educ), -1 + orig:dest),
+               ofInterest = "Mult.*educ", constrain = "Mult.*educ1",
+               family = poisson, data = yaish, subset = (dest != 7))
+prof <- profile(unidiff, trace = TRUE)
 plot(prof)
 ## clearly not quadratic for Mult1.Factor1.educ4 or Mult1.Factor1.educ5!
 confint(prof)
-coefs <- coef(unidiff)[61:65]
-sterr <- se(unidiff, 61:65)[,2]
-cbind(coefs - 1.96 * sterr, coefs + 1.96 * sterr)
+coefData <- se(RChomog)
+cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ## A far from quadratic example, also with eliminated parameters
 data(backPain)
 backPainLong <- expandCategorical(backPain, "pain")
 
 oneDimensional <- gnm(count ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
-                      eliminate = id, constrain = c(6, 12),
-                      constrainTo = c(0, 1),  family = "poisson",
+                      eliminate = id,  family = "poisson",
+                      constrain = "Mult.*worse|x1", constrainTo = c(0, 1),
                       data = backPainLong)
 prof <- profile(oneDimensional, trace = TRUE)
 plot(prof)
 ## not quadratic for any non-eliminated parameter
 confint(prof)
-coefs <- coef(oneDimensional)[-c(1:oneDimensional$eliminate)]
-sterr <- se(oneDimensional)[,2]
-cbind(coefs - 1.96 * sterr, coefs + 1.96 * sterr)
+coefData <- se(RChomog)
+cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 }
 \keyword{ models }

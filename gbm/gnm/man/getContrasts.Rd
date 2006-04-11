@@ -10,14 +10,15 @@ errors for those estimated differences.  Where possible, quasi standard
 errors are also computed.
 }
 \usage{
-getContrasts(model, sets = NULL, nSets = 1, ...)
+getContrasts(model, sets = ofInterest(model), nSets = 1, ...)
 }
 \arguments{
-  \item{model}{ a model object of class \code{"gnm"}}
+  \item{model}{ a model object of class \code{"gnm"}.}
   \item{sets}{ a vector of indices (if \code{nSets} is 1) or
-    a list (of length \code{nSets}) of such vectors; or \code{NULL} }
-  \item{nSets}{ the number of vectors of indices to use}
-  \item{\dots}{ arguments to pass to other functions }
+    a list (of length \code{nSets}) of such vectors. If missing, a Tk
+    dialog will open for parameter selection. }
+  \item{nSets}{ the number of vectors of indices to use.}
+  \item{\dots}{ arguments to pass to other functions. }
 }
 \details{
   The indices must all be in \code{1:length(coef(object))}.  If
@@ -35,7 +36,8 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
 }
 \author{ David Firth }
 \seealso{ \code{\link{gnm}}, \code{\link{se}},
-  \code{\link{checkEstimable}}, \code{\link[qvcalc]{qvcalc}}}
+  \code{\link{checkEstimable}}, \code{\link[qvcalc]{qvcalc}},
+  \code{\link{ofInterest}}}
 \references{
   Firth, D (2003).  Overcoming the reference category problem in the
   presentation of statistical models.  \emph{Sociological Methodology}
@@ -50,10 +52,11 @@ data(yaish)
 
 ## Fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
+               Mult(Exp(-1 + educ), -1 + orig:dest),
+               ofInterest = "Mult.*educ", family = poisson,
                data = yaish,  subset = (dest != 7))
 ## Examine the education multipliers (differences on the log scale):
-getContrasts(unidiff, grep("Mult1.Factor1", names(coef(unidiff))))
+getContrasts(unidiff)
 }
 \keyword{ models }
 \keyword{ regression }

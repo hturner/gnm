@@ -1,7 +1,7 @@
 confint.profile.gnm <- function (object, parm = names(object),
                                  level = 0.95, ...)  {
     of <- attr(object, "original.fit")
-    pnames <- names(of)
+    pnames <- names(coef(of))
     if (is.numeric(parm)) 
         parm <- pnames[parm]
     a <- (1 - level)/2

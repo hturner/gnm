@@ -8,7 +8,7 @@
   types of nonlinear effects via \dQuote{plug-in} functions (see details).
 }
 \usage{
-gnm(formula, eliminate = NULL, constrain = numeric(0),
+gnm(formula, eliminate = NULL,ofInterest = NULL, constrain = numeric(0),
     constrainTo = numeric(length(constrain)), family = gaussian, 
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
     start = NULL, tolerance = 1e-6, iterStart = 2, iterMax = 500,
@@ -17,11 +17,15 @@ gnm(formula, eliminate = NULL, constrain = numeric(0),
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
-  \item{eliminate}{ an optional factor to be included in the predictor
-    but excluded from \code{print()} displays of the model object or its
-    components obtained using accessor functions. See details. }
-  \item{constrain}{ (non-\code{eliminate}d) coefficients to set to zero,
-    specified by a numeric vector of indices, a character vector of
+  \item{eliminate}{ a factor to be included as the first term in the
+    model. \code{gnm} will exploit the structure of this factor to
+    improve computational effciency. See details. }
+  \item{ofInterest}{ optional coefficients of interest, specified by a
+    regular expression; a numeric vector of indices; a character vector of
+    names, or "pick" to select from a Tk dialog. If missing, it is
+    assumed that all non-\code{eliminate}d coefficients are of interest. }
+  \item{constrain}{ coefficients to set to zero, specified by a regular
+    expression, a numeric vector of indices, a character vector of 
     names, or "pick" to select from a Tk dialog. }
   \item{constrainTo}{ a numeric vector of the same length as
     \code{constrain} specifying the values to constrain to. By default
@@ -108,16 +112,23 @@ gnm(formula, eliminate = NULL, constrain = numeric(0),
   for details. 
 
   The \code{eliminate} argument may be used to specify a factor that
-  is to be included in the model, but excluded from \code{print()}
-  displays of the model object or its components obtained using accessor
-  functions such as \code{coef()} etc. The \code{eliminate}'d factor is
-  included as the first term in the model (since an intercept is then
-  redundant, none is fitted). The structure of the factor is exploited
-  to improve computational efficiency --- substantially so if the number
-  of eliminated parameters is large. Use of \code{eliminate} is designed
-  for terms that are required in the model but are not of direct
-  interest (e.g., terms needed to fit multinomial-response models as
-  conditional Poisson models). See \code{\link{backPain}} for an example. 
+  is to be included as the first term in the model (since an intercept
+  is then redundant, none is fitted). The structure of the factor is
+  exploited to improve computational efficiency --- substantially so if
+  the \code{eliminate}d factor has a large number of levels. Use of
+  \code{eliminate} is designed for factors that are required in the
+  model but are not of direct interest (e.g., terms needed to fit
+  multinomial-response models as conditional Poisson models). See
+  \code{\link{backPain}} for an example.
+
+  The \code{ofInterest} argument may be used to specify coefficients of
+  interest, the indices of which are returned in the \code{ofInterest}
+  component of the model object. \code{print()} displays of the model
+  object or its components obtained using accessor functions such as
+  \code{coef()} etc, will only show these coefficients. In addition
+  methods for \code{"gnm"} objects which may be applied to a subset of
+  the parameters are by default applied to the coefficients of interest.
+  See \code{\link{ofInterest}} for accessor and replacement functions.
 
   For contingency tables, the data may be provided as an object of class
   \code{"table"} from which the frequencies will be extracted to use
@@ -186,14 +197,8 @@ gnm(formula, eliminate = NULL, constrain = numeric(0),
   and is a list containing the following components:     
   \item{ call }{ the matched call. }
   \item{ formula }{ the formula supplied. }
-  \item{ constrain }{ a logical vector, indicating any coefficients that were
-    constrained to zero in the fitting process. }
-  
-  \item{ constrainTo }{ a logical vector, indicating any coefficients that were
-    constrained to zero in the fitting process. }
-  \item{constrain}{ a character vector specifying the names of any
-    (non-\code{eliminate}d) coefficients that were constrained in the
-    fitting process. }
+  \item{constrain}{ a numeric vector specifying any coefficients that
+    were constrained in the fitting process. }
   \item{constrainTo}{ a numeric vector of the same length as
     \code{constrain} specifying the values which constrained parameters
     were set to. }  
@@ -206,6 +211,8 @@ gnm(formula, eliminate = NULL, constrain = numeric(0),
   \item{ offset }{ the offset vector used. }
   \item{ coefficients }{ a named vector of coefficients. }
   \item{ eliminate }{ the number of eliminated parameters. }
+  \item{ ofInterest }{ a named numeric vector of indices, or
+    \code{NULL}. }
   \item{ predictors }{ the fitted values on the link scale. }
   \item{ fitted.values }{ the fitted mean values, obtained by transforming the
     predictors by the inverse of the link function. }
@@ -271,6 +278,10 @@ gnm(formula, eliminate = NULL, constrain = numeric(0),
   mobility tables.  \emph{American Sociological Review} \bold{57}, 380-395.
 }
 \author{ Heather Turner, David Firth }
+\note{
+  Regular expression matching is performed using \code{grep} with
+  default settings.
+}
 \seealso{
   \code{\link{formula}} for the symbolic language used to specify
   formulae. 

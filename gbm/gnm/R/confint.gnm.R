@@ -2,7 +2,7 @@ confint.gnm <- function (object, parm = ofInterest(object), level = 0.95,
                          trace = FALSE, ...) 
 {
     pnames <- names(coef(object))
-    if (missing(parm)) 
+    if (is.null(parm)) 
         parm <- seq(along = pnames)
     else if (is.character(parm)) 
         parm <- match(parm, pnames, nomatch = 0)

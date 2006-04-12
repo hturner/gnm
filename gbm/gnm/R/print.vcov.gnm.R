@@ -1,12 +1,6 @@
 print.vcov.gnm <- function(x, ...) {
-    if (attr(x, "eliminate")) {
-        if (attr(x, "eliminate") < nrow(x)) { 
-            keep <- (attr(x, "eliminate") + 1):nrow(x)
-            print.default(x[keep, keep])
-        }
-        else
-            cat("No non-eliminated coefficients\n")
-    }
+    if (!is.null(attr(x, "ofInterest")))
+        print.default(x[attr(x, "ofInterest"), attr(x, "ofInterest")])
     else
         print.default(x)
 }

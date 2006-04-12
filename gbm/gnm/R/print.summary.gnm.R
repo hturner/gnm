@@ -12,7 +12,8 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     }
     print.default(x$deviance.resid, digits = digits, na = "", print.gap = 2)
 
-    tidy.zeros <- function(vec) ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
+    tidy.zeros <- function(vec)
+        ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
     coefs <- tidy.zeros(coef(x))
     if (length(ofInterest(x)))
         coefs <- coefs[ofInterest(x), ]

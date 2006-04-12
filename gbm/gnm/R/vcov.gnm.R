@@ -28,5 +28,5 @@ vcov.gnm <-  function(object, dispersion = NULL, ...){
         cov.unscaled <- MPinv(Info, eliminate = needToElim, onlyNonElim = FALSE)
     attr(cov.unscaled, "rank") <- NULL
     structure(dispersion * cov.unscaled, dispersion = dispersion,
-              eliminate = eliminate, class = "vcov.gnm")
+              ofInterest = ofInterest(object), class = "vcov.gnm")
 }

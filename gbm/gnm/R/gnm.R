@@ -113,26 +113,21 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (method == "coefNames") return(coefNames)
         nParam <- length(coefNames)
 
-        if (identical(constrain, "pick")) {
+        if (identical(constrain, pick)) {
             call$constrain <-
-                relimp:::pickFrom(coefNames[seq(coefNames) > nElim],
-                                  setlabels = "Coefficients to constrain",
-                                  title =
-                                  "Constrain one or more gnm coefficients",
-                                  items.label = "Model coefficients:",
-                                  edit.setlabels = FALSE)
-            call$constrain <- unname(unlist(call$constrain))
-            if(!length(nchar(call$constrain))) {
-                warning("no parameters were specified to constrain")
-                call$constrain <- numeric(0)
-            }
+                pick(coefNames[seq(coefNames) > nElim],
+                     setlabels = "Coefficients to constrain",
+                     title = "Constrain one or more gnm coefficients",
+                     items.label = "Model coefficients:",
+                     warn = "No parameters were specified to constrain",
+                     return.indices = FALSE)
             constrain <- match(call$constrain, coefNames)
         }
         if (is.character(constrain)) {
             if (length(constrain) > 1)
-                constrain <- match(constrain, coefNames)
-            else
                 constrain <- grep(constrain, coefNames)
+            else
+                constrain <- match(constrain, coefNames)
         }
         ## dropped logical option
         if (any(constrain < nElim))
@@ -143,26 +138,18 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
         if (is.null(ofInterest) && !missing(eliminate))
             ofInterest <- (nElim + 1):length(coefNames)
-        if (identical(ofInterest, "pick")) {
-            call$ofInterest <-
-                relimp:::pickFrom(coefNames,
-                                  setlabels = "Coefficients of interest",
-                                  title = "Select coefficients of interest",
-                                  items.label = "Model coefficients:",
-                                  edit.setlabels = FALSE)
-            call$ofInterest <- unname(unlist(call$ofInterest))
-            if(!length(nchar(call$ofInterest))) {
-                warning("No subset of coefficients selected ",
-                        "- assuming all are of interest. ")
-                call$ofInterest <- NULL
-            }
-            ofInterest <- match(call$ofInterest, coefNames)
-        }
+        if (identical(ofInterest, pick))
+            call$ofInterest <- ofInterest <- 
+                pick(coefNames, setlabels = "Coefficients of interest",
+                     title = "Select coefficients of interest",
+                     items.label = "Model coefficients:",
+                     warn =  paste("No subset of coefficients selected",
+                     "- assuming all are of interest."))
         if (is.character(ofInterest)) {
-            if (length(ofInterest) > 1)
-                ofInterest <- match(ofInterest, coefNames)
-            else
+            if (length(ofInterest) == 1)
                 ofInterest <- grep(ofInterest, coefNames)
+            else
+                ofInterest <- match(ofInterest, coefNames)
         }
         if (!is.null(ofInterest)) {
             if (!any(ofInterest %in% seq(coefNames))) 

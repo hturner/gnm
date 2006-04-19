@@ -16,7 +16,7 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
         ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
     coefs <- tidy.zeros(coef(x))
     if (length(ofInterest(x)))
-        coefs <- coefs[ofInterest(x), ]
+        coefs <- coefs[ofInterest(x), , drop = FALSE]
     
     if (nrow(coefs)) {
         cat("\nCoefficients", " of interest"[!is.null(ofInterest(x))], ":\n",

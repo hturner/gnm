@@ -1,20 +1,12 @@
 "ofInterest<-" <- function(object, value = NULL) {
     coefNames <- names(coef(object))
-    if (identical(value, "pick")) {
-        value <-
-            relimp:::pickFrom(coefNames,
-                              setlabels = "Coefficients of interest",
-                              title = "Select coefficients of interest",
-                              items.label = "Model coefficients:",
-                              edit.setlabels = FALSE)
-        value <- unname(unlist(value))
-        if(!length(nchar(value))) {
-            warning("No subset of coefficients selected ",
-                    "- assuming all are of interest. ")
-            value <- NULL
-        }
-        value <- match(value, coefNames)
-    }
+    if (identical(value, pick))
+        value <- pick(coefNames,
+                      setlabels = "Coefficients of interest",
+                      title = "Select coefficients of interest",
+                      items.label = "Model coefficients:",
+                      warn = paste("No subset of coefficients selected",
+                     "- assuming all are of interest."))
     if (is.character(value))
         value <- grep(value, coefNames)
     if (!is.null(value)) {

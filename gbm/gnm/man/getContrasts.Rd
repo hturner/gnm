@@ -10,7 +10,7 @@ errors for those estimated differences.  Where possible, quasi standard
 errors are also computed.
 }
 \usage{
-getContrasts(model, sets = ofInterest(model), nSets = 1, ...)
+getContrasts(model, sets = NULL, nSets = 1, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}
@@ -56,7 +56,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                ofInterest = "Mult.*educ", family = poisson,
                data = yaish,  subset = (dest != 7))
 ## Examine the education multipliers (differences on the log scale):
-getContrasts(unidiff)
+getContrasts(unidiff, sets = ofInterest(unidiff))
 }
 \keyword{ models }
 \keyword{ regression }

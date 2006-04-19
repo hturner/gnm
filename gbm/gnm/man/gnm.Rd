@@ -8,7 +8,7 @@
   types of nonlinear effects via \dQuote{plug-in} functions (see details).
 }
 \usage{
-gnm(formula, eliminate = NULL,ofInterest = NULL, constrain = numeric(0),
+gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     constrainTo = numeric(length(constrain)), family = gaussian, 
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
     start = NULL, tolerance = 1e-6, iterStart = 2, iterMax = 500,
@@ -21,7 +21,7 @@ gnm(formula, eliminate = NULL,ofInterest = NULL, constrain = numeric(0),
     model. \code{gnm} will exploit the structure of this factor to
     improve computational effciency. See details. }
   \item{ofInterest}{ optional coefficients of interest, specified by a
-    regular expression; a numeric vector of indices; a character vector of
+    regular expression, a numeric vector of indices, a character vector of
     names, or "pick" to select from a Tk dialog. If missing, it is
     assumed that all non-\code{eliminate}d coefficients are of interest. }
   \item{constrain}{ coefficients to set to zero, specified by a regular

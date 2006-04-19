@@ -1,11 +1,21 @@
-getContrasts <- function(model, sets = ofInterest(model), nSets = 1, ...){
+getContrasts <- function(model, sets = NULL, nSets = 1, ...){
     coefs <- coef(model)
     l <- length(coefs)
-    if (model$eliminate && model$eliminate == l)
-        stop("No non-eliminated coefficients")
-    coefNames <- names(coefs)[(model$eliminate + 1):l]
-    if (is.null(sets))
-        sets <- relimp:::pickFrom(coefNames, nSets,...)
+    of.interest <- ofInterest(model)
+    if (is.null(of.interest)) {
+        if (l == model$eliminate) stop("model has no parameters of interest")
+        of.interest <- (model$eliminate + 1):l
+    }
+    coefNames <- names(coefs)
+    if (is.null(sets)) {
+        of.interest <- ofInterest(model)
+        if (is.null(of.interest)) {
+            if (l == model$eliminate)
+                stop("model has no parameters of interest")
+            of.interest <- (model$eliminate + 1):l
+        }
+        sets <- relimp:::pickFrom(coefNames[of.interest], nSets,...)
+    }
     if (!is.list(sets)) sets <- list(sets)
     setLengths <- sapply(sets, length)
     if (all(setLengths == 0)) stop(
@@ -27,7 +37,7 @@ getContrasts <- function(model, sets = ofInterest(model), nSets = 1, ...){
                    )
     coefMatrix <- lapply(sets, function(x){
         temp <- matrix(0, l, length(x$coefs))
-        id <- match(x$coefs, coefNames) + model$eliminate
+        id <- match(x$coefs, coefNames)
         temp[id, 2:ncol(temp)] <- x$contr
         colnames(temp) <- x$coefs
         temp})

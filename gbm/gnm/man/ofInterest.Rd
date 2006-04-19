@@ -42,7 +42,7 @@ ofInterest(object) <- value
   default settings.
 }
 \seealso{ \code{\link{grep}}, \code{\link{gnm}}, \code{\link{se}},
-  \code{\link{getConstrasts}},\code{\link{profile.gnm}}, \code{\link{confint.gnm}}}
+  \code{\link{getContrasts}},\code{\link{profile.gnm}}, \code{\link{confint.gnm}}}
 \examples{
 data(yaish)
 set.seed(1)

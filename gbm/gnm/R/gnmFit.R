@@ -141,6 +141,10 @@
             pns <- rep(nrow(X), ncol(X))
             ridge <- c(0, rep(1e-5, ncol(X)))
             for (iter in seq(iterMax)) {
+                if (any(!is.finite(X))){
+                    status <- "X.not.finite"
+                    break
+                }
                 if (verbose) {
                     if (iter == 1)
                         prattle("Running main iterations", "\n"[trace],
@@ -233,6 +237,8 @@
                                  "Predictors are not all finite",
                                w.not.finite =
                                  "Iterative weights are not all finite",
+                               X.not.finite =
+                                 "Local design matrix has infinite elements",
                                no.deviance = "Deviance is NaN"))
             attempt <- attempt + 1
             if (attempt > 5 || all(!is.na(start)) || modelTools$classID %in%
@@ -266,7 +272,7 @@
     }
     else
         fit$converged <- TRUE
-        
+
     if (x) {
         if (length(constrain) > 0) {
             fit$x <- array(0, dim = c(nrow(X), length(theta)),

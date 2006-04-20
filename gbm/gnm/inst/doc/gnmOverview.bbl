@@ -77,6 +77,11 @@ McCullagh, P. and J.~A. Nelder (1989).
 \newblock {\em Generalized Linear Models ({S}econd Edition)}.
 \newblock Chapman \& Hall Ltd.
 
+\bibitem[\protect\citeauthoryear{Seber and Wild}{Seber and Wild}{1989}]{Sebe89}
+Seber, G. A.~F. and C.~J. Wild (1989).
+\newblock {\em Nonlinear Regression}.
+\newblock Wiley.
+
 \bibitem[\protect\citeauthoryear{Sobel}{Sobel}{1981}]{Sobe81}
 Sobel, M.~E. (1981).
 \newblock Diagonal mobility models: A substantively motivated class of designs

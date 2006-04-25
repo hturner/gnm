@@ -19,7 +19,7 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \item{formula}{ a symbolic description of the nonlinear predictor. }
   \item{eliminate}{ a factor to be included as the first term in the
     model. \code{gnm} will exploit the structure of this factor to
-    improve computational effciency. See details. }
+    improve computational efficiency. See details. }
   \item{ofInterest}{ optional coefficients of interest, specified by a
     regular expression, a numeric vector of indices, a character vector of
     names, or "pick" to select from a Tk dialog. If missing, it is

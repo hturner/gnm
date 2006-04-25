@@ -1,17 +1,14 @@
-Exp <- function(multiplier){
+Exp <- function(expression, inst = NULL){
     badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
                          sapply(sys.calls(),
                                 function(x) as.character(x[[1]])[1]))
-    if (!all(is.na(badCall))) {
-        culprit <- gsub(".default", "",
-                        as.character(sys.calls()
-                                     [[min(badCall[!is.na(badCall)])]][[1]]))
-        stop(paste(culprit,
-                   "has called Exp() from the gnm package.\n", culprit,
-                   "can only handle Exp terms inside Mult()",
-                   "as part of the formula of a gnm object."))
-    }
+    if (!all(is.na(badCall)))
+        stop(paste("Exp terms are only valid in gnm models."))
+
+    Call <- sys.call()
+    Call$inst <- NULL
     
-    structure(deparse(substitute(multiplier)), class = "Exp")
+    structure(deparse(substitute(expression)), class = "Exp",
+              prefix = deparse(Call)[1], instance = paste("", inst, sep = ""))
 }
 

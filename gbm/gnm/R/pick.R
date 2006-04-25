@@ -1,6 +1,8 @@
-pick <- function(vec, setlabels = NULL,  title = NULL,
-                 items.label = "Pick from:", warn = "Nothing chosen",
-                 return.indices = TRUE, edit.setlabels = FALSE, ...){
+pick <- function(object, regexp = NULL, setlabels = "Coefficients of interest",
+                     title ="Select coefficients of interest",
+                     items.label = "Model coefficients:",
+                     warn = "No coefficients were chosen",
+                     return.indices = TRUE, edit.setlabels = FALSE, ...){
     selection <- relimp:::pickFrom(vec, setlabels = setlabels, title = title,
                                    items.label = items.label,
                                    return.indices = return.indices,

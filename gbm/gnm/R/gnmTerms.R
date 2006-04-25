@@ -17,29 +17,23 @@ gnmTerms <- function(formula, eliminate, data)
     intercept <- attr(fullTerms, "intercept")
     
     nonlinear <- is.element(seq(labelList),
-                            grep("(Mult|Nonlin)[[:space:]]*\\(", labelList))
+                            grep("(Exp|Mult|Nonlin)[[:space:]]*\\(", labelList))
     labelList <- c(list(structure(c(intercept, labelList[!nonlinear]),
-                                  class = "Linear"))[any(
-                                  c(intercept, !nonlinear))],
+                                  class = "Linear", prefix = "", instance = "")
+                        )[any(c(intercept, !nonlinear))],
                    lapply(labelList[nonlinear],
                           function(term) eval(parse(text = term))))
-    multiplicity <- sapply(labelList, function(x)
-                           ifelse(is.list(x), length(x), 1))
-    if (any(multiplicity > 1))
-        termsID <- rep(seq(multiplicity), multiplicity)
-    else
-        termsID <- NULL
-    labelList <- prefixList <- unlistOneLevel(labelList)
-    
-    classIndex <- sapply(labelList, class)
-    multNo <- cumsum(classIndex == "Mult")
-    for (i in seq(labelList))
-        prefixList[[i]] <-
-            switch(classIndex[[i]],
-                   "Mult" = paste("Mult", multNo[i], ".Factor",
-                   seq(labelList[[i]]), ".", sep = ""),
-                   "Nonlin" = deparse(attr(labelList[[i]], "call"))[1],
-                   "")
+    prefixLabels <- sapply(labelList, attr, "prefix")
+    instanceLabels <- sapply(labelList, attr, "instance")
+    nonsense <- tapply(instanceLabels, prefixLabels, FUN = function(x)
+                {nchar(x) && !identical(as.integer(x), seq(x))})
+    if(any(nonsense))
+        stop("Specified instances of ", prefixLabels[nonsense],
+             " are not in sequence")
+    constituentLabels <- sapply(labelList, attr, "constituentLabels")
+    prefixLabels <- unlist(mapply(paste, paste(prefixLabels, instanceLabels,
+                                               sep = ""),
+                                  constituentLabels, sep = ""))
 
     labelList <- unlistOneLevel(labelList)
     offsetList <- lapply(labelList, attr, "offset")
@@ -54,9 +48,9 @@ gnmTerms <- function(formula, eliminate, data)
     structure(reformulate(c(unlist(labelList), unlist(offsetList),
                             predictorOffset), response),
               terms = fullTerms,
-              termsID = termsID,
               offset = offsetList,
               parsedLabels = labelList,
-              prefixLabels = unlist(prefixList),
+              prefixLabels = prefixLabels,
+              instanceLabels = instanceLabels,
               .Environment = environment(formula))
 }

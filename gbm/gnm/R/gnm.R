@@ -24,9 +24,9 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     modelData <- eval(modelData, parent.frame())
 
     if (!missing(eliminate)) {
-        Elim <- modelData[[attr(attr(modelTerms, "terms"), "term.labels")[1]]]
+        Elim <- suppressWarnings(eval(substitute(eliminate), modelData))
         if (!is.factor(Elim))
-            stop("variables in 'eliminate' formula must be factors")
+            stop("'eliminate' must be a factor")
         nElim <- nlevels(Elim)
         if (missing(lsMethod)) lsMethod <- "chol"
     }
@@ -124,7 +124,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             constrain <- match(call$constrain, coefNames)
         }
         if (is.character(constrain)) {
-            if (length(constrain) > 1)
+            if (length(constrain) == 1)
                 constrain <- grep(constrain, coefNames)
             else
                 constrain <- match(constrain, coefNames)

@@ -45,7 +45,7 @@ print(sum((barley$y - fit)^2 / (fit * (1-fit))^2))
 ##  (1989, p331), which differs slightly from Wedderburn's reported value.
 
 ##  Fit the biplot model as in Gabriel (1998, p694)
-biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
+biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
                    family = wedderburn, data = barley)
 barleySVD <- svd(matrix(biplotModel$predictors, 10, 9))
 A <- sweep(barleySVD$v, 2, sqrt(barleySVD$d), "*")[, 1:2]

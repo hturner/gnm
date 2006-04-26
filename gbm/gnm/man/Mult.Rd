@@ -80,7 +80,7 @@ yield.scaled <- wheat$yield * sqrt(3/1000)
 treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
                           wheat$N, sep = ""))
 bilinear2 <- gnm(yield.scaled ~ year + treatment +
-                 Mult(year, treatment, multiplicity = 2),
+                 instances(Mult(year, treatment), 2),
                  family = gaussian, data = wheat)
 }
 }

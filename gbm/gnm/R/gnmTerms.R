@@ -9,7 +9,20 @@ gnmTerms <- function(formula, eliminate, data)
         formula <- formula(terms.formula(tmp, simplify = TRUE,
                                          keep.order = TRUE, data = data))
     }
-    fullTerms <- terms(formula, keep.order = TRUE, data = data)
+    fullTerms <- terms(formula, specials = "instances", keep.order = TRUE,
+                       data = data)
+    inst <- attr(fullTerms, "specials")$instances
+    if (length(inst)) {
+        instLabels <- rownames(attr(fullTerms, "factors"))[inst]
+        instLabels2 <- sapply(instLabels, function(x) eval(parse(text = x)))
+        formula <- deparse(formula, width.cutoff = 500)
+        formula <- as.formula(mapply(gsub, instLabels, instLabels2,
+                                     MoreArgs = list(formula, fixed = TRUE)))
+        fullTerms <- terms(formula, keep.order = TRUE, data = data)
+    }
+    else
+        attr(fullTerms, "specials") <- NULL
+    
     if (is.empty.model(fullTerms))
         return(structure(formula, terms = fullTerms))
 
@@ -39,11 +52,10 @@ gnmTerms <- function(formula, eliminate, data)
     offsetList <- lapply(labelList, attr, "offset")
 
     if (attr(fullTerms, "response") < 1) response <- NULL
-    else response <- evalq(attr(fullTerms, "variables")[[2]])
+    else response <- attr(fullTerms, "variables")[[2]]
     
-    predictorOffset <- sapply((attr(fullTerms,
-                                    "variables")[-1])[attr(fullTerms,
-                                                           "offset")], deparse)
+    predictorOffset <- rownames(attr(fullTerms, "factors")
+                                )[attr(fullTerms, "offset")]
     
     structure(reformulate(c(unlist(labelList), unlist(offsetList),
                             predictorOffset), response),
@@ -51,6 +63,5 @@ gnmTerms <- function(formula, eliminate, data)
               offset = offsetList,
               parsedLabels = labelList,
               prefixLabels = prefixLabels,
-              instanceLabels = instanceLabels,
               .Environment = environment(formula))
 }

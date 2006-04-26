@@ -178,7 +178,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             theta[constrain] <- constrainTo
             factorList <- modelTools$factorList(theta)
             X <- modelTools$localDesignFunction(theta, factorList)
-            attr(X, "assign") <- modelTools$termAssign
         }
         if (method == "model.matrix") return(X)
 

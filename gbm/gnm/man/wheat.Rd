@@ -68,12 +68,12 @@ svdStart <- residSVD(mainEffects, year, treatment, 3)
 bilinear1 <- update(asGnm(mainEffects), . ~ . + 
                     Mult(year - 1, treatment - 1),
                     start = c(coef(mainEffects), svdStart[,1]))
-bilinear2 <- update(asGnm(mainEffects), . ~ . + 
-                    Mult(year - 1, treatment - 1, multiplicity = 2),
-                    start = c(coef(mainEffects), svdStart[,1:2]))
-bilinear3 <- update(asGnm(mainEffects), . ~ . + 
-                    Mult(year - 1, treatment - 1, multiplicity = 3),
-                    start = c(coef(mainEffects), svdStart[,1:3]))
+bilinear2 <- update(bilinear1, . ~ . + 
+                    Mult(year - 1, treatment - 1, inst = 2),
+                    start = c(coef(bilinear1), svdStart[,2]))
+bilinear3 <- update(bilinear2, . ~ . + 
+                    Mult(year - 1, treatment - 1, inst = 3),
+                    start = c(coef(bilinear2), svdStart[,3]))
 anova(mainEffects, bilinear1, bilinear2, bilinear3)
 
 ##  Examine the extent to which, say, mTF explains the first bilinear term

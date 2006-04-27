@@ -103,17 +103,17 @@ plot(coef(House2001model1)[memberParameters], col = partyColors,
 ## Can do the same thing with two dimensions, but gnm takes around 40
 ## slow iterations to converge (there are more than 600 parameters): 
 \dontrun{
-Start2 <- residSVD(baseModel, rollCall, member, d = 2)
+Start2 <- residSVD(House2001model1, rollCall, member, d = 1)
 House2001model2 <- gnm(
-              voteAdj ~ Mult(rollCall - 1, member - 1, multiplicity = 2),
+              voteAdj ~ instances(Mult(rollCall - 1, member - 1), 2),
               eliminate = rollCall,
               family = binomial, data = House2001f,
               na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
               start = Start2, lsMethod = "qr")
 ## Deviance is 1545.166, df = 5257
 ##
-memberParameters1 <- grep("Mult1.*member", names(coef(House2001model2)))
-memberParameters2 <- grep("Mult2.*member", names(coef(House2001model2)))
+memberParameters1 <- grep("1\\.2", names(coef(House2001model2)))
+memberParameters2 <- grep("2\\.2", names(coef(House2001model2)))
 plot(coef(House2001model2)[memberParameters1],
      coef(House2001model2)[memberParameters2],
      col = partyColors,

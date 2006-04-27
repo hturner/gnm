@@ -936,7 +936,7 @@ first level. These differences can be represented by a contrast matrix as
 follows:
 <<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
-contrCoefs <- coefs[grep("Mult1.Factor1", coefs)]
+contrCoefs <- coefs[grep("religion.*\\.1", coefs)]
 nContr <- length(contrCoefs)
 contrMatrix <- matrix(0, length(coefs), nContr,
                       dimnames = list(coefs, contrCoefs))
@@ -958,7 +958,7 @@ multiplier in the interaction is not sufficient to make the parameters in that
 multiplier estimable:
 <<Check_estimability_2>>=
 coefs <- names(coef(doubleUnidiff))
-contrCoefs <- coefs[grep("Mult1.Factor2", coefs)]
+contrCoefs <- coefs[grep("religion.*\\.2", coefs)]
 nContr <- length(contrCoefs)
 contrMatrix <- matrix(0, length(coefs), length(contrCoefs),
                       dimnames = list(coefs, contrCoefs))
@@ -977,7 +977,7 @@ standard errors. Returning to the example of the first constituent multiplier
 in the first multiplicative interaction term, the differences between each
 election and the first can be obtained as follows:
 <<Get_contrasts_1>>=
-coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
+coefs.of.interest <- grep("religion.*\\.1", names(coef(doubleUnidiff)))
 print(myContrasts <- getContrasts(doubleUnidiff, coefs.of.interest))
 @ %def
 Visualization of estimated contrasts using
@@ -993,7 +993,7 @@ plot(myContrasts[[1]], levelNames = paste("election", c(1,2,3,4)),
 %(religion-vote association) multiplier produces the
 %following result:
 %<<Get_contrasts_2>>=
-%coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
+%coefs.of.interest <- grep("religion.*\\.2", names(coef(doubleUnidiff)))
 %getContrasts(doubleUnidiff, coefs.of.interest)
 %@ %def
 
@@ -1026,7 +1026,8 @@ in the bilinear term:
 <<residSVD>>=
 emptyModel <- gnm(y ~ -1, family = wedderburn, data = barley)
 biplotStart <- residSVD(emptyModel, barley$site, barley$variety, d = 2)
-biplotModel <- gnm(y ~ -1 + Mult(-1 + site, -1 + variety, multiplicity = 2), family = wedderburn, data = barley, start =  biplotStart)
+biplotModel <- gnm(y ~ -1 + instances Mult(-1 + site, -1 + variety), 2), 
+family = wedderburn, data = barley, start =  biplotStart)
 @ %def
 In this instance, the
 use of purposive (as opposed to the default, random) starting values
@@ -1130,7 +1131,7 @@ Extra instances of the multiplicative interaction can be specified by the
 fitted to the \Robject{mentalHealth} data as follows
 <<RC2_model>>=
 RC2model <- gnm(count ~ SES + MHS +
-                Mult(-1 + SES, -1 + MHS, multiplicity = 2),
+                instances(Mult(-1 + SES, -1 + MHS), 2),
                 family = poisson, data = mentalHealth)
 RC2model
 @
@@ -1548,7 +1549,7 @@ data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
                data = yaish, subset = (dest != 7))
-coefs.of.interest <- grep("Mult1.Factor1", names(coef(unidiff)))
+coefs.of.interest <- grep("\\.1", names(coef(unidiff)))
 coef(unidiff)[coefs.of.interest]
 @ %def
 The \Robject{coefs.of.interest} are the multipliers of the association between
@@ -1583,9 +1584,9 @@ doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)
 getContrasts(doubleUnidiff,
-             rev(grep("Mult1.Factor1", names(coef(doubleUnidiff)))))
+             rev(grep("religion.*\\.1", names(coef(doubleUnidiff)))))
 getContrasts(doubleUnidiff,
-             rev(grep("Mult2.Factor1", names(coef(doubleUnidiff)))))
+             rev(grep("class.*\\.1", names(coef(doubleUnidiff)))))
 @ %def
 
 \subsection{Generalized Additive Main Effects and
@@ -1671,7 +1672,7 @@ follows:
 <<Biplot_model>>=
 data(barley)
 set.seed(1)
-biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
+biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
                    family = wedderburn, data = barley)
 @ %def
 using the \Rfunction{wedderburn} family function introduced in Section
@@ -1906,7 +1907,7 @@ x <- 1:100
 y <- exp(- x / 10) + 2 * exp(- x / 50)
 set.seed(1)
 saved.fits <- list()
-for (i in 1:100) saved.fits[[i]] <- gnm(y ~ Mult(Exp(x), multiplicity = 2), verbose = FALSE)
+for (i in 1:100) saved.fits[[i]] <- gnm(y ~ instances(Exp(x), 2), verbose = FALSE)
 unlist(sapply(saved.fits, deviance))
 @ %def
 In this instance, only 13 of the 100 calls to \Rfunction{gnm} have successfully
@@ -1947,7 +1948,7 @@ found.  In the present example, knowing that $\gamma_1$ and $\gamma_2$ should
 both be small and negative, we might perhaps have tried
 @
 <<doubleExp3>>=
-gnm(y ~ Mult(Exp(x), multiplicity = 2), start = c(NA, NA, -0.1, NA, -0.1), verbose = FALSE)
+gnm(y ~ instances(Exp(x), 2), start = c(NA, NA, -0.1, NA, -0.1), verbose = FALSE)
 @ %def
 which reliably yields the (globally optimal) perfect fit to the data.
 

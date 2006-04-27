@@ -48,19 +48,19 @@ set.seed(1)
 ## Fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest),
-               ofInterest = "Mult.*educ", family = poisson,
+               ofInterest = "\\.1", family = poisson,
                data = yaish,  subset = (dest != 7))
 ## Deviance is 200.3
 
 ## Get estimate and se for the contrast between educ4 and educ5 in the
 ## UNIDIFF multiplier
-ofInterest(unidiff) <- "Mult.*educ[4,5]"
+ofInterest(unidiff) <- "\\.1educ[4,5]"
 mycontrast <- numeric(length(coef(unidiff)))
 mycontrast[ofInterest(unidiff)] <- c(1, -1)
 se(unidiff, mycontrast)
 
 ## Get all of the contrasts with educ5 in the UNIDIFF multipliers
-ofInterest(unidiff) <- "Mult.*educ"
+ofInterest(unidiff) <- "\\.1"
 getContrasts(unidiff, rev(ofInterest(unidiff)))
 }
 \keyword{ models }

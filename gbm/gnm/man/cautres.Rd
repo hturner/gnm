@@ -32,7 +32,7 @@ doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
 ##  Deviance should be 133.04
 
 ##  Examine the multipliers of the class-vote log odds ratios
-coefs.of.interest <- grep("Mult2.*election", names(coef(doubleUnidiff)))
+coefs.of.interest <- grep("class.*\\.1", names(coef(doubleUnidiff)))
 coef(doubleUnidiff)[coefs.of.interest]
 ##  Mult2.Factor1.election1 Mult2.Factor1.election2 
 ##               -0.5724370               0.1092972 

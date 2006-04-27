@@ -128,7 +128,7 @@ cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest),
-               ofInterest = "Mult.*educ", constrain = "Mult.*educ1",
+               ofInterest = "1.1", constrain = "1.1educ1",
                family = poisson, data = yaish, subset = (dest != 7))
 prof <- profile(unidiff, trace = TRUE)
 plot(prof)
@@ -143,7 +143,7 @@ backPainLong <- expandCategorical(backPain, "pain")
 
 oneDimensional <- gnm(count ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
                       eliminate = id,  family = "poisson",
-                      constrain = "Mult.*worse|x1", constrainTo = c(0, 1),
+                      constrain = "\\.1painworse$|x1$", constrainTo = c(0, 1),
                       data = backPainLong)
 prof <- profile(oneDimensional, trace = TRUE)
 plot(prof)

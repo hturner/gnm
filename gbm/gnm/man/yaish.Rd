@@ -34,7 +34,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
 ## Deviance should be 200.3, 116 d.f.
 ##
 ## Look at the multipliers of the orig:dest association:
-coefs.of.interest <- grep("Mult1.*educ", names(coef(unidiff)))
+coefs.of.interest <- grep("\\.1", names(coef(unidiff)))
 coef(unidiff)[coefs.of.interest]
 ##
 ## Mult1.Factor1.educ1 Mult1.Factor1.educ2 Mult1.Factor1.educ3 Mult1.Factor1.educ4 

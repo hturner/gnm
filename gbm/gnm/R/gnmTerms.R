@@ -38,15 +38,17 @@ gnmTerms <- function(formula, eliminate, data)
                           function(term) eval(parse(text = term))))
     prefixLabels <- sapply(labelList, attr, "prefix")
     instanceLabels <- sapply(labelList, attr, "instance")
+    instanceLabels[rev(duplicated(rev(prefixLabels)))
+                   & instanceLabels == ""] <- "1"
     nonsense <- tapply(instanceLabels, prefixLabels, FUN = function(x)
                 {nchar(x) && !identical(as.integer(x), seq(x))})
     if(any(nonsense))
-        stop("Specified instances of ", prefixLabels[nonsense],
+        stop("Specified instances of ", names(nonsense)[nonsense],
              " are not in sequence")
-    constituentLabels <- sapply(labelList, attr, "constituentLabels")
+    constituentLabels <- lapply(labelList, attr, "constituentLabels")
     prefixLabels <- unlist(mapply(paste, paste(prefixLabels, instanceLabels,
                                                sep = ""),
-                                  constituentLabels, sep = ""))
+                             constituentLabels, sep = ""))
 
     labelList <- unlistOneLevel(labelList)
     offsetList <- lapply(labelList, attr, "offset")

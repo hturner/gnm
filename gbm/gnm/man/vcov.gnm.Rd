@@ -58,7 +58,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
                data = yaish, subset = (dest != 7))
 ## Examine the education multipliers (differences on the log scale):
-ind <- grep("\\.1", names(coef(unidiff)))
+ind <- grep("Mult1.Factor1", names(coef(unidiff)))
 educMultipliers <- getContrasts(unidiff, rev(ind))[[1]]
 ## Now get the same standard errors using a suitable set of
 ## quadratic forms, by calling vcov() directly:

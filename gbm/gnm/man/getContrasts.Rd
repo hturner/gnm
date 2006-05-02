@@ -53,7 +53,7 @@ data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest),
-               ofInterest = "\\.1", family = poisson,
+               ofInterest = "Mult.*educ", family = poisson,
                data = yaish,  subset = (dest != 7))
 ## Examine the education multipliers (differences on the log scale):
 getContrasts(unidiff, sets = ofInterest(unidiff))

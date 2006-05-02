@@ -39,13 +39,13 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
                data = yaish, subset = (dest != 7))
 
-## Check whether multiplier contrast educ4 - educ5 is estimable
-educ4.pos <- grep("\\.1educ4", names(coef(unidiff)))
+## Check whether Mult1.Factor1.educ4 - Mult1.Factor1.educ5 is estimable
+educ4.pos <- grep("Mult1.Factor1.educ4", names(coef(unidiff)))
 checkEstimable(unidiff, c(rep(0, educ4.pos - 1), 1, -1,
                           rep(0, length(coef(unidiff)) - educ4.pos - 1)))
 ## should be TRUE
 
-## Check whether multiplier educ4 itself is estimable
+## Check whether Mult1.Factor1.educ4 itself is estimable
 checkEstimable(unidiff, c(rep(0, educ4.pos - 1), 1, 0,
                           rep(0, length(coef(unidiff)) - educ4.pos - 1)))
 ## should be FALSE -- only *differences* are identified here

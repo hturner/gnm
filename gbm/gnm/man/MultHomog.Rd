@@ -66,8 +66,11 @@ rc1 <- gnm(Freq ~ r + c + Diag(r,c) + Nonlin(MultHomog(r, c)),
            family = poisson, data = friend)
 rc1
 
-##  Extend to two-component interaction
-rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r, c), inst = 2))
+##  Extend to two-component interaction (using workaround)
+original <- as.data.frame(friend)
+r2 <- original$r
+c2 <- original$c
+rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r2, c2)))
 rc2
 }
 \keyword{ models }

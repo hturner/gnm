@@ -61,7 +61,7 @@
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest), 
-               ofInterest = "\\.1", constrain = "\\.1educ1",
+               ofInterest = "Mult.*educ", constrain = "Mult.*educ1",
                family = poisson, data = yaish, subset = (dest != 7))
 
 ## Letting 'confint' compute profile

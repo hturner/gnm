@@ -2,7 +2,7 @@
     function(gnmTerms, gnmData, x, termPredictors)
 {
     labelList <- attr(gnmTerms, "parsedLabels")
-    prefixLabels <- attr(gnmTerms, "prefixLabels")
+    prefixList <- attr(gnmTerms, "prefixLabels")
     offsetList <- lapply(attr(gnmTerms, "offset"), function(x) {
         if (!is.null(x))
             eval(parse(text = x), envir = gnmData)
@@ -18,7 +18,7 @@
                                    environment(gnmTerms))
             factorAssign[[i]] <-
                 structure(rep(i, length(termTools[[i]]$labels)),
-                          names = paste(prefixLabels[i], ".",
+                          names = paste(prefixList[[i]], ".",
                           termTools[[i]]$labels, sep = ""))
         }
         else {
@@ -26,7 +26,7 @@
                                                  keep.order = TRUE),
                                            data = gnmData)
             factorAssign[[i]] <- structure(rep(i, ncol(termTools[[i]])),
-                                           names = paste(prefixLabels[i],
+                                           names = paste(prefixList[[i]],
                                            colnames(termTools[[i]]), sep = ""))
         }
     }
@@ -50,7 +50,7 @@
     colnames(X) <- names(factorAssign)
     storage.mode(X) <- storage.mode(baseMatrix) <- "double"
 
-    multIndex <- gsub("[.][1-9]*$", ".", prefixLabels)
+    multIndex <- gsub("\.Factor[0-9]+\.", "", unlist(prefixList))
     multIndex[multIndex == ""] <- seq(sum(multIndex == ""))
     
     classID <- sapply(labelList, class)
@@ -65,6 +65,8 @@
     
     if (classID[1] == "Linear" || x || termPredictors) {
         termAssign <- unclass(as.factor(multIndex))[factorAssign]
+        if (!is.null(attr(gnmTerms, "termsID")))
+            termAssign <- attr(gnmTerms, "termsID")[termAssign]
         if (classID[1] == "Linear") {
             linearAssign <- attr(termTools[[1]], "assign")
             termAssign <- termAssign + max(linearAssign) - 1
@@ -104,6 +106,10 @@
         termPredictors <- lapply(split(factorList, multIndex), do.call,
                                  what = pprod)
         if (term) {
+            if (!is.null(attr(gnmTerms, "termsID")))
+                 termPredictors <- lapply(split(termPredictors,
+                                          attr(gnmTerms, "termsID")), do.call,
+                                          what = psum)
             termPredictors <- do.call("cbind", termPredictors)
             colnames(termPredictors) <-
                 c("(Intercept)"[attr(attr(gnmTerms, "terms"), "intercept")],

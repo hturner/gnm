@@ -1,4 +1,4 @@
-Mult <- function(..., inst = 1){
+Mult <- function(..., multiplicity = 1){
     badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
                            sapply(sys.calls(),
                                   function(x) as.character(x[[1]])[1]))
@@ -20,12 +20,7 @@ Mult <- function(..., inst = 1){
         else
             x
     })
-
-    Call <- sys.call()
-    Call$inst <- NULL
-    
-    structure(factorList, class = "Mult",
-              prefix = deparse(Call)[1], instance = paste("", inst, sep = ""),
-              constituentLabels = paste(".", seq(factorList), sep = ""))
+    class(factorList) <- "Mult"
+    rep(list(factorList), multiplicity)
 }
 

@@ -113,16 +113,17 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (method == "coefNames") return(coefNames)
         nParam <- length(coefNames)
 
-        if (identical(constrain, pick)) {
-            call$constrain <-
-                pick(coefNames[seq(coefNames) > nElim],
-                     setlabels = "Coefficients to constrain",
-                     title = "Constrain one or more gnm coefficients",
-                     items.label = "Model coefficients:",
-                     warn = "No parameters were specified to constrain",
-                     return.indices = FALSE)
-            constrain <- match(call$constrain, coefNames)
-        }
+        if (identical(constrain, "[?]"))
+            call$constrain <- constrain <- 
+                relimp:::pickFrom(coefNames,
+                                  subset = (nElim + 1):nParam,
+                                  setlabels = "Coefficients to constrain",
+                                  title =
+                                  "Constrain one or more gnm coefficients",
+                                  items.label = "Model coefficients:",
+                                  warningTest =
+                                  "No parameters were specified to constrain",
+                                  return.indices = TRUE)
         if (is.character(constrain)) {
             if (length(constrain) == 1)
                 constrain <- grep(constrain, coefNames)
@@ -135,28 +136,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                  "in the 'eliminate' term.")
         if (!all(constrain %in% seq(coefNames)))
             stop(" 'constrain' specifies non-existant parameters.")
-
-        if (is.null(ofInterest) && !missing(eliminate))
-            ofInterest <- (nElim + 1):length(coefNames)
-        if (identical(ofInterest, pick))
-            call$ofInterest <- ofInterest <- 
-                pick(coefNames, setlabels = "Coefficients of interest",
-                     title = "Select coefficients of interest",
-                     items.label = "Model coefficients:",
-                     warn =  paste("No subset of coefficients selected",
-                     "- assuming all are of interest."))
-        if (is.character(ofInterest)) {
-            if (length(ofInterest) == 1)
-                ofInterest <- grep(ofInterest, coefNames)
-            else
-                ofInterest <- match(ofInterest, coefNames)
-        }
-        if (!is.null(ofInterest)) {
-            if (!any(ofInterest %in% seq(coefNames))) 
-                stop("'ofInterest' does not specify a subset of the ",
-                     "coefficients.")
-            names(ofInterest) <- coefNames[ofInterest]
-        }
         
         if (is.null(start))
             start <- rep.int(NA, nParam)
@@ -221,6 +200,27 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         warning("Algorithm failed - no model could be estimated", call. = FALSE)
         return()
     }
+    
+    if (is.null(ofInterest) && !missing(eliminate))
+        ofInterest <- (nElim + 1):length(coefNames)
+    if (identical(ofInterest, "[?]"))
+        call$ofInterest <- ofInterest <- 
+            pickCoef(coefNames, 
+                     warningText = paste("No subset of coefficients selected",
+                     "- assuming all are of interest."))
+    if (is.character(ofInterest)) {
+        if (length(ofInterest) == 1)
+            ofInterest <- grep(ofInterest, coefNames)
+        else
+            ofInterest <- match(ofInterest, coefNames)
+    }
+    if (!is.null(ofInterest)) {
+        if (!any(ofInterest %in% seq(coefNames))) 
+            stop("'ofInterest' does not specify a subset of the ",
+                 "coefficients.")
+        names(ofInterest) <- coefNames[ofInterest]
+    }
+
     fit <- c(list(call = call, formula = formula,
                   terms = attr(modelTerms, "terms"), eliminate = nElim,
                   ofInterest = ofInterest,

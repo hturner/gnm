@@ -1,8 +1,8 @@
-Nonlin <- function(functionCall, inst = NULL){
+Nonlin <- function(functionCall){
     badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
                            sapply(sys.calls(),
                                   function(x) as.character(x[[1]])[1]))
-    if (!all(is.na(badCall)))
+    if (any(!is.na(badCall)))
         stop(paste("Nonlin terms are only valid in gnm models."))
     
     functionCall <- match.call()$functionCall
@@ -18,10 +18,5 @@ Nonlin <- function(functionCall, inst = NULL){
                                             expand.dots = FALSE)[["..."]])
     if (!length(variables))
         stop("No variables in term!")
-
-    Call <- sys.call()
-    Call$inst <- NULL
-        
-    structure(variables, call = functionCall, class = "Nonlin",
-              prefix = deparse(Call)[1], instance = paste("", inst, sep = ""))
+    structure(variables, class = "Nonlin", call = functionCall)
 }

@@ -936,7 +936,7 @@ first level. These differences can be represented by a contrast matrix as
 follows:
 <<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
-contrCoefs <- coefs[grep("religion.*\\.1", coefs)]
+contrCoefs <- coefs[grep("Mult1.Factor1", coefs)]
 nContr <- length(contrCoefs)
 contrMatrix <- matrix(0, length(coefs), nContr,
                       dimnames = list(coefs, contrCoefs))
@@ -958,7 +958,7 @@ multiplier in the interaction is not sufficient to make the parameters in that
 multiplier estimable:
 <<Check_estimability_2>>=
 coefs <- names(coef(doubleUnidiff))
-contrCoefs <- coefs[grep("religion.*\\.2", coefs)]
+contrCoefs <- coefs[grep("Mult1.Factor2", coefs)]
 nContr <- length(contrCoefs)
 contrMatrix <- matrix(0, length(coefs), length(contrCoefs),
                       dimnames = list(coefs, contrCoefs))
@@ -977,7 +977,7 @@ standard errors. Returning to the example of the first constituent multiplier
 in the first multiplicative interaction term, the differences between each
 election and the first can be obtained as follows:
 <<Get_contrasts_1>>=
-coefs.of.interest <- grep("religion.*\\.1", names(coef(doubleUnidiff)))
+coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
 print(myContrasts <- getContrasts(doubleUnidiff, coefs.of.interest))
 @ %def
 Visualization of estimated contrasts using
@@ -993,7 +993,7 @@ plot(myContrasts[[1]], levelNames = paste("election", c(1,2,3,4)),
 %(religion-vote association) multiplier produces the
 %following result:
 %<<Get_contrasts_2>>=
-%coefs.of.interest <- grep("religion.*\\.2", names(coef(doubleUnidiff)))
+%coefs.of.interest <- grep("Mult1.Factor2", names(coef(doubleUnidiff)))
 %getContrasts(doubleUnidiff, coefs.of.interest)
 %@ %def
 
@@ -1026,8 +1026,7 @@ in the bilinear term:
 <<residSVD>>=
 emptyModel <- gnm(y ~ -1, family = wedderburn, data = barley)
 biplotStart <- residSVD(emptyModel, barley$site, barley$variety, d = 2)
-biplotModel <- gnm(y ~ -1 + instances Mult(-1 + site, -1 + variety), 2), 
-family = wedderburn, data = barley, start =  biplotStart)
+biplotModel <- gnm(y ~ -1 + Mult(-1 + site, -1 + variety, multiplicity = 2), family = wedderburn, data = barley, start =  biplotStart)
 @ %def
 In this instance, the
 use of purposive (as opposed to the default, random) starting values
@@ -1131,7 +1130,7 @@ Extra instances of the multiplicative interaction can be specified by the
 fitted to the \Robject{mentalHealth} data as follows
 <<RC2_model>>=
 RC2model <- gnm(count ~ SES + MHS +
-                instances(Mult(-1 + SES, -1 + MHS), 2),
+                Mult(-1 + SES, -1 + MHS, multiplicity = 2),
                 family = poisson, data = mentalHealth)
 RC2model
 @
@@ -1549,7 +1548,7 @@ data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
                data = yaish, subset = (dest != 7))
-coefs.of.interest <- grep("\\.1", names(coef(unidiff)))
+coefs.of.interest <- grep("Mult1.Factor1", names(coef(unidiff)))
 coef(unidiff)[coefs.of.interest]
 @ %def
 The \Robject{coefs.of.interest} are the multipliers of the association between
@@ -1584,9 +1583,9 @@ doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)
 getContrasts(doubleUnidiff,
-             rev(grep("religion.*\\.1", names(coef(doubleUnidiff)))))
+             rev(grep("Mult1.Factor1", names(coef(doubleUnidiff)))))
 getContrasts(doubleUnidiff,
-             rev(grep("class.*\\.1", names(coef(doubleUnidiff)))))
+             rev(grep("Mult2.Factor1", names(coef(doubleUnidiff)))))
 @ %def
 
 \subsection{Generalized Additive Main Effects and
@@ -1672,7 +1671,7 @@ follows:
 <<Biplot_model>>=
 data(barley)
 set.seed(1)
-biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
+biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
                    family = wedderburn, data = barley)
 @ %def
 using the \Rfunction{wedderburn} family function introduced in Section
@@ -1835,124 +1834,6 @@ of the parameters to zero, either through the \Rfunarg{constrain} argument of
 getContrasts(oneDimensional, 6:11)
 @ %def
 giving the required estimates.
-
-\subsection{Exponential and sum-of-exponentials models for decay curves}
-
-A class of nonlinear functions which arise in various application contexts ---
-a notable one being pharmacokinetic studies -- involves one or more
-\emph{exponential decay} terms.  For example, a simple decay model with
-additive error is
-\begin{equation}
-\label{eq:singleExp}
-y = \alpha + \exp(\beta + \gamma x) + e
-\end{equation}
-(with $\gamma<0$), while a more complex (`sum of exponentials')
-model might involve two decay
-terms:
-\begin{equation}
-\label{eq:twoExp}
-y = \alpha + \exp(\beta_1 + \gamma_1 x) + \exp(\beta_2+ \gamma_2 x) + e.
-\end{equation}
-Estimation and inference with such models are typically not straightforward,
-partly on account of multiple local maxima in the likelihood
-\citep[e.g.,][Ch.3]{Sebe89}.  We illustrate the difficulties here, with a
-couple of artificial examples.  These examples will make clear the value
-of making repeated calls to \Rfunction{gnm}, in order to use different,
-randomly-generated parameterizations and starting values and thus improve
-the chances of locating both the global maximum and all local maxima of the
-likelihood.
-
-\subsubsection{Example: single exponential decay term}
-
-Let us first construct some data from model (\ref{eq:singleExp}).  For our
-illustrative purposes here, we will use \emph{noise-free} data, i.e., we
-fix the variance of $e$ to be zero; for the other parameters we will use
-$\alpha=0$, $\beta = 0$, $\gamma = -0.1$.
-@
-<<singleExp>>=
-x <- 1:100
-y <- exp(- x / 10)
-set.seed(1)
-saved.fits <- list()
-for (i in 1:100) saved.fits[[i]] <- gnm(y ~ Mult(Exp(x)), verbose = FALSE)
-summary(sapply(saved.fits, deviance))
-@ %def
-The \Robject{saved.fits} object thus contains the results of 100 calls to
-\Rfunction{gnm}, each using a different, randomly-generated starting value
-for the vector of parameters $(\alpha, \beta, \gamma)$.  The median deviance
-(in this case, residual sum of squares) among the 100 fits is
-essentially zero: in fact, 56 of these 100 fits reproduce the data exactly, to
-machine accuracy.
-The remaining 44 fits are all identical to one another, but they are far from
-globally optimal, with residual sum of squares 3.61: they result from
-divergence of $\hat\gamma$ to $+\infty$, and correspondingly of $\hat\beta$
-to $-\infty$, such that the fitted `curve' is in fact just a constant, with
-level equal to $\bar{y}=0.09508$.  For example, the very first of the 100 fits
-is of this kind:
-@
-<<singleExp2>>=
-saved.fits[[1]]
-@ %def
-The use of repeated calls to \Rfunction{gnm}, as here,
-allows the local and global
-maxima to be easily distinguished.
-
-\subsubsection{Example: sum of two exponentials}
-
-We can conduct a similar exercise based on the more complex model
-(\ref{eq:twoExp}):
-@
-<<doubleExp>>=
-x <- 1:100
-y <- exp(- x / 10) + 2 * exp(- x / 50)
-set.seed(1)
-saved.fits <- list()
-for (i in 1:100) saved.fits[[i]] <- gnm(y ~ instances(Exp(x), 2), verbose = FALSE)
-unlist(sapply(saved.fits, deviance))
-@ %def
-In this instance, only 13 of the 100 calls to \Rfunction{gnm} have successfully
-located a local maximum of the likelihood: in the remaining 87 cases the
-starting values generated were such that numerical problems resulted, and the
-fitting algorithm was abandoned (giving a \Robject{NULL} result).
-Among the 13 `successful'
-fits, it is evident that there are three distinct solutions (with respective
-residual sums of squares equal to 0.1589, 41.6, and essentially zero ---
-the last of these, the exact fit to the data, having been found 8 times
-out of the above 13).
-The two non-optimal local maxima here correspond to the best fit
-with a single exponential (which has residual sum of squares 0.1589) and to the
-fit with no dependence at all on $x$
-(residual sum of squares 41.6), as we can see
-by comparing with:
-\begin{center}
-@
-<<doubleExp2, fig = TRUE>>=
-singleExp <- gnm(y ~ Mult(Exp(x)), start = c(NA, NA, -0.1), verbose = FALSE)
-singleExp
-meanOnly <- gnm(y ~ 1, verbose = FALSE)
-meanOnly
-plot(x, y, main = "Two sub-optimal fits to a sum-of-exponentials curve")
-lines(x, fitted(singleExp))
-lines(x, fitted(meanOnly), lty = "dashed")
-@ %def
-\end{center}
-In this example, it is clear that
-even a small amount of noise in the data would make it
-practically impossible to distinguish between competing
-models containing one and two exponential-decay terms.
-
-In summary: the default \Rfunction{gnm} setting of randomly-chosen starting
-values is useful for identifying multiple local maxima in the likelihood; and
-reasonably good starting values are needed if the global maximum is to be
-found.  In the present example, knowing that $\gamma_1$ and $\gamma_2$ should
-both be small and negative, we might perhaps have tried
-@
-<<doubleExp3>>=
-gnm(y ~ instances(Exp(x), 2), start = c(NA, NA, -0.1, NA, -0.1), verbose = FALSE)
-@ %def
-which reliably yields the (globally optimal) perfect fit to the data.
-
-
 
 \newpage
 \appendix

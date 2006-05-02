@@ -45,7 +45,8 @@ RC1model <- update(indep, . ~ . + Mult(-1 + SES, -1 + MHS),
                    start = c(coef(indep), mult1), trace = TRUE)
 ##  Similarly for the RC2 model:
 mult2 <- residSVD(indep, SES, MHS, d = 2)
-RC2model <- update(indep, . ~ . + instances(Mult(-1 + SES, -1 + MHS), 2),
+RC2model <- update(indep,
+                   . ~ . + Mult(-1 + SES, -1 + MHS, multiplicity = 2),
                    start = c(coef(indep), mult2), trace = TRUE)
 ##
 ## See also example(House2001), where good starting values matter much more!

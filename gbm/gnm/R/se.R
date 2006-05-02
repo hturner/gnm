@@ -5,13 +5,10 @@ se <- function(model, estimate = ofInterest(model),
     l <- length(coefs)
     eliminate <- model$eliminate
     coefNames <- names(coefs)
-    if (identical(estimate, pick))
-        estimate <- pick(coefNames,
-                         setlabels = "Selected coefficients",
-                         title = paste("Estimate standard errors",
-                         "for one or more gnm coefficients"),
-                         items.label = "Model coefficients:",
-                         warn = "No subset of parameters was selected")
+    if (identical(estimate, "[?]"))
+        estimate <- pickCoef(model, subset = (nElim + 1):nParam,
+                             title = paste("Estimate standard errors",
+                             "for one or more gnm coefficients"))
     if (is.null(estimate))
         return(data.frame(coef(summary(model)))[, 1:2])
     else { 

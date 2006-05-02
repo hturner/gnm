@@ -40,14 +40,15 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                data = yaish, subset = (dest != 7))
 
 ## Check whether Mult1.Factor1.educ4 - Mult1.Factor1.educ5 is estimable
-educ4.pos <- grep("Mult1.Factor1.educ4", names(coef(unidiff)))
-checkEstimable(unidiff, c(rep(0, educ4.pos - 1), 1, -1,
-                          rep(0, length(coef(unidiff)) - educ4.pos - 1)))
+ofInterest(unidiff) <- pickCoef(unidiff, "Mult.*educ")
+mycontrast <- numeric(length(coef(unidiff)))
+mycontrast[ofInterest(unidiff)[4:5]] <- c(1, -1)
+checkEstimable(unidiff, mycontrast)
 ## should be TRUE
 
 ## Check whether Mult1.Factor1.educ4 itself is estimable
-checkEstimable(unidiff, c(rep(0, educ4.pos - 1), 1, 0,
-                          rep(0, length(coef(unidiff)) - educ4.pos - 1)))
+mycontrast[ofInterest(unidiff)[5]] <- 0
+checkEstimable(unidiff, mycontrast)
 ## should be FALSE -- only *differences* are identified here
 }
 \keyword{ models }

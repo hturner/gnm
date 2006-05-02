@@ -96,7 +96,7 @@ House2001model1 <- gnm(voteAdj ~ Mult(rollCall - 1, member - 1),
 ##
 ## Plot the members' positions as estimated in the model:
 ##
-memberParameters <- grep("member", names(coef(House2001model1)))
+memberParameters <- pickCoef(House2001model, "member")
 plot(coef(House2001model1)[memberParameters], col = partyColors,
      xlab = "Alphabetical index (Abercrombie 1 to Young 301)",
      ylab = "Member's relative position, one-dimensional model")
@@ -112,8 +112,8 @@ House2001model2 <- gnm(
               start = Start2, lsMethod = "qr")
 ## Deviance is 1545.166, df = 5257
 ##
-memberParameters1 <- grep("Mult1.*member", names(coef(House2001model2)))
-memberParameters2 <- grep("Mult2.*member", names(coef(House2001model2)))
+memberParameters1 <- pickCoef(House2001model, "Mult1.*member")
+memberParameters2 <- pickCoef(House2001model, "Mult2.*member")
 plot(coef(House2001model2)[memberParameters1],
      coef(House2001model2)[memberParameters2],
      col = partyColors,

@@ -23,6 +23,7 @@ A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
 }
 \examples{
 set.seed(1)
+
 data(yaish)
 
 ## Fit the "UNIDIFF" mobility model across education levels, leaving out
@@ -34,8 +35,8 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
 ## Deviance should be 200.3, 116 d.f.
 ##
 ## Look at the multipliers of the orig:dest association:
-coefs.of.interest <- grep("Mult1.*educ", names(coef(unidiff)))
-coef(unidiff)[coefs.of.interest]
+ofInterest(unidiff) <- pickCoef(unidiff, "Mult1.*educ")
+coef(unidiff)
 ##
 ## Mult1.Factor1.educ1 Mult1.Factor1.educ2 Mult1.Factor1.educ3 Mult1.Factor1.educ4 
 ##          -0.8150195          -1.0403857          -1.5584007          -1.8538570 
@@ -44,7 +45,7 @@ coef(unidiff)[coefs.of.interest]
 ##
 ## Get standard errors for the contrasts with educ1:
 ##
-getContrasts(unidiff, coefs.of.interest)
+getContrasts(unidiff, ofInterest(unidiff))
 ##
 ## [[1]]
 ##                       Estimate Std. Error   quasiSE   quasiVar

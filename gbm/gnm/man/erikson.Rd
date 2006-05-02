@@ -50,7 +50,9 @@ nullModel <- gnm(Freq ~ country*origin + country*destination,
 commonInteraction <- update(nullModel, ~ . + origin:destination)
 
 ## Full Interaction, different multiplier for each country
-multInteraction <- update(nullModel, ~ . + Mult(Exp(-1 + country), -1 + origin:destination))
+multInteraction <- update(nullModel,
+                          ~ . + Mult(Exp(-1 + country),
+                                     -1 + origin:destination))
 
 ### Create array of interaction levels as in Table 2 of Xie (1992)
 
@@ -68,12 +70,16 @@ levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
 commonTopo <- update(nullModel, ~ . +
                      Topo(origin, destination, spec = levelMatrix))
 
-## Interaction specified by levelMatrix, different multiplier for each country
+## Interaction specified by levelMatrix, different multiplier for
+## each country
 multTopo <- update(nullModel, ~ . +
-                   Mult(Exp(-1 + country), -1 + Topo(origin, destination, spec = levelMatrix)))
+                   Mult(Exp(-1 + country), -1 +
+                        Topo(origin, destination, spec = levelMatrix)))
 
-## Interaction specified by levelMatrix, different effects for each country
+## Interaction specified by levelMatrix, different effects for
+## each country
 separateTopo <- update(nullModel, ~ . +
-                       country:Topo(origin, destination, spec = levelMatrix))
+                       country:Topo(origin, destination,
+                                    spec = levelMatrix))
 }
 \keyword{datasets}

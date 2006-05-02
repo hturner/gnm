@@ -18,5 +18,7 @@ pickCoef <- function(object, regexpr = NULL, ...){
 
     if (!length(selection))
         selection <- NULL
+    else
+        names(selection) <- object[selection]
     selection
 }

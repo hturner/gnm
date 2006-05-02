@@ -54,13 +54,11 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
 
 ## Get estimate and se for the contrast between educ4 and educ5 in the
 ## UNIDIFF multiplier
-ofInterest(unidiff) <- "Mult.*educ[4,5]"
 mycontrast <- numeric(length(coef(unidiff)))
-mycontrast[ofInterest(unidiff)] <- c(1, -1)
+mycontrast[ofInterest(unidiff)[4:5]] <- c(1, -1)
 se(unidiff, mycontrast)
 
 ## Get all of the contrasts with educ5 in the UNIDIFF multipliers
-ofInterest(unidiff) <- "Mult.*educ"
 getContrasts(unidiff, rev(ofInterest(unidiff)))
 }
 \keyword{ models }

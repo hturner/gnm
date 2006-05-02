@@ -56,7 +56,8 @@
   (1-level)/2 and 1 - (1-level)/2 in \% (by default 2.5\% and 97.5\%).
 }
 \author{ Heather Turner }
-\seealso{ \code{\link{profile.gnm}}, \code{\link{gnm}}, \code{\link{profile.glm}}}
+\seealso{ \code{\link{profile.gnm}}, \code{\link{gnm}},
+  \code{\link[MASS]{profile.glm}}}
 \examples{
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
@@ -85,7 +86,9 @@ confint(prof, ofInterest(unidiff)[2:5])
 ## For 95\% confidence interval, need to estimate parameters for which
 ## z = +/- 1.96. Profile has not gone far enough for last two parameters
 range(prof[[4]]$z)
+## -1.566601  2.408650
 range(prof[[5]]$z)
+## -0.5751376  1.1989487
 }
 \keyword{ models }
 \keyword{ nonlinear }

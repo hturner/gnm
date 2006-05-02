@@ -61,12 +61,16 @@ nullModel <- gnm(Freq ~ country:origin + country:destination,
 commonTopo <- update(nullModel, ~ . +
                      Topo(origin, destination, spec = levelMatrix))
 
-## Interaction specified by levelMatrix, different multiplier for each country
+## Interaction specified by levelMatrix, different multiplier for
+## each country
 multTopo <- update(nullModel, ~ . +
-                   Mult(country, Topo(origin, destination, spec = levelMatrix)))
+                   Mult(Exp(-1 + country), -1 +
+                        Topo(origin, destination, spec = levelMatrix)))
 
-## Interaction specified by levelMatrix, different effects for each country
+## Interaction specified by levelMatrix, different effects for
+## each country
 separateTopo <- update(nullModel, ~ . +
-                       country:Topo(origin, destination, spec = levelMatrix))
+                       country:Topo(origin, destination,
+                                    spec = levelMatrix))
 }
 \keyword{ models }

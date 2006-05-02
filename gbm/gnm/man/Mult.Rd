@@ -64,6 +64,7 @@ Exp(multiplier)
          \code{\link{MultHomog}}}
 \examples{
 set.seed(1)
+
 ## Using 'Mult' with 'Exp' to constrain the first constituent multiplier
 data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels

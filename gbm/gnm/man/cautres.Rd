@@ -32,14 +32,14 @@ doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
 ##  Deviance should be 133.04
 
 ##  Examine the multipliers of the class-vote log odds ratios
-coefs.of.interest <- grep("Mult2.*election", names(coef(doubleUnidiff)))
-coef(doubleUnidiff)[coefs.of.interest]
+ofInterest(doubleUnidiff) <- pickCoef(doubleUnidiff, "Mult2.*election")
+coef(doubleUnidiff)
 ##  Mult2.Factor1.election1 Mult2.Factor1.election2 
 ##               -0.5724370               0.1092972 
 ##  Mult2.Factor1.election3 Mult2.Factor1.election4 
 ##               -0.1230682              -0.2105843
 ##  Re-parameterize by setting Mult2.Factor1.election1 to zero
-getContrasts(doubleUnidiff, coefs.of.interest)
+getContrasts(doubleUnidiff, ofInterest(doubleUnidiff))
 ## [[1]]
 ##                          estimate        SE    quasiSE    quasiVar
 ## Mult2.Factor1.election1 0.0000000 0.0000000 0.22854380 0.052232270
@@ -48,7 +48,7 @@ getContrasts(doubleUnidiff, coefs.of.interest)
 ## Mult2.Factor1.election4 0.3618262 0.2534753 0.10934823 0.011957035
 
 ##  Same thing but with election 4 as reference category:
-getContrasts(doubleUnidiff, rev(coefs.of.interest))
+getContrasts(doubleUnidiff, rev(ofInterest(doubleUnidiff)))
 ## [[1]]
 ##                            estimate        SE    quasiSE    quasiVar
 ## Mult2.Factor1.election4  0.00000000 0.0000000 0.10934823 0.011957035

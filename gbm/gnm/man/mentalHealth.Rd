@@ -37,15 +37,14 @@ mentalHealth$SES <- C(mentalHealth$SES, treatment)
 RC1model <- gnm(count ~ SES + MHS +
                 Mult(-1 + SES, -1 + MHS),
                 family = poisson, data = mentalHealth)
-## Row scores are parameters coef(RC1model)[10:15]
-## Column scores are coef(RC1model)[16:19]
-## -- both unnormalized in this parameterization of the model
+## Row scores and column scores are both unnormalized in this
+## parameterization of the model 
 
 ## The scores can be normalized as in Agresti's eqn (9.15):
 rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
 colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
-rowScores <- coef(RC1model)[10:15]
-colScores <- coef(RC1model)[16:19]
+rowScores <- coef(RC1model)[pickCoef(RC1model, "Mult1.*SES")]
+colScores <- coef(RC1model)[pickCoef(RC1model, "Mult1.*MHS")]
 rowScores <- rowScores - sum(rowScores * rowProbs)
 colScores <- colScores - sum(colScores * colProbs)
 beta1 <- sqrt(sum(rowScores^2 * rowProbs))

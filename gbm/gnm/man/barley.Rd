@@ -37,14 +37,14 @@ and the Gauss-Newton method.  \emph{Biometrika} \bold{61}, 439--47.
 data(barley)
 set.seed(1)
 
-##  Fit Wedderburn's logit model with variance proportional to [mu(1-mu)]^2
+###  Fit Wedderburn's logit model with variance proportional to [mu(1-mu)]^2
 logitModel <- glm(y ~ site + variety, family = wedderburn, data = barley)
 fit <- fitted(logitModel)
 print(sum((barley$y - fit)^2 / (fit * (1-fit))^2))
 ##  Agrees with the chi-squared value reported in McCullagh and Nelder 
 ##  (1989, p331), which differs slightly from Wedderburn's reported value.
 
-##  Fit the biplot model as in Gabriel (1998, p694)
+###  Fit the biplot model as in Gabriel (1998, p694)
 biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
                    family = wedderburn, data = barley)
 barleySVD <- svd(matrix(biplotModel$predictors, 10, 9))

@@ -56,7 +56,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                ofInterest = "Mult.*educ", family = poisson,
                data = yaish,  subset = (dest != 7))
 ## Examine the education multipliers (differences on the log scale):
-getContrasts(unidiff, sets = ofInterest(unidiff))
+getContrasts(unidiff, ofInterest(unidiff))
 }
 \keyword{ models }
 \keyword{ regression }

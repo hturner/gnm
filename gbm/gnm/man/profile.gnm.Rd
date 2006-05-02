@@ -111,12 +111,12 @@ cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
-classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
+classMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination)), 
                      family = binomial, data = voting)
-wts <- prop.table(exp(coef(classMobility)[2:3]))
-classMobility <- update(classMobility, constrain = "Dref.*[.]origin|1",
+wts <- prop.table(exp(coef(classMobility)))
+classMobility <- update(classMobility, constrain = "\\.(origin|1)",
                         constrainTo = c(log(wts[1]), 0))
-sum(exp(parameters(classMobility))[2:3]) #=1
+sum(exp(parameters(classMobility))[1:2]) #=1
 prof <- profile(classMobility, trace = TRUE)
 plot(prof)
 ## confint similar to MLE +/- 1.96*s.e. 
@@ -143,7 +143,7 @@ backPainLong <- expandCategorical(backPain, "pain")
 
 oneDimensional <- gnm(count ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
                       eliminate = id,  family = "poisson",
-                      constrain = "Mult.*worse|x1", constrainTo = c(0, 1),
+                      constrain = "Mult.*(worse|x1)", constrainTo = c(0, 1),
                       data = backPainLong)
 prof <- profile(oneDimensional, trace = TRUE)
 plot(prof)

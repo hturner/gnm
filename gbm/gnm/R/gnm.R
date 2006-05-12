@@ -158,7 +158,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             factorList <- modelTools$factorList(theta)
             X <- modelTools$localDesignFunction(theta, factorList)
         }
-        if (method == "model.matrix") return(X)
+        if (method == "model.matrix")
+            return(structure(X, assign = modelTools$termAssign))
 
         if (!is.numeric(tolerance) || tolerance <= 0)
             stop("value of 'tolerance' must be > 0")

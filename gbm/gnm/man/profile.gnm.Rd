@@ -121,7 +121,7 @@ prof <- profile(classMobility, trace = TRUE)
 plot(prof)
 ## confint similar to MLE +/- 1.96*s.e. 
 confint(prof, trace = TRUE)
-coefData <- se(RChomog)
+coefData <- se(classMobility)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ## An example showing asymptotic deviance
@@ -134,7 +134,7 @@ prof <- profile(unidiff, trace = TRUE)
 plot(prof)
 ## clearly not quadratic for Mult1.Factor1.educ4 or Mult1.Factor1.educ5!
 confint(prof)
-coefData <- se(RChomog)
+coefData <- se(unidiff)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ## A far from quadratic example, also with eliminated parameters
@@ -149,7 +149,7 @@ prof <- profile(oneDimensional, trace = TRUE)
 plot(prof)
 ## not quadratic for any non-eliminated parameter
 confint(prof)
-coefData <- se(RChomog)
+coefData <- se(oneDimensional)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 }

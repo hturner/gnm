@@ -200,27 +200,28 @@ a particular structure:
 \end{verbatim}
 The models of table 3 of \citet{Xie92} can now be fitted as follows:
 \begin{verbatim}
+> ### Fit the levels models given in Table 3 of Xie (1992)
 > ## Null association between origin and destination
 > nullModel <- gnm(Freq ~ country:origin + country:destination,
-+                  family = poisson, data = erikson)
-Running main iterations.
-Done
++                  family = poisson, data = erikson, verbose = FALSE)
+>
 > ## Interaction specified by levelMatrix, common to all countries
 > commonTopo <- update(nullModel, ~ . +
-+                      Topo(origin, destination, spec = levelMatrix))
-Running main iterations.
-Done
-> ## Interaction specified by levelMatrix, different multiplier for each country
-> multTopo <- update(nullModel, ~ . + Mult(country, Topo(origin, destination,
-+                                       spec = levelMatrix)))
-Running start-up iterations..
-Running main iterations.......
-Done
-> ## Interaction specified by levelMatrix, different effects for each country
++                      Topo(origin, destination, spec = levelMatrix),
++                      verbose = FALSE)
+>
+> ## Interaction specified by levelMatrix, different multiplier for
+> ## each country
+> multTopo <- update(nullModel, ~ . +
++                    Mult(Exp(-1 + country), -1 +
++                         Topo(origin, destination, spec = levelMatrix)),
++                    verbose = FALSE)
+>
+> ## Interaction specified by levelMatrix, different effects for
+> ## each country
 > separateTopo <- update(nullModel, ~ . +
-+                        country:Topo(origin, destination, spec = levelMatrix))
-Running main iterations.
-Done
++                        country:Topo(origin, destination, spec = levelMatrix), 
++                        verbose = FALSE)
 >
 > anova(nullModel, commonTopo, multTopo, separateTopo)
 Analysis of Deviance Table
@@ -261,6 +262,7 @@ This agrees with the chi-squared value reported on page 331 of \citet{McCu89},
 which differs slightly from Wedderburn's own reported value.
 
 \subsection{\Rfunction{termPredictors}}
+\label{termPredictors}
 
 The generic function \Rfunction{termPredictors} extracts a term-by-term
 decomposition of the predictor function in a linear, generalized linear or
@@ -713,17 +715,21 @@ these terms are aliased with the higher order multiplicative interaction, which
 is unconstrained.
 
 Standard errors are only meaningful for identified parameters and hence the
-output of \Rfunction{summary.gnm} will show clearly which coefficients are
+output of \Rmethod{summary.gnm} will show clearly which coefficients are
 estimable:
 <<Summarize_model>>=
 summary(RChomog2)
 @
 
-Additional constraints may be specified through the \Rfunarg{constrain} argument
-of \Rfunction{gnm}. This argument indicates parameters that are to be
-constrained to zero in the fitting process. Parameters can be indicated by a
-logical vector, a numeric vector of indices, a character vector of names or,
-if \texttt{constrain = "pick"} they can be selected through a \emph{Tk} dialog.
+Additional constraints may be specified through the \Rfunarg{constrain} and
+\Rfunarg{constrainTo} arguments of \Rfunction{gnm}. These arguments specify
+respectively parameters that are to be constrained in the fitting process and
+the values to which they should be constrained. Parameters may be specified by a
+regular expression to match against the parameter names, a numeric vector of
+indices, a character vector of names, or, if \texttt{constrain = "[?]"} they can
+be selected through a \emph{Tk} dialog. The values to constrain to should be
+specified by a numeric vector; if \Rfunarg{constrainTo} is missing, constrained
+parameters will be set to zero.
 
 In the case above, constraining one level of the homogeneous multiplicative
 factor is sufficient to make the parameters of the nonlinear term
@@ -741,9 +747,9 @@ identical(coef(RChomogConstrained1), coef(RChomogConstrained2))
 gives the same results regardless of the random seed set beforehand.
 
 It is not usually so straightforward to constrain all the parameters in a
-generalized nonlinear model. However, the simple constraints imposed by
-\Rfunarg{constrain} are often sufficient to make particular coefficients of
-interest identifiable. The functions \Rfunction{checkEstimable} or
+generalized nonlinear model. However use of \Rfunarg{constrain} in conjunction
+with \Rfunarg{constrainTo} is usually sufficient to make coefficients of
+interest identifiable . The functions \Rfunction{checkEstimable} or 
 \Rfunction{getContrasts}, described in Section \ref{Methods},
 may be used to check whether particular combinations of parameters
 are estimable.
@@ -751,14 +757,11 @@ are estimable.
 \subsection{Using \Rfunarg{eliminate}}
 \label{eliminate}
 
-Sometimes a model will include a ``stratification'' factor which identifies
-units for which a unit-specific intercept should be estimated. It is often the
-case that such factors have a large number of levels and though they are
-required in the model, are not of direct interest in themselves.
-
-The \Rfunarg{eliminate} argument of \Rfunction{gnm} can be used to specify a
-stratification factor in a model, so that this factor can be handled more
-efficiently. The factor should be specified by an expression, which is
+If a model contains a factor with hundreds of levels, the standard estimation
+procedure is not the best way to estimate the levels of that factor. The
+\Rfunarg{eliminate} argument of \Rfunction{gnm} can be used to specify such a
+factor in a model, so that this factor can be handled more efficiently. The
+factor should be specified by an expression, which is 
 interpreted as the first term in the model formula, replacing any intercept
 term. So in terms of the structure of the model,
 \begin{alltt}
@@ -768,12 +771,16 @@ is equivalent to
 \begin{alltt}
     gnm(mu ~ -1 + strata1:strata2 + A + B + Mult(A, B))
 \end{alltt}
-However specifying a stratification factor through \Rfunarg{eliminate} has two
+However specifying a factor through \Rfunarg{eliminate} has two
 advantages over the standard specification. First, the structure of the
 eliminated factor is exploited so that computational speed is improved ---
-substantially so if the number of eliminated parameters is large. Second, the
-eliminated parameters are excluded from summaries of the model so that the
-focus is on the coefficients of interest.
+substantially so if the number of eliminated parameters is large. Second, unless
+otherwise specified through the \Rfunarg{ofInterest} argument to
+\Rfunction{gnm}, the \Robject{ofInterest} component of the returned model object
+indexes the non-eliminated parameters. Thus eliminated parameters are excluded
+from printed model summaries and default slection by \Rclass{gnm} methods. See
+Section \ref{ofInterest} for further details on the use of the
+\Robject{ofInterest} component.  
 
 The \Rfunarg{eliminate} feature is useful, for example, when
 multinomial-response models are fitted by using the well known equivalence
@@ -810,7 +817,8 @@ run more quickly than \Rfunction{glm}.  The speed advantage\footnote{In fact
 than this: its
 implementation in the current version of \Rpackage{gnm} is really just a proof
 of concept, and it has not yet been optimized for speed.} increases with
-the number of eliminated parameters (here 500).  The eliminated parameters do
+the number of eliminated parameters (here 500).  Since the default behaviour has
+not been overrided by an \Rfunarg{ofInterest} argument, the eliminated parameters do
 not appear in printed model summaries:
 <<eliminate3>>=
 summary(temp.gnm)
@@ -856,14 +864,14 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
-              anova	&	hatvalues	&	rstandard	\\
-              case.names	&	labels	&	summary	\\
-              coef	&	logLik	&	variable.names	\\
-              cooks.distance	&	model.frame	&	vcov	\\
-              deviance	&	model.matrix	&	weights	\\
-              extractAIC	&	plot	&		\\
+              anova	&	formula	&	profile	
+              case.names	&	hatvalues	&	residuals	\\
+              coef	&	labels	&	rstandard	\\
+              cooks.distance	&	logLik	&	summary	\\
+              confint	&	model.frame	&	variable.names	\\
+              deviance	&	model.matrix	&	vcov	\\
+              extractAIC	&	plot	&	weights	\\
               family	&	print	&		\\
-              formula	&	residuals	&		\\
           \end{tabular*}
         }
     \end{fbox}
@@ -878,13 +886,12 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{4.5cm}{@{\extracolsep{\fill}}ll@{\extracolsep{\fill}}}
-              add1	&	dummy.coef	\\
-              alias	&	effects	\\
-              confint	&	influence	\\
+              add1	&	effects	\\
+              alias	&	influence	\\
               dfbeta	&	kappa	\\
               dfbetas	&	predict	\\
               drop1	&	proj	\\
-
+              dummy.coef	&		\\
           \end{tabular*}
         }
     \end{fbox}
@@ -900,14 +907,121 @@ In addition to the accessor functions shown in Figure \ref{glm.lm}, the
 \Rfunction{termPredictors}
 that has methods for objects of class \Rclass{gnm}, \Rclass{glm} and
 \Rclass{lm}. This function returns the additive contribution of each term to
-the predictor.  See Section \ref{glms} for an example of its use.
+the predictor.  See Section \ref{termPredictors} for an example of its use.
 
-Most of the methods listed in Figure \ref{glm.lm} can be used as they would be
+Most of the functions listed in Figure \ref{glm.lm} can be used as they would be
 for \Rclass{glm} or \Rclass{lm} objects, however care must be taken with
-\Rmethod{vcov}, as the variance-covariance matrix will depend on the
+\Rmethod{vcov.gnm}, as the variance-covariance matrix will depend on the
 parameterization of the model. In particular, standard errors calculated using
 the variance-covariance matrix will only be valid for parameters or contrasts
-that are estimable!
+that are estimable! 
+
+Similarly, \Rmethod{profile.gnm} and \Rmethod{confint.gnm} are only applicable
+to estimable parameters. The deviance function of a generalised nonlinear model
+can sometimes be far from quadratic and \Rmethod{profile.gnm} attempts to detect
+assymetry or asymptotic behaviour in order to return a sufficient profile for a
+given parameter. As an example, consider the following model, described later in
+Section \ref{Unidiff}: 
+ 
+<<Profile_unidiff>>=
+data(yaish)
+unidiff <- gnm(Freq ~ educ*orig + educ*dest +
+               Mult(Exp(-1 + educ), -1 + orig:dest),
+               constrain = "Mult.*educ1", family = poisson, data = yaish, 
+               subset = (dest != 7))      
+prof <- profile(unidiff, which = 61:65, trace = TRUE)
+@ %def
+
+If the deviance is quadratic in a given parameter, the profile trace will be
+linear. We can plot the profile traces as follows:
+
+\begin{center}
+<<profilePlot, fig = TRUE, echo = FALSE>>=
+plot(prof)
+title(list("Profile traces for the multipliers of the orig:dest association",
+           cex = 0.9))
+@ %def
+\end{center}
+
+From these plots we can see that the deviance is approximately quadratic
+in \Robject{Mult1.Factor1.educ2}, assymetric in \Robject{Mult1.Factor1.educ3}
+and \Robject{Mult1.Factor1.educ4} and asymptotic in
+\Robject{Mult1.Factor1.educ5}. When the deviance is approximately quadratic in a
+given parameter, \Rmethod{profile.gnm} uses the same stepsize for profiling
+above and below the original estimate:
+
+\begin{verbatim}
+> diff(prof[[2]]$par.vals[, "Mult1.Factor1.educ2"])
+ [1] 0.1053072 0.1053072 0.1053072 0.1053072 0.1053072 0.1053072 0.1053072
+ [8] 0.1053072 0.1053072 0.1053072
+\end{verbatim}
+
+When the deviance is assymmetric, \Rmethod{profile.gnm} uses different
+stepsizes to accomadate the skew:
+\begin{verbatim}
+> diff(prof[[4]]$par.vals[, "Mult1.Factor1.educ4"])
+ [1] 0.2018393 0.2018393 0.2018393 0.2018393 0.2018393 0.2018393 0.2018393
+ [8] 0.2018393 0.2018393 0.2243673 0.2243673 0.2243673 0.2243673 0.2243673
+\end{verbatim}
+
+Finally, the presence of an asymptote is recorded in the \Robject{"asymptote"}
+attribute of the returned profile:
+\begin{verbatim}
+> attr(prof[[5]], "asymptote")
+[1]  TRUE FALSE
+\end{verbatim}
+
+This information is used by \Rmethod{confint.gnm} to return infinite limits for
+confidence intervals, as appropriate:
+@ 
+<<Confint_unidiff>>=
+confint(prof)
+@ %def 
+
+\subsection{\Rfunction{ofInterest} and \Rfunction{pickCoef}}
+
+It is quite common for a statistical model to have a large number of
+parameters, yet only a subset of these parameters be of interest when it
+comes to interpreting the model. An example of this has been seen in
+Section~\ref{eliminate}, where a factor is required in the model to represent
+a structural aspect of the data and the estimated factor effects have no
+substantive interpretation. Yet even for models in which all parameters
+correspond to variables of interest, the focus may still be on a subset of
+parameters, typically in higher order terms.
+
+The \Rfunarg{ofInterest} argument to \Rfunction{gnm} allows the user to specify
+a subset of the parameters which are of interest, so that \Rclass{gnm} methods
+will focus on these parameters. In particular, printed model summaries will only
+show the parameters of interest, whilst methods for which a subset of parameters
+may be selected will by default select the parameters of interest, or where this
+may not be appropriate, provide a Tk dialog for selection from the parameters of
+interest. Parameters may be specified to the \Rfunarg{ofInterest} argument by a
+regular expression to match against parameter names, a numeric vector of
+indices, a character vector of names, or, if \texttt{ofInterest = "[?]"} they can
+be selected through a \emph{Tk} dialog. 
+
+The information regarding the parameters of interest is held in the
+\Robject{ofInterest} component of \Rclass{gnm} objects, which is a named vector
+of numeric indices, or \Robject{NULL} if all parameters are of interest. This
+component may be accessed or replaced using \Rfunction{ofInterest} or
+\Rfunction{ofInterest<-} respectively. 
+
+The \Rfunction{pickCoef} function provides a simple way to obtain the indices of
+coefficients from any model object. It takes the model object as its first
+argument and has an optional \Rfunarg{regexp} argument. If a regular expression
+is passed to \Rfunarg{regexp}, the coefficients are selected by matching this
+regular expression against the coefficient names. Otherwise, coefficients may be
+selected via a Tk dialog. 
+
+So, returning to the example from the last section, if we had set
+\Robject{ofInterest} to index the education multipliers as follows
+@ 
+<<ofInterest>>=
+ofInterest(unidiff) <- pickCoef(unidiff, "Mult1.*educ")
+@ %def 
+then it would not have been necessary to specify the \Rfunarg{which} argument of
+\Rfunction{profile} as these parameters would have been selected by default.
+
 
 \subsection{\Rfunction{checkEstimable}}
 \label{checkEstimable}
@@ -977,15 +1091,15 @@ standard errors. Returning to the example of the first constituent multiplier
 in the first multiplicative interaction term, the differences between each
 election and the first can be obtained as follows:
 <<Get_contrasts_1>>=
-coefs.of.interest <- grep("Mult1.Factor1", names(coef(doubleUnidiff)))
-print(myContrasts <- getContrasts(doubleUnidiff, coefs.of.interest))
+myContrasts <- getContrasts(doubleUnidiff, pickCoef(doubleUnidiff, "Mult1.Factor1")
+myContrasts
 @ %def
 Visualization of estimated contrasts using
 `quasi standard errors' \citep{Firt03,FirtMene04} is achieved by plotting
 the resulting object:
 \begin{center}
 <<qvplot, fig = TRUE>>=
-plot(myContrasts[[1]], levelNames = paste("election", c(1,2,3,4)),
+plot(myContrasts[[1]], levelNames = paste("election", 1:4),
   main = "Relative strength of religion-vote association, log scale")
 @
 \end{center}
@@ -1546,18 +1660,18 @@ the education levels.  We omit the sub-table which corresponds to level 7 of
 set.seed(1)
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
+               Mult(Exp(-1 + educ), -1 + orig:dest), 
+               ofInterest = "Mult1.Factor1", family = poisson,
                data = yaish, subset = (dest != 7))
-coefs.of.interest <- grep("Mult1.Factor1", names(coef(unidiff)))
-coef(unidiff)[coefs.of.interest]
+coef(unidiff)
 @ %def
-The \Robject{coefs.of.interest} are the multipliers of the association between
-the social class of father and son. We can contrast each multiplier to that of
-the lowest education level and obtain the standard errors for these parameters
-as follows:
+The \Robject{ofInterest} component has been set to index the multipliers of the
+association between the social class of father and son. We can contrast each
+multiplier to that of the lowest education level and obtain the standard errors
+for these parameters as follows:
 @
 <<Unidiff_contrasts>>=
-getContrasts(unidiff, coefs.of.interest)
+getContrasts(unidiff, ofInterest(unidiff))
 @ %def
 
 Four-way contingency tables may sometimes be described by a
@@ -1582,10 +1696,8 @@ doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(-1 + election), religion:vote) +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)
-getContrasts(doubleUnidiff,
-             rev(grep("Mult1.Factor1", names(coef(doubleUnidiff)))))
-getContrasts(doubleUnidiff,
-             rev(grep("Mult2.Factor1", names(coef(doubleUnidiff)))))
+getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, "Mult1.Factor1")))
+getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, "Mult2.Factor1")))
 @ %def
 
 \subsection{Generalized Additive Main Effects and
@@ -1601,7 +1713,7 @@ row and column scores, indicating the importance of the component, or axis.
 
 For cell means $\mu_{rc}$ a GAMMI-K model has the form
 \[
-g(\mu_{rc}) = \alpha_r + \beta_c + \sum_{k=1}^K
+g(\mu_{rc}) d= \alpha_r + \beta_c + \sum_{k=1}^K
 \sigma_k\gamma_{kr}\delta_{kc},
 \]
 in which $g$ is a link function, $\alpha_r$ and $\beta_c$ are the row and column
@@ -1781,8 +1893,9 @@ oneDimensional <- gnm(count ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
                       eliminate = id, family = "poisson", data = backPainLong)
 oneDimensional
 @ %def
-using \Rfunarg{eliminate} to handle the \Robject{id} factor so that these
-structural parameters do not appear in the model summaries. This model is one
+specifying the \Robject{id} factor through \Rfunarg{eliminate} so that the 101
+\Robject{id} effects are estimated more efficiently and are excluded from
+printed model summaries by default. This model is one
 dimensional since it involves only one function of $\mathbf{x} = (x1, x2,
 x3)$. We can compare this model to one with category-specific coefficents of the
 $x$ variables, as may be used for a qualitative categorical response:
@@ -1831,7 +1944,7 @@ of the parameters to zero, either through the \Rfunarg{constrain} argument of
 \Rfunction{gnm} or with \Rfunction{getContrasts}:
 @
 <<get_slopes>>=
-getContrasts(oneDimensional, 6:11)
+getContrasts(oneDimensional, pickCoef(oneDimensional, "Mult.*pain"))
 @ %def
 giving the required estimates.
 
@@ -1871,17 +1984,34 @@ We list here, for easy reference, all of the user-level functions in the
     \midrule
     \multicolumn{3}{l}{\textbf{Methods and Accessor Functions}}	\\
     \midrule
+    &	\Rmethod{confint.gnm}	&  compute confidence intervals of \Rclass{gnm} parameters
+                                   based on the profiled deviance	\\
+    &   \Rmethod{confint.profile.gnm}   & compute confidence intervals of
+                                          parameters from a \Rclass{profile.gnm} object \\
+    &	\Rmethod{profile.gnm}	&  profile deviance for parameters in a
+                                   \Rclass{gnm} model \\
+    &   \Rmethod{plot.profile.gnm}      & plot profile traces from a
+                                          \Rclass{profile.gnm} object \\
     &	\Rmethod{summary.gnm}	&  summarize \Rclass{gnm} fits	\\
+    &	\Rfunction{residSVD}	&  multiplicative approximation of
+                                   model residuals	\\
+    &   \Rfunction{exitInfo}    &  print numerical details of last iteration
+                                   when  \Rfunction{gnm} has not converged \\
+    &   \Rfunction{ofInterest}  &  extract the \Robject{ofInterest} component of
+                                   a \Rclass{gnm} object \\
+    &   \Rfunction{ofInterest<-}        &  replace the \Robject{ofInterest} component of
+                                           a \Rclass{gnm} object \\
+    &   \Rfunction{parameters}  &  get model parameters from a \Rclass{gnm}
+                                   object, including parameters that were
+                                   constrained \\
+    &   \Rfunction{pickCoef}    &  get indices of model parameters \\
     &	\Rfunction{getContrasts}	&  estimate contrasts and their
-                                           standard errors for parameters in a gnm
+                                           standard errors for parameters in a \Rclass{gnm}
                                            model \\
     &	\Rfunction{checkEstimable}	&  check whether one or more parameter
                                            combinations in a
                                            \Rclass{gnm} model is identified \\
-    &   \Rfunction{exitInfo}    &  print numerical details of last iteration
-                                   when  \Rfunction{gnm} has not converged \\
-    &	\Rfunction{residSVD}	&  multiplicative approximation of
-                                   model residuals	\\
+    
     &	\Rfunction{se}	&  get standard errors of linear parameter
                            combinations in \Rclass{gnm} models	\\
     &	\Rfunction{termPredictors}	&  (\emph{generic}) extract term

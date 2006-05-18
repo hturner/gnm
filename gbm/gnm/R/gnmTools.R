@@ -12,7 +12,17 @@
 
     nFactor <- length(labelList)
     termTools <- factorAssign <- vector(mode = "list", length = nFactor)
-    for (i in seq(labelList)) {
+    linear <- sapply(labelList, inherits, "Linear")
+    if (any(linear)) {
+        tmp <- model.matrix(terms(reformulate(c(0, unlist(labelList[linear]))),
+                                  keep.order = TRUE), data = gnmData)
+        tmpAssign <- attr(tmp, "assign") + !attr(tmp, "assign")[1]
+        tmpAssign <- structure(which(linear)[tmpAssign], names = colnames(tmp))
+        termTools[linear] <- lapply(split(1:ncol(tmp), tmpAssign),
+                                    function(i, M) M[, i , drop = FALSE], tmp)
+        factorAssign[linear] <- split(tmpAssign, tmpAssign)
+    }
+    for (i in which(!linear)) {
         if (inherits(labelList[[i]], "Nonlin")) {
             termTools[[i]] <- eval(attr(labelList[[i]], "call"), gnmData,
                                    environment(gnmTerms))
@@ -43,10 +53,11 @@
     z <- tmp
     storage.mode(first) <- storage.mode(last) <- storage.mode(a) <-
         storage.mode(z) <- "integer"
-    X <- baseMatrix <- matrix(1, nrow = nr, ncol = nTheta)
+    baseMatrix <- matrix(1, nrow = nr, ncol = nTheta)
     for (i in seq(termTools)) 
         if (is.matrix(termTools[[i]]))
             baseMatrix[, factorAssign == i] <- termTools[[i]]
+    X <- baseMatrix
     colnames(X) <- names(factorAssign)
     storage.mode(X) <- storage.mode(baseMatrix) <- "double"
 
@@ -59,19 +70,13 @@
     thetaClassID[plugInStart] <- "plugInStart"
     thetaClassID <- structure(thetaClassID[factorAssign],
                                 names = names(factorAssign))
-
-    if (classID[1] == "Linear")
-        X[, factorAssign == 1] <- termTools[[1]]
     
-    if (classID[1] == "Linear" || x || termPredictors) {
-        termAssign <- unclass(as.factor(multIndex))[factorAssign]
+    if (x || termPredictors) {
+        termAssign <- c(factor(multIndex, unique(multIndex)))[factorAssign]
         if (!is.null(attr(gnmTerms, "termsID")))
             termAssign <- attr(gnmTerms, "termsID")[termAssign]
-        if (classID[1] == "Linear") {
-            linearAssign <- attr(termTools[[1]], "assign")
-            termAssign <- termAssign + max(linearAssign) - 1
-            termAssign[thetaClassID == "Linear"] <- linearAssign
-        }
+        if (attr(attr(gnmTerms, "terms"), "intercept"))
+            termAssign <- termAssign - 1
     }
 
     start <- function(scale = 0.1) {
@@ -96,9 +101,6 @@
                              NAOK = TRUE))
         }
         factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
-        if (term && classID[[1]] == "Linear")
-            factorList[[1]] <- t(rowsum(t(termTools[[1]]) * parameterList[[1]],
-                                        linearAssign))
         unlistOneLevel(factorList)
     }
     
@@ -149,6 +151,7 @@
             if (exists("v", inherits = FALSE)) {
                 .Call("subprod", X, baseMatrix, as.double(v),
                       first[i1], last[i2], nr, PACKAGE = "gnm")
+                rm(v)
             }
         }
         if(!is.null(ind)) X[, a, drop = FALSE]

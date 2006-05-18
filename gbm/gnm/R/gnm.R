@@ -100,7 +100,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                      matrix(, nrow(modelData), 0))
     }
     else {
-        onlyLin <- nElim == 0 && identical(attr(modelTerms, "prefixLabels"), "")
+        onlyLin <- nElim == 0 && all(attr(modelTerms, "prefixLabels") == "")
         if (onlyLin) {
             X <- model.matrix(modelTerms, modelData)
             coefNames <- colnames(X)
@@ -157,9 +157,10 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             theta[constrain] <- constrainTo
             factorList <- modelTools$factorList(theta)
             X <- modelTools$localDesignFunction(theta, factorList)
+            attr(X, "assign") <- modelTools$termAssign
         }
         if (method == "model.matrix")
-            return(structure(X, assign = modelTools$termAssign))
+            return(X)
 
         if (!is.numeric(tolerance) || tolerance <= 0)
             stop("value of 'tolerance' must be > 0")

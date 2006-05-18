@@ -96,7 +96,7 @@ House2001model1 <- gnm(voteAdj ~ Mult(rollCall - 1, member - 1),
 ##
 ## Plot the members' positions as estimated in the model:
 ##
-memberParameters <- pickCoef(House2001model, "member")
+memberParameters <- pickCoef(House2001model1, "member")
 plot(coef(House2001model1)[memberParameters], col = partyColors,
      xlab = "Alphabetical index (Abercrombie 1 to Young 301)",
      ylab = "Member's relative position, one-dimensional model")

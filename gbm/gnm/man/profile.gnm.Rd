@@ -113,9 +113,9 @@ count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination)), 
                      family = binomial, data = voting)
-wts <- prop.table(exp(coef(classMobility)))
-classMobility <- update(classMobility, constrain = "\\.(origin|1)",
-                        constrainTo = c(log(wts[1]), 0))
+wts <- prop.table(exp(coef(classMobility))[1:2])
+classMobility <- update(classMobility, constrain = "\[.]origin",
+                        constrainTo = log(wts[1]))
 sum(exp(parameters(classMobility))[1:2]) #=1
 prof <- profile(classMobility, trace = TRUE)
 plot(prof)

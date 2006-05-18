@@ -162,7 +162,7 @@ A
 ## Pearson chi-squared: 425.3389 
 ## Residual df:         576
 
-prop.table(exp(coef(A)[pickCoef(A, "\\.MOPLM|\\.FOPLF")]))
+prop.table(exp(coef(A)[pickCoef(A, "[.]MOPLM|[.]FOPLF")]))
 ## weights as in Table 4
 ## Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF 
 ##               0.4225734                0.5774266
@@ -221,7 +221,7 @@ prop.table(exp(baseline)) ## weights for MFCM = 0
 ##                                                 0.7446585 
 ## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept) 
 ##                                                 0.2553415
-MFCM1 <- coef(F)[pickCoef(F, "\\.MFCM")]
+MFCM1 <- coef(F)[pickCoef(F, "[.]MFCM")]
 prop.table(exp(MFCM1 + baseline)) ## weights for MFCM = 1
 ## Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM 
 ##                                         0.02977851 

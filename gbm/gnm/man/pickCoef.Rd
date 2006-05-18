@@ -44,6 +44,9 @@ getContrasts(unidiff, ofInterest(unidiff))
 
 ### Use to pick out coefficients relating to different groups
 data(voting)
+## reconstruct counts voting Labour/non-Labour
+count <- with(voting, percentage/100 * total)
+yvar <- cbind(count, voting$total - count)
 ## create factors indicating movement in and out of salariat (class 1)
 upward <- with(voting, origin != 1 & destination == 1)
 downward <- with(voting, origin == 1 & destination != 1)

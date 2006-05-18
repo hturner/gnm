@@ -864,7 +864,7 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
-              anova	&	formula	&	profile	
+              anova	&	formula	&	profile	\\
               case.names	&	hatvalues	&	residuals	\\
               coef	&	labels	&	rstandard	\\
               cooks.distance	&	logLik	&	summary	\\
@@ -979,6 +979,7 @@ confint(prof)
 @ %def 
 
 \subsection{\Rfunction{ofInterest} and \Rfunction{pickCoef}}
+\label{ofInterest}
 
 It is quite common for a statistical model to have a large number of
 parameters, yet only a subset of these parameters be of interest when it
@@ -1091,7 +1092,8 @@ standard errors. Returning to the example of the first constituent multiplier
 in the first multiplicative interaction term, the differences between each
 election and the first can be obtained as follows:
 <<Get_contrasts_1>>=
-myContrasts <- getContrasts(doubleUnidiff, pickCoef(doubleUnidiff, "Mult1.Factor1")
+myContrasts <- getContrasts(doubleUnidiff, 
+                            pickCoef(doubleUnidiff, "Mult1.Factor1"))
 myContrasts
 @ %def
 Visualization of estimated contrasts using

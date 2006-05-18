@@ -1,4 +1,4 @@
-gnmTerms <- function(formula, eliminate, data)
+gnmTerms <- function(formula, eliminate = NULL, data = NULL)
 {
     if (!is.null(substitute(e, list(e = eliminate)))) {
         tmp <- .Internal(update.formula(formula,
@@ -13,16 +13,17 @@ gnmTerms <- function(formula, eliminate, data)
     if (is.empty.model(fullTerms))
         return(structure(formula, terms = fullTerms))
 
-    labelList <- attr(fullTerms, "term.labels")
-    intercept <- attr(fullTerms, "intercept")
-    
-    nonlinear <- is.element(seq(labelList),
-                            grep("(Mult|Nonlin)[[:space:]]*\\(", labelList))
-    labelList <- c(list(structure(c(intercept, labelList[!nonlinear]),
-                                  class = "Linear"))[any(
-                                  c(intercept, !nonlinear))],
-                   lapply(labelList[nonlinear],
-                          function(term) eval(parse(text = term))))
+    labelList <- as.list(attr(fullTerms, "term.labels"))
+    if (attr(fullTerms, "intercept") == 1)
+        labelList <- c("1", labelList)
+
+    for (i in seq(labelList)) {
+        if (length(grep("(Mult|Nonlin)[[:space:]]*\\(", labelList[[i]])))
+            labelList[[i]] <- eval(parse(text = labelList[[i]]))
+        else
+            labelList[[i]] <- list(structure(labelList[[i]], class = "Linear"))
+    }
+
     multiplicity <- sapply(labelList, function(x)
                            ifelse(is.list(x), length(x), 1))
     if (any(multiplicity > 1))

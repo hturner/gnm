@@ -53,6 +53,8 @@ iterated singular value decomposition.  \emph{Computational Statistics
   and Data Analysis} \bold{50}, 21--39.
 }
 \examples{
+\dontrun{
+## This example takes some while to run 
 data(House2001)
 summary(House2001)
 ## Put the votes in a matrix, and discard members with too many NAs etc:
@@ -102,7 +104,6 @@ plot(coef(House2001model1)[memberParameters], col = partyColors,
      ylab = "Member's relative position, one-dimensional model")
 ## Can do the same thing with two dimensions, but gnm takes around 40
 ## slow iterations to converge (there are more than 600 parameters): 
-\dontrun{
 Start2 <- residSVD(baseModel, rollCall, member, d = 2)
 House2001model2 <- gnm(
               voteAdj ~ Mult(rollCall - 1, member - 1, multiplicity = 2),

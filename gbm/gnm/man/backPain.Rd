@@ -55,6 +55,9 @@ oneDimensional <- update(noRelationship,
 ## obtain identifiable contrasts & id possibly indistinguishable slopes
 getContrasts(oneDimensional, pickCoef(oneDimensional, "Mult.*pain"))
 
+\dontrun{
+## (this part not needed for package testing)
+## fit simpler models and compare 
 .pain <- backPainLong$pain
 
 levels(.pain)[2:3] <- paste(levels(.pain)[2:3], collapse = " | ")
@@ -85,5 +88,6 @@ logLikMultinom <- function(model){
 models <- c("threeDimensional", "oneDimensional", "noRelationship",
             "fiveGroups", "fourGroups", "threeGroups", "sixCategories")
 t(sapply(models, logLikMultinom))
+}
 }
 \keyword{datasets}

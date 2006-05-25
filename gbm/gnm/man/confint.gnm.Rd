@@ -59,6 +59,17 @@
 \seealso{ \code{\link{profile.gnm}}, \code{\link{gnm}},
   \code{\link[MASS]{profile.glm}}}
 \examples{
+### Example in which profiling doesn't take too long
+data(voting)
+count <- with(voting, percentage/100 * total)
+yvar <- cbind(count, voting$total - count)
+classMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination)),
+                     constrain = "[.]origin", family = binomial,
+                     data = voting)
+confint(classMobility, trace = TRUE)
+
+\dontrun{
+### Profiling takes much longer here, but example more interesting!
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest), 
@@ -89,6 +100,7 @@ range(prof[[4]]$z)
 ## -1.566601  2.408650
 range(prof[[5]]$z)
 ## -0.5751376  1.1989487
+}
 }
 \keyword{ models }
 \keyword{ nonlinear }

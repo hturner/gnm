@@ -54,7 +54,6 @@ through a Professorial Fellowship.}\\
 
 \section{Introduction}
 
-
 The \Rpackage{gnm} package provides facilities for fitting
 \emph{generalized nonlinear models}, i.e., regression models in which the
 link-transformed mean is described as a sum of predictor terms, some of
@@ -806,11 +805,17 @@ recommended package \Rpackage{nnet}).  But fitting as here via the
 `Poisson trick' allows the model to be elaborated within the \Rpackage{gnm}
 framework using \Rfunction{Mult} or \Rfunction{Nonlin} terms.}, using
 either \Rfunction{glm} or \Rfunction{gnm}:
-<<eliminate2>>=
-system.time(temp.glm <- glm(counts ~ rowID + resp + resp:x, family = poisson))
-system.time(temp.gnm <- gnm(counts ~ resp + resp:x, eliminate = rowID, family = poisson))
-c(deviance(temp.glm), deviance(temp.gnm))
-@
+\begin{verbatim}
+> ## Timings on a Pentium 4 3.2GHz, with Windows XP
+> system.time(temp.glm <- glm(counts ~ rowID + resp + resp:x, 
+                              family = poisson))[3]
+[1] 6.09
+> system.time(temp.gnm <- gnm(counts ~ resp + resp:x, eliminate = rowID, 
++                             family = poisson, verbose = FALSE))[3]
+[1] 4.63
+> c(deviance(temp.glm), deviance(temp.gnm))
+[1] 1196.341 1196.341
+\end{verbatim}
 Here the use of \Rfunarg{eliminate} causes the \Rfunction{gnm} calculations to
 run more quickly than \Rfunction{glm}.  The speed advantage\footnote{In fact
 \Rfunarg{eliminate} is, in principle, capable of much bigger time savings
@@ -820,22 +825,54 @@ of concept, and it has not yet been optimized for speed.} increases with
 the number of eliminated parameters (here 500).  Since the default behaviour has
 not been overrided by an \Rfunarg{ofInterest} argument, the eliminated parameters do
 not appear in printed model summaries:
-<<eliminate3>>=
-summary(temp.gnm)
-@
+\begin{verbatim}
+> summary(temp.gnm)
+
+Call:
+gnm(formula = counts ~ resp + resp:x, eliminate = rowID, family = poisson, 
+    verbose = FALSE)
+
+
+Deviance Residuals: 
+      Min         1Q     Median         3Q        Max  
+-2.266771  -0.766713  -0.001797   0.375404   2.854789  
+
+Coefficients of interest:
+         Estimate Std. Error z value Pr(>|z|)
+resp2   -1.964709   0.047995  -40.94   <2e-16
+resp3   -1.290139   0.036258  -35.58   <2e-16
+resp1:x -0.009198         NA      NA       NA
+resp2:x -0.017474         NA      NA       NA
+resp3:x  0.045449         NA      NA       NA
+
+(Dispersion parameter for poisson family taken to be 1)
+
+Std. Error is NA where coefficient has been constrained or is unidentified
+
+Residual deviance: 1196.3 on 996 degrees of freedom
+AIC: 5982.5
+
+Number of iterations: 3
+\end{verbatim}
 As usual, \Rfunction{gnm} has worked here with an over-parameterized
 representation of the model.  The parameterization used by \Rfunction{glm}
 can be seen from
-<<eliminate4>>=
-coef(temp.glm)[-(1:500)]
-@
+\begin{verbatim}
+> coef(temp.glm)[-(1:500)]
+      resp2       resp3     resp1:x     resp2:x     resp3:x 
+-1.96470932 -1.29013922 -0.05464657 -0.06292256          NA 
+\end{verbatim}
 (we will not print the full summary of \Robject{temp.glm} here, since it gives
 details of all 505 parameters!), which easily can be obtained, if required,
-by using
-\Rfunction{getContrasts}:
-<<eliminate5>>=
-getContrasts(temp.gnm, 5:3)
-@
+by using \Rfunction{getContrasts}:
+\begin{verbatim}
+> getContrasts(temp.gnm, ofInterest(temp.gnm)[5:3])
+[[1]]
+           estimate         SE    quasiSE     quasiVar
+resp3:x  0.00000000 0.00000000 0.03169678 0.0010046856
+resp2:x -0.06292256 0.05462786 0.04449177 0.0019795175
+resp1:x -0.05464657 0.03580324 0.01664891 0.0002771862
+\end{verbatim}
 
 The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
@@ -923,24 +960,20 @@ assymetry or asymptotic behaviour in order to return a sufficient profile for a
 given parameter. As an example, consider the following model, described later in
 Section \ref{Unidiff}: 
  
-<<Profile_unidiff>>=
+\begin{verbatim}
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest),
                constrain = "Mult.*educ1", family = poisson, data = yaish, 
                subset = (dest != 7))      
 prof <- profile(unidiff, which = 61:65, trace = TRUE)
-@ %def
+\end{verbatim}
 
 If the deviance is quadratic in a given parameter, the profile trace will be
 linear. We can plot the profile traces as follows:
 
 \begin{center}
-<<profilePlot, fig = TRUE, echo = FALSE>>=
-plot(prof)
-title(list("Profile traces for the multipliers of the orig:dest association",
-           cex = 0.9))
-@ %def
+\includegraphics{gnmOverview-profilePlot.pdf}
 \end{center}
 
 From these plots we can see that the deviance is approximately quadratic
@@ -973,10 +1006,9 @@ attribute of the returned profile:
 
 This information is used by \Rmethod{confint.gnm} to return infinite limits for
 confidence intervals, as appropriate:
-@ 
-<<Confint_unidiff>>=
+\begin{verbatim}
 confint(prof)
-@ %def 
+\end{verbatim}
 
 \subsection{\Rfunction{ofInterest} and \Rfunction{pickCoef}}
 \label{ofInterest}
@@ -1016,10 +1048,9 @@ selected via a Tk dialog.
 
 So, returning to the example from the last section, if we had set
 \Robject{ofInterest} to index the education multipliers as follows
-@ 
-<<ofInterest>>=
+\begin{verbatim}
 ofInterest(unidiff) <- pickCoef(unidiff, "Mult1.*educ")
-@ %def 
+\end{verbatim} 
 then it would not have been necessary to specify the \Rfunarg{which} argument of
 \Rfunction{profile} as these parameters would have been selected by default.
 

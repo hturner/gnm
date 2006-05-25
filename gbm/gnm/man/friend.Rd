@@ -23,17 +23,19 @@
 set.seed(1)
 data(friend)
 
-##  Fit an association model with homogeneous row-column effects
+###  Fit an association model with homogeneous row-column effects
 rc1 <- gnm(Freq ~ r + c + Diag(r,c) + Nonlin(MultHomog(r, c)),
            family = poisson, data = friend)
 rc1
 
-##  Extend to two-component interaction (using workaround)
+\dontrun{
+###  (Takes a little while to run)
+###  Extend to two-component interaction (using workaround)
 original <- as.data.frame(friend)
 r2 <- original$r
 c2 <- original$c
 rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r2, c2)))
 rc2
-
+}
 }
 \keyword{datasets}

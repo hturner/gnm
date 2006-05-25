@@ -93,8 +93,24 @@ profile.gnm(fitted, which = ofInterest(fitted), alpha = 0.05, maxsteps = 10,
 \seealso{ \code{\link{confint.gnm}},  \code{\link{gnm}},
   \code{\link[MASS]{profile.glm}}, \code{\link{ofInterest}}
 }
-  \examples{
-## Example in which deviance is near quadratic
+\examples{
+### Example in which deviance is near quadratic
+data(voting)
+count <- with(voting, percentage/100 * total)
+yvar <- cbind(count, voting$total - count)
+classMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination)),
+                     constrain = "[.]origin", family = binomial,
+                     data = voting)
+prof <- profile(classMobility, trace = TRUE)
+plot(prof)
+## confint similar to MLE +/- 1.96*s.e. 
+confint(prof, trace = TRUE)
+coefData <- se(classMobility)
+cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
+
+\dontrun{
+### These examples take longer to run
+### Another near quadratic example
 data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Nonlin(MultHomog(origin, destination)),
@@ -107,24 +123,7 @@ confint(prof)
 coefData <- se(RChomog)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
-## Another near quadratic example, with more complex constraints
-data(voting)
-count <- with(voting, percentage/100 * total)
-yvar <- cbind(count, voting$total - count)
-classMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination)), 
-                     family = binomial, data = voting)
-wts <- prop.table(exp(coef(classMobility))[1:2])
-classMobility <- update(classMobility, constrain = "\[.]origin",
-                        constrainTo = log(wts[1]))
-sum(exp(parameters(classMobility))[1:2]) #=1
-prof <- profile(classMobility, trace = TRUE)
-plot(prof)
-## confint similar to MLE +/- 1.96*s.e. 
-confint(prof, trace = TRUE)
-coefData <- se(classMobility)
-cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
-
-## An example showing asymptotic deviance
+### An example showing asymptotic deviance
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest),
@@ -134,10 +133,16 @@ prof <- profile(unidiff, trace = TRUE)
 plot(prof)
 ## clearly not quadratic for Mult1.Factor1.educ4 or Mult1.Factor1.educ5!
 confint(prof)
-coefData <- se(unidiff)
-cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
+##                          2.5 \%     97.5 \%
+## Mult1.Factor1.educ1         NA         NA
+## Mult1.Factor1.educ2 -0.5978901  0.1022447
+## Mult1.Factor1.educ3 -1.4836854 -0.2362378
+## Mult1.Factor1.educ4 -2.5792398 -0.2953420
+## Mult1.Factor1.educ5       -Inf -0.7006889
+## coefData <- se(unidiff)
+## cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
-## A far from quadratic example, also with eliminated parameters
+### A far from quadratic example, also with eliminated parameters
 data(backPain)
 backPainLong <- expandCategorical(backPain, "pain")
 
@@ -151,7 +156,7 @@ plot(prof)
 confint(prof)
 coefData <- se(oneDimensional)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
-
+}
 }
 \keyword{ models }
 \keyword{ nonlinear }

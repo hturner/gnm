@@ -759,7 +759,7 @@ are estimable.
 When a model contains the additive effect of a factor which has a large
 number of levels, the iterative algorithm by which maximum likelihood estimates
 are computed can usually
-be accelerated by use of the \Rfunarg[eliminate} argument to \Rfunction{gnm}.
+be accelerated by use of the \Rfunarg{eliminate} argument to \Rfunction{gnm}.
 
 The factor to be \Rfunarg{eliminate}-d should be specified by an expression,
 which is then

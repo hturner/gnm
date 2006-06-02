@@ -15,7 +15,7 @@ se(model, estimate = ofInterest(model), checkEstimability = TRUE, ...)
   \item{estimate}{ (optional) specifies parameters or linear
     combinations of parameters for which to find standard errors. In the
     first case either a character vector of names, a
-    numeric vector of indices or \code{"pick"} to select from a Tk
+    numeric vector of indices or \code{"[?]"} to select from a Tk
     dialog. In the second case coefficients given as a vector or the
     rows of a matrix, such that \code{NROW(estimate)} is equal to 
     \code{length(coef(model))} or \code{length(coef(model)) -

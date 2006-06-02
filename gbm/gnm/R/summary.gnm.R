@@ -11,7 +11,7 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         if (is.matrix(cov.scaled))
             sterr <- sqrt(diag(cov.scaled))
         else
-            sterr <- diag(cov..scaled)
+            sterr <- diag(cov.scaled)
         is.na(sterr[!estimable]) <- TRUE
         tvalue <- coefs/sterr
         dn <- c("Estimate", "Std. Error")

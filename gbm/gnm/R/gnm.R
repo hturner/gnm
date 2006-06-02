@@ -46,12 +46,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     y <- model.response(modelData, "numeric")
     nObs <- NROW(y)
 
-    weights <- model.weights(modelData)
+    weights <- as.vector(model.weights(modelData))
     if (!is.null(weights) && any(weights < 0))
         stop("negative weights are not allowed")
     if (is.null(weights))
         weights <- rep.int(1, nObs)
-    offset <- model.offset(modelData)
+    offset <- as.vector(model.offset(modelData))
     if (is.null(offset))
         offset <- rep.int(0, nObs)
 
@@ -102,7 +102,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     else {
         onlyLin <- nElim == 0 && all(attr(modelTerms, "prefixLabels") == "")
         if (onlyLin) {
-            X <- model.matrix(modelTerms, modelData)
+            X <- model.matrix(attr(modelTerms, "terms"), modelData)
             coefNames <- colnames(X)
         }
         else {

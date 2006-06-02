@@ -46,7 +46,9 @@ oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
 
 ## multinomial logistic
-threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
+%threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
+threeDimensional <- glm(count ~ id + pain + pain:(x1 + x2 + x3),
+                        family = "poisson", data = backPainLong)
 
 ### Models to determine distinguishability in stereotype model
 ## constrain scale of category-specific multipliers

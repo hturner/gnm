@@ -1,3 +1,75 @@
+Changes in gnm 0.8-4
+====================
+
+New Features
+------------
+
+    o	added "gnm" methods for profile() and confint(). Use of 'alpha' argument 
+    	differs slightly from "glm" methods: see help files.
+
+    o	'constrain' argument to gnm() now supplemented by 'constrainTo' 
+	argument, allowing specification of values to which parameters should be 
+	constrained.
+
+    o	gnm() now has 'ofInterest' argument to specify a subset of coefficients 
+	which are of interest - returned in 'ofInterest' component of "gnm" 
+	object as named numeric vector. print() summaries of model object/its 
+	components extracted by accessor functions only print coefficients of 
+	interest and (where appropriate) methods for "gnm" objects select 
+	coefficients of interest by default.
+
+    o	added ofInterest() and ofInterest<-() to extract/replace 'ofInterest'
+  	component of "gnm" object.
+
+    o	added parameters() to which returns coefficient vector with constrained
+	parameters replaced by their constrained value.
+
+    o	added pickCoef() function to aid selection of coefficients - returns 
+	numeric indices of coefficients selected by Tk dialog or regular 
+	expression matching.
+
+Improvements
+------------
+
+    o	'constrain' argument to gnm() now accepts a regular expression to match 
+	against coefficient names.
+
+
+Changes in Behaviour
+--------------------
+
+    o	'constrain' component of "gnm" objects is now a numeric, rather than 
+	logical, vector of indices.
+
+    o	all "gnm" methods for which a subset of the coefficients may be 
+	specified by numeric indices now interpret those indices as 
+	referencing the full coefficient vector (not just non-eliminated
+	parameters).
+
+    o	gnm() now preserves order of terms rather than moving all linear 
+	terms to the start (this fixes bug in anova.gnm()).
+
+    o	the "pick" option for the 'constrain' argument to gnm() and the 
+	'estimate' argument to se() has been replaced by "[?]" to avoid
+	possible conflict with coefficient names/regular expressions.
+
+Bug Fixes
+---------
+
+    o	fixed bug in se() so will now work for single parameter.
+
+    o	fixed bug in summary.gnm() so will now work for models with one 
+	parameter.
+
+    o	fixed bug in anova() so that rows of returned table are correct for 
+	models with eliminated terms.
+
+    o	fixed bug in eliminate() so that it now accepts interactions.
+
+    o   fixed bug in MPInv() so that it works for models in which all parameters 
+	are eliminated.
+
+
 Changes in gnm 0.8-3
 ====================
 

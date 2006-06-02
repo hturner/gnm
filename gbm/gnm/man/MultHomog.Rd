@@ -61,20 +61,22 @@ MultHomog(...)
 set.seed(1)
 data(friend)
 
+lin <- glm(Freq ~ r + c + Diag(r,c), family = poisson, data = friend)
+init <- residSVD(lin, r, c, 2)
+
 ###  Fit an association model with homogeneous row-column effects
 rc1 <- gnm(Freq ~ r + c + Diag(r,c) + Nonlin(MultHomog(r, c)),
-           family = poisson, data = friend)
+           start = c(coef(lin), init[1:31, 1]), family = poisson,
+           data = friend)
 rc1
 
-\dontrun{
-###  (Takes a little while to run)
 ###  Extend to two-component interaction (using workaround)
 original <- as.data.frame(friend)
 r2 <- original$r
 c2 <- original$c
-rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r2, c2)))
+rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r2, c2)),
+              start = c(coef(rc1), init[1:31, 2]))
 rc2
-}
 }
 \keyword{ models }
 \keyword{ regression }

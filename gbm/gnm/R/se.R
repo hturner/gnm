@@ -6,7 +6,7 @@ se <- function(model, estimate = ofInterest(model),
     eliminate <- model$eliminate
     coefNames <- names(coefs)
     if (identical(estimate, "[?]"))
-        estimate <- pickCoef(model, subset = (nElim + 1):nParam,
+        estimate <- pickCoef(model, subset = (eliminate + 1):l,
                              title = paste("Estimate standard errors",
                              "for one or more gnm coefficients"))
     if (is.null(estimate))

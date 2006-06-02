@@ -12,8 +12,6 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
         which <- match(which, coefNames)
     summ <- summary(fitted)
     sterr <- summ$coefficients[, "Std. Error"]
-    offst <- fitted$offset
-    wts <- fitted$prior.weights
     fittedDev <- deviance(fitted)
     disp <- summ$dispersion
     ## use z cutoffs as in confint.profile.gnm

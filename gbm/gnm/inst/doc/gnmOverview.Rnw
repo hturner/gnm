@@ -795,7 +795,7 @@ substantive interest.  For an application see Section \ref{Stereotype} below.
 Here we give an artificial illustration: 500 randomly-generated trinomial
 responses, and a single predictor variable (whose effect on the data generation
 is null):
-<<eliminate1>>=
+<<Eliminate_Eg>>=
 set.seed(1)
 n <- 500
 x <- rep(rnorm(n), rep(3, n))
@@ -1973,7 +1973,7 @@ parameters. The latter constraint can be imposed by fixing the slope of one of
 the covariates in the second multiplier to \Robject{1}, which may be achieved by
 specifying the covariate as an offset:
 @
-<<constrain_slopes>>=
+<<Constrain_slopes>>=
 ## before constraint
 summary(oneDimensional)
 oneDimensional <- gnm(count ~ pain + Mult(pain - 1, offset(x1) + x2 + x3 - 1),
@@ -1985,7 +1985,7 @@ The location of the category-specific multipliers can constrained by setting one
 of the parameters to zero, either through the \Rfunarg{constrain} argument of
 \Rfunction{gnm} or with \Rfunction{getContrasts}:
 @
-<<get_slopes>>=
+<<Get_slopes>>=
 getContrasts(oneDimensional, pickCoef(oneDimensional, "Mult.*pain"))
 @ %def
 giving the required estimates.

@@ -22,12 +22,13 @@
               offset = rep(0, length(y)),
               family = gaussian(),
               eliminate = 0,
-              nIter = 2,
+              nIter = 3,
               verbose = FALSE)
 {
     if (eliminate == 0)
         return(suppressWarnings(glm.fit(x, y, weights = weights,
-                                        offset = offset, family = family)$coef))
+                                        offset = offset,
+                                        family = family)$coef))
 ##  The rest handles the case of eliminated columns in X
     xElim <- x[ , seq(eliminate), drop = FALSE]
     if (eliminate < ncol(x))
@@ -54,5 +55,6 @@
                                           family = family,
                                           control = glm.control(maxit = 2)))
     }
-    structure(c(os.by.level, coef(model)[-1]), names = colnames(x))
+    structure(c(os.by.level + coef(model)[1], coef(model)[-1]),
+              names = colnames(x))
 }

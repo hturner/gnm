@@ -4,7 +4,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 offset, start = NULL, tolerance = 1e-6, iterStart = 2,
                 iterMax = 500, trace = FALSE, verbose = TRUE, model = TRUE,
-                x = FALSE, termPredictors = FALSE, lsMethod = "qr", ...) {
+                x = FALSE, termPredictors = FALSE, lsMethod = "qr",
+                ridge = 1e-8, ...) {
 
     call <- match.call()
 
@@ -114,7 +115,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         nParam <- length(coefNames)
 
         if (identical(constrain, "[?]"))
-            call$constrain <- constrain <- 
+            call$constrain <- constrain <-
                 relimp:::pickFrom(coefNames,
                                   subset = (nElim + 1):nParam,
                                   setlabels = "Coefficients to constrain",
@@ -136,7 +137,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                  "in the 'eliminate' term.")
         if (!all(constrain %in% seq(coefNames)))
             stop(" 'constrain' specifies non-existant parameters.")
-        
+
         if (is.null(start))
             start <- rep.int(NA, nParam)
         else if (length(start) != nParam) {
@@ -146,7 +147,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 stop("length(start) must either equal the no. of parameters\n",
                      "or the no. of non-eliminated parameters.")
         }
-        
+
         if (onlyLin) {
             offset <- offset + X[, constrain, drop = FALSE] %*% constrainTo
             X[, constrain] <- 0
@@ -196,18 +197,18 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             fit <- gnmFit(modelTools, y, constrain, constrainTo, nElim, family,
                           weights, offset, nObs, start, tolerance, iterStart,
                           iterMax, trace, verbose, x, termPredictors,
-                          lsMethod = lsMethod)
+                          lsMethod = lsMethod, ridge = ridge)
     }
     if (is.null(fit)) {
         warning("Algorithm failed - no model could be estimated", call. = FALSE)
         return()
     }
-    
+
     if (is.null(ofInterest) && !missing(eliminate))
         ofInterest <- (nElim + 1):length(coefNames)
     if (identical(ofInterest, "[?]"))
-        call$ofInterest <- ofInterest <- 
-            pickCoef(coefNames, 
+        call$ofInterest <- ofInterest <-
+            pickCoef(coefNames,
                      warningText = paste("No subset of coefficients selected",
                      "- assuming all are of interest."))
     if (is.character(ofInterest)) {
@@ -217,7 +218,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             ofInterest <- match(ofInterest, coefNames)
     }
     if (!is.null(ofInterest)) {
-        if (!any(ofInterest %in% seq(coefNames))) 
+        if (!any(ofInterest %in% seq(coefNames)))
             stop("'ofInterest' does not specify a subset of the ",
                  "coefficients.")
         names(ofInterest) <- coefNames[ofInterest]

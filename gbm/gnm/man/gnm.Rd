@@ -13,7 +13,7 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
     start = NULL, tolerance = 1e-6, iterStart = 2, iterMax = 500,
     trace = FALSE, verbose = TRUE, model = TRUE, x = FALSE,
-    termPredictors = FALSE, lsMethod = "qr", ...)  
+    termPredictors = FALSE, lsMethod = "qr", ridge = 1e-8, ...)  
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -81,6 +81,8 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor. }
   \item{lsMethod}{ character: must be one of "chol" or "qr".}
+  \item{ridge}{numeric, a positive value for the ridge constant to be
+    used in the fitting algorithm}
   \item{\dots}{ further arguments passed to fitting function. }
 }
 \details{
@@ -159,7 +161,10 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   direct solution using a QR decomposition (\code{"qr"}), and matrix
   inversion via Cholesky decomposition (\code{"chol"}).  In both cases,
   the design matrix is standardized and regularized (in the
-  Levenberg-Marquardt sense) prior to solving.  If \code{lsMethod} is
+  Levenberg-Marquardt sense) prior to solving; the \code{ridge} argument
+  provides a degree of control over the regularization performed
+  (smaller values may sometimes give faster convergence but can lead
+  to numerical instability).  If \code{lsMethod} is
   left unspecified, the default is \code{"qr"}, unless \code{eliminate}
   is used in which case the default \code{lsMethod} used is \code{"chol"}. 
 

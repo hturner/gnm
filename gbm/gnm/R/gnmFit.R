@@ -15,7 +15,8 @@
               verbose = FALSE,
               x = FALSE,
               termPredictors = FALSE,
-              lsMethod = "qr")
+              lsMethod = "qr",
+              ridge = 1e-8)
 {
     if (!(lsMethod %in% c("chol", "qr"))) stop(
                 "lsMethod must be chol or qr")
@@ -139,7 +140,7 @@
             X <-  modelTools$localDesignFunction(theta, factorList)
             X <- X[, !isConstrained, drop = FALSE]
             pns <- rep(nrow(X), ncol(X))
-            ridge <- c(0, rep(1e-5, ncol(X)))
+            ridge <- c(0, rep(ridge, ncol(X)))
             for (iter in seq(iterMax)) {
                 if (any(!is.finite(X))){
                     status <- "X.not.finite"
@@ -189,8 +190,9 @@
                     XWX <- crossprod(W.X.scaled)
                     theDiagonal <- diag(XWX)
                     diag(XWX) <- theDiagonal + ridge[-1]
-                    theChange <- solve(qr(XWX), crossprod(W.X.scaled, w.z)) *
-                        znorm / Xscales
+                    theChange <- solve(qr(XWX, tol = 1e-20),
+                                       crossprod(W.X.scaled, w.z)) *
+                                           znorm / Xscales
                 }
                 dev[2] <- dev[1]
                 j <- 1

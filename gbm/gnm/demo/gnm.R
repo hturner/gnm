@@ -57,4 +57,4 @@ message("8. Get simple constrasts of homogeneous row-column effects")
 getContrasts(RChomog, grep("MultHomog", names(coef(RChomog))))
 
 message("End of demo. \n",
- "See vignette(gnmOverview, package = \"gnm\") for full manual.")
+ "See vignette("gnmOverview", package = \"gnm\") for full manual.")

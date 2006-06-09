@@ -22,7 +22,7 @@
               offset = rep(0, length(y)),
               family = gaussian(),
               eliminate = 0,
-              nIter = 3,
+              nIter = 2,
               verbose = FALSE)
 {
     if (eliminate == 0)

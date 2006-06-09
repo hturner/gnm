@@ -4,7 +4,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 offset, start = NULL, tolerance = 1e-6, iterStart = 2,
                 iterMax = 500, trace = FALSE, verbose = TRUE, model = TRUE,
-                x = FALSE, termPredictors = FALSE, lsMethod = "qr",
+                x = TRUE, termPredictors = FALSE, lsMethod = "qr",
                 ridge = 1e-8, ...) {
 
     call <- match.call()

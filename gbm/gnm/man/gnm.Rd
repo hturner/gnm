@@ -12,7 +12,7 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     constrainTo = numeric(length(constrain)), family = gaussian, 
     data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
     start = NULL, tolerance = 1e-6, iterStart = 2, iterMax = 500,
-    trace = FALSE, verbose = TRUE, model = TRUE, x = FALSE,
+    trace = FALSE, verbose = TRUE, model = TRUE, x = TRUE,
     termPredictors = FALSE, lsMethod = "qr", ridge = 1e-8, ...)  
 }
 \arguments{
@@ -76,7 +76,7 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     if the algorithm restarts. } 
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
   \item{x}{ logical: if \code{TRUE} the local design matrix from the last
-    iteration is returned. }
+    iteration is included as a component of returned model object. }
   \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor. }

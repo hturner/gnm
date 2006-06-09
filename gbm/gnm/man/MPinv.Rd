@@ -12,10 +12,15 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
       rank = NULL, method = "svd")
 }
 \arguments{
-  \item{mat}{ A real matrix, which should be symmetric unless
-    \code{eliminate} has zero length. }
+  \item{mat}{ Either a real matrix, which should be symmetric unless
+    \code{eliminate} has zero length; or a list with three components,
+    whose classes are "matrix", "vector" and "matrix" (see details).}
   \item{eliminate}{ Numeric.  A vector of indices identifying
-    rows/columns which form a diagonal submatrix of \code{mat}. }
+    rows/columns which form a diagonal submatrix of \code{mat}.  If
+    \code{mat} is a list (see details) and \code{eliminate} is not
+    changed from its default value, the top left corner of the matrix
+    is assumed to be the eliminated block.
+  }
   \item{onlyFirstCol}{ Logical.  If \code{TRUE}, return only the first
     non-eliminated column of the generalized inverse matrix; otherwise
     the whole matrix.}
@@ -40,6 +45,16 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
   reduction of the computational burden when the number of `eliminated'
   rows/columns is large.
 
+  If a submatrix is to be eliminated, a more economical representation
+  of the input matrix (\code{mat}) is possible, as a list representing
+  the various submatrices.  If a list if used in place of the full
+  matrix, it must have three components, say \code{W}, \code{T} and
+  \code{U}, where \code{T} is the k-vector of diagonal values in the
+  eliminated diagonal submatrix, \code{W} is the remaining diagonal
+  block, and \code{U} is the off-diagonal block in the rows that
+  correspond to \code{T}.  This representation avoids storing the full
+  eliminated submatrix, which in some applications can be very large.
+  
   The specification \code{method = "chol"} is valid only for
   symmetric matrices.  No check for symmetry is made.
 }
@@ -47,8 +62,14 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
   A matrix, with an additional attribute named \code{"rank"} containing
   the numerically determined rank of the matrix.
 }
-\references{Harville, D. A. (1997).  \emph{Matrix Algebra from a
-    Statistician's Perspective}.  New York: Springer.  }
+\references{
+  Harville, D. A. (1997).  \emph{Matrix Algebra from a
+    Statistician's Perspective}.  New York: Springer.
+
+  Courrieu, P. (2005).  Fast computation of Moore-Penrose
+  inverse matrices. \emph{Neural Information Processing} \bold{8},
+  25--29
+}
 \author{ David Firth }
 \seealso{\code{\link{ginv}}}
 \examples{
@@ -73,7 +94,9 @@ B <- MPinv(A, eliminate = 1:2)
 A \%*\% B \%*\% A - A  # essentially zero
 B \%*\% A \%*\% B - B  # essentially zero
 attr(B, "rank")        # here 3  
-
+## alternative representation of A as a list
+A.list <- list(matrix(4), c(1,2), matrix(c(2,3)))
+C <- MPinv(A.list)
 \dontrun{
 ## demo that eliminate can give substantial speed gains
 A <- diag(rnorm(100))

@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.1  (2005-12-20 r36812)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.0 (2006-04-24)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -26,54 +26,10 @@ Running start-up iterations..
 Running main iterations.........................................................
 ..........................................................................
 Done
-> biplotModel
-
-Call:
-gnm(formula = y ~ -1 + Mult(site, variety, multiplicity = 2), 
-    family = wedderburn, data = barley)
-
-
-Coefficients:
-Mult1.Factor1.(Intercept)        Mult1.Factor1.siteB  
-                  7.59553                   -2.90332  
-      Mult1.Factor1.siteC        Mult1.Factor1.siteD  
-                 -4.68184                   -2.30363  
-      Mult1.Factor1.siteE        Mult1.Factor1.siteF  
-                 -4.23080                   -3.54394  
-      Mult1.Factor1.siteG        Mult1.Factor1.siteH  
-                 -2.58752                   -0.56755  
-      Mult1.Factor1.siteI  Mult1.Factor2.(Intercept)  
-                  0.29551                   -0.65911  
-   Mult1.Factor2.variety2     Mult1.Factor2.variety3  
-                 -0.21459                   -0.16874  
-   Mult1.Factor2.variety4     Mult1.Factor2.variety5  
-                  0.12113                    0.23319  
-   Mult1.Factor2.variety6     Mult1.Factor2.variety7  
-                  0.27066                    0.38807  
-   Mult1.Factor2.variety8     Mult1.Factor2.variety9  
-                  0.55694                    0.53741  
-   Mult1.Factor2.varietyX  Mult2.Factor1.(Intercept)  
-                  0.64978                   -1.94044  
-      Mult2.Factor1.siteB        Mult2.Factor1.siteC  
-                  0.58666                    1.36123  
-      Mult2.Factor1.siteD        Mult2.Factor1.siteE  
-                  1.55398                    1.60817  
-      Mult2.Factor1.siteF        Mult2.Factor1.siteG  
-                  1.87535                    2.22960  
-      Mult2.Factor1.siteH        Mult2.Factor1.siteI  
-                  3.04803                    3.96577  
-Mult2.Factor2.(Intercept)     Mult2.Factor2.variety2  
-                  1.69248                    1.40023  
-   Mult2.Factor2.variety3     Mult2.Factor2.variety4  
-                  1.39848                    0.01106  
-   Mult2.Factor2.variety5     Mult2.Factor2.variety6  
-                 -0.00878                    1.10045  
-   Mult2.Factor2.variety7     Mult2.Factor2.variety8  
-                 -0.12244                   -0.02545  
-   Mult2.Factor2.variety9     Mult2.Factor2.varietyX  
-                  0.18464                   -0.14194  
-
-Deviance:            41.02424 
-Pearson chi-squared: 54.29363 
-Residual df:         56 
+> 
+> print(biplotModel$deviance, digits = 10)
+[1] 41.02423508
+> print(biplotModel$df)
+[1] 56
+> 
 > 

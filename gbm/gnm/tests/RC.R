@@ -7,4 +7,6 @@ mentalHealth$SES <- C(mentalHealth$SES, treatment)
 RC1model <- gnm(count ~ SES + MHS +
                 Mult(-1 + SES, -1 + MHS),
                 family = poisson, data = mentalHealth)
-RC1model
+
+print(RC1model$deviance, digits = 10)
+print(RC1model$df)

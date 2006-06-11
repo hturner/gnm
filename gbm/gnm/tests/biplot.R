@@ -4,4 +4,7 @@ data(barley)
 
 biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
                    family = wedderburn, data = barley)
-biplotModel
+
+print(biplotModel$deviance, digits = 10)
+print(biplotModel$df)
+

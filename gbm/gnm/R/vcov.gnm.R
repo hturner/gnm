@@ -17,7 +17,7 @@ vcov.gnm <-  function(object, dispersion = NULL, ...){
     needToElim <- seq(length.out = eliminate)
     isConstrained <- is.element(seq(coefNames), constrain)
     X <- model.matrix(object)[, !isConstrained, drop = FALSE]
-    w <- object$weights
+    w <- as.vector(object$weights)
     W.X <- sqrt(w) * X
     cov.unscaled <- array(0, dim = rep(length(coefNames), 2),
                           dimnames = rep(list(coefNames), 2))

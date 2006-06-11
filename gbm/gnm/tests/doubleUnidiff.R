@@ -6,4 +6,6 @@ doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(-1 + election), religion:vote) +
                      Mult(Exp(-1 + election), class:vote),
                      family = poisson, data = cautres)
-doubleUnidiff
+
+print(doubleUnidiff$deviance, digits=10)
+print(doubleUnidiff$df)

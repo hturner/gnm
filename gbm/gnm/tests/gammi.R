@@ -8,4 +8,6 @@ treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
 bilinear3 <- gnm(yield.scaled ~ year + treatment +
                  Mult(year, treatment, multiplicity = 3),
                  family = gaussian, data = wheat)
-bilinear3
+
+print(bilinear3$deviance, digits=10)
+print(bilinear3$df)

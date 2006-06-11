@@ -16,7 +16,9 @@ noRelationship <- gnm(.counts ~ pain, eliminate = .rowID,
 
 oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
-oneDimensional
+
+print(oneDimensional$deviance, digits=10)
+print(oneDimensional$df)
 
 
 

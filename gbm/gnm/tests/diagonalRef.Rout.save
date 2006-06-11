@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.1  (2005-12-20 r36812)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.0 (2006-04-24)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -22,32 +22,16 @@ Type 'q()' to quit R.
 > count <- with(voting, percentage/100 * total)
 > yvar <- cbind(count, voting$total - count)
 > 
-> classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)), 
+> classMobility <- gnm(yvar ~ Nonlin(Dref(origin, destination)),
 +                      family = binomial, data = voting)
 Initialising
 Running main iterations........
 Done
-> classMobility
-
-Call:
-
-gnm(formula = yvar ~ Nonlin(Dref(origin, destination)), family = binomial, 
-    data = voting)
-
-
-Coefficients:
-                          (Intercept)       Dref(origin, destination).origin  
-                             -1.34325                               -0.30736  
-Dref(origin, destination).destination            Dref(origin, destination).1  
-                             -0.05501                               -0.83455  
-          Dref(origin, destination).2            Dref(origin, destination).3  
-                              0.21066                               -0.61159  
-          Dref(origin, destination).4            Dref(origin, destination).5  
-                              0.76500                                1.38370  
-
-Deviance:            21.22093 
-Pearson chi-squared: 18.95311 
-Residual df:         19 
+> 
+> print(classMobility$deviance, digits = 10)
+[1] 21.22093265
+> print(classMobility$df)
+[1] 19
 > 
 > upward <- with(voting, origin != 1 & destination == 1)
 > downward <- with(voting, origin == 1 & destination != 1)
@@ -58,40 +42,9 @@ Residual df:         19
 Initialising
 Running main iterations..........
 Done
-> socialMobility
-
-Call:
-gnm(formula = yvar ~ Nonlin(Dref(origin, destination, formula = ~1 + 
-    downward + upward)), family = binomial, data = voting)
-
-
-Coefficients:
-                                                                         (Intercept)  
-                                                                            -1.31739  
-      Dref(origin, destination, formula = ~1 + downward + upward).origin.(Intercept)  
-                                                                            -0.39834  
-     Dref(origin, destination, formula = ~1 + downward + upward).origin.downwardTRUE  
-                                                                             0.37858  
-       Dref(origin, destination, formula = ~1 + downward + upward).origin.upwardTRUE  
-                                                                             0.06225  
- Dref(origin, destination, formula = ~1 + downward + upward).destination.(Intercept)  
-                                                                            -0.01158  
-Dref(origin, destination, formula = ~1 + downward + upward).destination.downwardTRUE  
-                                                                            -0.43218  
-  Dref(origin, destination, formula = ~1 + downward + upward).destination.upwardTRUE  
-                                                                             0.12247  
-                       Dref(origin, destination, formula = ~1 + downward + upward).1  
-                                                                            -0.74021  
-                       Dref(origin, destination, formula = ~1 + downward + upward).2  
-                                                                             0.20469  
-                       Dref(origin, destination, formula = ~1 + downward + upward).3  
-                                                                            -0.67740  
-                       Dref(origin, destination, formula = ~1 + downward + upward).4  
-                                                                             0.74824  
-                       Dref(origin, destination, formula = ~1 + downward + upward).5  
-                                                                             1.37497  
-
-Deviance:            18.97407 
-Pearson chi-squared: 17.07493 
-Residual df:         17 
+> 
+> print(socialMobility$deviance, digits = 10)
+[1] 18.97407303
+> print(socialMobility$df)
+[1] 17
 > 

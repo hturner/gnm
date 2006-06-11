@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.1  (2005-12-20 r36812)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.0 (2006-04-24)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -26,135 +26,19 @@ Initialising
 Running start-up iterations..
 Running main iterations...............................................
 Done
-> unidiff
-
-Call:
-gnm(formula = Freq ~ educ * orig + educ * dest + Mult(Exp(-1 + 
-    educ), orig:dest), family = poisson, data = yaish, subset = (dest !=     7))
-
-
-
-Coefficients:
-              (Intercept)                      educ2  
-                 0.517688                   0.296728  
-                    educ3                      educ4  
-                 1.579510                   1.909463  
-                    educ5                      orig2  
-                 4.312685                  -0.145084  
-                    orig3                      orig4  
-                 2.170589                   1.218405  
-                    orig5                      orig6  
-                 1.024761                   1.693081  
-                    orig7                educ2:orig2  
-                -0.067867                   0.393701  
-              educ3:orig2                educ4:orig2  
-                -0.417291                  -0.037201  
-              educ5:orig2                educ2:orig3  
-                -0.746429                  -0.712197  
-              educ3:orig3                educ4:orig3  
-                -1.277988                  -1.094040  
-              educ5:orig3                educ2:orig4  
-                -2.107749                  -0.841972  
-              educ3:orig4                educ4:orig4  
-                -1.641552                  -0.944815  
-              educ5:orig4                educ2:orig5  
-                -2.249880                   0.009003  
-              educ3:orig5                educ4:orig5  
-                -0.811264                  -0.168178  
-              educ5:orig5                educ2:orig6  
-                -1.551858                  -0.314136  
-              educ3:orig6                educ4:orig6  
-                -1.405889                  -0.921057  
-              educ5:orig6                educ2:orig7  
-                -2.106116                  -1.346967  
-              educ3:orig7                educ4:orig7  
-                -1.750146                  -1.103562  
-              educ5:orig7                      dest2  
-                -4.366213                   0.900833  
-                    dest3                      dest4  
-                 1.900410                  -0.614113  
-                    dest5                      dest6  
-                 2.318324                   2.147258  
-              educ2:dest2                educ3:dest2  
-                -0.002197                  -0.243699  
-              educ4:dest2                educ5:dest2  
-                -1.816753                  -3.213398  
-              educ2:dest3                educ3:dest3  
-                -0.660518                  -1.122224  
-              educ4:dest3                educ5:dest3  
-                -2.739893                  -4.323589  
-              educ2:dest4                educ3:dest4  
-                 0.106099                  -0.427878  
-              educ4:dest4                educ5:dest4  
-                -2.787604                  -4.516146  
-              educ2:dest5                educ3:dest5  
-                -0.522351                  -1.391509  
-              educ4:dest5                educ5:dest5  
-                -2.011794                  -4.543371  
-              educ2:dest6                educ3:dest6  
-                -1.277812                  -1.663377  
-              educ4:dest6                educ5:dest6  
-                -4.658061                  -6.184724  
-      Mult1.Factor1.educ1        Mult1.Factor1.educ2  
-                -0.913104                  -1.138476  
-      Mult1.Factor1.educ3        Mult1.Factor1.educ4  
-                -1.656528                  -1.952043  
-      Mult1.Factor1.educ5  Mult1.Factor2.(Intercept)  
-                -3.162607                  -0.153475  
-Mult1.Factor2.orig1:dest1  Mult1.Factor2.orig2:dest1  
-                 2.817803                   2.652735  
-Mult1.Factor2.orig3:dest1  Mult1.Factor2.orig4:dest1  
-                 0.111002                  -0.087014  
-Mult1.Factor2.orig5:dest1  Mult1.Factor2.orig6:dest1  
-                -2.396412                  -0.545064  
-Mult1.Factor2.orig7:dest1  Mult1.Factor2.orig1:dest2  
-                 0.722803                  -0.907335  
-Mult1.Factor2.orig2:dest2  Mult1.Factor2.orig3:dest2  
-                -0.009513                   0.497363  
-Mult1.Factor2.orig4:dest2  Mult1.Factor2.orig5:dest2  
-                -1.774953                  -0.607357  
-Mult1.Factor2.orig6:dest2  Mult1.Factor2.orig7:dest2  
-                 0.625772                   2.069362  
-Mult1.Factor2.orig1:dest3  Mult1.Factor2.orig2:dest3  
-                -0.273115                  -1.940520  
-Mult1.Factor2.orig3:dest3  Mult1.Factor2.orig4:dest3  
-                 1.015152                   0.401577  
-Mult1.Factor2.orig5:dest3  Mult1.Factor2.orig6:dest3  
-                -0.428944                  -0.484613  
-Mult1.Factor2.orig7:dest3  Mult1.Factor2.orig1:dest4  
-                -1.487714                   2.434645  
-Mult1.Factor2.orig2:dest4  Mult1.Factor2.orig3:dest4  
-                -4.689539                  -0.868647  
-Mult1.Factor2.orig4:dest4  Mult1.Factor2.orig5:dest4  
-                 5.129596                  -2.014596  
-Mult1.Factor2.orig6:dest4  Mult1.Factor2.orig7:dest4  
-                -2.003128                  -0.784418  
-Mult1.Factor2.orig1:dest5  Mult1.Factor2.orig2:dest5  
-                -0.738708                   0.235273  
-Mult1.Factor2.orig3:dest5  Mult1.Factor2.orig4:dest5  
-                -0.309972                  -1.047423  
-Mult1.Factor2.orig5:dest5  Mult1.Factor2.orig6:dest5  
-                 1.422905                   0.491938  
-Mult1.Factor2.orig7:dest5  Mult1.Factor2.orig1:dest6  
-                 0.161905                  -0.140427  
-Mult1.Factor2.orig2:dest6  Mult1.Factor2.orig3:dest6  
-                -0.607718                  -0.307048  
-Mult1.Factor2.orig4:dest6  Mult1.Factor2.orig5:dest6  
-                 0.926060                   0.210657  
-Mult1.Factor2.orig6:dest6  Mult1.Factor2.orig7:dest6  
-                 0.520495                  -0.187227  
-
-Deviance:            200.3259 
-Pearson chi-squared: 187.9472 
-Residual df:         116 
+> 
+> print(unidiff$deviance, digits = 10)
+[1] 200.3259229
+> print(unidiff $df)
+[1] 116
+> 
 > getContrasts(unidiff, grep("Mult.*educ", names(coef(unidiff))))
-Loading required package: qvcalc
 [[1]]
                       estimate        SE    quasiSE   quasiVar
 Mult1.Factor1.educ1  0.0000000 0.0000000 0.09757438 0.00952076
 Mult1.Factor1.educ2 -0.2253718 0.1611874 0.12885847 0.01660450
 Mult1.Factor1.educ3 -0.7434236 0.2335083 0.21182123 0.04486823
 Mult1.Factor1.educ4 -1.0389386 0.3434256 0.32609379 0.10633716
-Mult1.Factor1.educ5 -2.2495026 0.9453763 0.93560640 0.87535934
+Mult1.Factor1.educ5 -2.2495026 0.9453763 0.93560641 0.87535935
 
 > 

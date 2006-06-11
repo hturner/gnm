@@ -5,4 +5,6 @@ data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Nonlin(MultHomog(origin, destination)), family = poisson,
                data = occupationalStatus)
-RChomog
+
+print(RChomog$deviance, digits=10)
+print(RChomog$df)

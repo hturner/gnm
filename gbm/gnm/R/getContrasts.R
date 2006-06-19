@@ -1,4 +1,7 @@
-getContrasts <- function(model, sets = NULL, nSets = 1, ...){
+getContrasts <- function(model, sets = NULL, nSets = 1,
+                         dispersion = NULL,
+                         use.eliminate = TRUE,
+                         ...){
     coefs <- coef(model)
     l <- length(coefs)
     of.interest <- ofInterest(model)
@@ -14,7 +17,7 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
                 stop("model has no parameters of interest")
             of.interest <- (model$eliminate + 1):l
         }
-        sets <- relimp:::pickFrom(coefNames[of.interest], nSets,...)
+        sets <- relimp:::pickFrom(coefNames[of.interest], nSets, ...)
     }
     if (!is.list(sets)) sets <- list(sets)
     setLengths <- sapply(sets, length)
@@ -41,6 +44,8 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
         temp[id, 2:ncol(temp)] <- x$contr
         colnames(temp) <- x$coefs
         temp})
+    Vcov <-  vcov(model, dispersion = dispersion,
+                  use.eliminate = use.eliminate)
     lapply(coefMatrix, function(x)
        {
         iden <- checkEstimable(model, x)
@@ -51,12 +56,12 @@ getContrasts <- function(model, sets = NULL, nSets = 1, ...){
         }
         not.unestimable <- iden | is.na(iden)
         result <- se(model, x[, not.unestimable, drop = FALSE],
-           checkEstimability = FALSE)
+           checkEstimability = FALSE, Vcov = Vcov)
         relerrs <- NULL
         V <- NULL
         if (any(not.unestimable)){
             estimable.names <- names(not.unestimable)[not.unestimable]
-            V <- vcov(model)[estimable.names, estimable.names, drop = FALSE]
+            V <- Vcov[estimable.names, estimable.names, drop = FALSE]
         }
         if (sum(not.unestimable) > 2) {
             QVs <- qvcalc:::qvcalc(V)

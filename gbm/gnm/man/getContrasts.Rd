@@ -10,7 +10,8 @@ errors for those estimated differences.  Where possible, quasi standard
 errors are also computed.
 }
 \usage{
-getContrasts(model, sets = NULL, nSets = 1, ...)
+getContrasts(model, sets = NULL, nSets = 1, dispersion = NULL,
+use.eliminate = TRUE, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}
@@ -18,6 +19,9 @@ getContrasts(model, sets = NULL, nSets = 1, ...)
     a list (of length \code{nSets}) of such vectors. If missing, a Tk
     dialog will open for parameter selection. }
   \item{nSets}{ the number of vectors of indices to use.}
+  \item{dispersion}{either \code{NULL}, or a positive number by which
+    the model's variance-covariance matrix should be scaled.}
+  \item{use.eliminate}{ logical; see \code{\link{vcov.gnm}}}
   \item{\dots}{ arguments to pass to other functions. }
 }
 \details{

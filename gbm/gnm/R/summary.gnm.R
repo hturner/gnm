@@ -5,8 +5,8 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
                  is.null(dispersion) && object$df.residual > 0)
     coefs <- coef(object)
     if (object$rank > 0) {
-        cov.scaled <- vcov(object)
-        estimable <- checkEstimable(object, diag(length(coefs)), ...)
+        cov.scaled <- vcov(object, dispersion = dispersion)
+        estimable <- checkEstimable(object, ...)
         estimable[is.na(estimable)] <- FALSE
         if (is.matrix(cov.scaled))
             sterr <- sqrt(diag(cov.scaled))
@@ -52,5 +52,5 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         ans$symbolic.cor <- symbolic.cor
     }
     class(ans) <- "summary.gnm"
-    return(ans)
+    ans
 }

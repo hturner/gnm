@@ -167,7 +167,7 @@
                 w.z <- wSqrt * z
                 score <- drop(crossprod(w.z, W.X))
                 diagInfo <- colSums(W.X * W.X)
-                Xscales <- pmax(1e-3, sqrt(diagInfo)) ## to allow for zeros!
+                Xscales <- pmax(1e-3, sqrt(diagInfo)) ## to allow for zeros
                 W.X.scaled <- W.X / rep(Xscales, pns)
                 if (all(diagInfo < 1e-20) ||
                     all(abs(score) <
@@ -177,6 +177,7 @@
                 }
                 znorm <- sqrt(sum(w.z * w.z))
                 w.z <- w.z/znorm
+                XWX <- NULL
                 if (lsMethod == "chol") {
                     W.Z <- cbind(w.z, W.X.scaled)
                     if (eliminate > 0){
@@ -197,10 +198,11 @@
                 } else { ## lsMethod is "qr"
                     XWX <- crossprod(W.X.scaled)
                     theDiagonal <- diag(XWX)
-                    diag(XWX) <- theDiagonal + ridge[-1]
-                    theChange <- solve(qr(XWX, tol = 1e-20),
-                                       crossprod(W.X.scaled, w.z)) *
-                                           znorm / Xscales
+                    XWXridge <- XWX
+                    diag(XWXridge) <- theDiagonal + ridge[-1]
+                    Qr <- qr(XWXridge, tol = 1e-20)
+                    theChange <- solve(Qr, crossprod(W.X.scaled, w.z)) *
+                        znorm / Xscales
                 }
                 dev[2] <- dev[1]
                 j <- 1
@@ -260,20 +262,9 @@
     }
     theta[constrain] <- NA
     sv.tolerance <-  100 * .Machine$double.eps
-    if (eliminate == 0) {
-        Info <- crossprod(W.X)
-        Svd <- svd(Info)
-        theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0))
-    } else {
-        Tvec <- colSums(w * X[, seq(eliminate), drop = FALSE])
-        Wmat <- W.X[, -needToElim, drop = FALSE]
-        Umat <- crossprod(W.X[, needToElim, drop = FALSE], Wmat)
-        Ti.U <- Umat / sqrt(Tvec)
-        Wmat <- crossprod(Wmat)
-        Qmat <- Wmat - crossprod(Ti.U)
-        Svd <- svd(Qmat)
-        theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0)) + eliminate
-    }
+    if (is.null(XWX)) XWX <- crossprod(W.X.scaled)
+    Svd <- svd(XWX, nu = 0, nv = 0)
+    theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0))
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)
@@ -283,7 +274,7 @@
                 deviance = dev[1], aic = modelAIC,
                 iter = iter - (iter != iterMax), weights = w,
                 prior.weights = weights,
-                df.residual = nObs - theRank, # - sum(weights == 0),
+                df.residual = nObs - theRank,
                 y = y)
     if (status == "not.converged") {
         warning("Fitting algorithm has either not converged or converged\n",

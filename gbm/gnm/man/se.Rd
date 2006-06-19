@@ -8,7 +8,8 @@
   check is made first on the estimability of each specified combination.
 }
 \usage{
-se(model, estimate = ofInterest(model), checkEstimability = TRUE, ...)
+se(model, estimate = ofInterest(model), checkEstimability = TRUE, Vcov =
+NULL, dispersion = NULL, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}
@@ -23,13 +24,19 @@ se(model, estimate = ofInterest(model), checkEstimability = TRUE, ...)
     parameters in the model.}
   \item{checkEstimability}{ logical: should the estimability of
     all specified combinations be checked?}
+  \item{Vcov}{ either NULL, or a matrix }
+  \item{dispersion}{ either NULL, or a positive number }
   \item{\dots}{ possible further arguments for
     \code{\link{checkEstimable}}. }
 }
 \note{
   In the case where \code{estimate} is a numeric vector, \code{se} will
-  assume indices have been specified if all the values of
+  assume that indices have been specified if all the values of
   \code{estimate} are in \code{seq(length(coef(model))}.
+
+  Where both \code{Vcov} and \code{dispersion} are supplied, the
+  variance-covariance matrix of estimated model coefficients is taken to
+  be \code{Vcov * dispersion}.
 }
 \value{
 A data frame with two columns:

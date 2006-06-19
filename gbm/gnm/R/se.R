@@ -1,6 +1,9 @@
 se <- function(model, estimate = ofInterest(model),
-               checkEstimability = TRUE, ...){
+               checkEstimability = TRUE, Vcov = NULL, dispersion = NULL, ...){
     if (!inherits(model, "gnm")) stop("model is not of class \"gnm\"")
+    if (!is.nul(Vcov) && !is.null(dispersion)) {
+        Vcov <- Vcov * dispersion
+    }
     coefs <- coef(model)
     l <- length(coefs)
     eliminate <- model$eliminate
@@ -11,14 +14,15 @@ se <- function(model, estimate = ofInterest(model),
                              "for one or more gnm coefficients"))
     if (is.null(estimate))
         return(data.frame(coef(summary(model)))[, 1:2])
-    else { 
+    else {
         if (is.character(estimate))
             estimate <- match(estimate, coefNames)
+        if (is.null(Vcov)) Vcov <- vcov(model, dispersion = dispersion)
         if (is.vector(estimate) && all(estimate %in% seq(coefNames))) {
             if (!length(estimate))
                 stop("no coefficients specified by 'estimate' argument")
             comb <- naToZero(coefs[estimate])
-            var <- vcov(model)[estimate, estimate]
+            var <- Vcov[estimate, estimate]
             coefMatrix <- matrix(0, l, length(comb))
             coefMatrix[cbind(estimate, seq(length(comb)))] <- 1
             colnames(coefMatrix) <- names(comb)
@@ -32,12 +36,12 @@ se <- function(model, estimate = ofInterest(model),
                      "a numeric vector/matrix.")
             if (eliminate && nrow(coefMatrix) == l - eliminate)
                 coefMatrix <- cbind(matrix(0, eliminate, ncol(coefMatrix)),
-                                    coefMatrix)                
+                                    coefMatrix)
             if (nrow(coefMatrix) != l)
                 stop("NROW(estimate) should equal length(coef(model)) or \n",
                      "length(coef(model)) - model$eliminate")
             comb <- drop(crossprod(coefMatrix, naToZero(coefs)))
-            var <- crossprod(coefMatrix, crossprod(vcov(model), coefMatrix))
+            var <- crossprod(coefMatrix, crossprod(Vcov, coefMatrix))
         }
     }
     estimable <- rep(TRUE, ncol(coefMatrix))

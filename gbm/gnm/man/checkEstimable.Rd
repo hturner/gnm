@@ -8,11 +8,12 @@
   estimate is invariant to re-parameterization of the model.
 }
 \usage{
-checkEstimable(model, coefMatrix, tolerance = 1e-8)
+checkEstimable(model, combMatrix = diag(seq(along = coef(model))),
+                           tolerance = 100 * .Machine$double.eps)
 }
 \arguments{
   \item{model}{  a model object of class \code{"gnm"} }
-  \item{coefMatrix}{  numeric: either a vector of length the same as
+  \item{combMatrix}{  numeric: either a vector of length the same as
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
   \item{tolerance}{ numeric: a threshold value for detection of

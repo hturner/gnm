@@ -1,20 +1,19 @@
-checkEstimable <- function(model, coefMatrix, tolerance = 1e-8){
+checkEstimable <- function(model, combMatrix = diag(seq(along = coef(model))),
+                           tolerance = 100 * .Machine$double.eps)
+{
     if (!inherits(model, "gnm")) stop("model not of class gnm")
     coefs <- coef(model)
     l <- length(coefs)
-    coefMatrix <- as.matrix(coefMatrix)
-    if (nrow(coefMatrix) != l) stop(
-          "coefMatrix does not match coef(model)")
-    Xt <- t(model.matrix(model))
-    Xt <- Xt[!is.na(coefs), ]
-    coefMatrix <- coefMatrix[!is.na(coefs), ]
-    coefMatrix <- scale(coefMatrix, center = FALSE)
-    resultNA <- apply(coefMatrix, 2, function(col) any(is.na(col)))
-    result <- logical(ncol(coefMatrix))
+    if (nrow(combMatrix) != l) stop(
+          "dimensions of combMatrix do not match coef(model)")
+    X <- model.matrix(model)[, !is.na(coefs), drop = FALSE]
+    combMatrix <- scale(combMatrix[!is.na(coefs), ], center = FALSE)
+    resultNA <- apply(combMatrix, 2, function(col) any(is.na(col)))
+    result <- logical(ncol(combMatrix))
     is.na(result) <- resultNA
-    resids <- qr.resid(qr(Xt), coefMatrix[, !resultNA, drop = FALSE])
-    rss <- apply(resids, 2, var)
-    result[!resultNA] <- rss < tolerance
-    names(result) <- colnames(coefMatrix)
+    resids <- qr.resid(qr(crossprod(X)), combMatrix[, !resultNA, drop = FALSE])
+    rms <- apply(resids, 2, sd)
+    result[!resultNA] <- rms < tolerance
+    names(result) <- colnames(combMatrix)
     return(result)
 }

@@ -8,13 +8,16 @@
   generalized nonlinear model.  
 }
 \usage{
-\method{vcov}{gnm}(object, dispersion = NULL, ...)
+\method{vcov}{gnm}(object, dispersion = NULL, use.eliminate = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{ a model object of class \code{gnm}. }
   \item{dispersion} {the dispersion parameter for the fitting family. By
     default it is obtained from \code{object}. }
+  \item{use.eliminate} {logical; should a non-zero \code{eliminate} component
+    of \code{object} be exploited in calculating the result here?}
+    
   \item{\dots}{ as for \code{\link{vcov}}. }
 }
 \details{
@@ -30,7 +33,12 @@
   \code{Poisson} families, and otherwise estimated by the residual
   Chi-squared statistic divided by the residual degrees of freedom. The
   dispersion used is returned as an attribute of the matrix.
-}
+
+  The \code{use.eliminate = TRUE} setting can sometimes give appreciable
+  speed gains; see \code{\link{gnm}} for details of the \code{eliminate}
+  mechanism.  The \code{use.eliminate} argument is currently ignored if the
+  model has full rank.
+  }
 \value{
   A square matrix, with number of rows/columns equal to
   \code{length(coef(object))}.

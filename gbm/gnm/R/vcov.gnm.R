@@ -1,4 +1,4 @@
-vcov.gnm <-  function(object, dispersion = NULL, ...){
+vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
     if (is.null(dispersion)) {
         if (any(object$family$family == c("poisson", "binomial")))
             dispersion <- 1
@@ -21,13 +21,20 @@ vcov.gnm <-  function(object, dispersion = NULL, ...){
     W.X <- sqrt(w) * X
     cov.unscaled <- array(0, dim = rep(length(coefNames), 2),
                           dimnames = rep(list(coefNames), 2))
-    if (eliminate == 0) invInfo <- MPinv(crossprod(W.X))
-    else {
-        Tvec <- colSums(w * X[, seq(eliminate), drop = FALSE])
-        Wmat <- W.X[, -needToElim, drop = FALSE]
-        Umat <- crossprod(W.X[, needToElim, drop = FALSE], Wmat)
-        Wmat <- crossprod(Wmat)
-        invInfo <- MPinv(list(Wmat, Tvec, Umat), eliminate = needToElim)
+    if (object$rank == ncol(W.X)) {
+        invInfo <- chol2inv(chol(crossprod(W.X)))
+    } else {
+        if (eliminate == 0 || !use.eliminate) {
+            invInfo <- MPinv(crossprod(W.X), method = "chol",
+                             rank = object$rank)
+        } else {
+            Tvec <- colSums(w * X[, seq(eliminate), drop = FALSE])
+            Wmat <- W.X[, -needToElim, drop = FALSE]
+            Umat <- crossprod(W.X[, needToElim, drop = FALSE], Wmat)
+            Wmat <- crossprod(Wmat)
+            invInfo <- MPinv(list(Wmat, Tvec, Umat), eliminate = needToElim,
+                             method = "chol", rank = object$rank)
+        }
     }
     cov.unscaled[!isConstrained, !isConstrained] <- invInfo
     attr(cov.unscaled, "rank") <- NULL

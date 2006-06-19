@@ -4,6 +4,7 @@ checkEstimable <- function(model, combMatrix = diag(seq(along = coef(model))),
     if (!inherits(model, "gnm")) stop("model not of class gnm")
     coefs <- coef(model)
     l <- length(coefs)
+    combMatrix <- as.matrix(combMatrix)
     if (nrow(combMatrix) != l) stop(
           "dimensions of combMatrix do not match coef(model)")
     X <- model.matrix(model)[, !is.na(coefs), drop = FALSE]

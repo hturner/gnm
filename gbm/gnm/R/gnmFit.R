@@ -26,6 +26,7 @@
     if (verbose)
         width <- as.numeric(options("width"))
     isConstrained <- is.element(seq(start), constrain)
+    XWX <- NULL
     repeat {
         status <- "not.converged"
         if (any(is.na(start))) {
@@ -177,7 +178,6 @@
                 }
                 znorm <- sqrt(sum(w.z * w.z))
                 w.z <- w.z/znorm
-                XWX <- NULL
                 if (lsMethod == "chol") {
                     W.Z <- cbind(w.z, W.X.scaled)
                     if (eliminate > 0){

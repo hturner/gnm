@@ -1,7 +1,7 @@
 se <- function(model, estimate = ofInterest(model),
                checkEstimability = TRUE, Vcov = NULL, dispersion = NULL, ...){
     if (!inherits(model, "gnm")) stop("model is not of class \"gnm\"")
-    if (!is.nul(Vcov) && !is.null(dispersion)) {
+    if (!is.null(Vcov) && !is.null(dispersion)) {
         Vcov <- Vcov * dispersion
     }
     coefs <- coef(model)

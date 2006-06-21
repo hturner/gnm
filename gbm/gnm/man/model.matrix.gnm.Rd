@@ -12,8 +12,7 @@
   \item{object}{ an object of class \code{gnm}. }
   \item{coef}{ if specified, the vector of coefficients at which the
     local design matrix is evaluated.  }
-  \item{\dots}{ extra arguments will be passed to \code{gnm} in the case
-  of evaluation. }
+  \item{...}{ further arguments.  }
 }
 \value{
   If \code{coef = NULL}, the local design matrix evaluated at

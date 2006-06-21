@@ -10,18 +10,20 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     call <- match.call()
 
     modelTerms <- gnmTerms(formula, substitute(eliminate), data)
-    modelData <- match.call(expand.dots = FALSE)
-    argPos <- match(c("data", "subset", "weights", "na.action", "offset"),
+    modelData <- as.list(match.call(expand.dots = FALSE))
+    argPos <- match(c("data", "subset", "na.action", "weights", "offset"),
                     names(modelData), 0)
-    modelData <- as.call(c(as.name("model.frame"),
-                           formula = modelTerms,
-                           as.list(modelData)[argPos],
-                           drop.unused.levels = TRUE))
     if (inherits(data, "table") && !is.empty.model(modelTerms)) {
-        xFactors <- modelData
-        xFactors$formula <- Freq ~ .
+        xFactors <- as.call(c(as.name("model.frame"),
+                           formula = Freq ~ .,
+                           modelData[argPos[1:3]],
+                           drop.unused.levels = TRUE))
         xFactors <- eval(xFactors, parent.frame())[, -1]
     }
+    modelData <- as.call(c(as.name("model.frame"),
+                           formula = modelTerms,
+                           modelData[argPos],
+                           drop.unused.levels = TRUE))
     modelData <- eval(modelData, parent.frame())
 
     if (!missing(eliminate)) {

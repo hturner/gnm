@@ -4,14 +4,14 @@ model.frame.gnm <- function (formula, ...)
     nargs <- dots[match(c("data", "na.action", "subset"), names(dots), 
         0)]
     if (length(nargs) || is.null(formula$model)) {
-        args <- formula$call
-        args$method <- "model.frame"
-        args[names(nargs)] <- nargs
-        args[[1]] <- as.name("list")
+        fcall <- formula$call
+        fcall$method <- "model.frame"
+        fcall[[1]] <- as.name("gnm")
+        fcall[names(nargs)] <- nargs
         env <- environment(formula$terms)
         if (is.null(env)) 
             env <- parent.frame()
-        do.call("gnm", eval(args, env))
+        eval(fcall, env)
     }
     else formula$model
 }

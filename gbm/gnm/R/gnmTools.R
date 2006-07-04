@@ -100,6 +100,7 @@
                              first[a[i]], nr, nc[i], PACKAGE = "gnm",
                              NAOK = TRUE))
         }
+        browser()
         factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
         unlistOneLevel(factorList)
     }

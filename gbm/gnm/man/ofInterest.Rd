@@ -13,10 +13,9 @@ ofInterest(object) <- value
 
 \arguments{
   \item{object}{ an object of class \code{"gnm"}. }
-  \item{value}{ coefficients of interest, specified by a regular
-    expression, a numeric vector of indices, a character vector of
-    names, "pick" to select from a Tk dialog, or \code{NULL}, the last implying
-    that all non-\code{eliminate}-d coefficients are of interest. }  
+  \item{value}{ a numeric vector of indices specifying the subset of
+    coefficients of interest, or \code{NULL} to specify that all
+    non-\code{eliminate}-d coefficients are of interest.  }  
 }
 \details{
   The \code{"ofInterest"} component of a \code{"gnm"} object is a named

@@ -81,12 +81,10 @@
                 for (i in rep(seq(theta)[oneAtATime], 2)) {
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
-                    w <- weights * ifelse(abs(dmu) < eps, 0, dmu * dmu/vmu)
+                    w <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu
                     Xi <- modelTools$localDesignFunction(theta,
                                                          factorList, i)
-                    score <- crossprod(ifelse(abs(y - mu) < eps,
-                                              0,
-                                              (y - mu)/dmu),
+                    score <- crossprod((abs(y - mu) >= eps) * (y - mu)/dmu,
                                        w * Xi)
                     gradient <- crossprod(w, Xi^2)
                     theta[i] <- as.vector(theta[i] + score/gradient)
@@ -155,9 +153,9 @@
                         cat("\n")
                 }
                 dmu <- family$mu.eta(eta)
-                z <- ifelse(abs(dmu) < eps, 0, (y - mu)/dmu)
+                z <- (abs(dmu) >= eps) * (y - mu)/dmu
                 vmu <- family$variance(mu)
-                w <- weights * ifelse(abs(dmu) < eps, 0, dmu * dmu/vmu)
+                w <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu
                 if (any(!is.finite(w))) {
                     status <- "w.not.finite"
                     break

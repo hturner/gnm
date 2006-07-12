@@ -700,7 +700,7 @@ RChomog1 <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
 Running the analysis again from a different seed
 <<RC_homogeneous_model_2>>=
 set.seed(2)
-RChomog2 <- eval(RChomog1$call)
+RChomog2 <- update(RChomog1)
 @
 gives a different representation of the same model:
 <<Compare_coefficients>>=
@@ -735,12 +735,12 @@ factor is sufficient to make the parameters of the nonlinear term
 identifiable, and hence all parameters in the model identifiable. For example,
 setting the last level of the homogeneous multiplicative factor to zero,
 <<RC_homogeneous_constrained_model>>=
-multCoef <- coef(RChomog1)[grep("Mult", names(coef(RChomog1)))]
+multCoef <- coef(RChomog1)[pickCoef(RChomog1, "Mult")]
 set.seed(1)
 RChomogConstrained1 <- update(RChomog1, constrain = 31,
                               start = c(rep(NA, 23), multCoef - multCoef[8]))
 set.seed(2)
-RChomogConstrained2 <- eval(RChomogConstrained1$call)
+RChomogConstrained2 <- update(RChomogConstrained1)
 identical(coef(RChomogConstrained1), coef(RChomogConstrained2))
 @
 gives the same results regardless of the random seed set beforehand.
@@ -792,16 +792,16 @@ between multinomial and (conditional) Poisson likelihoods.  In such situations
 the sufficient statistic involves a potentially large number of fixed
 multinomial row totals, and the corresponding parameters are of no
 substantive interest.  For an application see Section \ref{Stereotype} below.
-Here we give an artificial illustration: 500 randomly-generated trinomial
+Here we give an artificial illustration: 1000 randomly-generated trinomial
 responses, and a single predictor variable (whose effect on the data generation
 is null):
 <<Eliminate_Eg>>=
 set.seed(1)
-n <- 500
+n <- 1000
 x <- rep(rnorm(n), rep(3, n))
 counts <- as.vector(rmultinom(n, 10, c(0.7, 0.1, 0.2)))
-rowID <- factor(rep(1:n, rep(3, n)))
-resp <- factor(rep(1:3, n))
+rowID <- gl(n, 3, 3 * n)
+resp <- gl(3, 1, 3 * n)
 @
 The logistic model for dependence on \Robject{x} can be fitted as a Poisson
 log-linear model\footnote{For this particular example, of course, it would be
@@ -811,15 +811,15 @@ recommended package \Rpackage{nnet}).  But fitting as here via the
 framework using \Rfunction{Mult} or \Rfunction{Nonlin} terms.}, using
 either \Rfunction{glm} or \Rfunction{gnm}:
 \begin{verbatim}
-> ## Timings on a Pentium 4 3.2GHz, with Windows XP
+> ## Timings on a Pentium M 1.6GHz, under Linux
 > system.time(temp.glm <- glm(counts ~ rowID + resp + resp:x,
-                              family = poisson))[3]
-[1] 6.09
+                              family = poisson))[1]
+[1] 116.8
 > system.time(temp.gnm <- gnm(counts ~ resp + resp:x, eliminate = rowID,
-+                             family = poisson, verbose = FALSE))[3]
-[1] 4.63
+                              family = poisson, verbose = FALSE))[1]
+[1] 22.0
 > c(deviance(temp.glm), deviance(temp.gnm))
-[1] 1196.341 1196.341
+[1] 2462.556 2462.556
 \end{verbatim}
 Here the use of \Rfunarg{eliminate} causes the \Rfunction{gnm} calculations to
 run more quickly than \Rfunction{glm}.  The speed advantage\footnote{In fact
@@ -827,36 +827,37 @@ run more quickly than \Rfunction{glm}.  The speed advantage\footnote{In fact
 than this: its
 implementation in the current version of \Rpackage{gnm} is really just a proof
 of concept, and it has not yet been optimized for speed.} increases with
-the number of eliminated parameters (here 500).
+the number of eliminated parameters (here 1000).
 Since the default behaviour has not been over-ridden
 by an \Rfunarg{ofInterest} argument, the eliminated parameters do
 not appear in printed model summaries:
 \begin{verbatim}
-> summary(temp.gnm)
+>  summary(temp.gnm)
 
 Call:
+
 gnm(formula = counts ~ resp + resp:x, eliminate = rowID, family = poisson,
     verbose = FALSE)
 
 
 Deviance Residuals:
       Min         1Q     Median         3Q        Max
--2.266771  -0.766713  -0.001797   0.375404   2.854789
+-2.852038  -0.786172  -0.004534   0.645278   2.755013
 
 Coefficients of interest:
-         Estimate Std. Error z value Pr(>|z|)
-resp2   -1.964709   0.047995  -40.94   <2e-16
-resp3   -1.290139   0.036258  -35.58   <2e-16
-resp1:x -0.009198         NA      NA       NA
-resp2:x -0.017474         NA      NA       NA
-resp3:x  0.045449         NA      NA       NA
+          Estimate Std. Error z value Pr(>|z|)
+resp2   -1.9614483  0.0340074  -57.68   <2e-16
+resp3   -1.2558460  0.0253589  -49.52   <2e-16
+resp1:x  0.0001049         NA      NA       NA
+resp2:x -0.0155083         NA      NA       NA
+resp3:x  0.0078314         NA      NA       NA
 
 (Dispersion parameter for poisson family taken to be 1)
 
 Std. Error is NA where coefficient has been constrained or is unidentified
 
-Residual deviance: 1196.3 on 996 degrees of freedom
-AIC: 5982.5
+Residual deviance: 2462.6 on 1996 degrees of freedom
+AIC: 12028
 
 Number of iterations: 3
 \end{verbatim}
@@ -864,20 +865,19 @@ As usual, \Rfunction{gnm} has worked here with an over-parameterized
 representation of the model.  The parameterization used by \Rfunction{glm}
 can be seen from
 \begin{verbatim}
-> coef(temp.glm)[-(1:500)]
-      resp2       resp3     resp1:x     resp2:x     resp3:x
--1.96470932 -1.29013922 -0.05464657 -0.06292256          NA
+> coef(temp.glm)[-(1:1000)]
+   resp2    resp3  resp1:x  resp2:x  resp3:x
+-1.96145 -1.25585 -0.00773 -0.02334       NA
 \end{verbatim}
 (we will not print the full summary of \Robject{temp.glm} here, since it gives
-details of all 505 parameters!), which easily can be obtained, if required,
+details of all 1005 parameters!), which easily can be obtained, if required,
 by using \Rfunction{getContrasts}:
 \begin{verbatim}
 > getContrasts(temp.gnm, ofInterest(temp.gnm)[5:3])
-[[1]]
-           estimate         SE    quasiSE     quasiVar
-resp3:x  0.00000000 0.00000000 0.03169678 0.0010046856
-resp2:x -0.06292256 0.05462786 0.04449177 0.0019795175
-resp1:x -0.05464657 0.03580324 0.01664891 0.0002771862
+        estimate      SE quasiSE quasiVar
+resp3:x  0.00000 0.00000 0.02163 0.000468
+resp2:x -0.02334 0.03761 0.03077 0.000947
+resp1:x -0.00773 0.02452 0.01154 0.000133
 \end{verbatim}
 
 The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
@@ -1141,8 +1141,9 @@ Visualization of estimated contrasts using
 the resulting object:
 \begin{center}
 <<qvplot, fig = TRUE>>=
-plot(myContrasts[[1]], levelNames = paste("election", 1:4),
-  main = "Relative strength of religion-vote association, log scale")
+plot(myContrasts,
+  main = "Relative strength of religion-vote association, log scale",
+xlab = "Election", levelNames = 1:4)
 @
 \end{center}
 %Attempting to obtain the equivalent contrasts for the second
@@ -1320,8 +1321,7 @@ data(occupationalStatus)
 RCheterog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Mult(origin, destination), family = poisson,
                data = occupationalStatus)
-RChomog$dev - RCheterog$dev
-RChomog$df.residual - RCheterog$df.residual
+anova(RChomog, RCheterog)
 @
 In this case there is little gain in allowing heterogeneous effects.
 

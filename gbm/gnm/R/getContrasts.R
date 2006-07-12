@@ -1,7 +1,12 @@
-getContrasts <- function(model, sets = NULL, nSets = 1,
+getContrasts <- function(model, sets = NULL,
+                         nSets = if (is.list(sets)) length(sets) else 1,
                          dispersion = NULL,
                          use.eliminate = TRUE,
                          ...){
+    result.as.list <- {
+        (is.null(sets) && (nSets > 1)) ||
+        (!is.null(sets) && is.list(sets))
+    }
     coefs <- coef(model)
     l <- length(coefs)
     of.interest <- ofInterest(model)
@@ -28,7 +33,6 @@ getContrasts <- function(model, sets = NULL, nSets = 1,
     if (is.list(sets)) sets <- sets[setLengths > 1.5]
     if (any(setLengths < 1.5)) warning(
             "Sets with fewer than 2 parameters were dropped,")
-    nSets <- length(sets)
     sets <- lapply(sets, function(x){
         if (is.numeric(x)) x <- coefNames[x]
         contr <- contr.sum(factor(x))
@@ -46,7 +50,7 @@ getContrasts <- function(model, sets = NULL, nSets = 1,
         temp})
     Vcov <-  vcov(model, dispersion = dispersion,
                   use.eliminate = use.eliminate)
-    lapply(coefMatrix, function(x)
+    result <- lapply(coefMatrix, function(x)
        {
         iden <- checkEstimable(model, x)
         if (any(!na.omit(iden))) {
@@ -80,4 +84,5 @@ getContrasts <- function(model, sets = NULL, nSets = 1,
                )
     }
            )
+    if (result.as.list) result else result[[1]]
 }

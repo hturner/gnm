@@ -67,7 +67,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                data = yaish, subset = (dest != 7))
 ## Examine the education multipliers (differences on the log scale):
 ind <- pickCoef(unidiff, "Mult1.Factor1")
-educMultipliers <- getContrasts(unidiff, rev(ind))[[1]]
+educMultipliers <- getContrasts(unidiff, rev(ind))
 ## Now get the same standard errors using a suitable set of
 ## quadratic forms, by calling vcov() directly:
 cmat <- contr.sum(ind)

@@ -47,7 +47,6 @@ coef(unidiff)
 ##
 getContrasts(unidiff, ofInterest(unidiff))
 ##
-## [[1]]
 ##                       Estimate Std. Error   quasiSE   quasiVar
 ## Mult1.Factor1.educ1  0.0000000  0.0000000 0.0975751 0.00952090
 ## Mult1.Factor1.educ2 -0.2253661  0.1611886 0.1288595 0.01660478

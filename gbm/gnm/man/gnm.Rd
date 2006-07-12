@@ -332,7 +332,6 @@ coef(doubleUnidiff)[coefs.of.interest]
 
 ##  Re-parameterize by setting Mult2.Factor1.election1 to zero
 getContrasts(doubleUnidiff, coefs.of.interest)
-## [[1]]
 ##                          estimate        SE    quasiSE    quasiVar
 ## Mult2.Factor1.election1 0.0000000 0.0000000 0.22854380 0.052232270
 ## Mult2.Factor1.election2 0.6817370 0.2401642 0.07395880 0.005469905
@@ -341,7 +340,6 @@ getContrasts(doubleUnidiff, coefs.of.interest)
 
 ##  Same thing but with election 4 as reference category:
 getContrasts(doubleUnidiff, rev(coefs.of.interest))
-## [[1]]
 ##                            estimate        SE    quasiSE    quasiVar
 ## Mult2.Factor1.election4  0.00000000 0.0000000 0.10934823 0.011957035
 ## Mult2.Factor1.election3  0.08754785 0.1446834 0.09475932 0.008979329

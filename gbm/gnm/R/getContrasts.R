@@ -1,5 +1,5 @@
 getContrasts <- function(model, sets = NULL,
-                         nSets = if (is.list(sets)) length(sets) else 1,
+                         nSets = 1,
                          dispersion = NULL,
                          use.eliminate = TRUE,
                          ...){

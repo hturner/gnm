@@ -11,7 +11,7 @@ errors are also computed.
 }
 \usage{
 getContrasts(model, sets = NULL, nSets = 1, dispersion = NULL,
-use.eliminate = TRUE, ...)
+  use.eliminate = TRUE, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}

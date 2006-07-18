@@ -34,6 +34,9 @@ Improvements
 
     o	implemented faster alternatives to ifelse in gnmFit()
 
+    o	speed gains from use of tcrossprod().  Because of this the gnm
+        package now requires R 2.3.0 or later.
+
 Changes in Behaviour
 --------------------
 

@@ -1,6 +1,6 @@
 
 R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.0 (2006-04-24)
+Version 2.3.1 (2006-06-01)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -29,16 +29,14 @@ Done
 > 
 > print(unidiff$deviance, digits = 10)
 [1] 200.3259229
-> print(unidiff $df)
+> print(unidiff$df)
 [1] 116
 > 
 > getContrasts(unidiff, grep("Mult.*educ", names(coef(unidiff))))
-[[1]]
                       estimate        SE    quasiSE   quasiVar
 Mult1.Factor1.educ1  0.0000000 0.0000000 0.09757438 0.00952076
 Mult1.Factor1.educ2 -0.2253718 0.1611874 0.12885847 0.01660450
 Mult1.Factor1.educ3 -0.7434236 0.2335083 0.21182123 0.04486823
 Mult1.Factor1.educ4 -1.0389386 0.3434256 0.32609379 0.10633716
 Mult1.Factor1.educ5 -2.2495026 0.9453763 0.93560641 0.87535935
-
 > 

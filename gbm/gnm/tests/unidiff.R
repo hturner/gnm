@@ -7,6 +7,6 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                      data = yaish, subset = (dest != 7))
 
 print(unidiff$deviance, digits = 10)
-print(unidiff $df)
+print(unidiff$df)
 
 getContrasts(unidiff, grep("Mult.*educ", names(coef(unidiff))))

@@ -1,3 +1,88 @@
+Changes in gnm 0.8-5
+====================
+
+New Features
+------------
+
+    none in this release
+
+Improvements
+------------
+
+    o	added a new `ridge' argument to gnm, to allow some control over
+        the Levenberg-Marquardt regularization of the internal least squares
+        calculation
+
+    o	changed the default ridge constant to 1e-8 (from 1e-5), to increase
+        speed of convergence (especially in cases where there are infinite
+        parameter estimates)
+
+    o	modified the "qr" method so that it no longer checks for rank deficiency
+        (it was both unreliable, and not necessary since the matrix is regularized 
+        prior to solving)
+
+    o	substantial speed improvements in model fitting when there are large 
+        numbers of eliminated parameters, achieved mainly via a new internal 
+        function cholInv1().  Corresponding example timings changed in the 
+        Overview document (vignette).
+
+    o	speed improvements in vcov.gnm() when there are eliminated parameters; new
+        logical argument `use.eliminate' gives control over this
+
+    o	in getContrasts(), added new arguments `dispersion' and `use.eliminate', 
+        both of which are passed on to vcov()
+
+    o	implemented faster alternatives to ifelse in gnmFit()
+
+Changes in Behaviour
+--------------------
+
+    o	in gnm(), changed the default value of argument x to TRUE (it was
+        previously FALSE)
+
+    o	in checkEstimable(), changed the name of the first argument from 
+        `coefMatrix' to `combMatrix' (to reflect better that it is a matrix of 
+        coefficient *combinations*); and changed the default tolerance value to 
+        one which should give more reliable results.  Also, more fundamentally, 
+        changed the check to be whether combinations are in the column span of 
+        crossprod(X) instead of the row span of X; the results should be the same, 
+        but the new version is much faster for large n.
+
+    o	model.matrix.gnm() no longer passes extra arguments to gnm as it's unlikely 
+        to be useful/sensible. For the same reasons it will not pass extra 
+        arguments to model.frame(), unlike model.matrix.lm()
+
+    o	getContrasts() now results in a list only when the `sets' argument itself
+        is a list;  otherwise (ie, normally) the result is a single object 
+        (rather than a list of objects) of class `qv'
+
+Bug fixes
+---------
+
+    o	fixed a bug in internal function quick.glm.fit(), which greatly improves
+        its performance.  Also changed the defailt value of the nIter argument
+        from 3 to 2.
+
+    o	fixed a small bug in demo(gnm)
+
+    o	fixed a bug in vcov.gnm(), which previously gave an error when data were 
+        of class "table")
+
+    o	fixed summary.gnm() so that it now pakes proper account of the dispersion
+        argument
+
+    o	in se(), added new arguments `Vcov' and `dispersion'; the latter fixes a 
+        bug, while the former minimizes wasted computation in summary.gnm
+
+    o	fixed bug in model.matrix.gnm() so that it can compute the model matrix 
+        even when original data is not available - unless model frame has not been
+        saved.  Original data still needed to update model frame - this is the 
+        same as for glms, etc.
+
+    o	fixed bug in gnm() so that reconstructing "table"-class data works for 
+        models with weights/offsets 
+
+
 Changes in gnm 0.8-4
 ====================
 

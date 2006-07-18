@@ -6,27 +6,33 @@
 \documentclass[a4paper]{article}
 
 \usepackage{Sweave}
-\usepackage{alltt}
+%\usepackage{alltt} % now replaced by environments Sinput, Soutput, Scode
 \usepackage{amsmath}
 %\usepackage{times}
 %\usepackage[scaled]{couriers}
 \usepackage{txfonts} % Times, with Belleek math font and txtt for monospaced
+\usepackage[scaled=0.92]{helvet}
+%\usepackage[T1]{fontenc}
+%\usepackage[expert,altbullet,lucidasmallerscale]{lucidabr}
 \usepackage{booktabs}
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,top=2.5cm,nohead]{geometry}
 \usepackage{hyperref}
-\usepackage{moreverb}
+%\usepackage{moreverb}
 
 \setkeys{Gin}{width=0.6\textwidth}
 
 %% The next few definitions from "Writing Vignettes for Bioconductor Packages"
 %% by R Gentleman
-\newcommand{\Robject}[1]{{\texttt{#1}}}
-\newcommand{\Rfunction}[1]{{\texttt{#1}}}
-\newcommand{\Rpackage}[1]{{\textit{#1}}}
-\newcommand{\Rclass}[1]{{\textit{#1}}}
-\newcommand{\Rmethod}[1]{{\textit{#1}}}
-\newcommand{\Rfunarg}[1]{{\textit{#1}}}
+\newcommand{\Robject}[1]{{\emph{\texttt{#1}}}}
+\newcommand{\Rfunction}[1]{{\emph{\texttt{#1}}}}
+\newcommand{\Rcode}[1]{{\emph{\texttt{#1}}}}
+\newcommand{\Rpackage}[1]{{\textsf{#1}}}
+\newcommand{\Rclass}[1]{{\emph{#1}}}
+\newcommand{\Rmethod}[1]{{\emph{\texttt{#1}}}}
+\newcommand{\Rfunarg}[1]{{\emph{\texttt{#1}}}}
+
+\newcommand{\R}{\textsf{R}}
 
 \newcommand\twiddle{{\char'176}}
 
@@ -34,8 +40,8 @@
 %\setlength{\evensidemargin}{0.5in}
 %\setlength{\textwidth}{5.5in}
 
-\title{Generalized nonlinear models in R: an overview of the
-\textbf{\Rpackage{gnm}} package}
+\title{Generalized nonlinear models in \R: an overview of the
+\Rpackage{gnm} package}
 
 \author{Heather Turner and David Firth\footnote{
 This work was supported by the Economic and Social Research Council (UK)
@@ -59,27 +65,27 @@ The \Rpackage{gnm} package provides facilities for fitting
 link-transformed mean is described as a sum of predictor terms, some of
 which may be non-linear in the unknown parameters.  Linear and generalized
 linear models,
-as handled by the \Rfunction{lm} and \Rfunction{glm} functions in R, are
+as handled by the \Rfunction{lm} and \Rfunction{glm} functions in \R, are
 included in the class
 of generalized nonlinear models, as the special case in which there is no
 nonlinear term.
 
 This document gives an extended overview of the \Rpackage{gnm} package, with
 some examples of applications.  The primary package documentation in the
-form of standard help pages, as viewed in R by, for example, \texttt{?gnm} or
-\texttt{help(gnm)}, is supplemented rather than replaced by the present
+form of standard help pages, as viewed in \R\ by, for example, \Rcode{?gnm} or
+\Rcode{help(gnm)}, is supplemented rather than replaced by the present
 document.
 
 We begin below with a preliminary note (Section \ref{glms}) on some
 ways in which
-the \Rpackage{gnm} package extends R's facilities for specifying, fitting
+the \Rpackage{gnm} package extends \R's facilities for specifying, fitting
 and working with generalized \emph{linear} models.  Then (Section
 \ref{nonlinear} onwards) the facilities for nonlinear terms are introduced,
 explained and exemplified.
 
 The \Rpackage{gnm} package is installed in the standard way for CRAN packages,
 for example by using \Rfunction{install.packages}.  Once installed, the
-package is loaded into an R session by
+package is loaded into an \R\ session by
 <<Load_gnm>>=
 library(gnm)
 @
@@ -92,7 +98,7 @@ library(gnm)
 Central to the facilities provided by the \Rpackage{gnm} package is the
 model-fitting function \Rfunction{gnm}, which interprets a model formula
 and returns a model object.  The user interface of \Rfunction{gnm} is patterned
-after \Rfunction{glm} (which is included in R's standard \Rpackage{stats}
+after \Rfunction{glm} (which is included in \R's standard \Rpackage{stats}
 package), and indeed
 \Rfunction{gnm} can be viewed as a replacement for
 \Rfunction{glm} for specifying and fitting generalized linear models.
@@ -188,7 +194,7 @@ From sociological theory --- for which see \citet{Erik82} or \citet{Xie92} ---
 the log-linear interaction between origin and destination is assumed to have
 a particular structure:
 \newpage
-\begin{verbatim}
+\begin{Sinput}
 > levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
 +                         3, 3, 4, 6, 4, 5, 6,
 +                         4, 4, 2, 5, 5, 5, 5,
@@ -196,9 +202,9 @@ a particular structure:
 +                         4, 4, 5, 6, 3, 4, 5,
 +                         5, 4, 5, 5, 3, 3, 5,
 +                         6, 6, 5, 3, 5, 4, 1), 7, 7, byrow = TRUE)
-\end{verbatim}
+\end{Sinput}
 The models of table 3 of \citet{Xie92} can now be fitted as follows:
-\begin{verbatim}
+\begin{Sinput}
 > ### Fit the levels models given in Table 3 of Xie (1992)
 > ## Null association between origin and destination
 > nullModel <- gnm(Freq ~ country:origin + country:destination,
@@ -223,6 +229,8 @@ The models of table 3 of \citet{Xie92} can now be fitted as follows:
 +                        verbose = FALSE)
 >
 > anova(nullModel, commonTopo, multTopo, separateTopo)
+\end{Sinput}
+\begin{Soutput}
 Analysis of Deviance Table
 
 Model 1: Freq ~ country:origin + country:destination
@@ -237,7 +245,7 @@ Model 4: Freq ~ country:origin + country:destination + country:Topo(origin,
 2       103      244.3   5   4615.7
 3       101      216.4   2     28.0
 4        93      208.5   8      7.9
-\end{verbatim}
+\end{Soutput}
 Here we have used \Rfunction{gnm} to fit all of these log-link models; the
 first, second and fourth are log-linear and could equally well have been fitted
 using \Rfunction{glm}.
@@ -248,7 +256,7 @@ In \citet{Wedd74} it was suggested to represent the mean of
 a continuous response variable in
 $[0,1]$ using a quasi-likelihood model with logit link and the
 variance function $\mu^2(1-\mu)^2$.  This is not one of the variance
-functions made available as standard in R's \Rfunction{quasi} family.  The
+functions made available as standard in \R's \Rfunction{quasi} family.  The
 \Rfunction{wedderburn} family provides it.  As an example, Wedderburn's
 analysis of data on leaf blotch on barley can be reproduced as follows:
 <<wedderburn>>=
@@ -306,7 +314,7 @@ sometimes the abbreviation `multiplier', will
 be used throughout this document in preference to the more elegant and standard
 mathematical term `factor'.  This will avoid possible confusion with the
 completely different meaning of the word `factor' --- that is, a categorical
-variable --- in R.
+variable --- in \R.
 }
 in
 the interaction are passed as unspecified arguments to \Rfunction{Mult} and are
@@ -320,19 +328,20 @@ to fit the row-column association model
 also known as the Goodman RC model \citep{Good79}, the \Rfunarg{formula}
 argument
 of \Rfunction{gnm} would be
-\begin{alltt}
-    mu \twiddle\ R + C + Mult(-1 + R, -1 + C)
-\end{alltt}
+\begin{Scode}
+mu ~ R + C + Mult(-1 + R, -1 + C)
+\end{Scode}
 where \Robject{R} and \Robject{C} are row and column factors respectively.
 
 
 
-\Rfunction{Mult} has one specified argument \Rfunarg{multiplicity}, which is
+The \Rfunction{Mult} function has one specified argument
+\Rfunarg{multiplicity}, which is
 \Robject{1} by default. This argument determines the number of times that
 the specified multiplicative structure appears in the model. For example,
-\begin{alltt}
-    mu \twiddle\ R + C + Mult(-1 + R, -1 + C, multiplicity = 2)
-\end{alltt}
+\begin{Scode}
+mu ~ R + C + Mult(-1 + R, -1 + C, multiplicity = 2)
+\end{Scode}
 would give the RC(2) model \citep{Good79}
 \[
 \log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c + \theta_r\phi_c.
@@ -350,9 +359,9 @@ Exponentiated constituent multipliers
 are specified in \Rclass{gnm} models using the symbolic
 function \Rfunction{Exp}; for example, the uniform difference model above
 would be specified by the formula
-\begin{alltt}
-    mu \twiddle\ R:T + C:T + Mult(Exp(-1 + T), R:C)
-\end{alltt}
+\begin{Scode}
+mu ~ R:T + C:T + Mult(Exp(-1 + T), R:C)
+\end{Scode}
 
 \subsection{Other Nonlinear Terms using \Rfunction{Nonlin}}
 
@@ -363,9 +372,9 @@ parameters. \Rfunction{Nonlin} takes a single argument, which is a call to the
 relevant plug-in function.
 
 For example, in the formula
-\begin{alltt}
-    mu ~ x + A + B + Nonlin(PlugInFunction(A, B, arg1 = x, arg2 = C))
-\end{alltt}
+\begin{Scode}
+mu ~ x + A + B + Nonlin(PlugInFunction(A, B, arg1 = x, arg2 = C))
+\end{Scode}
 the call to \Rfunction{Nonlin} is used to specify a term that requires the
 plug-in function \Robject{PlugInFunction}.
 
@@ -388,9 +397,9 @@ row-column effects:
 \[\log \mu_{rc} = \alpha_r + \beta_c + \theta_{r}I(r=c) + \gamma_r\gamma_c.\]
 To fit this model, with response variable named \Robject{mu},
 the formula argument to \Rfunction{gnm} would be
-\begin{alltt}
-    mu \twiddle\ R + C + Diag(R, C) + Nonlin(MultHomog(R, C))
-\end{alltt}
+\begin{Scode}
+mu ~ R + C + Diag(R, C) + Nonlin(MultHomog(R, C))
+\end{Scode}
 
 If the factors passed to \Rfunction{MultHomog} do not have
 exactly the same levels,
@@ -400,7 +409,8 @@ factor, sorted into increasing order.
 \subsubsection{\Rfunction{Dref}}
 \label{NonlinDref}
 
-\Rfunction{Dref} is a plug-in function to fit diagonal reference terms involving
+The function \Rfunction{Dref} is a plug-in  to fit diagonal reference terms
+involving
 two or more factors with a common set of levels. A diagonal reference term
 comprises an additive component for each factor. The component for factor $f$,
 is given by
@@ -429,17 +439,17 @@ and the column factor \Robject{C},
 \frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_c,
 \]
 would be specified by the formula
-\begin{alltt}
-    mu \twiddle\ -1 + Nonlin(Dref(R, C))
-\end{alltt}
+\begin{Scode}
+mu ~ -1 + Nonlin(Dref(R, C))
+\end{Scode}
 
-\Rfunction{Dref} has one specified argument, \Rfunarg{formula},
+The \Rfunction{Dref} function has one specified argument, \Rfunarg{formula},
 which is a symbolic
 description of the dependence of $\delta_f$ on any covariates.
 For example, the formula
-\begin{alltt}
-    mu \twiddle\ -1 + x + Nonlin(Dref(R, C, formula = ~ 1 + x))
-\end{alltt}
+\begin{Scode}
+mu ~ -1 + x + Nonlin(Dref(R, C, formula = ~ 1 + x))
+\end{Scode}
 specifies the following diagonal reference model
 \[
 \mu_{rc} = \beta_Xx + \frac{e^{\xi_1 + \beta_1x}}{e^{\xi_1 + \beta_1x} + e^{\xi_2 + \beta_2x}}\gamma_r +
@@ -468,13 +478,12 @@ variables, a companion function must exist (in the environment of the
 plug-in function), which takes the same arguments as the plug-in function and
 returns deparsed expressions representing the necessary variables. The name of
 this function must be the name of the plug-in function suffixed with
-"Variables". For example, the (non-visible) companion function for
+\Rcode{Variables}\null. For example, the (non-visible) companion function for
 \Rfunction{Dref} is defined as
-\begin{verbatim}
-    DrefVariables <- function(..., formula = ~ 1) {
-        as.character(c(match.call(expand.dots = FALSE)[[2]], formula[[2]]))
-    }
-\end{verbatim}
+\begin{Scode}
+DrefVariables <- function(..., formula = ~ 1) {
+    as.character(c(match.call(expand.dots = FALSE)[[2]], formula[[2]]))}
+\end{Scode}
 returning the expressions passed to unspecified arguments and the right-hand
 side of the formula passed to \Rfunarg{formula}, as character strings. For
 instance
@@ -495,18 +504,18 @@ which can be obtained using the function \Rfunction{getModelFrame}.
 For example, the factors in a \Rfunction{Dref} term are passed directly to
 unspecified arguments, so the dummy variables for these factors can be found as
 follows:
-\begin{alltt}
-    # get design matrices for Dref factors
-    designList <- lapply(list(...), class.ind)
-\end{alltt}
+\begin{Scode}
+# get design matrices for Dref factors
+designList <- lapply(list(...), class.ind)
+\end{Scode}
 But any covariates on which the weights depend are only represented symbolically
 in the \Rfunarg{formula} argument, so the design matrix for these variables must
 be found in the context of the model frame:
-\begin{alltt}
-    ## get design matrix for local structure
-    gnmData <- getModelFrame()
-    local <- model.matrix(formula, data = gnmData)
-\end{alltt}
+\begin{Scode}
+## get design matrix for local structure
+gnmData <- getModelFrame()
+local <- model.matrix(formula, data = gnmData)
+\end{Scode}
 
 The plug-in function should return a list with at least the following
 three components:
@@ -540,9 +549,9 @@ and optionally one further component,
 \end{description}
 
 As an example of a \Robject{start} component, \Rfunction{Dref} returns
-\begin{alltt}
-    c(runif(nLocal) - 0.5, rep(0.5, nGlobal))
-\end{alltt}
+\begin{Scode}
+c(runif(nLocal) - 0.5, rep(0.5, nGlobal))
+\end{Scode}
 where \Robject{nLocal} is the number of weight parameters (parameters which are
 ``local'' to a specific factor) and \Robject{nGlobal} is the number of diagonal
 effects (``global'' level effects across factors). The randomness in the
@@ -551,11 +560,10 @@ final parameterization is emphasised.
 
 The \Rfunction{MultHomog} function provides a simple example of a
 \Robject{predictor} component:
-\begin{alltt}
-    predictor <- function(coef) \{
-        do.call("pprod", lapply(designList, "%*%", coef))
-    \}
-\end{alltt}
+\begin{Scode}
+predictor <- function(coef) {
+    do.call("pprod", lapply(designList, "%*%", coef))}
+\end{Scode}
 which computes the product of the vectors found by multiplying the design matrix
 for each factor in the interaction (held in \Robject{designList}) by the
 homogeneous coefficients (in \Robject{coef}). This function takes advantage of
@@ -566,20 +574,18 @@ homogeneous coefficients (in \Robject{coef}). This function takes advantage of
 
 The \Rfunction{localDesignFunction} created by \Rfunction{MultHomog}
 is slightly more complicated:
-\begin{alltt}
-    localDesignFunction <- function(coef, ind = NULL, ...) \{
-        X <- 0
-        vList <- lapply(designList, "%*%", coef)
-        for (i in seq(designList)) \{
-            if (is.null(ind))
-                X <- X + designList[[*]] * drop(do.call("pprod", vList[-i]))
-            else
-                X <- X + designList[[]][, ind] *
-                    drop(do.call("pprod", vList[-i]))
-        \}
-        X
-    \}
-\end{alltt}
+\begin{Scode}
+localDesignFunction <- function(coef, ind = NULL, ...) {
+    X <- 0
+    vList <- lapply(designList, "%*%", coef)
+    for (i in seq(designList)) {
+        if (is.null(ind))
+            X <- X + designList[[*]] * drop(do.call("pprod", vList[-i]))
+        else
+            X <- X + designList[[]][, ind] *
+                drop(do.call("pprod", vList[-i]))}
+    X}
+\end{Scode}
 Since the result of the predictor function is not needed here, the local design
 function does not have the specified argument \Rfunarg{predictor}, but allows such an
 argument to be passed to the function by the use of the special argument
@@ -618,7 +624,7 @@ reached \Rfunarg{iterMax} if the convergence criteria have been met, with
 tolerance specified by \Rfunarg{tolerance}. Convergence is judged by comparing
 the squared components of the score vector with corresponding elements of the
 diagonal of the Fisher information matrix. If, for all components of the score
-vector, the ratio is less than \texttt{tolerance\^{}2},
+vector, the ratio is less than \Robject{tolerance\^{}2},
 or the corresponding diagonal
 element of the Fisher information matrix is less than 1e-20, the algorithm is
 deemed to have converged.
@@ -638,12 +644,12 @@ If there is no user-specified starting value for a parameter, the
 default value is used. This feature is particularly useful when adding terms to
 a model, since the estimates from the original model can be used as starting
 values, as in this example:
-\begin{alltt}
-    model1 <- gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C))
-    model2 <- gnm(mu \twiddle\ R + C + Mult(-1 + R, -1 + C, multiplicity = 2),
-                  start = c(coef(model1), rep(NA, 10))
-\end{alltt}
-The \Rfunction{gnm} call can be made with \texttt{method = "coefNames"} to
+\begin{Scode}
+model1 <- gnm(mu ~ R + C + Mult(-1 + R, -1 + C))
+model2 <- gnm(mu ~ R + C + Mult(-1 + R, -1 + C, multiplicity = 2),
+              start = c(coef(model1), rep(NA, 10))
+\end{Scode}
+The \Rfunction{gnm} call can be made with \Rcode{method = "coefNames"} to
 identify the parameters of a model prior to estimation, to assist with the
 specification of arguments such as \Rfunarg{start}.
 
@@ -725,7 +731,7 @@ Additional constraints may be specified through the \Rfunarg{constrain} and
 respectively parameters that are to be constrained in the fitting process and
 the values to which they should be constrained. Parameters may be specified by a
 regular expression to match against the parameter names, a numeric vector of
-indices, a character vector of names, or, if \texttt{constrain = "[?]"} they can
+indices, a character vector of names, or, if \Rcode{constrain = "[?]"} they can
 be selected through a \emph{Tk} dialog. The values to constrain to should be
 specified by a numeric vector; if \Rfunarg{constrainTo} is missing, constrained
 parameters will be set to zero.
@@ -765,13 +771,13 @@ The factor to be \Rfunarg{eliminate}-d should be specified by an expression,
 which is then
 interpreted as the first term in the model formula, replacing any intercept
 term. So, for example, in terms of the structure of the model,
-\begin{alltt}
-    gnm(mu ~ A + B + Mult(A, B), eliminate = strata1:strata2)
-\end{alltt}
+\begin{Scode}
+gnm(mu ~ A + B + Mult(A, B), eliminate = strata1:strata2)
+\end{Scode}
 is equivalent to
-\begin{alltt}
-    gnm(mu ~ -1 + strata1:strata2 + A + B + Mult(A, B))
-\end{alltt}
+\begin{Scode}
+gnm(mu ~ -1 + strata1:strata2 + A + B + Mult(A, B))
+\end{Scode}
 However, specifying a factor through \Rfunarg{eliminate} has two
 advantages over the standard specification. First, the structure of the
 eliminated factor is exploited so that computational speed is
@@ -810,17 +816,27 @@ recommended package \Rpackage{nnet}).  But fitting as here via the
 `Poisson trick' allows the model to be elaborated within the \Rpackage{gnm}
 framework using \Rfunction{Mult} or \Rfunction{Nonlin} terms.}, using
 either \Rfunction{glm} or \Rfunction{gnm}:
-\begin{verbatim}
+\begin{Sinput}
 > ## Timings on a Pentium M 1.6GHz, under Linux
 > system.time(temp.glm <- glm(counts ~ rowID + resp + resp:x,
                               family = poisson))[1]
+\end{Sinput}
+\begin{Soutput}
 [1] 116.8
+\end{Soutput}
+\begin{Sinput}
 > system.time(temp.gnm <- gnm(counts ~ resp + resp:x, eliminate = rowID,
                               family = poisson, verbose = FALSE))[1]
+\end{Sinput}
+\begin{Soutput}
 [1] 22.0
+\end{Soutput}
+\begin{Sinput}
 > c(deviance(temp.glm), deviance(temp.gnm))
+\end{Sinput}
+\begin{Soutput}
 [1] 2462.556 2462.556
-\end{verbatim}
+\end{Soutput}
 Here the use of \Rfunarg{eliminate} causes the \Rfunction{gnm} calculations to
 run more quickly than \Rfunction{glm}.  The speed advantage\footnote{In fact
 \Rfunarg{eliminate} is, in principle, capable of much bigger time savings
@@ -831,9 +847,10 @@ the number of eliminated parameters (here 1000).
 Since the default behaviour has not been over-ridden
 by an \Rfunarg{ofInterest} argument, the eliminated parameters do
 not appear in printed model summaries:
-\begin{verbatim}
->  summary(temp.gnm)
-
+\begin{Sinput}
+> summary(temp.gnm)
+\end{Sinput}
+\begin{Soutput}
 Call:
 
 gnm(formula = counts ~ resp + resp:x, eliminate = rowID, family = poisson,
@@ -860,25 +877,29 @@ Residual deviance: 2462.6 on 1996 degrees of freedom
 AIC: 12028
 
 Number of iterations: 3
-\end{verbatim}
+\end{Soutput}
 As usual, \Rfunction{gnm} has worked here with an over-parameterized
 representation of the model.  The parameterization used by \Rfunction{glm}
 can be seen from
-\begin{verbatim}
+\begin{Sinput}
 > coef(temp.glm)[-(1:1000)]
+\end{Sinput}
+\begin{Soutput}
    resp2    resp3  resp1:x  resp2:x  resp3:x
 -1.96145 -1.25585 -0.00773 -0.02334       NA
-\end{verbatim}
+\end{Soutput}
 (we will not print the full summary of \Robject{temp.glm} here, since it gives
 details of all 1005 parameters!), which easily can be obtained, if required,
 by using \Rfunction{getContrasts}:
-\begin{verbatim}
+\begin{Sinput}
 > getContrasts(temp.gnm, ofInterest(temp.gnm)[5:3])
+\end{Sinput}
+\begin{Soutput}
         estimate      SE quasiSE quasiVar
 resp3:x  0.00000 0.00000 0.02163 0.000468
 resp2:x -0.02334 0.03761 0.03077 0.000947
 resp1:x -0.00773 0.02452 0.01154 0.000133
-\end{verbatim}
+\end{Soutput}
 
 The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
@@ -966,14 +987,14 @@ assymetry or asymptotic behaviour in order to return a sufficient profile for a
 given parameter. As an example, consider the following model, described later in
 Section \ref{Unidiff}:
 
-\begin{verbatim}
+\begin{Scode}
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(-1 + educ), -1 + orig:dest),
                constrain = "Mult.*educ1", family = poisson, data = yaish,
                subset = (dest != 7))
 prof <- profile(unidiff, which = 61:65, trace = TRUE)
-\end{verbatim}
+\end{Scode}
 
 If the deviance is quadratic in a given parameter, the profile trace will be
 linear. We can plot the profile traces as follows:
@@ -989,32 +1010,38 @@ and \Robject{Mult1.Factor1.educ4} and asymptotic in
 given parameter, \Rmethod{profile.gnm} uses the same stepsize for profiling
 above and below the original estimate:
 
-\begin{verbatim}
+\begin{Sinput}
 > diff(prof[[2]]$par.vals[, "Mult1.Factor1.educ2"])
+\end{Sinput}
+\begin{Soutput}
  [1] 0.1053072 0.1053072 0.1053072 0.1053072 0.1053072 0.1053072 0.1053072
  [8] 0.1053072 0.1053072 0.1053072
-\end{verbatim}
+\end{Soutput}
 
 When the deviance is assymmetric, \Rmethod{profile.gnm} uses different
-stepsizes to accomadate the skew:
-\begin{verbatim}
+stepsizes to accommodate the skew:
+\begin{Sinput}
 > diff(prof[[4]]$par.vals[, "Mult1.Factor1.educ4"])
+\end{Sinput}
+\begin{Soutput}
  [1] 0.2018393 0.2018393 0.2018393 0.2018393 0.2018393 0.2018393 0.2018393
  [8] 0.2018393 0.2018393 0.2243673 0.2243673 0.2243673 0.2243673 0.2243673
-\end{verbatim}
+\end{Soutput}
 
 Finally, the presence of an asymptote is recorded in the \Robject{"asymptote"}
 attribute of the returned profile:
-\begin{verbatim}
+\begin{Sinput}
 > attr(prof[[5]], "asymptote")
+\end{Sinput}
+\begin{Soutput}
 [1]  TRUE FALSE
-\end{verbatim}
+\end{Soutput}
 
 This information is used by \Rmethod{confint.gnm} to return infinite limits for
 confidence intervals, as appropriate:
-\begin{verbatim}
+\begin{Scode}
 confint(prof)
-\end{verbatim}
+\end{Scode}
 
 \subsection{\Rfunction{ofInterest} and \Rfunction{pickCoef}}
 \label{ofInterest}
@@ -1038,7 +1065,7 @@ may be selected will by default select the parameters of interest, or where this
 may not be appropriate, provide a \emph{Tk} dialog for selection from the parameters of
 interest. Parameters may be specified to the \Rfunarg{ofInterest} argument by a
 regular expression to match against parameter names, by a numeric vector of
-indices, by a character vector of names, or, if \texttt{ofInterest = "[?]"}
+indices, by a character vector of names, or, if \Rcode{ofInterest = "[?]"}
 they can
 be selected through a \emph{Tk} dialog.
 
@@ -1057,9 +1084,9 @@ Otherwise, coefficients may be selected via a \emph{Tk} dialog.
 
 So, returning to the example from the last section, if we had set
 \Robject{ofInterest} to index the education multipliers as follows
-\begin{verbatim}
+\begin{Scode}
 ofInterest(unidiff) <- pickCoef(unidiff, "Mult1.*educ")
-\end{verbatim}
+\end{Scode}
 then it would not have been necessary to specify the \Rfunarg{which} argument of
 \Rfunction{profile} as these parameters would have been selected by default.
 
@@ -1158,7 +1185,7 @@ For more general linear combinations of parameters
 than contrasts,
 the lower-level \Rfunction{se} function (which is called internally by
 \Rfunction{getContrasts} and by the \Rmethod{summary} method)
-can be used directly.  See \texttt{help(se)} for details.
+can be used directly.  See \Rcode{help(se)} for details.
 
 \subsection{\Rfunction{residSVD}}
 \label{residSVD}
@@ -1193,7 +1220,7 @@ maximum, not by
 poor starting values.  In other situations, the use of \Rfunction{residSVD}
 may speed the calculations dramatically (see for example Section
 \ref{GAMMI}), or it may be crucial to success in
-locating the MLE (for example see \texttt{help(House2001)}, where
+locating the MLE (for example see \Rcode{help(House2001)}, where
 the number of multiplicative parameters is in the hundreds).
 
 The \Rfunction{residSVD} result in this instance
@@ -1244,7 +1271,7 @@ by the child's
 mental impairment (MHS) and the parents' socioeconomic status (SES). Although
 both of these factors are ordered, we do not wish to use polynomial contrasts
 in the model, so we begin by setting the contrasts attribute of these
-factors to \Robject{``treatment''}:
+factors to \Rcode{treatment}:
 <<Set_contrasts_attribute>>=
 set.seed(1)
 data(mentalHealth)
@@ -1419,7 +1446,8 @@ The weights for those moving into the salariat, those moving out of the
 salariat and those in any other group, can be evaluated as below
 @
 <<social_mobility_weights>>=
-prop.table(exp(coef(socialMobility)[c(4, 7)] + coef(socialMobility)[c(2, 5)]))
+prop.table(exp(coef(socialMobility)[c(4, 7)] +
+               coef(socialMobility)[c(2, 5)]))
 prop.table(exp(coef(socialMobility)[c(3, 6)] + coef(socialMobility)[c(2, 5)]))
 prop.table(exp(coef(socialMobility)[c(2, 5)]))
 @ %def
@@ -1467,13 +1495,14 @@ two education factors. This model may be expressed as
 \]
 
 The baseline model can be fitted as follows:
-\begin{alltt}
+\begin{Sinput}
 > set.seed(1)
 >  A <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
 +           Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
 +           verbose = FALSE)
 > A
-
+\end{Sinput}
+\begin{Soutput}
 Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
@@ -1495,16 +1524,17 @@ Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2
 Deviance:            425.3389
 Pearson chi-squared: 425.3389
 Residual df:         576
-\end{alltt}
+\end{Soutput}
 The coefficients of the covariates are not aliased with the parameters of the
 diagonal reference term and thus the basic identifiability constraints that have
 been imposed are sufficient for these parameters to be identified. The diagonal
 effects do not need to be constrained as they represent contrasts with the
 off-diagonal cells.  Therefore the only unidentified parameters in this model
 are the weight parameters. This is confirmed in the summary of the model:
-\begin{alltt}
+\begin{Sinput}
 > summary(A)
-
+\end{Sinput}
+\begin{Soutput}
 Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
@@ -1540,16 +1570,17 @@ Residual deviance: 425.34 on 576 degrees of freedom
 AIC: 1507.8
 
 Number of iterations: 10
-
-\end{alltt}
+\end{Soutput}
 The over-parameterization of the weights is immaterial, since the weights have
 been constrained to sum to one as described earlier, so the weights themselves
 are estimable. The weights may be evaluated as follows:
-\begin{alltt}
+\begin{Sinput}
 > prop.table(exp(coef(A)[6:7]))
+\end{Sinput}
+\begin{Soutput}
 Dref(MOPLM, FOPLF).MOPLM Dref(MOPLM, FOPLF).FOPLF
                0.4225701                0.5774299
-\end{alltt}
+\end{Soutput}
 giving the values reported by \citet{Vand02}. All the other coefficients of
 model A are the same as those reported by \citet{Vand02} except the coefficients
 of the mother's gender role (MRMM) and the father's gender role
@@ -1559,14 +1590,15 @@ covariates. However, simply reversing the signs of these coefficients does not
 give the same model, since the estimates of the diagonal effects depend on the
 estimates of these coefficients. For consistent interpretation of the covariate
 coefficients, it is better to recode the gender role factors as follows:
-\begin{alltt}
+\begin{Sinput}
 > MRMM2 <- as.numeric(!conformity$MRMM)
 > FRMF2 <- as.numeric(!conformity$FRMF)
 > A <- gnm(MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
 +           Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
 +           verbose = FALSE)
 > A
-
+\end{Sinput}
+\begin{Soutput}
 Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
     Nonlin(Dref(MOPLM, FOPLF)), family = gaussian, data = conformity,
@@ -1588,7 +1620,7 @@ Dref(MOPLM, FOPLF).FOPLF      Dref(MOPLM, FOPLF).1      Dref(MOPLM, FOPLF).2
 Deviance:            425.3389
 Pearson chi-squared: 425.3389
 Residual df:         576
-\end{alltt}
+\end{Soutput}
 The coefficients of the covariates are now as reported by \citet{Vand02}, but
 the diagonal effects have been adjusted appropriately.
 
@@ -1606,12 +1638,13 @@ e^{\xi_2 + \beta_2x}}\gamma_r + \frac{e^{\xi_2 + \beta_2x}}{e^{\xi_1 + \beta_1x}
 
 This model can be fitted as below, using the original coding for the gender
 role factors for ease of comparison to the results reported by \citet{Vand02},
-\begin{alltt}
+\begin{Sinput}
 > F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
 +           Nonlin(Dref(MOPLM, FOPLF, formula = ~ 1 + MFCM)), family = gaussian,
 +           data = conformity, verbose = FALSE)
 > F
-
+\end{Sinput}
+\begin{Soutput}
 Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
     Nonlin(Dref(MOPLM, FOPLF, formula = ~1 + MFCM)), family = gaussian,
@@ -1655,22 +1688,28 @@ Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)
 Deviance:            420.9022
 Pearson chi-squared: 420.9022
 Residual df:         575
-\end{alltt}
+\end{Soutput}
 In this case there are two sets of weights, one for when the mother's conflict
 score is less than average (coded as zero) and one for when the score is greater
 than average (coded as one). These can be evaluated as follows:
-\begin{alltt}
+\begin{Sinput}
 > prop.table(exp(coef(F))[c(6,8)])
+\end{Sinput}
+\begin{Soutput}
 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.(Intercept)
                                                 0.7446574
 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.(Intercept)
                                                 0.2553426
+\end{Soutput}
+\begin{Sinput}
 > prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)]))
+\end{Sinput}
+\begin{Soutput}
 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).MOPLM.MFCM
                                         0.02977308
 Dref(MOPLM, FOPLF, formula = ~1 + MFCM).FOPLF.MFCM
                                         0.97022692
-\end{alltt}
+\end{Soutput}
 giving the same weights as in Table 4 of \citet{Vand02}.
 
 \subsection{Uniform Difference (UNIDIFF) Models}
@@ -1755,7 +1794,7 @@ row and column scores, indicating the importance of the component, or axis.
 
 For cell means $\mu_{rc}$ a GAMMI-K model has the form
 \[
-g(\mu_{rc}) d= \alpha_r + \beta_c + \sum_{k=1}^K
+g(\mu_{rc}) = \alpha_r + \beta_c + \sum_{k=1}^K
 \sigma_k\gamma_{kr}\delta_{kc},
 \]
 in which $g$ is a link function, $\alpha_r$ and $\beta_c$ are the row and column

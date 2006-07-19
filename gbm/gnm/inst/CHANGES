@@ -63,7 +63,7 @@ Bug fixes
 ---------
 
     o	fixed a bug in internal function quick.glm.fit(), which greatly improves
-        its performance.  Also changed the defailt value of the nIter argument
+        its performance.  Also changed the default value of the nIter argument
         from 3 to 2.
 
     o	fixed a small bug in demo(gnm)
@@ -71,7 +71,7 @@ Bug fixes
     o	fixed a bug in vcov.gnm(), which previously gave an error when data were 
         of class "table")
 
-    o	fixed summary.gnm() so that it now pakes proper account of the dispersion
+    o	fixed summary.gnm() so that it now takes proper account of the dispersion
         argument
 
     o	in se(), added new arguments `Vcov' and `dispersion'; the latter fixes a 

@@ -9,4 +9,4 @@ URL: http://go.warwick.ac.uk/heatherturner/gnm
 License: GPL version 2 or later
 Depends: R (>= 2.3.0)
 Imports: MASS, stats, graphics, nnet
-Suggests: gtools, qvcalc, relimp, tcltk
+Suggests: gtools, qvcalc (>= 0.8-3), relimp, tcltk

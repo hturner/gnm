@@ -25,8 +25,8 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
     }    
     nvars <- max(0, varseq)
 
-    nonlinear <- match(TRUE, !sapply(attr(gnmTerms(object), "parsedLabels"),
-                                     inherits, "Linear"))
+    nonlinear <- match(TRUE, attr(terms(object), "classID") != "Linear")
+    
     if (is.na(nonlinear))
         nonlinear <- nvars + 1
     

@@ -94,12 +94,14 @@ profile.gnm(fitted, which = ofInterest(fitted), alpha = 0.05, maxsteps = 10,
   \code{\link[MASS]{profile.glm}}, \code{\link{ofInterest}}
 }
 \examples{
+set.seed(1)
+
 ### Example in which deviance is near quadratic
 data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
-classMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination)),
-                     constrain = "[.]origin", family = binomial,
+classMobility <- gnm(yvar ~ -1 + Dref(origin, destination),
+                     constrain = "delta1", family = binomial,
                      data = voting)
 prof <- profile(classMobility, trace = TRUE)
 plot(prof)
@@ -113,7 +115,7 @@ cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 ### Another near quadratic example
 data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               Nonlin(MultHomog(origin, destination)),
+               MultHomog(origin, destination),
                ofInterest = "MultHomog", constrain = "MultHomog.*1",
                family = poisson, data = occupationalStatus)
 prof <- profile(RChomog, trace = TRUE)
@@ -123,22 +125,39 @@ confint(prof)
 coefData <- se(RChomog)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
+## Another near quadratic example, with more complex constraints
+data(voting)
+count <- with(voting, percentage/100 * total)
+yvar <- cbind(count, voting$total - count)
+classMobility <- gnm(yvar ~ -1 + Dref(origin, destination), 
+                     family = binomial, data = voting)
+wts <- prop.table(exp(coef(classMobility))[1:2])
+classMobility <- update(classMobility, constrain = "delta1",
+                        constrainTo = log(wts[1]))
+sum(exp(parameters(classMobility))[1:2]) #=1
+prof <- profile(classMobility, trace = TRUE)
+plot(prof)
+## confint similar to MLE +/- 1.96*s.e. 
+confint(prof, trace = TRUE)
+coefData <- se(classMobility)
+cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
+
 ### An example showing asymptotic deviance
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest),
-               ofInterest = "Mult.*educ", constrain = "Mult.*educ1",
+               Mult(Exp(educ), orig:dest),
+               ofInterest = "[.]educ", constrain = "[.]educ1",
                family = poisson, data = yaish, subset = (dest != 7))
 prof <- profile(unidiff, trace = TRUE)
 plot(prof)
 ## clearly not quadratic for Mult1.Factor1.educ4 or Mult1.Factor1.educ5!
 confint(prof)
 ##                          2.5 \%     97.5 \%
-## Mult1.Factor1.educ1         NA         NA
-## Mult1.Factor1.educ2 -0.5978901  0.1022447
-## Mult1.Factor1.educ3 -1.4836854 -0.2362378
-## Mult1.Factor1.educ4 -2.5792398 -0.2953420
-## Mult1.Factor1.educ5       -Inf -0.7006889
+## Mult(Exp(.), orig:dest).educ1         NA         NA
+## Mult(Exp(.), orig:dest).educ2 -0.5978901  0.1022447
+## Mult(Exp(.), orig:dest).educ3 -1.4836854 -0.2362378
+## Mult(Exp(.), orig:dest).educ4 -2.5792398 -0.2953420
+## Mult(Exp(.), orig:dest).educ5       -Inf -0.7006889
 ## coefData <- se(unidiff)
 ## cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
@@ -146,9 +165,9 @@ confint(prof)
 data(backPain)
 backPainLong <- expandCategorical(backPain, "pain")
 
-oneDimensional <- gnm(count ~ pain + Mult(pain - 1, x1 + x2 + x3 - 1),
+oneDimensional <- gnm(count ~ pain + Mult(pain, x1 + x2 + x3),
                       eliminate = id,  family = "poisson",
-                      constrain = "Mult.*(worse|x1)", constrainTo = c(0, 1),
+                      constrain = "[.](painworse|x1)", constrainTo = c(0, 1),
                       data = backPainLong)
 prof <- profile(oneDimensional, trace = TRUE)
 plot(prof)

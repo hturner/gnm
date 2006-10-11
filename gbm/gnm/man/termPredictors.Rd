@@ -46,7 +46,7 @@ A <- gl(4, 6)
 B <- gl(6, 1, 24)
 y <- cbind(rbinom(24, 10, 0.5), rep(10, 24))
 set.seed(1)
-gnmAB <- gnm(y ~ A + B + Mult(A - 1, B - 1), family = binomial)
+gnmAB <- gnm(y ~ A + B + Mult(A, B), family = binomial)
 contrib <- termPredictors(gnmAB)
 contrib
 all.equal(as.numeric(rowSums(contrib)),

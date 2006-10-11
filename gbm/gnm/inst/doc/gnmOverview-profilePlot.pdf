@@ -2,10 +2,10 @@
 %Å‚Å„ÅœÅ”\r
 1 0 obj
 <<
-/CreationDate (D:20060601095016)
-/ModDate (D:20060601095016)
+/CreationDate (D:20060922120623)
+/ModDate (D:20060922120623)
 /Title (R Graphics Output)
-/Producer (R 2.3.0)
+/Producer (R 2.3.1)
 /Creator (R)
 >>
 endobj
@@ -37,6 +37,7 @@ endobj
 >>
 stream
 q
+Q q 49.00 258.21 123.52 87.29 re W n
 Q q 0.00 0.00 395.25 394.50 re W n
 /GS1 gs
 0.000 0.000 0.000 RG
@@ -82,7 +83,7 @@ Q q 0.00 197.25 197.62 197.25 re W n
 BT
 /GS257 gs
 0.000 0.000 0.000 rg
-/F2 1 Tf 10.00 0.00 0.00 10.00 65.44 212.79 Tm (Mult1.Factor1.educ2) Tj
+/F2 1 Tf 10.00 0.00 0.00 10.00 47.61 212.79 Tm (Mult\(Exp\(.\), orig:dest\).educ2) Tj
 /F2 1 Tf 0.00 10.00 -10.00 0.00 10.76 299.35 Tm (z) Tj
 ET
 Q q 49.00 258.21 123.52 87.29 re W n
@@ -175,7 +176,7 @@ Q q 197.62 197.25 197.62 197.25 re W n
 BT
 /GS257 gs
 0.000 0.000 0.000 rg
-/F2 1 Tf 10.00 0.00 0.00 10.00 263.06 212.79 Tm (Mult1.Factor1.educ3) Tj
+/F2 1 Tf 10.00 0.00 0.00 10.00 245.24 212.79 Tm (Mult\(Exp\(.\), orig:dest\).educ3) Tj
 /F2 1 Tf 0.00 10.00 -10.00 0.00 208.38 299.35 Tm (z) Tj
 ET
 Q q 246.63 258.21 123.52 87.29 re W n
@@ -275,7 +276,7 @@ Q q 0.00 0.00 197.62 197.25 re W n
 BT
 /GS257 gs
 0.000 0.000 0.000 rg
-/F2 1 Tf 10.00 0.00 0.00 10.00 65.44 15.54 Tm (Mult1.Factor1.educ4) Tj
+/F2 1 Tf 10.00 0.00 0.00 10.00 47.61 15.54 Tm (Mult\(Exp\(.\), orig:dest\).educ4) Tj
 /F2 1 Tf 0.00 10.00 -10.00 0.00 10.76 102.10 Tm (z) Tj
 ET
 Q q 49.00 60.96 123.52 87.29 re W n
@@ -379,7 +380,7 @@ Q q 197.62 0.00 197.62 197.25 re W n
 BT
 /GS257 gs
 0.000 0.000 0.000 rg
-/F2 1 Tf 10.00 0.00 0.00 10.00 263.06 15.54 Tm (Mult1.Factor1.educ5) Tj
+/F2 1 Tf 10.00 0.00 0.00 10.00 245.24 15.54 Tm (Mult\(Exp\(.\), orig:dest\).educ5) Tj
 /F2 1 Tf 0.00 10.00 -10.00 0.00 208.38 102.10 Tm (z) Tj
 ET
 Q q 246.63 60.96 123.52 87.29 re W n
@@ -438,11 +439,17 @@ Q q 246.63 60.96 123.52 87.29 re W n
 362.98 142.95 l
 365.58 145.01 l
 S
+Q q 0.00 0.00 395.25 394.50 re W n
+BT
+/GS257 gs
+0.000 0.000 0.000 rg
+/F3 1 Tf 11.00 0.00 0.00 11.00 56.26 361.03 Tm (Profile traces for the multipliers of the orig:dest association) Tj
+ET
 Q
 endstream
 endobj
 8 0 obj
-8463
+8744
 endobj
 3 0 obj
 <<
@@ -457,8 +464,8 @@ endobj
 4 0 obj
 <<
 /ProcSet [/PDF /Text]
-/Font << /F1 5 0 R /F2 10 0 R >>
-/ExtGState << /GS1 11 0 R /GS257 12 0 R >>
+/Font << /F1 5 0 R /F2 10 0 R /F3 11 0 R >>
+/ExtGState << /GS1 12 0 R /GS257 13 0 R >>
 >>
 endobj
 9 0 obj
@@ -477,38 +484,46 @@ endobj
 /BaseFont /Helvetica
 /Encoding 9 0 R
 >> endobj
-11 0 obj
+11 0 obj <<
+/Type /Font
+/Subtype /Type1
+/Name /F3
+/BaseFont /Helvetica-Bold
+/Encoding 9 0 R
+>> endobj
+12 0 obj
 <<
 /Type /ExtGState
 /CA 1.000 >>
 endobj
-12 0 obj
+13 0 obj
 <<
 /Type /ExtGState
 /ca 1.000
 >>
 endobj
 xref
-0 13
+0 14
 0000000000 65535 f 
 0000000021 00000 n 
 0000000163 00000 n 
-0000008911 00000 n 
-0000008994 00000 n 
+0000009192 00000 n 
+0000009275 00000 n 
 0000000212 00000 n 
 0000000295 00000 n 
 0000000375 00000 n 
-0000008891 00000 n 
-0000009113 00000 n 
-0000009370 00000 n 
-0000009467 00000 n 
-0000009516 00000 n 
+0000009172 00000 n 
+0000009405 00000 n 
+0000009662 00000 n 
+0000009759 00000 n 
+0000009861 00000 n 
+0000009910 00000 n 
 trailer
 <<
-/Size 13
+/Size 14
 /Info 1 0 R
 /Root 2 0 R
 >>
 startxref
-9565
+9959
 %%EOF

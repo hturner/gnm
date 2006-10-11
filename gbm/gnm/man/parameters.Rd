@@ -24,7 +24,7 @@ parameters(object)
 \examples{
 data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               Nonlin(MultHomog(origin, destination)), family = poisson,
+               MultHomog(origin, destination), family = poisson,
                data = occupationalStatus, ofInterest = "MultHomog",
                constrain = "MultHomog.*1")
 coefficients(RChomog)

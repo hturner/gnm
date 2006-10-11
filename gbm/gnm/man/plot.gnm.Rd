@@ -78,7 +78,7 @@ data(occupationalStatus)
 
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               Nonlin(MultHomog(origin, destination)), family = poisson,
+               MultHomog(origin, destination), family = poisson,
                data = occupationalStatus)
 
 ## Plot model diagnostics

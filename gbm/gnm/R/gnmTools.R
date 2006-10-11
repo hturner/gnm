@@ -1,165 +1,253 @@
 "gnmTools" <-
-    function(gnmTerms, gnmData, x, termPredictors)
+    function(modelTerms, gnmData, x, termPredictors)
 {
-    labelList <- attr(gnmTerms, "parsedLabels")
-    prefixList <- attr(gnmTerms, "prefixLabels")
-    offsetList <- lapply(attr(gnmTerms, "offset"), function(x) {
-        if (!is.null(x))
-            eval(parse(text = x), envir = gnmData)
-        else
-            0
-    })
+    unitLabels <- attr(modelTerms, "unitLabels")
+    common <- attr(modelTerms, "common")
+    prefixLabels <- attr(modelTerms, "prefixLabels")
+    match <- attr(modelTerms, "match")
+    varLabels <- attr(modelTerms, "varLabels")
+    block <- attr(modelTerms, "block")
+    classID <- attr(modelTerms, "classID")
+    NonlinID <- attr(modelTerms, "NonlinID")
 
-    nFactor <- length(labelList)
-    termTools <- factorAssign <- vector(mode = "list", length = nFactor)
-    linear <- sapply(labelList, inherits, "Linear")
-    if (any(linear)) {
-        tmp <- model.matrix(terms(reformulate(c(0, unlist(labelList[linear]))),
-                                  keep.order = TRUE), data = gnmData)
-        tmpAssign <- attr(tmp, "assign") + !attr(tmp, "assign")[1]
-        tmpAssign <- structure(which(linear)[tmpAssign], names = colnames(tmp))
-        termTools[linear] <- lapply(split(1:ncol(tmp), tmpAssign),
-                                    function(i, M) M[, i , drop = FALSE], tmp)
-        factorAssign[linear] <- split(tmpAssign, tmpAssign)
-    }
-    for (i in which(!linear)) {
-        if (inherits(labelList[[i]], "Nonlin")) {
-            termTools[[i]] <- eval(attr(labelList[[i]], "call"), gnmData,
-                                   environment(gnmTerms))
+    nFactor <- length(varLabels)
+    seqFactor <- seq(nFactor)
+    termTools <- factorAssign <- thetaID <- vector(mode = "list",
+                                                   length = nFactor)
+    blockID <- unique(block)
+    adj <- 1
+    for (i in blockID) {
+        b <- block == i
+        if (sum(b) == 1 && length(grep("Nonlin\\(", unitLabels[b]))) {
+            i <- which(b)
+            termTools[[i]] <- eval(parse(text = unitLabels[b])[[1]][[2]],
+                                   gnmData, environment(modelTerms))
+            nTheta <- length(termTools[[i]]$labels)
             factorAssign[[i]] <-
-                structure(rep(i, length(termTools[[i]]$labels)),
-                          names = paste(prefixList[[i]], ".",
-                          termTools[[i]]$labels, sep = ""))
+                structure(rep.int(i, nTheta),
+                          names = paste(prefixLabels[i], termTools[[i]]$labels,
+                                        sep = ""))
+            thetaID[[i]] <- structure(adj + seq(nTheta) - 1,
+                                      names = termTools[[i]]$labels)
+            adj <- adj + nTheta
+        }
+        else if (all(common[b])) {
+            designList <- lapply(unitLabels[b],
+                                 function(x) class.ind(gnmData[[x]]))
+            
+            ## get labels for all levels
+            allLevels <- lapply(designList, colnames)
+            labels <- unique(unlist(allLevels))
+            nLevels <- length(labels)
+
+            ## expand design matrices if necessary
+            if (!all(mapply(identical, allLevels, list(labels)))) {
+                labels <- sort(labels)
+                M <- matrix(0, nrow = nrow(designList[[1]]), ncol = nLevels,
+                            dimnames = list(NULL, labels))
+                designList <- lapply(designList, function(design, M) {
+                    M[,colnames(design)] <- design
+                    M}, M)
+            }
+            i <- which(b)
+            nm <- paste(prefixLabels[i], labels, sep = "")
+            termTools[b] <- designList
+            factorAssign[b] <- lapply(i, function(x, nLevels, nm)
+                                      structure(rep(x, nLevels), names = nm),
+                                      nLevels, nm)
+            thetaID[b] <- rep(list(structure(adj + seq(nLevels) - 1,
+                                             names = nm)),
+                              length(designList))
+            adj <- adj + nLevels
         }
         else {
-            termTools[[i]] <- model.matrix(terms(reformulate(labelList[[i]]),
-                                                 keep.order = TRUE),
-                                           data = gnmData)
-            factorAssign[[i]] <- structure(rep(i, ncol(termTools[[i]])),
-                                           names = paste(prefixList[[i]],
-                                           colnames(termTools[[i]]), sep = ""))
+            tmp <- model.matrix(terms(reformulate(c(0, unitLabels[b])),
+                                      keep.order = TRUE), data = gnmData)
+            tmpAssign <- attr(tmp, "assign") + !attr(tmp, "assign")[1]
+            nm <- paste(prefixLabels[b], colnames(tmp)[match[b] | sum(b) > 1],
+                        sep = "")
+            tmpAssign <- structure(which(b)[tmpAssign],
+                                   names = nm)
+            termTools[b] <- lapply(split(1:ncol(tmp), tmpAssign),
+                                   function(i, M) M[, i , drop = FALSE], tmp)
+            factorAssign[b] <- split(tmpAssign, tmpAssign)
+            thetaID[b] <- split(structure(adj + seq(length(tmpAssign)) - 1,
+                                          names = nm), tmpAssign)
+            adj <- adj + length(tmpAssign)
         }
     }
-    
-    factorAssign <- do.call("c", factorAssign)
+
+    factorAssign <- unlist(factorAssign)
+    parLabels <- names(factorAssign)
     nTheta <- length(factorAssign)
     nr <- dim(gnmData)[1]
     tmp <- seq(factorAssign) * nr
     first <- c(0, tmp[-nTheta])
+    firstX <- first[unlist(thetaID)]
     last <- tmp - 1
+    lastX <- last[unlist(thetaID)] + 1
     nc <- tabulate(factorAssign)
     tmp <- cumsum(nc)
     a <- c(1, tmp[-nFactor] + 1)
     z <- tmp
-    storage.mode(first) <- storage.mode(last) <- storage.mode(a) <-
-        storage.mode(z) <- "integer"
+    lt <- last[z] - first[a] + 1
+    storage.mode(firstX) <- storage.mode(first) <- storage.mode(lastX) <-
+        storage.mode(last) <- storage.mode(a) <-
+        storage.mode(z) <- storage.mode(lt) <- "integer"
     baseMatrix <- matrix(1, nrow = nr, ncol = nTheta)
     for (i in seq(termTools)) 
         if (is.matrix(termTools[[i]]))
             baseMatrix[, factorAssign == i] <- termTools[[i]]
     X <- baseMatrix
-    colnames(X) <- names(factorAssign)
-    storage.mode(X) <- storage.mode(baseMatrix) <- "double"
+    colID <- match(unlist(thetaID), unlist(thetaID))
+    if (any(duplicated(parLabels[unique(colID)]))){
+        parLabels[unique(colID)] <- make.unique(parLabels[unique(colID)])
+        warning("Using make.unique() to make default parameter labels unique",
+                call. = FALSE)
+    }
+    colnames(X) <- parLabels
+    X <- X[, unique(colID), drop = FALSE]
 
-    multIndex <- gsub("\.Factor[0-9]+\.", "", unlist(prefixList))
-    multIndex[multIndex == ""] <- seq(sum(multIndex == ""))
-    
-    classID <- sapply(labelList, class)
-    plugInStart <- !sapply(lapply(termTools, function(x) x$start), is.null)
-    thetaClassID <- classID
-    thetaClassID[plugInStart] <- "plugInStart"
-    thetaClassID <- structure(thetaClassID[factorAssign],
-                                names = names(factorAssign))
+    thetaClassID <- structure(classID[factorAssign], names = parLabels)
+    theta <- rep(NA, length(factorAssign))
+    for (i in blockID) {
+        b <- block == i
+        if (sum(b) == 1 && !is.null(termTools[[which(b)]]$start)){
+            theta[unlist(thetaID[b])] <- termTools[[which(b)]]$start
+            thetaClassID[unlist(thetaID[b])][is.na(termTools[[which(b)]]$start)] <-
+                "Linear"
+        }
+    }
+    names(theta) <- parLabels
+
+    thetaClassID <- thetaClassID[unique(colID)]
+    theta <- theta[unique(colID)]
+
+    for (i in seq(attr(modelTerms, "predictor"))) {
+        if (!is.null(attr(modelTerms, "start")[[i]])) {
+            termID <- unique(unlist(thetaID[attr(modelTerms, "assign") == i]))
+            theta[termID] <- attr(modelTerms, "start")[[i]](theta[termID])
+        }
+    }
     
     if (x || termPredictors) {
-        termAssign <- c(factor(multIndex, unique(multIndex)))[factorAssign]
-        if (!is.null(attr(gnmTerms, "termsID")))
-            termAssign <- attr(gnmTerms, "termsID")[termAssign]
-        if (attr(attr(gnmTerms, "terms"), "intercept"))
+        termAssign <- attr(modelTerms, "assign")[factorAssign]
+        if (attr(modelTerms, "intercept"))
             termAssign <- termAssign - 1
     }
 
-    start <- function(scale = 0.1) {
-        theta <- structure(runif(nTheta, -1, 1) * scale,
-                           names = names(factorAssign))
-        theta <- ifelse(theta < 0, theta - scale, theta + scale)
-        for (i in seq(termTools)[plugInStart])
-            theta[factorAssign == i] <- termTools[[i]]$start
-        theta
+    prodList <- vector(mode = "list", length = nFactor)
+    names(prodList) <- varLabels
+    NonlinID <- NonlinID == "Nonlin"
+    classID <- classID == "Special"
+
+    varPredictors <- function(theta) {
+        for (i in seqFactor) {
+            if (NonlinID[i])
+                prodList[[i]] <-
+                    drop(termTools[[i]]$predictor(theta[thetaID[[i]]]))
+            else
+                prodList[[i]] <- .Call("submatprod", baseMatrix,
+                                       theta[thetaID[[i]]],
+                                       first[a[i]], nr, nc[i],
+                                       PACKAGE = "gnm", NAOK = TRUE)
+        }
+        prodList
+    }
+    
+    predictor <- function(varPredictors, term = FALSE) {
+        if (term)
+            sapply(attr(modelTerms, "predictor"), eval,
+                   varPredictors)
+        else
+            eval(e, varPredictors)
     }
 
-    factorList <- function(theta, term = FALSE) {
-        factorList <- parameterList <- unname(split(theta, factorAssign))
-        for (i in seq(factorList)) {
-            factorList[[i]] <-
-                switch(classID[i],
-                       "Exp" = exp(.Call("submatprod", baseMatrix,
-                       parameterList[[i]], first[a[i]], nr, nc[i])),
-                       "Nonlin" = termTools[[i]]$predictor(parameterList[[i]]),
-                       .Call("submatprod", baseMatrix, parameterList[[i]],
-                             first[a[i]], nr, nc[i], PACKAGE = "gnm",
-                             NAOK = TRUE))
-        }
-        factorList <- mapply("+", factorList, offsetList, SIMPLIFY = FALSE)
-        unlistOneLevel(factorList)
-    }
+    gnmData <- lapply(gnmData[, !names(gnmData) %in% varLabels, drop = FALSE],
+                      drop) 
+    e <- do.call("bquote",
+                 list(sumExpression(attr(modelTerms, "predictor")), gnmData))
+    varDerivs <- lapply(varLabels, deriv, expr = e)
     
-    predictor <- function(factorList, term = FALSE) {
-        termPredictors <- lapply(split(factorList, multIndex), do.call,
-                                 what = pprod)
-        if (term) {
-            if (!is.null(attr(gnmTerms, "termsID")))
-                 termPredictors <- lapply(split(termPredictors,
-                                          attr(gnmTerms, "termsID")), do.call,
-                                          what = psum)
-            termPredictors <- do.call("cbind", termPredictors)
-            colnames(termPredictors) <-
-                c("(Intercept)"[attr(attr(gnmTerms, "terms"), "intercept")],
-                  attr(attr(gnmTerms, "terms"), "term.labels"))
-        }
-        else termPredictors <- rowSums(do.call("cbind", termPredictors))
-        termPredictors
-    }
+
+    commonAssign <- factorAssign[colID]
+    nCommon <- table(commonAssign[!duplicated(factorAssign)])
+    tmpID <- unique(commonAssign)
+    tmpID <- tmpID[(NonlinID | classID)[tmpID]]
+    nCommon <- as.integer(nCommon[as.character(tmpID)])
+    if (any(NonlinID | classID))
+        specialVarDerivs <- deriv(e, varLabels[(NonlinID | classID)])
+    convIND <- unique(colID)
+    vID <- cumsum(c(1, nCommon))[seq(nCommon)]
     
-    localDesignFunction <- function(theta, factorList, ind = NULL) {
-        if (!is.null(ind)) {
-            a <- ind
-            if (factorAssign[ind] > 1)
-                ind <- ind - z[factorAssign[ind] - 1]
+    localDesignFunction <- function(theta, varPredictors, ind = NULL) {
+        #browser()
+        if (!any(common)) {
+            if (!is.null(ind)){
+                i1 <- convIND[ind]
+                tmpID <- commonAssign[i1]
+            }
+                                       
+            for (i in tmpID) {
+                fi <- unique(factorAssign[commonAssign == i]) 
+                if (is.null(ind)){
+                    i1  <- a[fi][1]
+                    i2 <- z[fi][1]
+                }
+                else {
+                    i2 <- i1
+                    a <- ind
+                    if (factorAssign[ind] > 1)
+                        ind <- ind - z[factorAssign[ind] - 1]
+                }
+                if (NonlinID[fi]) {
+                    .Call("nonlin", X, first[i1], last[i2],
+                          quote(termTools[[fi]]$localDesignFunction(
+                          coef = theta[factorAssign == fi],
+                          predictor = varPredictors[[fi]], ind = ind)),
+                          environment(), PACKAGE = "gnm")
+                    if (classID[fi]) {
+                        v <- attr(eval(varDerivs[[fi]], varPredictors),
+                                  "gradient")
+                        .Call("subprod", X, X, as.double(v),
+                              first[i1], last[i2], nr, PACKAGE = "gnm")
+                    }
+                }
+                else if (classID[fi]) {
+                    v <- attr(eval(varDerivs[[fi]], varPredictors),
+                              "gradient")
+                    .Call("subprod", X, baseMatrix, as.double(v),
+                          first[i1], last[i2], nr, PACKAGE = "gnm")
+                }
+            }
+            if(!is.null(ind)) X[, a, drop = FALSE]
+            else X
         }
-            
-        for (i1 in a) {
-            fi <- factorAssign[i1]
-            i2 <- ifelse(is.null(ind), z[fi], i1)            
-            switch(classID[fi],
-                   "Exp" = {
-                       v <- do.call("pprod",
-                                    factorList[multIndex == multIndex[fi]])
-                   },
-                   "Nonlin" = {
-                       .Call("nonlin", X, first[i1], last[i2],
-                             quote(termTools[[fi]]$localDesignFunction(
-                             coef = theta[factorAssign == fi],
-                             predictor = factorList[[fi]], ind = ind)),
-                             environment(), PACKAGE = "gnm")
-                   },
-                   "character" = {
-                       v <- do.call("pprod",
-                                    factorList[(multIndex == multIndex[fi])
-                                               & (seq(multIndex) != fi)])
-                   })
-            if (exists("v", inherits = FALSE)) {
-                .Call("subprod", X, baseMatrix, as.double(v),
-                      first[i1], last[i2], nr, PACKAGE = "gnm")
-                rm(v)
+        else {
+            if (is.null(ind)){
+                v <- attr(eval(specialVarDerivs, varPredictors),
+                          "gradient")
+                .Call("newsubprod", baseMatrix, as.double(v), X,
+                      first[a[tmpID]], first[vID], firstX[a[tmpID]],
+                      as.integer(length(nCommon)), lt[tmpID], lastX[z[tmpID]],
+                      nr, nCommon, max(nCommon), PACKAGE = "gnm")
+            }
+            else {
+                i1 <- convIND[ind]
+                fi <- unique(factorAssign[commonAssign == commonAssign[i1]])
+                v <- list()
+                for(j in fi) 
+                    v[[j]] <- attr(eval(varDerivs[[j]], varPredictors),
+                                   "gradient")
+                .Call("single", baseMatrix, as.double(unlist(v[fi])),
+                      first[i1], lt[fi[1]], nr, as.integer(length(fi)),
+                      PACKAGE = "gnm")
             }
         }
-        if(!is.null(ind)) X[, a, drop = FALSE]
-        else X
     }
 
-    toolList <- list(classID = thetaClassID, start = start,
-                     factorList = factorList, predictor = predictor,
+    toolList <- list(classID = thetaClassID, start = theta,
+                     varPredictors = varPredictors, predictor = predictor,
                      localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign
     toolList

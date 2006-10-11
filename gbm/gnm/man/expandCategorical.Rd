@@ -84,7 +84,7 @@ noRelationship <- gnm(count ~ pain, eliminate = id,
                       family = "poisson", data = backPainLong)
 
 oneDimensional <- update(noRelationship,
-                         ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
+                         ~ . + Mult(pain, x1 + x2 + x3))
 }
 \keyword{ manip }
 \keyword{ models }

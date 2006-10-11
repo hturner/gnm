@@ -43,19 +43,17 @@ noRelationship <- gnm(count ~ pain, eliminate = id,
 
 ## stereotype model
 oneDimensional <- update(noRelationship,
-                         ~ . + Mult(pain - 1, x1 + x2 + x3 - 1))
+                         ~ . + Mult(pain, x1 + x2 + x3))
 
 ## multinomial logistic
-%threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
-threeDimensional <- glm(count ~ id + pain + pain:(x1 + x2 + x3),
-                        family = "poisson", data = backPainLong)
+threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
 
 ### Models to determine distinguishability in stereotype model
 ## constrain scale of category-specific multipliers
 oneDimensional <- update(noRelationship,
-                         ~ . + Mult(pain - 1, offset(x1) + x2 + x3 - 1))
+                         ~ . + Mult(pain, offset(x1) + x2 + x3))
 ## obtain identifiable contrasts & id possibly indistinguishable slopes
-getContrasts(oneDimensional, pickCoef(oneDimensional, "Mult.*pain"))
+getContrasts(oneDimensional, pickCoef(oneDimensional, "[.]pain"))
 
 \dontrun{
 ## (this part not needed for package testing)
@@ -64,7 +62,7 @@ getContrasts(oneDimensional, pickCoef(oneDimensional, "Mult.*pain"))
 
 levels(.pain)[2:3] <- paste(levels(.pain)[2:3], collapse = " | ")
 fiveGroups <- update(noRelationship,
-                     ~ . + Mult(.pain - 1, x1 + x2 + x3 - 1))
+                     ~ . + Mult(.pain, x1 + x2 + x3))
 
 levels(.pain)[4:5] <- paste(levels(.pain)[4:5], collapse = " | ")
 fourGroups <- update(fiveGroups)

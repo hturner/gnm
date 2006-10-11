@@ -35,10 +35,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     }
     else nElim <- 0
 
-    if (method == "model.frame") {
-        attr(modelData, "terms") <- attr(modelTerms, "terms")
+    if (method == "model.frame")
         return(modelData)
-    }
     else if (!method %in% c("gnmFit", "coefNames", "model.matrix") &&
              !is.function(get(method))) {
         warning("function ", method, " can not be found. Using \"gnmFit\".\n",
@@ -46,8 +44,10 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         method <- "gnmFit"
     }
 
+    nObs <- nrow(modelData)
     y <- model.response(modelData, "numeric")
-    nObs <- NROW(y)
+    if (is.null(y))
+        y <- rep(0, nObs)
 
     weights <- as.vector(model.weights(modelData))
     if (!is.null(weights) && any(weights < 0))
@@ -103,14 +103,14 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                      matrix(, nrow(modelData), 0))
     }
     else {
-        onlyLin <- nElim == 0 && all(attr(modelTerms, "prefixLabels") == "")
+        onlyLin <- nElim == 0 && all(attr(modelTerms, "classID") == "Linear")
         if (onlyLin) {
-            X <- model.matrix(attr(modelTerms, "terms"), modelData)
+            X <- model.matrix(modelTerms, modelData)
             coefNames <- colnames(X)
         }
         else {
             modelTools <- gnmTools(modelTerms, modelData,
-                                   method == "model.matrix", termPredictors)
+                                   method == "model.matrix" | x, termPredictors)
             coefNames <- names(modelTools$classID)
         }
         if (method == "coefNames") return(coefNames)
@@ -144,7 +144,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             start <- rep.int(NA, nParam)
         else if (length(start) != nParam) {
             if (!missing(eliminate) && length(start) == (nParam - nElim))
-                start <- c(rep(NA, nElim), start)
+                start <- c(rep.int(NA, nElim), start)
             else
                 stop("length(start) must either equal the no. of parameters\n",
                      "or the no. of non-eliminated parameters.")
@@ -158,8 +158,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             theta <- seq(start)
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- constrainTo
-            factorList <- modelTools$factorList(theta)
-            X <- modelTools$localDesignFunction(theta, factorList)
+            varPredictors <- modelTools$varPredictors(theta)
+            X <- modelTools$localDesignFunction(theta, varPredictors)
             attr(X, "assign") <- modelTools$termAssign
         }
         if (method == "model.matrix")
@@ -176,8 +176,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             fit <- glm.fit(X, y, family = family, weights = weights,
                            offset = offset, start = start,
                            control = glm.control(tolerance, iterMax, trace),
-                           intercept = attr(attr(modelTerms, "terms"),
-                           "intercept"))
+                           intercept = attr(modelTerms, "intercept"))
             if (sum(is.na(coef(fit))) > length(constrain)) {
                 extra <- setdiff(which(is.na(coef(fit))), constrain)
                 ind <- order(c(constrain, extra))
@@ -227,10 +226,10 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     }
 
     fit <- c(list(call = call, formula = formula,
-                  terms = attr(modelTerms, "terms"), eliminate = nElim,
+                  terms = modelTerms, eliminate = nElim,
                   ofInterest = ofInterest,
                   na.action = attr(modelData, "na.action"),
-                  xlevels = .getXlevels(attr(modelData, "terms"), modelData),
+                  xlevels = .getXlevels(modelTerms, modelData),
                   offset = offset, tolerance = tolerance, iterStart = iterStart,
                   iterMax = iterMax), fit)
 
@@ -243,10 +242,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     else
         fit[asY] <- lapply(fit[asY], structure, names = names(y))
 
-    if (model) {
-        attr(modelData, "terms") <- attr(modelTerms, "terms")
+    if (model)
         fit$model <- modelData
-    }
     class(fit) <- c("gnm", "glm", "lm")
     attr(fit, ".Environment") <- environment(gnm)
     fit

@@ -20,20 +20,18 @@
   \bold{20}, 383--401. 
 }
 \examples{
-\dontrun{
-###  (Not needed for package testing - same as example(MultHomog))
+set.seed(1)
+data(friend)
+
 ###  Fit an association model with homogeneous row-column effects
-rc1 <- gnm(Freq ~ r + c + Diag(r,c) + Nonlin(MultHomog(r, c)),
-           start = c(coef(lin), init[1:31, 1]), family = poisson,
-           data = friend)
+rc1 <- gnm(Freq ~ r + c + Diag(r,c) + MultHomog(r, c),
+           family = poisson, data = friend)
 rc1
 
-###  Extend to two-component interaction (using workaround)
-original <- as.data.frame(friend)
-r2 <- original$r
-c2 <- original$c
-rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r2, c2)),
-              start = c(coef(rc1), init[1:31, 2]))
+\dontrun{
+###  (Takes a little while to run)
+###  Extend to two-component interaction
+rc2 <- update(rc1, . ~ . + MultHomog(r, c, inst = 2))
 rc2
 }
 }

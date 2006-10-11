@@ -1,9 +1,10 @@
 useDynLib(gnm)
-export(asGnm, checkEstimable, confint.gnm, confint.profile.gnm, Diag, Dref,
-       exitInfo, Exp, expandCategorical, getContrasts, getModelFrame, gnm,
-       MPinv, Mult, MultHomog, Nonlin, ofInterest, "ofInterest<-", parameters,
-       pickCoef, plot.profile.gnm, profile.gnm, qrSolve, residSVD, se, Symm,
-       summary.gnm, termPredictors, Topo, wedderburn)
+export(asGnm, checkEstimable, confint.gnm, confint.profile.gnm, Const, Diag,
+       Dref, exitInfo, Exp, expandCategorical, getContrasts,
+       getModelFrame, gnm, instances, Inv, Log, Logit, MPinv, Mult, MultHomog,
+       Nonlin, ofInterest, "ofInterest<-", parameters,
+       pickCoef, plot.profile.gnm, profile.gnm, qrSolve, Raise, residSVD, se,
+       Symm, summary.gnm, termPredictors, Topo, wedderburn)
 
 import(MASS, stats)
 importFrom(graphics, plot)

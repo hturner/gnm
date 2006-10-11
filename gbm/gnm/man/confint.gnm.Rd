@@ -63,8 +63,8 @@
 data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
-classMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination)),
-                     constrain = "[.]origin", family = binomial,
+classMobility <- gnm(yvar ~ -1 + Dref(origin, destination),
+                     constrain = "delta1", family = binomial,
                      data = voting)
 confint(classMobility, trace = TRUE)
 
@@ -72,27 +72,27 @@ confint(classMobility, trace = TRUE)
 ### Profiling takes much longer here, but example more interesting!
 data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest), 
-               ofInterest = "Mult.*educ", constrain = "Mult.*educ1",
+               Mult(Exp(educ), orig:dest), 
+               ofInterest = "[.]educ", constrain = "[.]educ1",
                family = poisson, data = yaish, subset = (dest != 7))
 
 ## Letting 'confint' compute profile
 confint(unidiff, trace = TRUE)
-##                          2.5 \%     97.5 \%
-## Mult1.Factor1.educ1         NA         NA
-## Mult1.Factor1.educ2 -0.5978901  0.1022447
-## Mult1.Factor1.educ3 -1.4836854 -0.2362378
-## Mult1.Factor1.educ4 -2.5792398 -0.2953420
-## Mult1.Factor1.educ5       -Inf -0.7007616
+##                                                   2.5 \%     97.5 \%
+## Mult(Exp(.), orig:dest).educ1         NA         NA
+## Mult(Exp(.), orig:dest).educ2 -0.5978901  0.1022447
+## Mult(Exp(.), orig:dest).educ3 -1.4836854 -0.2362378
+## Mult(Exp(.), orig:dest).educ4 -2.5792398 -0.2953420
+## Mult(Exp(.), orig:dest).educ5       -Inf -0.7007616
 
 ## Creating profile object first with user-specified stepsize
 prof <- profile(unidiff, trace = TRUE, stepsize = 0.1)
 confint(prof, ofInterest(unidiff)[2:5])
-##                          2.5 \%     97.5 \%
-## Mult1.Factor1.educ2 -0.5978324  0.1022441
-## Mult1.Factor1.educ3 -1.4834753 -0.2362138
-## Mult1.Factor1.educ4         NA -0.2950790
-## Mult1.Factor1.educ5         NA         NA
+##                                    2.5 \%     97.5 \%
+## Mult(Exp(.), orig:dest).educ2 -0.5978324  0.1022441
+## Mult(Exp(.), orig:dest).educ3 -1.4834753 -0.2362138
+## Mult(Exp(.), orig:dest).educ4         NA -0.2950790
+## Mult(Exp(.), orig:dest).educ5         NA         NA
 
 ## For 95\% confidence interval, need to estimate parameters for which
 ## z = +/- 1.96. Profile has not gone far enough for last two parameters

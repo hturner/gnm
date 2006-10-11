@@ -30,11 +30,11 @@ set.seed(1)
 data(yaish)
 ## fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest),
+               Mult(Exp(educ), orig:dest),
                family = poisson, data = yaish, subset = (dest != 7))
 
 ## set coefficients in first constituent multiplier as 'ofInterest'
-ofInterest(unidiff) <- pickCoef(unidiff, "Mult1.*educ")
+ofInterest(unidiff) <- pickCoef(unidiff, "Mult.*educ")
 
 ## summarise model, only showing coefficients of interest
 summary(unidiff)
@@ -52,8 +52,8 @@ upward <- with(voting, origin != 1 & destination == 1)
 downward <- with(voting, origin == 1 & destination != 1)
 
 ## fit separate weights for the "socially mobile" groups
-socialMobility <- gnm(yvar ~ -1 + Nonlin(Dref(origin, destination,
-                                         formula = ~ 1 + downward + upward)),
+socialMobility <- gnm(yvar ~ -1 + Dref(origin, destination,
+                                       delta = ~ 1 + downward + upward),
                       family = binomial, data = voting)
 ## calculate weights
 coefs <- coef(socialMobility)

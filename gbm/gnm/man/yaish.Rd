@@ -30,29 +30,37 @@ data(yaish)
 ## the uninformative subtable for dest == 7:
 ##
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-                     Mult(Exp(-1 + educ), -1 + orig:dest), family = poisson,
+                     Mult(Exp(educ), orig:dest), family = poisson,
                      data = yaish, subset = (dest != 7))
 ## Deviance should be 200.3, 116 d.f.
 ##
 ## Look at the multipliers of the orig:dest association:
-ofInterest(unidiff) <- pickCoef(unidiff, "Mult1.*educ")
+ofInterest(unidiff) <- pickCoef(unidiff, "[.]educ")
 coef(unidiff)
 ##
-## Mult1.Factor1.educ1 Mult1.Factor1.educ2 Mult1.Factor1.educ3 Mult1.Factor1.educ4 
-##          -0.8150195          -1.0403857          -1.5584007          -1.8538570 
-## Mult1.Factor1.educ5 
-##          -3.0643114
+## Coefficients of interest:
+## Mult(Exp(.), orig:dest).educ1 Mult(Exp(.), orig:dest).educ2 
+##                    -0.5513258                    -0.7766976 
+## Mult(Exp(.), orig:dest).educ3 Mult(Exp(.), orig:dest).educ4 
+##                    -1.2947494                    -1.5902644 
+## Mult(Exp(.), orig:dest).educ5 
+##                    -2.8008285 
 ##
 ## Get standard errors for the contrasts with educ1:
 ##
 getContrasts(unidiff, ofInterest(unidiff))
-##
-##                       Estimate Std. Error   quasiSE   quasiVar
-## Mult1.Factor1.educ1  0.0000000  0.0000000 0.0975751 0.00952090
-## Mult1.Factor1.educ2 -0.2253661  0.1611886 0.1288595 0.01660478
-## Mult1.Factor1.educ3 -0.7433812  0.2335042 0.2118164 0.04486617
-## Mult1.Factor1.educ4 -1.0388374  0.3434049 0.3260719 0.10632288
-## Mult1.Factor1.educ5 -2.2492918  0.9452228 0.9354512 0.87506893
+##                                 estimate        SE    quasiSE
+## Mult(Exp(.), orig:dest).educ1  0.0000000 0.0000000 0.09757438
+## Mult(Exp(.), orig:dest).educ2 -0.2253718 0.1611874 0.12885847
+## Mult(Exp(.), orig:dest).educ3 -0.7434236 0.2335083 0.21182123
+## Mult(Exp(.), orig:dest).educ4 -1.0389386 0.3434256 0.32609380
+## Mult(Exp(.), orig:dest).educ5 -2.2495026 0.9453764 0.93560643
+##                                 quasiVar
+## Mult(Exp(.), orig:dest).educ1 0.00952076
+## Mult(Exp(.), orig:dest).educ2 0.01660450
+## Mult(Exp(.), orig:dest).educ3 0.04486823
+## Mult(Exp(.), orig:dest).educ4 0.10633716
+## Mult(Exp(.), orig:dest).educ5 0.87535940
 ##
 ## Table of model residuals:
 ##

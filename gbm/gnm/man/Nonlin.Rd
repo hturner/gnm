@@ -3,33 +3,32 @@
 \title{Specify a Special Nonlinear Term in a Model Formula}
 \description{
   A symbolic wrapper, for use in the formula argument to
-  \code{\link{gnm}}, to indicate a nonlinear term that requires special
-  handling.
+  \code{\link{gnm}}, to indicate a nonlinear term that requires a
+  plug-in function.
 }
 \usage{
 Nonlin(functionCall)
 }
 \arguments{
   \item{functionCall}{ a call to a plug-in function that provides the
-    objects required to fit the special nonlinear term. }
+    objects required to fit the nonlinear term. }
 }
 \details{
-    Nonlinear terms that cannot be specified by \code{Mult} require special
-    handling by \code{gnm}.  \code{Nonlin} provides a way of specifying
-    such terms in a \code{gnm} formula.  
+  \code{gnm} used to use plug-in functions to handle nonlinear terms
+  that could not be specified by \code{Mult}. Now all nonlinear terms
+  should be specified by functions of class \code{"nonlin"}, see
+  \code{\link{nonlin.function}} for more details.
 
-    To fit the special terms, \code{gnm} requires certain objects and
-    functions, which must be produced by a plug-in function.  The
-    \code{functionCall}
-    argument of \code{Nonlin} specifies the call to this function that is
-    necessary to fit the desired term.  
+  User-defined plug-in functions will still work, but support for
+  plug-in functions is likely to be withdrawn in future
+  versions. Meanwhile this page is maintained for help with old code.
 
-    The \pkg{gnm} package includes plug-in functions for multiplicative
-    interactions with homogeneous effects (\code{MultHomog}) and diagonal
-    reference terms (\code{Dref}).
+  The \code{functionCall} argument of \code{Nonlin} specifies the call
+  to the plug-in function that returns objects and functions used by
+  \code{gnm} to fit the desired term.  
 
-    Users may also define their own plug-in functions which should
-    return a list with at least the following three components:
+  Plug-in functions should return a list with at least the following
+  three components: 
     \describe{
       \item{labels}{a character vector of labels for the
         parameters (to which \code{gnm} will prefix the call to the
@@ -91,9 +90,64 @@ Nonlin(functionCall)
 set.seed(1)
 data(occupationalStatus)
 
+## Definition of old MultHomog plug-in function
+MultHomogPlugIn <- function(...){
+    designList <- lapply(list(...), nnet:::class.ind)
+
+    ## get labels for all levels
+    allLevels <- lapply(designList, colnames)
+    labels <- unique(unlist(allLevels))
+    nLevels <- length(labels)
+
+    ## expand design matrices if necessary
+    if (!all(mapply(identical, allLevels, list(labels)))) {
+        labels <- sort(labels)
+        M <- matrix(0, nrow = nrow(designList[[1]]), ncol = nLevels,
+                    dimnames = list(NULL, labels))
+        designList <- lapply(designList, function(design, M) {
+            M[,colnames(design)] <- design
+            M}, M)
+    }
+
+    pprod <- function(...) {
+        factorList <- list(...)
+        nFactors <- length(factorList)
+        if (nFactors == 0) return(1)
+        else if (nFactors == 1) return(factorList[[1]])
+        else {
+            tryProduct <- try(factorList[[1]] * do.call("Recall", factorList[-1]),
+                              silent = TRUE)
+            if (inherits(tryProduct, "try-error"))
+                stop("multiplication not implemented for types of argument supplied")
+            else tryProduct
+        }
+    }
+        
+    predictor <- function(coef) {
+        do.call("pprod", lapply(designList, "\%*\%", coef))
+    }
+
+    localDesignFunction <- function(coef, ind = NULL, ...) {
+        X <- 0
+        vList <- lapply(designList, "\%*\%", coef)
+        for (i in seq(designList)) {
+            if (is.null(ind)) 
+                X <- X + designList[[i]] * drop(do.call("pprod", vList[-i]))
+            else
+                X <- X + designList[[i]][, ind] *
+                    drop(do.call("pprod", vList[-i]))
+        }
+        X
+    }
+
+    list(labels = labels, predictor = predictor,
+         localDesignFunction = localDesignFunction)
+}
+
+
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               Nonlin(MultHomog(origin, destination)), family = poisson,
+               Nonlin(MultHomogPlugIn(origin, destination)), family = poisson,
                data = occupationalStatus)
 }
 \keyword{ models }

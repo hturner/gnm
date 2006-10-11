@@ -26,32 +26,47 @@ data(cautres)
 ##  Fit a "double UNIDIFF" model with the religion-vote and class-vote
 ##  interactions both modulated by nonnegative election-specific multipliers
 doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
-                     Mult(Exp(-1 + election), religion:vote) +
-                     Mult(Exp(-1 + election), class:vote),
+                     Mult(Exp(election), religion:vote) +
+                     Mult(Exp(election), class:vote),
                      family = poisson, data = cautres)
 ##  Deviance should be 133.04
 
 ##  Examine the multipliers of the class-vote log odds ratios
-ofInterest(doubleUnidiff) <- pickCoef(doubleUnidiff, "Mult2.*election")
+ofInterest(doubleUnidiff) <- pickCoef(doubleUnidiff, "class:vote[).]")
 coef(doubleUnidiff)
-##  Mult2.Factor1.election1 Mult2.Factor1.election2 
-##               -0.5724370               0.1092972 
-##  Mult2.Factor1.election3 Mult2.Factor1.election4 
-##               -0.1230682              -0.2105843
+## Coefficients of interest:
+## Mult(Exp(.), class:vote).election1 
+##                        -0.38357138 
+## Mult(Exp(.), class:vote).election2 
+##                         0.29816599 
+## Mult(Exp(.), class:vote).election3 
+##                         0.06580307 
+## Mult(Exp(.), class:vote).election4 
+##                        -0.02174104
 ##  Re-parameterize by setting Mult2.Factor1.election1 to zero
 getContrasts(doubleUnidiff, ofInterest(doubleUnidiff))
-##                          estimate        SE    quasiSE    quasiVar
-## Mult2.Factor1.election1 0.0000000 0.0000000 0.22854380 0.052232270
-## Mult2.Factor1.election2 0.6817370 0.2401642 0.07395880 0.005469905
-## Mult2.Factor1.election3 0.4493740 0.2473519 0.09475932 0.008979329
-## Mult2.Factor1.election4 0.3618262 0.2534753 0.10934823 0.011957035
+##                                     estimate        SE
+## Mult(Exp(.), class:vote).election1 0.0000000 0.0000000
+## Mult(Exp(.), class:vote).election2 0.6817374 0.2401644
+## Mult(Exp(.), class:vote).election3 0.4493745 0.2473521
+## Mult(Exp(.), class:vote).election4 0.3618301 0.2534754
+##                                       quasiSE    quasiVar
+## Mult(Exp(.), class:vote).election1 0.22854401 0.052232363
+## Mult(Exp(.), class:vote).election2 0.07395886 0.005469913
+## Mult(Exp(.), class:vote).election3 0.09475938 0.008979340
+## Mult(Exp(.), class:vote).election4 0.10934798 0.011956981
 
 ##  Same thing but with election 4 as reference category:
 getContrasts(doubleUnidiff, rev(ofInterest(doubleUnidiff)))
-##                            estimate        SE    quasiSE    quasiVar
-## Mult2.Factor1.election4  0.00000000 0.0000000 0.10934823 0.011957035
-## Mult2.Factor1.election3  0.08754785 0.1446834 0.09475932 0.008979329
-## Mult2.Factor1.election2  0.31991082 0.1320023 0.07395880 0.005469905
-## Mult2.Factor1.election1 -0.36182617 0.2534753 0.22854380 0.052232270
+##                                       estimate        SE
+## Mult(Exp(.), class:vote).election4  0.00000000 0.0000000
+## Mult(Exp(.), class:vote).election3  0.08754436 0.1446833
+## Mult(Exp(.), class:vote).election2  0.31990727 0.1320022
+## Mult(Exp(.), class:vote).election1 -0.36183013 0.2534754
+##                                       quasiSE    quasiVar
+## Mult(Exp(.), class:vote).election4 0.10934798 0.011956981
+## Mult(Exp(.), class:vote).election3 0.09475938 0.008979340
+## Mult(Exp(.), class:vote).election2 0.07395886 0.005469913
+## Mult(Exp(.), class:vote).election1 0.22854401 0.052232363
 }
 \keyword{datasets}

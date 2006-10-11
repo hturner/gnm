@@ -89,7 +89,7 @@ Start <- residSVD(baseModel, rollCall, member)
 ## where p is the number of parameters and n the number of observations.
 ##
 voteAdj <- 0.5 + 0.94*(House2001f$vote - 0.5)
-House2001model1 <- gnm(voteAdj ~ Mult(rollCall - 1, member - 1),
+House2001model1 <- gnm(voteAdj ~ Mult(rollCall, member),
               eliminate = rollCall,
               family = binomial, data = House2001f,
               na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
@@ -106,15 +106,15 @@ plot(coef(House2001model1)[memberParameters], col = partyColors,
 ## slow iterations to converge (there are more than 600 parameters): 
 Start2 <- residSVD(baseModel, rollCall, member, d = 2)
 House2001model2 <- gnm(
-              voteAdj ~ Mult(rollCall - 1, member - 1, multiplicity = 2),
+              voteAdj ~ instances(Mult(rollCall - 1, member - 1), 2),
               eliminate = rollCall,
               family = binomial, data = House2001f,
               na.action = na.exclude, trace = TRUE, tolerance = 1e-03,
               start = Start2, lsMethod = "qr")
 ## Deviance is 1545.166, df = 5257
 ##
-memberParameters1 <- pickCoef(House2001model, "Mult1.*member")
-memberParameters2 <- pickCoef(House2001model, "Mult2.*member")
+memberParameters1 <- pickCoef(House2001model, "1[.]2")
+memberParameters2 <- pickCoef(House2001model, "2[.]2")
 plot(coef(House2001model2)[memberParameters1],
      coef(House2001model2)[memberParameters2],
      col = partyColors,

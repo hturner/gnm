@@ -1,4 +1,5 @@
 DrefVariables <- function(..., formula = ~ 1) {
-    as.character(c(match.call(expand.dots = FALSE)[[2]], formula[[2]]))
+    c(match.call(expand.dots = FALSE)[[2]],
+      as.list(attr(terms(formula), "variables"))[-1])
 }
     

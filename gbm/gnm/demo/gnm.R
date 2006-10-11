@@ -35,7 +35,7 @@ summary(RC)
 message("5. Fit an association model using Nonlin() with MultHomog() plug-in\n",
         "to fit homogeneous row-column effects")
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               Nonlin(MultHomog(origin, destination)), family = poisson,
+               MultHomog(origin, destination), family = poisson,
                data = occupationalStatus)
 if (interactive()) {
     cat("\nType <Return> to print summary of RChomog: ")

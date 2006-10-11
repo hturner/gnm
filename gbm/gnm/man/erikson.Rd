@@ -51,8 +51,7 @@ commonInteraction <- update(nullModel, ~ . + origin:destination)
 
 ## Full Interaction, different multiplier for each country
 multInteraction <- update(nullModel,
-                          ~ . + Mult(Exp(-1 + country),
-                                     -1 + origin:destination))
+                          ~ . + Mult(Exp(country), origin:destination))
 
 ### Create array of interaction levels as in Table 2 of Xie (1992)
 
@@ -73,7 +72,7 @@ commonTopo <- update(nullModel, ~ . +
 ## Interaction specified by levelMatrix, different multiplier for
 ## each country
 multTopo <- update(nullModel, ~ . +
-                   Mult(Exp(-1 + country), -1 +
+                   Mult(Exp(country),
                         Topo(origin, destination, spec = levelMatrix)))
 
 ## Interaction specified by levelMatrix, different effects for

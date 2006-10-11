@@ -3,9 +3,8 @@
 \title{ Fitting Generalized Nonlinear Models }
 \description{
   \code{gnm} fits generalised nonlinear models using an
-  over-parameterised representation. \code{gnm} is able to fit models
-  incorporating multiplicative interactions as standard and can fit other
-  types of nonlinear effects via \dQuote{plug-in} functions (see details).
+  over-parameterised representation. Nonlinear terms are specified by
+  calls to functions of class \code{"nonlin"}.
 }
 \usage{
 gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
@@ -92,26 +91,19 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   section for alternatives. The usual symbolic language may be used to
   specify any linear terms, see \code{\link{formula}} for details.
 
-  \code{gnm} has the in-built capability to handle multiplicative
-  interactions, which can be specified in the model formula using the
-  symbolic wrapper \code{Mult}; e.g. \code{Mult(A, B)} specifies a
-  multiplicative interaction between factors \code{A} and
-  \code{B}. The family of multiplicative interaction models include
-  row-column association models for contingency tables (e.g., Agresti,
-  2002, Sec 9.6), log-multiplicative or UNIDIFF models (Erikson and
-  Goldthorpe, 1992; Xie, 1992), and GAMMI models (van Eeuwijk, 1995).
-
-  Other nonlinear terms may be incorporated in the model via
-  plug-in functions that provide the objects required by \code{gnm} to
-  fit the desired term. Such terms are specified in the model formula
-  using the symbolic wrapper \code{Nonlin};
-  e.g. \code{Nonlin(PlugInFunction(A, B))} specifies a term to be fitted
-  by the plug-in function \code{PlugInFunction} involving factors
-  \code{A} and \code{B}. The \pkg{gnm} package includes plug-in
-  functions for multiplicative interactions with homogeneous effects
-  (\code{MultHomog}) and  diagonal reference terms (\code{Dref}). Users
-  may also define their own plug-in functions, see \code{\link{Nonlin}}
-  for details. 
+  Nonlinear terms may be specified by calls to functions of class
+  "nonlin". There are several "nonlin" functions in the \code{gnm}
+  package. Some of these specify simple
+  mathematical functions of predictors: \code{Exp}, \code{Log},
+  \code{Mult}, \code{Inv}, \code{Raise} (to raise to a constant power),
+  and \code{Logit}. Others specify more specialised nonlinear terms, in
+  particular \code{MultHomog} specifies homogeneous multiplicative
+  interactions and \code{Dref} specifies diagonal reference terms. Users
+  may also define their own "nonlin" functions, see
+  \code{\link{nonlin.function}} for details. (N.B. the "nonlin" class of
+  functions has replaced the old plug-in mechanism of previous
+  versions. Plug-ins currently work, but support is likely to be
+  withdrawn in future versions).
 
   The \code{eliminate} argument may be used to specify a factor that
   is to be included as the first term in the model (since an intercept
@@ -266,21 +258,9 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   deviance residuals respectively, as for \code{glm} objects.  
 }
 \references{
-  Agresti, A (2002).  \emph{Categorical Data Analysis} (2nd ed.)  New
-  York: Wiley.
-
   Cautres, B, Heath, A F and Firth, D (1998).  Class,
   religion and vote in Britain and France.  \emph{La Lettre de la Maison
     Francaise} \bold{8}.
-
-  Erikson, R and Goldthorpe, J H (1992).  \emph{The Constant Flux}.
-  Oxford: Clarendon Press.
-
-  van Eeuwijk, F A (1995).  Multiplicative interaction in generalized
-  linear models.  \emph{Biometrics} \bold{51}, 1017-1032.
-
-  Xie, Y (1992).  The log-multiplicative layer effect model for comparing
-  mobility tables.  \emph{American Sociological Review} \bold{57}, 380-395.
 }
 \author{ Heather Turner, David Firth }
 \note{
@@ -318,40 +298,55 @@ print(cautres)
 ##  interactions both modulated by nonnegative election-specific
 ##  multipliers.
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
-                     + Mult(Exp(election - 1), religion:vote - 1) +
-                     Mult(Exp(election - 1), class:vote - 1), family = poisson,
+                     + Mult(Exp(election), religion:vote) +
+                     Mult(Exp(election), class:vote), family = poisson,
                      data = cautres)
 
 ##  Examine the multipliers of the class-vote log odds ratios
-coefs.of.interest <- pickCoef(doubleUnidiff, "Mult2.*election")
-coef(doubleUnidiff)[coefs.of.interest]
-##  Mult2.Factor1.election1 Mult2.Factor1.election2 
-##               -0.5724370               0.1092972 
-##  Mult2.Factor1.election3 Mult2.Factor1.election4 
-##               -0.1230682              -0.2105843
+ofInterest(doubleUnidiff) <- pickCoef(doubleUnidiff, "class:vote[).]")
+coef(doubleUnidiff)
+## Coefficients of interest:
+## Mult(Exp(.), class:vote).election1 
+##                        -0.38357138 
+## Mult(Exp(.), class:vote).election2 
+##                         0.29816599 
+## Mult(Exp(.), class:vote).election3 
+##                         0.06580307 
+## Mult(Exp(.), class:vote).election4 
+##                        -0.02174104
 
-##  Re-parameterize by setting Mult2.Factor1.election1 to zero
-getContrasts(doubleUnidiff, coefs.of.interest)
-##                          estimate        SE    quasiSE    quasiVar
-## Mult2.Factor1.election1 0.0000000 0.0000000 0.22854380 0.052232270
-## Mult2.Factor1.election2 0.6817370 0.2401642 0.07395880 0.005469905
-## Mult2.Factor1.election3 0.4493740 0.2473519 0.09475932 0.008979329
-## Mult2.Factor1.election4 0.3618262 0.2534753 0.10934823 0.011957035
+##  Re-parameterize by setting first multiplier to zero
+getContrasts(doubleUnidiff, ofInterest(doubleUnidiff))
+##                                     estimate        SE
+## Mult(Exp(.), class:vote).election1 0.0000000 0.0000000
+## Mult(Exp(.), class:vote).election2 0.6817374 0.2401644
+## Mult(Exp(.), class:vote).election3 0.4493745 0.2473521
+## Mult(Exp(.), class:vote).election4 0.3618301 0.2534754
+##                                       quasiSE    quasiVar
+## Mult(Exp(.), class:vote).election1 0.22854401 0.052232363
+## Mult(Exp(.), class:vote).election2 0.07395886 0.005469913
+## Mult(Exp(.), class:vote).election3 0.09475938 0.008979340
+## Mult(Exp(.), class:vote).election4 0.10934798 0.011956981
 
-##  Same thing but with election 4 as reference category:
-getContrasts(doubleUnidiff, rev(coefs.of.interest))
-##                            estimate        SE    quasiSE    quasiVar
-## Mult2.Factor1.election4  0.00000000 0.0000000 0.10934823 0.011957035
-## Mult2.Factor1.election3  0.08754785 0.1446834 0.09475932 0.008979329
-## Mult2.Factor1.election2  0.31991082 0.1320023 0.07395880 0.005469905
-## Mult2.Factor1.election1 -0.36182617 0.2534753 0.22854380 0.052232270
+##  Same thing but with last multiplier as reference category:
+getContrasts(doubleUnidiff, rev(ofInterest(doubleUnidiff)))
+##                                       estimate        SE
+## Mult(Exp(.), class:vote).election4  0.00000000 0.0000000
+## Mult(Exp(.), class:vote).election3  0.08754436 0.1446833
+## Mult(Exp(.), class:vote).election2  0.31990727 0.1320022
+## Mult(Exp(.), class:vote).election1 -0.36183013 0.2534754
+##                                       quasiSE    quasiVar
+## Mult(Exp(.), class:vote).election4 0.10934798 0.011956981
+## Mult(Exp(.), class:vote).election3 0.09475938 0.008979340
+## Mult(Exp(.), class:vote).election2 0.07395886 0.005469913
+## Mult(Exp(.), class:vote).election1 0.22854401 0.052232363
 
-##  Re-fit model with Mult2.Factor1.election1 set to zero
+##  Re-fit model with first multiplier set to zero
 doubleUnidiffConstrained <-
-    update(doubleUnidiff, constrain = coefs.of.interest[1])
+    update(doubleUnidiff, constrain = ofInterest(doubleUnidiff)[1])
 
 ##  Examine the multipliers of the class-vote log odds ratios
-coef(doubleUnidiffConstrained)[coefs.of.interest]
+coef(doubleUnidiffConstrained)[ofInterest(doubleUnidiff)]
 ##  ...as using 'getContrasts' (to 4 d.p.).
 }
 \keyword{ models }

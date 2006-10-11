@@ -1,47 +1,44 @@
 \name{MultHomog}
 \alias{MultHomog}
-\title{gnm Plug-in Function to Fit Multiplicative Interactions with
- Homogeneous Effects}
+\title{Specify a Multiplicative Interaction with Homogeneous Effects in
+  a gnm Model Formula}
 \description{
-  A function to provide the objects and functions required to fit
-  multiplicative interactions with homogeneous effects in a generalized
-  nonlinear model using \code{\link{gnm}}.  
+  A function of class \code{"nonlin"} to specify a multiplicative
+  interaction with homogeneous effects in the formula argument to
+  \code{\link{gnm}}.   
 }
 \usage{
-MultHomog(...)
+MultHomog(..., inst = NULL)
 }
 \arguments{
   \item{\dots}{ a comma-separated list of two or more factors. }
+  \item{inst}{ (optional) an integer specifying the instance number of
+    the term. }
 }
 \details{
-  Designed to work as a plug-in function for \code{gnm}, \code{MultHomog}
-  produces the objects required to fit a multiplicative interaction with
-  one component in which the constituent multipliers are the effects of
-  two or more factors and the effects of these factors are constrained
-  to be equal when the factor levels are equal. Thus the interaction
-  effect would be
+  \code{MultHomog} specifies instances of a multiplicative interaction
+  in which the constituent multipliers are the effects of two or more
+  factors and the effects of these factors are constrained to be equal
+  when the factor levels are equal.  Thus the interaction effect would
+  be
   \deqn{\gamma_i\gamma_j...}{gamma_i gamma_j ...}
   for an observation with level \eqn{i} of the first factor, level
   \eqn{j} of the second factor and so on, where \eqn{\gamma_l}{gamma_l}
-  is the effect for level \eqn{l} of the homogeneous multiplicative factor.
-  
-  To specify a homogeneous multiplicative interaction in the formula argument
-  to \code{gnm}, the symbolic wrapper \code{Nonlin} must be used, with a call
-  to \code{MultHomog} as the first argument.
+  is the effect for level \eqn{l} of the homogeneous multiplicative
+  factor. 
 
   If the factors passed to \code{MultHomog} do not have exactly the same
   levels, the set of levels is taken to be the union of the factor
   levels, sorted into increasing order. 
 }
 \value{
-  A list with the components required of a \code{gnm} plug-in function:
-  \item{labels}{ a character vector of labels for the parameters in the
-    interaction. }
-  \item{predictor}{ a function that takes estimates of the parameters in the
-    interaction and returns the fitted values. }
-  \item{localDesignFunction}{ a function that takes a vector of estimates of
-    the parameters in the interaction and returns
-    the local design matrix. }
+   A list with the anticipated components of a \code{"nonlin"} function:
+   \item{ predictors }{ the factors passed to \code{MultHomog}}
+   \item{ common }{ an index to specify that common effects are to be
+     estimated across the factors }
+  \item{ term }{ a function to create a deparsed mathematical expression
+    of the term, given labels for the predictors.}
+  \item{ call }{ the call to use as a prefix for parameter labels. } 
 }
 \references{
   Goodman, L. A. (1979) Simple Models for the Analysis of Association in
@@ -51,32 +48,23 @@ MultHomog(...)
   one-dimensional interaction. See examples for a workaround to specify
   interactions with more than one dimension. }
 \author{ Heather Turner }
-\seealso{\code{\link{gnm}} and \code{\link{Nonlin}} for usage.
-  
-  \code{\link{Dref}} for another \code{gnm} plug-in function.
-  
-  \code{\link{Mult}} for specifying multiplicative interactions in
-  \code{gnm} formulae.}
+\seealso{\code{\link{gnm}}, \code{\link{formula}}, \code{\link{instances}},
+  \code{\link{nonlin.function}}, \code{\link{Mult}}}
 \examples{
 set.seed(1)
 data(friend)
 
-lin <- glm(Freq ~ r + c + Diag(r,c), family = poisson, data = friend)
-init <- residSVD(lin, r, c, 2)
-
 ###  Fit an association model with homogeneous row-column effects
-rc1 <- gnm(Freq ~ r + c + Diag(r,c) + Nonlin(MultHomog(r, c)),
-           start = c(coef(lin), init[1:31, 1]), family = poisson,
-           data = friend)
+rc1 <- gnm(Freq ~ r + c + Diag(r,c) + MultHomog(r, c),
+           family = poisson, data = friend)
 rc1
 
-###  Extend to two-component interaction (using workaround)
-original <- as.data.frame(friend)
-r2 <- original$r
-c2 <- original$c
-rc2 <- update(rc1, . ~ . + Nonlin(MultHomog(r2, c2)),
-              start = c(coef(rc1), init[1:31, 2]))
+\dontrun{
+###  (Takes a little while to run)
+###  Extend to two-component interaction
+rc2 <- update(rc1, . ~ . + MultHomog(r, c, inst = 2))
 rc2
+}
 }
 \keyword{ models }
 \keyword{ regression }

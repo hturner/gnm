@@ -4,9 +4,9 @@ updateLinear <- function(which, theta, y, mu, eta, offset, weights, family,
     vmu <- family$variance(mu)
     w <- weights * dmu * dmu / vmu
     theta[which] <- NA
-    offsetFactorList <- modelTools$factorList(theta, term = TRUE)
-    offsetFactorList <- lapply(offsetFactorList, naToZero)
-    offset <- offset + modelTools$predictor(offsetFactorList)
+    offsetVarPredictors <- modelTools$varPredictors(theta)
+    offsetVarPredictors <- lapply(offsetVarPredictors, naToZero)
+    offset <- offset + modelTools$predictor(offsetVarPredictors)
     z <- eta - offset + (y - mu)/dmu
     theta[which] <- suppressWarnings(naToZero(lm.wfit(X[,which, drop = FALSE],
                                                       z, w)$coef))

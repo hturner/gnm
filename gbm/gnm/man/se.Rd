@@ -54,8 +54,8 @@ set.seed(1)
 
 ## Fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
-               Mult(Exp(-1 + educ), -1 + orig:dest),
-               ofInterest = "Mult.*educ", family = poisson,
+               Mult(Exp(educ), orig:dest),
+               ofInterest = "[.]educ", family = poisson,
                data = yaish,  subset = (dest != 7))
 ## Deviance is 200.3
 

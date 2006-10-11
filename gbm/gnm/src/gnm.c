@@ -75,3 +75,61 @@ SEXP nonlin(SEXP X, SEXP a, SEXP z, SEXP expr, SEXP rho) {
   UNPROTECT(1);
   return(X);
 }
+
+/* Computes elementwise products between submatrices of base matrix M and 
+   columns of gradient matrix V, summing 'common' results an putting result 
+   in submatrix of X. This version has start point in M, V and X for each
+   "term" */
+SEXP newsubprod(SEXP M, SEXP V, SEXP X, SEXP a, SEXP b, SEXP c, 
+		  SEXP nt, SEXP lt, SEXP ls, SEXP nr, SEXP nc, SEXP max) {
+  /* currently set up for single term so nt = 1 and all integers here */
+  int i, j, k, l, start, end, common, nrow = INTEGER(nr)[0], 
+    n = INTEGER(max)[0], final, jump;
+  double *p[n], *q[n];
+
+  final = INTEGER(nt)[0];
+  for (i = 0; i < final; i++){
+    common = INTEGER(nc)[i];
+    jump = INTEGER(lt)[i];
+    p[0] = &REAL(M)[INTEGER(a)[i]];
+    q[0] = &REAL(V)[INTEGER(b)[i]];
+    for (l = 1; l < common; l++) {
+      p[l] = p[l - 1] + jump;
+      q[l] = q[l - 1] + nrow;
+    }
+    start = INTEGER(c)[i];
+    end = INTEGER(ls)[i];
+    k = 0;
+    for (j = start; j < end; j++, k = (++k == nrow) ? 0 : k) {
+      REAL(X)[j] = *(p[0])++ * q[0][k];
+      for (l = 1; l < common; l++){
+	REAL(X)[j] += *(p[l])++ * q[l][k];
+      }
+    }
+  }
+  return(X);
+}
+/* computes single column of design matrix */
+SEXP single(SEXP M, SEXP V, SEXP a, SEXP lt, SEXP nr, SEXP nc) {
+  int j, k, l, nrow = INTEGER(nr)[0], common = INTEGER(nc)[0], jump;
+  double *p[common], *q[common];
+  SEXP col;
+
+  jump = INTEGER(lt)[0];
+  p[0] = &REAL(M)[INTEGER(a)[0]];
+  q[0] = &REAL(V)[0];
+  for (l = 1; l < common; l++) {
+    p[l] = p[l - 1] + jump;
+    q[l] = q[l - 1] + nrow;
+  }
+  k = 0;
+  PROTECT(col = allocVector(REALSXP, nrow));
+  for (j = 0; j < nrow; j++, k = (++k == nrow) ? 0 : k) {
+    REAL(col)[j] = *(p[0])++ * q[0][k];
+    for (l = 1; l < common; l++){
+      REAL(col)[j] += *(p[l])++ * q[l][k];
+    }
+  }
+  UNPROTECT(1);
+  return(col);
+}

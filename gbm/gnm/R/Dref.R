@@ -1,57 +1,30 @@
-Dref <- function(..., formula = ~ 1) {
-    labelList <- as.character((match.call(expand.dots = FALSE))[[2]])
-    
-    # get design matrices for Dref factors
-    designList <- lapply(list(...), class.ind)
+Dref <- function(..., delta = ~ 1){
+    preds <- match.call(expand.dots = FALSE)[["..."]]
+    n <- length(preds)
+    preds <- c(delta = rep(list(delta), n), preds)
+    common <- c(1:n, rep(n + 1, n))
+    nf <- match(c("delta"), names(match.call()[-1]), 0)
+    if ("formula" %in% names(match.call()[-1]))
+        stop("formula argument of old plug-in has been renamed ",
+             "\"delta\" in this function.")
+    match <- c(rep(nf, n), 1:n)
+    names(preds) <- c(rep("delta", n), rep("", n))
 
-    ## get labels for global parameters
-    allLevels <- lapply(designList, colnames)
-    global <- unique(unlist(allLevels))
-    nGlobal <- length(global)
-
-    ## get design matrix for local structure
-    gnmData <- getModelFrame()
-    local <- model.matrix(formula, data = gnmData)
-
-    ## create index and labels for parameters
-    factorIndex <- c(rep(seq(labelList), each = ncol(local)), rep(0, nGlobal))
-    if (ncol(local) > 1)
-        labels <- c(as.vector(sapply(labelList, paste, colnames(local),
-                                     sep = ".")), global)
-    else
-        labels <- c(labelList, global)
-
-    ## pad out design matrices for Dref factors if necessary
-    if (!all(mapply(identical, allLevels, list(global)))) {
-        labels <- sort(labels)
-        M <- matrix(0, nrow = nrow(gnmData), ncol = nGlobal,
-                    dimnames = list(NULL, global))
-        designList <- lapply(designList, function(design, M) {
-            M[,colnames(design)] <- design
-            M}, M)
-    }
-
-    predictor <- function(coef) {
-        # calculate constrained weights
-        W <- matrix(nrow = nrow(gnmData), ncol = length(designList))
-        for (i in seq(ncol(W)))
-            W[,i] <- drop(exp(local %*% coef[factorIndex == i]))
-        W <- W/rowSums(W)
-        gamma <- sapply(designList, "%*%", coef[factorIndex == 0])
-        predictor <- W * gamma
-        structure(predictor, W = W)
-    }
-
-    localDesignFunction <- function(predictor, ...) {
-        W <- attr(predictor, "W")
-        Dintercept <- predictor - W * rowSums(predictor)
-        do.call("cbind", c(tapply(Dintercept, col(Dintercept), "*", local),
-                           list(do.call("psum", (mapply("*", split(W, col(W)),
-                                                        designList,
-                                                        SIMPLIFY = FALSE))))))
-    }
-    
-    list(start = c(runif(length(labels) - nGlobal) - 0.5, rep(0.5, nGlobal)),
-         labels = labels, predictor = predictor,
-         localDesignFunction = localDesignFunction)
+    list(predictors = preds,
+         common = common,
+         match = match,
+         term = function(predLabels, ...){
+             delta <- predLabels[1:n]
+             gamma <- predLabels[-c(1:n)]
+             paste("(((exp(", delta, "))/(",
+                   paste("exp(", delta, ")", collapse = " + "),
+                   "))*", gamma, ")", sep = "", collapse = " + ")},
+         start = function(theta) {
+             theta[] <- 0.5
+             delta <- grep("[)]delta", names(theta))
+             theta[delta] <- runif(length(delta)) - 0.5
+             theta
+         },
+         call = as.expression(match.call()))            
 }
+class(Dref) <- "nonlin"

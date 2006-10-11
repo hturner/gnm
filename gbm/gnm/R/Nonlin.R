@@ -1,22 +1,40 @@
 Nonlin <- function(functionCall){
-    badCall <- charmatch(c("model.frame.default", "model.matrix.default"),
-                           sapply(sys.calls(),
-                                  function(x) as.character(x[[1]])[1]))
-    if (any(!is.na(badCall)))
-        stop(paste("Nonlin terms are only valid in gnm models."))
-    
+    checkCall()
     functionCall <- match.call()$functionCall
+    if (deparse(functionCall[[1]]) %in% c("Dref", "MultHomog"))
+        stop(deparse(functionCall[[1]]), " is now implemented as a ",
+              "\"nonlin\" function")
+    else
+        warning("Plug-in functions are likely to be deprecated in future ",
+                "versions. \nFunctions of class \"nonlin\" should be used ",
+                "instead.", call. = FALSE)
+         
     envir <- environment(eval(functionCall[[1]]))
-    varMethod <- paste(as.character(functionCall[[1]]), "Variables", sep = "")
+    varMethod <- paste(functionCall[[1]], "Variables", sep = "")
     if (exists(varMethod, envir)) {
         varMethod <- as.call(c(as.name(varMethod), as.list(functionCall)[-1]))
-        variables <- eval(substitute(varMethod), envir)
+        variables <- as.list(attr(terms(reformulate(eval(substitute(varMethod),
+                                                         envir))),
+                                  "variables"))[-1]
     }
     else
-       variables <- as.character(match.call(match.fun(functionCall[[1]]),
-                                            functionCall,
-                                            expand.dots = FALSE)[["..."]])
+       variables <- match.call(match.fun(functionCall[[1]]), functionCall,
+                               expand.dots = FALSE)[["..."]]
     if (!length(variables))
         stop("No variables in term!")
-    structure(variables, class = "Nonlin", call = functionCall)
+
+    Call <- deparse(sys.call())
+        
+    list(prefix = deparse(functionCall),
+         matchID = 0,
+         variables = variables,
+         predvars = variables,
+         varLabels =  Call,
+         unitLabels = Call,
+         block = 0,
+         common = 1,
+         classID = "Nonlin",
+         NonlinID = "Nonlin",
+         predictor = paste("`", Call, "`", sep = ""))
 }
+class(Nonlin) <- "nonlin"

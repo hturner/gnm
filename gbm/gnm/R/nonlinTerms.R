@@ -1,4 +1,4 @@
-argTerms <- function(predictors, variables = NULL, term = NULL,
+nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                      common = seq(predictors), call = NULL,
                      match = if (!is.null(call)) seq(predictors)
                      else numeric(length(predictors)),
@@ -30,39 +30,39 @@ argTerms <- function(predictors, variables = NULL, term = NULL,
     data <- getData()
     for (i in order(match)) {
         if (inherits(predictors[[i]], "formula")){
-            argTerms <- terms(predictors[[i]], specials = "Const",
+            nonlinTerms <- terms(predictors[[i]], specials = "Const",
                               keep.order = TRUE, data = data)
             twiddle <- "~ "
         }
         else {
-            argTerms <- terms(reformulate(c("-1", predictors[[i]])),
+            nonlinTerms <- terms(reformulate(c("-1", predictors[[i]])),
                               specials = "Const", keep.order = TRUE,
                               data = data)
             twiddle <- ""
         }
-        if (is.empty.model(argTerms)) {
+        if (is.empty.model(nonlinTerms)) {
             predvars[[i]] <- vars[[i]] <-
-                as.list(attr(argTerms, "variables"))[-1]
-            offsetLabels[[i]] <- vars[[i]][attr(argTerms, "offset")]
+                as.list(attr(nonlinTerms, "variables"))[-1]
+            offsetLabels[[i]] <- vars[[i]][attr(nonlinTerms, "offset")]
             NonlinID[[i]] <- list()
             varLabels[[i]] <- predictor[[i]] <- unitLabels[[i]] <- NULL
             blockList[[i]] <- numeric(0)
             suffix[[i]] <- character(0)
         }
         else {
-            unitLabels[[i]] <- as.list(c("1"[attr(argTerms, "intercept")],
-                                         attr(argTerms, "term.labels")))
+            unitLabels[[i]] <- as.list(c("1"[attr(nonlinTerms, "intercept")],
+                                         attr(nonlinTerms, "term.labels")))
             vars[[i]] <- predvars[[i]] <-
-                as.list(attr(argTerms, "variables"))[-1]
+                as.list(attr(nonlinTerms, "variables"))[-1]
             specials <- sapply(vars[[i]], function(x) {
                 length(x) > 1 && inherits(match.fun(x[[1]]), "nonlin")})
-            const <- attr(argTerms, "specials")$Const
+            const <- attr(nonlinTerms, "specials")$Const
             if (length(const)) {
                 unitLabels[[i]] <- unitLabels[[i]][!unitLabels[[i]] %in%
                                                    vars[[i]][const]]
                 predvars[[i]][const] <- lapply(vars[[i]][const], eval)
             }
-            offsetLabels[[i]] <- vars[[i]][c(attr(argTerms, "offset"),
+            offsetLabels[[i]] <- vars[[i]][c(attr(nonlinTerms, "offset"),
                                                   const)]
             varLabels[[i]] <- as.list(paste("#", adj,
                                             gsub("\`", ".", unitLabels[[i]]),

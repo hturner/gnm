@@ -97,7 +97,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         if (identical(substr(unitLabels[[j]], 0, 7), "Nonlin("))
             tmp <- eval(parse(text = unitLabels[[j]]))
         else
-            tmp <- do.call("argTerms", eval(parse(text = unitLabels[[j]])))
+            tmp <- do.call("nonlinTerms", eval(parse(text = unitLabels[[j]])))
         unitLabels[[j]] <- tmp$unitLabels
         if (!identical(tmp$prefix, "#")) {
             bits <- hashSplit(tmp$prefix)

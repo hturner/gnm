@@ -93,7 +93,8 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
         }
         for (sgn in c(-1, 1)) {
             if (trace) 
-                cat("\nParameter:", par, c("down", "up")[(sgn + 1)/2 + 1], "\n")
+                prattle("\nParameter:", par, c("down", "up")[(sgn + 1)/2 + 1],
+                        "\n")
             step <- 0
             init <- parameters(fitted)
             while ((step <- step + 1) <= maxsteps) {

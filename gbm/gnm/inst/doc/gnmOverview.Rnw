@@ -22,6 +22,7 @@
 
 \setkeys{Gin}{width=0.6\textwidth}
 
+
 %% The next few definitions from "Writing Vignettes for Bioconductor Packages"
 %% by R Gentleman
 \newcommand{\Robject}[1]{{\emph{\texttt{#1}}}}
@@ -39,6 +40,8 @@
 %\setlength{\oddsidemargin}{0.5in}
 %\setlength{\evensidemargin}{0.5in}
 %\setlength{\textwidth}{5.5in}
+
+\setlength{\itemindent}{1cm}
 
 \title{Generalized nonlinear models in \R: an overview of the
 \Rpackage{gnm} package}
@@ -292,7 +295,7 @@ mathematical functions. In order to specify certain nonlinear terms in this way,
 it is necessary to be able to specify a constant in the symbolic expression of a
 predictor. This is the function of \Rfunction{Const}, such that
 \begin{Scode}
-    Const{a}
+    Const(a)
 \end{Scode}
 is equivalent to
 \begin{Scode}
@@ -309,16 +312,17 @@ estimation of generalized models with nonlinear terms. The facility provided
 with \Rfunction{gnm} for the specification of nonlinear terms is designed to be
 compatible with the symbolic language used in \Rclass{formula}
 objects. Primarily, nonlinear terms are specified in the model formula as calls
-to \Rclass{nonlin} functions. There are several \Rclass{nonlin} functions in the
+to functions of the class \Rclass{nonlin}.
+There are several \Rclass{nonlin} functions included in the
 \Rpackage{gnm} package. Some of these specify simple mathematical functions of
 predictors: \Rfunction{Exp}, \Rfunction{Log}, \Rfunction{Mult}, \Rfunction{Inv},
 \Rfunction{Raise} (to raise to a constant power), and \Rfunction{Logit}. Others
-specify more specialised nonlinear terms, in particular \Rfunction{MultHomog}
+specify more specialized nonlinear terms, in particular \Rfunction{MultHomog}
 specifies homogeneous multiplicative interactions and \Rfunction{Dref} specifies
 diagonal reference terms. Users may also define their own \Rclass{nonlin}
-functions. 
+functions.
 
-In previous versions of \Rpackage{gnm}, specialised nonlinear terms
+In previous versions of \Rpackage{gnm}, specialized nonlinear terms
 were implemented using plug-in functions and users could define custom plug-in
 functions as described in Section \ref{plug-ins}. Such functions still work in
 the current version of \Rpackage{gnm}, but as plug-in functions are less
@@ -331,42 +335,44 @@ likely to be withdrawn in future versions.
 Most of the \Rclass{nonlin} functions included in \Rpackage{gnm} are basic
 mathematical functions of predictors:
 \begin{description}
-\item[Exp] the exponential of a predictor
-\item[Inv] the reciprocal of a predictor
-\item[Log] the natural logarithm of a predictor
-\item[Logit] the logit of a predictor
-\item[Mult] the product of predictors
-\item[Raise] a predictor raised to a constant power
+\setlength{\itemindent}{-0.5cm}
+\item[\Rfunction{Exp}:] the exponential of a predictor
+\item[\Rfunction{Inv}:] the reciprocal of a predictor
+\item[\Rfunction{Log}:] the natural logarithm of a predictor
+\item[\Rfunction{Logit}:] the logit of a predictor
+\item[\Rfunction{Mult}:] the product of predictors
+\item[\Rfunction{Raise}:] a predictor raised to a constant power
 \end{description}
 Predictors are specified by symbolic expressions that are interpreted as the
 right-hand side of a \Rclass{formula} object, except that an intercept is
-\textbf{not} added by default. 
+\textbf{not} added by default.
 
 The predictors may contain nonlinear terms, allowing more complex functions to
-be built up. For example, one way to specify a logistic term of the form
+be built up. For example, one way to specify a logistic predictor function
+of the form
 \[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}\]
 would be as follows
 \begin{Scode}
 ~ -1 + Mult(1, Inv(Const(1) + Exp(Mult(1 + offset(-log(conc)), Inv(1)))))
 \end{Scode}
 However, this is rather convoluted and it may be preferable to define a
-specialised \Rclass{nonlin} function in such a case. Section
+specialized \Rclass{nonlin} function in such a case. Section
 \ref{nonlin.functions} explains how users can define custom \Rclass{nonlin}
 functions, with a function to specify logistic terms as an example.
 
 One family of models usefully specified with the basic functions is the
 family of models with multiplicative interactions. For example, the row-column
-association model 
+association model
 \[
 \log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c,
 \]
-also known as the Goodman RC model \citep{Good79}, would be specified by the
-following formula
+also known as the Goodman RC model \citep{Good79}, would be specified
+as a log-link model (for response variable \Robject{resp}, say), with formula
 \begin{Scode}
-mu ~ R + C + Mult(R, C)
+resp ~ R + C + Mult(R, C)
 \end{Scode}
 where \Robject{R} and \Robject{C} are row and column factors respectively. In
-some contexts, it may be desirable to constrain one or more of the constituent 
+some contexts, it may be desirable to constrain one or more of the constituent
 multipliers\footnote{
 A note on terminology: the rather cumbersome phrase `constituent multiplier', or
 sometimes the abbreviation `multiplier', will
@@ -376,18 +382,18 @@ completely different meaning of the word `factor' --- that is, a categorical
 variable --- in \R.
 } in a multiplicative interaction to be nonnegative . This may be achieved by
 specifying the multiplier as an exponential, as in the following `uniform
-difference' model \citep{Xie92, Erik92} 
+difference' model \citep{Xie92, Erik92}
 \[
 \log \mu_{rct} = \alpha_{rt} + \beta_{ct} + e^{\gamma_t}\delta_{rc},
 \]
-which would be represented by the following formula
+which would be represented by a formula of the form
 \begin{Scode}
-mu ~ R:T + C:T + Mult(Exp(T), R:C)
+resp ~ R:T + C:T + Mult(Exp(T), R:C)
 \end{Scode}
 
 \subsection{\Rfunction{MultHomog}}
 
-\Rfunction{MultHomog} is \ \Rclass{nonlin} function to specify
+\Rfunction{MultHomog} is a \Rclass{nonlin} function to specify
 multiplicative interaction terms in which the constituent
 multipliers are the effects of two or more factors and the effects of these
 factors are constrained to be equal when the factor levels are equal. The
@@ -398,10 +404,10 @@ assumed to be objects of class \Rclass{factor}.
 As an example, consider the following association model with homogeneous
 row-column effects:
 \[\log \mu_{rc} = \alpha_r + \beta_c + \theta_{r}I(r=c) + \gamma_r\gamma_c.\]
-To fit this model, with response variable named \Robject{mu},
+To fit this model, with response variable named \Robject{resp}, say,
 the formula argument to \Rfunction{gnm} would be
 \begin{Scode}
-mu ~ R + C + Diag(R, C) + MultHomog(R, C)
+resp ~ R + C + Diag(R, C) + MultHomog(R, C)
 \end{Scode}
 
 If the factors passed to \Rfunction{MultHomog} do not have
@@ -415,7 +421,7 @@ factor, sorted into increasing order.
 \Rfunction{Dref} is a \Rclass{nonlin} function to fit diagonal reference terms
 involving
 two or more factors with a common set of levels. A diagonal reference term
-comprises an additive component for each factor. The component for factor $f$,
+comprises an additive component for each factor. The component for factor $f$
 is given by
 \[
 w_f\gamma_l
@@ -441,19 +447,19 @@ and the column factor \Robject{C},
 \mu_{rc} =\frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_r +
 \frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_c,
 \]
-would be specified by the formula
+would be specified by a formula of the form
 \begin{Scode}
-mu ~ -1 + Dref(R, C)
+resp ~ -1 + Dref(R, C)
 \end{Scode}
 
 The \Rfunction{Dref} function has one specified argument, \Rfunarg{delta},
-which is a formula with no left-hand side, specifying the dependence of
-$\delta_f$ on any covariates. 
+which is a formula with no left-hand side, specifying the dependence (if any)
+of $\delta_f$ on  covariates.
 For example, the formula
 \begin{Scode}
-mu ~ -1 + x + Dref(R, C, delta = ~ 1 + x)
+resp ~ -1 + x + Dref(R, C, delta = ~ 1 + x)
 \end{Scode}
-specifies the following diagonal reference model
+specifies the generalized diagonal reference model
 \[
 \mu_{rci} = \beta x_i + \frac{e^{\xi_{01} + \xi_{11}x_i}}{e^{\xi_{01} + \xi_{11}x_i} + e^{\xi_{02} + \xi_{12}x_i}}\gamma_r +
 \frac{e^{\xi_{02} + \xi_{12}x_i}}{e^{\xi_{01} + \xi_{11}x_i} + e^{\xi_{02} + \xi_{12}x_i}}\gamma_c.
@@ -461,7 +467,7 @@ specifies the following diagonal reference model
 The default value of \Rfunarg{delta} is \Robject{\twiddle 1}, so that
 constant weights are estimated. The coefficients returned by \Rfunction{gnm} are
 those that are directly estimated, i.e. the $\delta_f$ or the $\xi_{.f}$, rather
-than the implied weights $w_f$. 
+than the implied weights $w_f$.
 
 \subsection{\Rfunction{instances}}
 \label{instances}
@@ -483,56 +489,64 @@ Currently all of the \Rclass{nonlin} functions in \Rpackage{gnm} except
 an \Rfunarg{inst} argument to allow the specification of multiple instances. So the
 RC(2) model could be specified as follows
 \begin{Scode}
-mu ~ R + C + Mult(R, C, inst = 1) + Mult(R, C, inst = 2)
+resp ~ R + C + Mult(R, C, inst = 1) + Mult(R, C, inst = 2)
 \end{Scode}
 The convenience function \Rfunction{instances} allows multiple instances of a
 term to be specified at once
 \begin{Scode}
-mu ~ R + C + instances(Mult(R, C), 2)
+resp ~ R + C + instances(Mult(R, C), 2)
 \end{Scode}
 The formula is expanded by \Rfunction{gnm}, so that the instances are treated as
 separate terms. The \Rfunction{instances} function may be used with any function
 with an \Rfunarg{inst} argument.
 
 \subsection{Custom \Rclass{nonlin} Functions}
+\label{nonlin.functions}
+
+\subsubsection{General description}
 
 Users may write their own \Rclass{nonlin} functions to specify nonlinear terms
 which can not (easily) be specified using the \Rclass{nonlin} functions in the
 \Rpackage{gnm} package. A function of class \Rclass{nonlin} should return a list
 with the following components:
 \begin{description}
-\item[\Robject{predictors}] a list of symbolic expressions or formulae with no
+\setlength{\itemindent}{-0.5cm}
+\item[\Robject{predictors}:] a list of symbolic expressions or formulae with no
     left hand side which represent (possibly nonlinear)
-    predictors that form part of the term. 
-\item[\Robject{term}] a function that takes the arguments \Rfunarg{predLabels}
+    predictors that form part of the term.
+\item[\Robject{term}:] a function that takes the arguments \Rfunarg{predLabels}
     and \Rfunarg{varLabels}, which are labels generated by \Rfunction{gnm} for
     the specified predictors and variables (see below), and returns a deparsed
     mathematical expression of the nonlinear term.  Only functions recognised by
     \Rfunction{deriv} should be used in the expression, e.g. \Rfunction{+}
-    rather than \Rfunction{sum}. 
+    rather than \Rfunction{sum}.
 \end{description}
-Intercepts will be added by default to predictors that are specified by formulae. If
-predictors are named, these names will be used as a prefix for parameter labels
-or the parameter label itself in the single parameter case.  
+Intercepts are added by default to predictors that are specified by formulae.
+If
+predictors are named, these names are used as a prefix for parameter labels
+or as the parameter label itself in the single-parameter case.
 
-The list returned by the \Rclass{nonlin} function should also include the following
-components as necessary: 
+The list returned by the \Rclass{nonlin} function should also include the
+following
+components as necessary:
 \begin{description}
-\item[\Robject{variables}] a list of expressions representing variables in the term
+\setlength{\itemindent}{-0.5cm}
+\item[\Robject{variables}:] a list of expressions representing variables in the term
     (variables with a coefficient of 1).
-\item[\Robject{common}] a numeric index of \Rfunarg{predictors} with
+\item[\Robject{common}:] a numeric index of \Rfunarg{predictors} with
     duplicated indices identifying single factor predictors for which
-    homologous effects are to be estimated. 
+    homologous effects are to be estimated.
 \end{description}
 and may include any of the following components:
 \begin{description}
-\item[\Robject{call}] a call to be used as a prefix for parameter labels.
-\item[\Robject{match}] (if \Robject{call} is non-\Rcode{NULL}) a numeric index
+\setlength{\itemindent}{-0.5cm}
+\item[\Robject{call}:] a call to be used as a prefix for parameter labels.
+\item[\Robject{match}:] (if \Robject{call} is non-\Rcode{NULL}) a numeric index
     of \Robject{predictors} specifying which arguments of \Robject{call} the
     predictors match to --- zero indicating no match. If \Rcode{NULL},
     predictors will be matched sequentially to the arguments of
     \Robject{call}.
-\item[start] an optional function which takes a named vector of parameters
+\item[\Robject{start}:] an optional function which takes a named vector of parameters
     corresponding to the predictors and returns a vector of
     starting values for those parameters. This function is ignored if the
     term is nested within another nonlinear term.
@@ -540,10 +554,10 @@ and may include any of the following components:
 
 Predictors which are matched to a specified argument of \Robject{call} should be
 given the same name as the argument. Matched predictors are labelled using ``dot-style''
-labelling, e.g. the label for the intercept in the first 
+labelling, e.g. the label for the intercept in the first
 constituent multiplier of the term \Rcode{Mult(A, B)} would be \Rcode{"Mult(\. + A, 1 +
 B).(Intercept)"}. It is recommended that matches are specified wherever
-possible, to ensure parameter labels are well-defined. 
+possible, to ensure parameter labels are well-defined.
 
 The arguments of \Rclass{nonlin} functions are as suited to the particular term,
 but will usually include symbolic representations of predictors in the term
@@ -551,15 +565,17 @@ and/or the names of variables in the term. The function may also have an
 \Rfunarg{inst} argument to allow specification of multiple instances (see
 \ref{instances}).
 
-As an example, consider the following logistic term
-\[\frac{Asym}{1 + \exp((xmid - x)/scal)}\]
+\subsubsection{Example: a logistic function}
 
-We can consider Asym, xmid and scal as the parameters of three separate predictors,
+As an example, consider writing a \Rclass{nonlin} function for
+the following logistic term:
+\[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
+We can consider \emph{Asym}, \emph{xmid} and \emph{scal}
+as the parameters of three separate predictors,
 each with a single intercept term. Thus our \Robject{predictors} component would be
 \begin{Scode}
 list(Asym = 1, xmid = 1, scal = 1)
 \end{Scode}
-
 The term also depends on the variable $x$, which would need to be specified by
 the user. Suppose this is specified to our \Rclass{nonlin} function through an
 argument named \Rfunarg{x}. Then our \Rclass{nonlin} function would return the
@@ -576,74 +592,81 @@ the term, given labels for the predictors and the variables:
     function(predLabels, varLabels) {
       paste(predLabels[1], "/(1 + exp((", predLabels[2], "-",
       varLabels[1], ")/", predLabels[3], "))")
-    }  
+    }
 \end{Scode}
 This would be the \Robject{term} component returned by our \Rclass{nonlin} function.
 
 We now have all the necessary ingredients of a \Rclass{nonlin} function to specify
-the logistic term. Since the parameterisation does not depend on user-specified
+the logistic term. Since the parameterization does not depend on user-specified
 values, it does not make sense to use call-matched labelling in this case. The
 labels for our parameters will be specified by the labels of the
 \Robject{predictors} component. Since we do not anticipate fitting models with
 multiple logistic terms, our \Rclass{nonlin} will not return a \Robject{call}
 component with which to prefix the parameter labels. We do however, have some
-idea of useful starting values, so we will specify the following \Robject{start} component
+idea of useful starting values, so we will specify the \Robject{start}
+component as
 \begin{Scode}
-    function(theta){
-      theta[3] <- 1
-      theta
-    }
+function(theta){
+    theta[3] <- 1
+    theta
+}
 \end{Scode}
-which sets the initial scale parameter to one. 
+which sets the initial scale parameter to one.
 
 Putting all these ingredients together we have
 \begin{Scode}
-    Logistic <- function(x){
-      list(predictors = list(Asym = 1, xmid = 1, scal = 1),
-      variables = list(substitute(x)),
-      term = function(predLabels, varLabels) {
-        paste(predLabels[1], "/(1 + exp((", predLabels[2], "-",
-        varLabels[1], ")/", predLabels[3], "))")
-      },
-      start = function(theta){
-        theta[3] <- 1
-        theta
-      }
-      )
-    }
+Logistic <- function(x){
+    list(predictors = list(Asym = 1, xmid = 1, scal = 1),
+         variables = list(substitute(x)),
+         term = function(predLabels, varLabels) {
+             paste(predLabels[1], "/(1 + exp((", predLabels[2], "-",
+             varLabels[1], ")/", predLabels[3], "))")
+         },
+         start = function(theta){
+             theta[3] <- 1
+             theta
+         })
+}
 class(Logistic) <- "nonlin"
 \end{Scode}
 
-The \Rfunction{MultHomog} function provides a further example a \Rclass{nonlin}
+\subsubsection{Example: \Rfunction{MultHomog}}
+
+The \Rfunction{MultHomog} function included in the \Rpackage{gnm} package
+provides a further example of a \Rclass{nonlin}
 function, showing how to specify a term with quite different features from the
-logistic term:
+preceding example.  The definition is
 \begin{Scode}
 MultHomog <- function(..., inst = NULL){
     dots <- match.call(expand.dots = FALSE)[["..."]]
     list(predictors = dots,
          common = rep(TRUE, length(dots)),
          term = function(predLabels, ...) {
-             paste("(", paste(predLabels, collapse = ")*("), ")", sep = "")
-         },
+             paste("(", paste(predLabels, collapse = ")*("), ")", sep = "")},
          call = as.expression(match.call()),
          match = rep(0, length(dots)))
 }
 class(MultHomog) <- "nonlin"
 \end{Scode}
 Firstly, the interaction may be based on any number of factors, hence the use
-of the special ``...'' argument. The use of \Rfunction{match.call} is 
+of the special ``\Robject{...}'' argument. The use of \Rfunction{match.call} is
 equivalent to the use of \Rfunction{substitute} in the \Rfunction{Logistic}
-function: to obtain expressions for the factors as specified by the user. 
+function: to obtain expressions for the factors as specified by the user.
 
-The \Robject{common} component specifies that homogeneous effects are to be estimated
-across all the specified factors. The term only depend on these factors, but the
-\Robject{term} function allows for the empty \Robject{varLabels} vector that will be
-passed to it, by having a ``...'' argument. 
+The \Robject{common} component specifies that homogeneous effects are to
+be estimated
+across all the specified factors. The term only depends on these factors,
+but the
+\Robject{term} function allows for the empty \Robject{varLabels} vector
+that will be
+passed to it, by having a ``\Robject{...}'' argument.
 
-Since the user may wish to specify multiple instances, a \Robject{call} component
+Since the user may wish to specify multiple instances, a \Robject{call}
+component
 is returned, so that parameters in different instances of the term will have
 unique labels (due to the \Rfunarg{inst} argument in the call). However as the
-expressions passed to ``...'' may only represent single factors, rather than
+expressions passed to ``\Robject{...}'' may only represent single factors,
+rather than
 general predictors, it is not necessary to use call-matched labelling, so a
 vector of zeros is returned as the \Robject{match} component.
 
@@ -1052,7 +1075,7 @@ the variance-covariance matrix will only be valid for parameters or contrasts
 that are estimable!
 
 Similarly, \Rmethod{profile.gnm} and \Rmethod{confint.gnm} are only applicable
-to estimable parameters. The deviance function of a generalised nonlinear model
+to estimable parameters. The deviance function of a generalized nonlinear model
 can sometimes be far from quadratic and \Rmethod{profile.gnm} attempts to detect
 assymetry or asymptotic behaviour in order to return a sufficient profile for a
 given parameter. As an example, consider the following model, described later in
@@ -1074,12 +1097,12 @@ linear. We can plot the profile traces as follows:
 \end{center}
 
 From these plots we can see that the deviance is approximately quadratic
-in \Robject{Mult(Exp(.), orig:dest).educ2}, assymetric in 
+in \Robject{Mult(Exp(.), orig:dest).educ2}, assymetric in
 \Robject{Mult(Exp(.), orig:dest).educ3} and \Robject{Mult(Exp(.),
   orig:dest).educ4} and asymptotic in \Robject{Mult(Exp(.), orig:dest).educ5}.
 When the deviance is approximately quadratic in a given parameter,
 \Rmethod{profile.gnm} uses the same stepsize for profiling above and below the
-original estimate: 
+original estimate:
 
 \begin{Sinput}
 > diff(prof[[2]]$par.vals[, "Mult(Exp(.), orig:dest).educ2"])
@@ -1281,7 +1304,7 @@ in the bilinear term:
 <<residSVD>>=
 emptyModel <- gnm(y ~ -1, family = wedderburn, data = barley)
 biplotStart <- residSVD(emptyModel, barley$site, barley$variety, d = 2)
-biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2), 
+biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
 family = wedderburn, data = barley, start =  biplotStart)
 @ %def
 In this instance, the
@@ -1353,7 +1376,7 @@ mentalHealth$SES <- C(mentalHealth$SES, treatment)
 The \Rclass{gnm} model is then specified as follows, using the poisson family
 with a log link function:
 <<RC1_model>>=
-RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS), family = poisson, 
+RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS), family = poisson,
                 data = mentalHealth)
 RC1model
 @ %def
@@ -1575,26 +1598,26 @@ The baseline model can be fitted as follows:
 \end{Sinput}
 \begin{Soutput}
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Dref(MOPLM, FOPLF), family = gaussian, data = conformity, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+    Dref(MOPLM, FOPLF), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
 Coefficients:
-                    AGEM                      MRMM                      FRMF  
-                 0.06363                  -0.32425                  -0.25324  
-                   MWORK                      MFCM  Dref(MOPLM, FOPLF)delta1  
-                -0.06430                  -0.06043                  -0.33731  
-Dref(MOPLM, FOPLF)delta2   Dref(., .).MOPLM|FOPLF1   Dref(., .).MOPLM|FOPLF2  
-                -0.02505                   4.95121                   4.86329  
- Dref(., .).MOPLM|FOPLF3   Dref(., .).MOPLM|FOPLF4   Dref(., .).MOPLM|FOPLF5  
-                 4.86458                   4.72343                   4.43516  
- Dref(., .).MOPLM|FOPLF6   Dref(., .).MOPLM|FOPLF7  
-                 4.18873                   4.43378  
+                    AGEM                      MRMM                      FRMF
+                 0.06363                  -0.32425                  -0.25324
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF)delta1
+                -0.06430                  -0.06043                  -0.33731
+Dref(MOPLM, FOPLF)delta2   Dref(., .).MOPLM|FOPLF1   Dref(., .).MOPLM|FOPLF2
+                -0.02505                   4.95121                   4.86329
+ Dref(., .).MOPLM|FOPLF3   Dref(., .).MOPLM|FOPLF4   Dref(., .).MOPLM|FOPLF5
+                 4.86458                   4.72343                   4.43516
+ Dref(., .).MOPLM|FOPLF6   Dref(., .).MOPLM|FOPLF7
+                 4.18873                   4.43378
 
-Deviance:            425.3389 
-Pearson chi-squared: 425.3389 
-Residual df:         576 
+Deviance:            425.3389
+Pearson chi-squared: 425.3389
+Residual df:         576
 \end{Soutput}
 The coefficients of the covariates are not aliased with the parameters of the
 diagonal reference term and thus the basic identifiability constraints that have
@@ -1607,24 +1630,24 @@ are the weight parameters. This is confirmed in the summary of the model:
 \end{Sinput}
 \begin{Soutput}
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Dref(MOPLM, FOPLF), family = gaussian, data = conformity, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+    Dref(MOPLM, FOPLF), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
-Deviance Residuals: 
-     Min        1Q    Median        3Q       Max  
--3.63688  -0.50383   0.01714   0.56753   2.25139  
+Deviance Residuals:
+     Min        1Q    Median        3Q       Max
+-3.63688  -0.50383   0.01714   0.56753   2.25139
 
 Coefficients:
-                         Estimate Std. Error t value Pr(>|t|)    
-AGEM                      0.06363    0.07375   0.863  0.38859    
+                         Estimate Std. Error t value Pr(>|t|)
+AGEM                      0.06363    0.07375   0.863  0.38859
 MRMM                     -0.32425    0.07766  -4.175 3.44e-05 ***
-FRMF                     -0.25324    0.07681  -3.297  0.00104 ** 
-MWORK                    -0.06430    0.07431  -0.865  0.38727    
-MFCM                     -0.06043    0.07123  -0.848  0.39663    
-Dref(MOPLM, FOPLF)delta1 -0.33731         NA      NA       NA    
-Dref(MOPLM, FOPLF)delta2 -0.02505         NA      NA       NA    
+FRMF                     -0.25324    0.07681  -3.297  0.00104 **
+MWORK                    -0.06430    0.07431  -0.865  0.38727
+MFCM                     -0.06043    0.07123  -0.848  0.39663
+Dref(MOPLM, FOPLF)delta1 -0.33731         NA      NA       NA
+Dref(MOPLM, FOPLF)delta2 -0.02505         NA      NA       NA
 Dref(., .).MOPLM|FOPLF1   4.95121    0.16639  29.757  < 2e-16 ***
 Dref(., .).MOPLM|FOPLF2   4.86329    0.10436  46.602  < 2e-16 ***
 Dref(., .).MOPLM|FOPLF3   4.86458    0.12855  37.842  < 2e-16 ***
@@ -1633,7 +1656,7 @@ Dref(., .).MOPLM|FOPLF5   4.43516    0.19314  22.963  < 2e-16 ***
 Dref(., .).MOPLM|FOPLF6   4.18873    0.17142  24.435  < 2e-16 ***
 Dref(., .).MOPLM|FOPLF7   4.43378    0.16903  26.231  < 2e-16 ***
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for gaussian family taken to be 0.7384355)
 
@@ -1651,8 +1674,8 @@ are estimable. The weights may be evaluated as follows:
 > prop.table(exp(coef(A)[6:7]))
 \end{Sinput}
 \begin{Soutput}
-Dref(MOPLM, FOPLF)delta1 Dref(MOPLM, FOPLF)delta2 
-               0.4225638                0.5774362 
+Dref(MOPLM, FOPLF)delta1 Dref(MOPLM, FOPLF)delta2
+               0.4225638                0.5774362
 \end{Soutput}
 giving the values reported by \citet{Vand02}. All the other coefficients of
 model A are the same as those reported by \citet{Vand02} except the coefficients
@@ -1673,26 +1696,26 @@ coefficients, it is better to recode the gender role factors as follows:
 \end{Sinput}
 \begin{Soutput}
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM + 
-    Dref(MOPLM, FOPLF), family = gaussian, data = conformity, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
+    Dref(MOPLM, FOPLF), family = gaussian, data = conformity,
     verbose = FALSE)
 
 
 Coefficients:
-                    AGEM                     MRMM2                     FRMF2  
-                 0.06363                   0.32425                   0.25324  
-                   MWORK                      MFCM  Dref(MOPLM, FOPLF)delta1  
-                -0.06430                  -0.06043                   0.08440  
-Dref(MOPLM, FOPLF)delta2   Dref(., .).MOPLM|FOPLF1   Dref(., .).MOPLM|FOPLF2  
-                 0.39666                   4.37371                   4.28579  
- Dref(., .).MOPLM|FOPLF3   Dref(., .).MOPLM|FOPLF4   Dref(., .).MOPLM|FOPLF5  
-                 4.28708                   4.14593                   3.85767  
- Dref(., .).MOPLM|FOPLF6   Dref(., .).MOPLM|FOPLF7  
-                 3.61123                   3.85629  
+                    AGEM                     MRMM2                     FRMF2
+                 0.06363                   0.32425                   0.25324
+                   MWORK                      MFCM  Dref(MOPLM, FOPLF)delta1
+                -0.06430                  -0.06043                   0.08440
+Dref(MOPLM, FOPLF)delta2   Dref(., .).MOPLM|FOPLF1   Dref(., .).MOPLM|FOPLF2
+                 0.39666                   4.37371                   4.28579
+ Dref(., .).MOPLM|FOPLF3   Dref(., .).MOPLM|FOPLF4   Dref(., .).MOPLM|FOPLF5
+                 4.28708                   4.14593                   3.85767
+ Dref(., .).MOPLM|FOPLF6   Dref(., .).MOPLM|FOPLF7
+                 3.61123                   3.85629
 
-Deviance:            425.3389 
-Pearson chi-squared: 425.3389 
-Residual df:         576 
+Deviance:            425.3389
+Pearson chi-squared: 425.3389
+Residual df:         576
 \end{Soutput}
 The coefficients of the covariates are now as reported by \citet{Vand02}, but
 the diagonal effects have been adjusted appropriately.
@@ -1706,7 +1729,7 @@ follows:
 \mu_{rci} = \beta_1x_{1i} + \beta_2x_{2i} + \beta_3x_{3i} +\beta_4x_{4i} +\beta_5x_{5i} +
 \frac{e^{\xi_{01} + \xi_{11}x_{5i}}}{e^{\xi_{01} + \xi_{11}x_{5i}} +
 e^{\xi_{02} + \xi_{12}x_{5i}}}\gamma_r + \frac{e^{\xi_{02} +
-  \xi_{12}x_{5i}}}{e^{\xi_{01} + \xi_{11}x_{5i}} 
+  \xi_{12}x_{5i}}}{e^{\xi_{01} + \xi_{11}x_{5i}}
 + e^{\xi_{02} + \xi_{12}x_{5i}}}\gamma_c.
 \]
 
@@ -1720,48 +1743,48 @@ role factors for ease of comparison to the results reported by \citet{Vand02},
 \end{Sinput}
 \begin{Soutput}
 Call:
-gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
-    Dref(MOPLM, FOPLF, delta = ~1 + MFCM), family = gaussian, 
+gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
+    Dref(MOPLM, FOPLF, delta = ~1 + MFCM), family = gaussian,
     data = conformity, verbose = FALSE)
 
 
 Coefficients:
-                                                    AGEM  
-                                                 0.05818  
-                                                    MRMM  
-                                                -0.32701  
-                                                    FRMF  
-                                                -0.25772  
-                                                   MWORK  
-                                                -0.07847  
-                                                    MFCM  
-                                                -0.01694  
-Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept)  
-                                                 1.03515  
-          Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM  
-                                                -1.77756  
-Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept)  
-                                                -0.03515  
-          Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM  
-                                                 2.77756  
-             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF1  
-                                                 4.82476  
-             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF2  
-                                                 4.88066  
-             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF3  
-                                                 4.83969  
-             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF4  
-                                                 4.74850  
-             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF5  
-                                                 4.42020  
-             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF6  
-                                                 4.17957  
-             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF7  
-                                                 4.40819  
+                                                    AGEM
+                                                 0.05818
+                                                    MRMM
+                                                -0.32701
+                                                    FRMF
+                                                -0.25772
+                                                   MWORK
+                                                -0.07847
+                                                    MFCM
+                                                -0.01694
+Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept)
+                                                 1.03515
+          Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM
+                                                -1.77756
+Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept)
+                                                -0.03515
+          Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM
+                                                 2.77756
+             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF1
+                                                 4.82476
+             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF2
+                                                 4.88066
+             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF3
+                                                 4.83969
+             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF4
+                                                 4.74850
+             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF5
+                                                 4.42020
+             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF6
+                                                 4.17957
+             Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF7
+                                                 4.40819
 
-Deviance:            420.9022 
-Pearson chi-squared: 420.9022 
-Residual df:         575 
+Deviance:            420.9022
+Pearson chi-squared: 420.9022
+Residual df:         575
 \end{Soutput}
 In this case there are two sets of weights, one for when the mother's conflict
 score is less than average (coded as zero) and one for when the score is greater
@@ -1770,19 +1793,19 @@ than average (coded as one). These can be evaluated as follows:
 > prop.table(exp(coef(F))[c(6,8)])
 \end{Sinput}
 \begin{Soutput}
-Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept) 
-                                               0.7446523 
-Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept) 
-                                               0.2553477 
+Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept)
+                                               0.7446523
+Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept)
+                                               0.2553477
 \end{Soutput}
 \begin{Sinput}
 > prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)]))
 \end{Sinput}
 \begin{Soutput}
-Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM 
-                                    0.02974698 
-Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM 
-                                    0.97025302 
+Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM
+                                    0.02974698
+Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM
+                                    0.97025302
 \end{Soutput}
 giving the same weights as in Table 4 of \citet{Vand02}.
 
@@ -1849,7 +1872,7 @@ data(cautres)
 doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(election), religion:vote) +
                      Mult(Exp(election), class:vote),
-        
+
              family = poisson, data = cautres)
 getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, ", religion:vote")))
 getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, "[.]religion")))
@@ -2146,7 +2169,7 @@ table(zapsmall(sapply(saved.fits, deviance)))
 The \Robject{saved.fits} object thus contains the results of 100 calls to
 \Rfunction{gnm}, each using a different, randomly-generated starting value
 for the vector of parameters $(\alpha, \beta, \gamma)$.  Out of 100 fits, 52
-reproduce the data exactly, to machine accuracy. 
+reproduce the data exactly, to machine accuracy.
 The remaining 48 fits are all identical to one another, but they are far from
 globally optimal, with residual sum of squares 3.61: they result from
 divergence of $\hat\gamma$ to $+\infty$, and correspondingly of $\hat\beta$
@@ -2171,9 +2194,9 @@ x <- 1:100
 y <- exp(- x / 10) + 2 * exp(- x / 50)
 set.seed(1)
 saved.fits <- list()
-for (i in 1:100) 
+for (i in 1:100)
     saved.fits[[i]] <- suppressWarnings(gnm(y ~ Exp(1 + x, inst = 1) +
-                                            Exp(1 + x, inst = 2), 
+                                            Exp(1 + x, inst = 2),
                                             verbose = FALSE))
 unlist(sapply(saved.fits, deviance))
 @ %def
@@ -2215,7 +2238,7 @@ found.  In the present example, knowing that $\gamma_1$ and $\gamma_2$ should
 both be small and negative, we might perhaps have tried
 @
 <<doubleExp3>>=
-gnm(y ~ instances(Exp(1 + x), 2), start = c(NA, NA, -0.1, NA, -0.1), 
+gnm(y ~ instances(Exp(1 + x), 2), start = c(NA, NA, -0.1, NA, -0.1),
     verbose = FALSE)
 @ %def
 which reliably yields the (globally optimal) perfect fit to the data.

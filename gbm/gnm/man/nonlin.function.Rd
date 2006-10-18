@@ -1,5 +1,5 @@
 \name{nonlin.function}
-\alias{nonlin functions}
+\alias{nonlin.function}
 \title{ Functions to Specify Nonlinear Terms in gnm Models  }
 \description{
   Nonlinear terms maybe be specified in the formula argument to gnm by
@@ -108,8 +108,8 @@ class(MultHomog) <- "nonlin"
 set.seed(1)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                MultHomog(origin, destination), ofInterest = "[|]",
-               family = poisson, data = occupationalStatus, verbose =
-               FALSE)
+               family = poisson, data = occupationalStatus,
+               verbose = FALSE)
 RChomog
 ## 
 ## Call:

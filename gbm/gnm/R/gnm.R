@@ -209,7 +209,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         ofInterest <- (nElim + 1):length(coefNames)
     if (identical(ofInterest, "[?]"))
         call$ofInterest <- ofInterest <-
-            pickCoef(coefNames,
+            pickCoef(fit,
                      warningText = paste("No subset of coefficients selected",
                      "- assuming all are of interest."))
     if (is.character(ofInterest)) {

@@ -97,7 +97,7 @@ data(occupationalStatus)
 MultHomog <- function(..., inst = NULL){
     dots <- match.call(expand.dots = FALSE)[["..."]]
     list(predictors = dots,
-         common = rep(TRUE, length(dots)),
+         common = rep(1, length(dots)),
          term = function(predictors, ...) {
              paste("(", paste(predictors, collapse = ")*("), ")", sep = "")
          },
@@ -107,7 +107,7 @@ class(MultHomog) <- "nonlin"
 ## use to fit homogeneous multiplicative interaction
 set.seed(1)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-               MultHomog(origin, destination), ofInterest = "[|]",
+               MultHomog(origin, destination), ofInterest = "MultHomog",
                family = poisson, data = occupationalStatus,
                verbose = FALSE)
 RChomog

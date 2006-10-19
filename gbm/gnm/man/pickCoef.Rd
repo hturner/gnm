@@ -11,7 +11,7 @@ pickCoef(object, regexpr = NULL, ...)
 \arguments{
   \item{object}{ a model object. }
   \item{regexpr}{ character string containing a regular expression. If
-    missing, a Tk dialog will open foe coefficient selection.  }
+    missing, a Tk dialog will open for coefficient selection.  }
   \item{\dots}{ arguments to pass on to relimp:::pickFrom. }
 }
 \value{

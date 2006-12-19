@@ -48,7 +48,7 @@
 
 \author{Heather Turner and David Firth\footnote{
 This work was supported by the Economic and Social Research Council (UK)
-through a Professorial Fellowship.}\\
+through Professorial Fellowship RES-051-27-0055.}\\
 \emph{University of Warwick, UK}
 }
 
@@ -2124,6 +2124,159 @@ of the parameters to zero, either through the \Rfunarg{constrain} argument of
 getContrasts(oneDimensional, pickCoef(oneDimensional, "Mult.*pain"))
 @ %def
 giving the required estimates.
+
+\subsection{Lee-Carter model for trends in age-specific mortality}
+
+
+In the study and projection of population mortality rates, the model proposed
+by \cite{LeeCart92} forms the basis of many if not most current analyses.
+Here we consider the quasi-Poisson version of the model \citep{Wilm93, Alho00,
+BrouDenuVerm02, RensHabe03}, in which the death count $D_{ay}$ for individuals
+of age $a$ in year $y$ has mean $\mu_{ay}$ and variance $\phi\mu_{ay}$ (where
+$\phi$ is 1 for Poisson-distributed counts, and is respectively greater
+than or less than 1 in cases of over-dispersion or under-dispersion).  In
+the Lee-Carter model, the
+expected counts follow the log-bilinear form
+\[
+\log(\mu_{ay}/e_{ay}) = \alpha_a + \beta_a \gamma_y,
+\]
+where $e_{ay}$ is the `exposure' (number of lives at risk).  This is
+a generalized nonlinear model with a single multiplicative term.
+
+The use of \Rpackage{gnm} to fit this model is straightforward.  We will
+illustrate by using data from the Human Mortality
+Database\footnote{Thanks to Iain Currie for helpful advice
+relating to this section}
+(HMD, at \texttt{http://www.mortality.org})
+on male deaths in Canada between 1921 and
+2003.  The data are not made available as part of \Rpackage{gnm} because
+of license restrictions; but they are readily available via the web simply by
+registering with the HMD.  We assume that the data for Canadian males (both
+deaths and exposure-to-risk) have been downloaded from the HMD and organised
+into a data frame named \Robject{Canada} in \R, with columns \Robject{Year}
+(a factor, with levels \Rcode{1921} to \Rcode{2003}),
+\Robject{Age} (a factor, with levels \Rcode{20} to \Rcode{99}),
+\Robject{mDeaths} and \Robject{mExposure} (both quantitative).  The Lee-Carter
+model may then be specified as
+\begin{Sinput}
+LCmodel.male <- gnm(mDeaths ~ Age + Mult(Exp(Age), Year),
+                    offset = log(mExposure), family = "quasipoisson",
+                    data = Canada)
+\end{Sinput}
+Here we have acknowledged the fact that the model only really makes
+sense if all of the $\beta_a$ parameters, which represent the `sensitivity'
+of age group $a$ to a change in the level of general mortality
+\citep[e.g.,][]{BrouDenuVerm02}, have the same sign.  Without loss of
+generality we assume $\beta_a>0$ for all $a$, and we impose this constraint
+by using \Rcode{Exp(Age)} instead of just \Rcode{Age} in the
+multiplicative term.
+Convergence is to a fitted model with residual
+deviance 32422.68 on 6400 degrees of freedom --- representing
+clear evidence of substantial overdispersion relative to the Poisson
+distribution.  In order to explore the lack of fit a little further, we
+plot the distribution of Pearson residuals in Figure \ref{LCresplot}:
+\begin{Sinput}
+par(mfrow = c(2,2))
+age <- as.numeric(as.character(Canada$Age))
+with(Canada,{
+    res <- residuals(LCmodel.male, type = "pearson")
+    plot(Age, res, xlab="Age", ylab="Pearson residual",
+         main = "(a) Residuals by age")
+    plot(Year, res, xlab="Year", ylab="Pearson residual",
+         main = "(b) Residuals by year")
+    plot(Year[(age>24) & (age<36)], res[(age>24) & (age<36)],
+         xlab = "Year", ylab = "Pearson residual",
+         main = "(c) Age group 25-35")
+    plot(Year[(age>49) & (age<66)], res[(age>49) & (age<66)],
+         xlab = "Year", ylab = "Pearson residual",
+         main = "(d) Age group 50-65")
+})
+\end{Sinput}
+\begin{figure}[!tbph]
+\begin{center}
+\includegraphics[width=6in]{LCall.pdf}
+\caption{Canada, males: plots of residuals from the Lee-Carter model
+of mortality}
+\end{center}
+\label{LCresplot}
+\end{figure}
+Panel (a) of Figure \ref{LCresplot} indicates that the overdispersion
+is not evenly spread through the data, but is largely concentrated in
+two age groups, roughly ages 25--35 and 50--65\null.  Panels (c) and (d)
+focus on the residuals in each of these two age groups: there is a clear
+(and roughly cancelling)
+dependence on \Robject{Year}, indicating that the assumed bilinear
+interaction between \Robject{Age} and \Robject{Year} does not hold
+for the full range of ages and years considered here.
+
+A somewhat more satisfactory Lee-Carter model fit
+is obtained if only a subset of
+the data is used, namely only those males aged 45 or over:
+\begin{Sinput}
+LCmodel.maleOver45 <- gnm(mDeaths ~ Age + Mult(Exp(Age), Year),
+                          offset = log(mExposure), family = "quasipoisson",
+                          data = Canada[age>44,])
+\end{Sinput}
+The residual deviance now is 12595.44 on 4375 degrees of freedom: still
+substantially overdispersed, but less severely so than before.  Again we plot
+the distributions of Pearson residuals (Figure \ref{LCresplot2}).
+\begin{figure}[!tbph]
+\begin{center}
+\includegraphics[width=6in]{LCover45.pdf}
+\caption{Canada, males over 45: plots of residuals from the Lee-Carter model
+of mortality}
+\end{center}
+\label{LCresplot2}
+\end{figure}
+Still clear departures from the assumed bilinear structure are evident,
+especially for age group 81--89; but they are less pronounced than in
+the previous model fit.
+
+The main purpose here is only to illustrate how straightforward it
+is to work with the Lee-Carter model using \Rfunction{gnm}, but we will take
+this example a little further by examining the estimated $\beta_a$
+parameters from the last fitted model.  We can use \Rfunction{getContrasts}
+to compute quasi standard errors for the logarithms of $\hat\beta_a$ --- the
+logarithms
+being the result of having used
+\Rcode{Exp(Age)} in the model specification ---
+and use these in a plot of the coefficients:
+\begin{Sinput}
+AgeContrasts <- getContrasts(LCmodel.maleOver45, 56:100) ## ages 45 to 89 only
+\end{Sinput}
+\begin{center}
+\includegraphics{qvplot.pdf}
+\end{center}
+The plot shows that sensitivity to the general level of mortality is highest
+at younger ages, as expected.  An \emph{unexpected} feature is the clear
+outlying positions occupied by the estimates for ages 51, 61, 71 and 81:
+for each of those ages, the estimated $\beta_a$ coefficient is substantially
+less than it is for the neighbouring age groups (and the
+error bars indicate clearly that the deviations are larger than could plausibly
+be due to chance variation).  This is a curious finding.  A partial explanation
+comes from a look back at the raw death-count data.  In the years between
+1921 and 1940, the death counts for ages 31, 41, 51, 61, 71 and 81 all
+stand out as being very substantially lower than those of neighbouring
+ages
+(Figure \ref{deaths2140}: the ages concerned are highlighted in solid red).
+The same does \emph{not} hold for later years: after about 1940, the `1' ages
+fall in with the general pattern.    We do not know the reason for this,
+but it does explain our finding above regarding the
+$\beta_a$ coefficients: whilst all age groups have benefited from the general
+trend of reduced mortality, the `1' age groups appear to have
+benefited least because
+their starting point (in the 1920s and 1930s) was lower than would have
+been indicated by the general pattern --- hence
+$\hat\beta_a$ is smaller
+for ages $a=31$, $a=41$,\ldots, $a=81$.
+
+\begin{figure}[!tbph]
+\begin{center}
+\includegraphics{deaths1921-1940.pdf}
+\caption{Canada, males: Deaths 1921 to 1940 by age}
+\end{center}
+\label{deaths2140}
+\end{figure}
 
 \subsection{Exponential and sum-of-exponentials models for decay curves}
 

@@ -5,10 +5,22 @@ Agresti, A. (2002).
 \newblock {\em Categorical Data Analysis\/} (2nd ed.).
 \newblock New York: Wiley.
 
+\bibitem[\protect\citeauthoryear{Alho}{Alho}{2000}]{Alho00}
+Alho, J.~M. (2000).
+\newblock Discussion of {Lee} (2000).
+\newblock {\em North American Actuarial Journal\/}~{\em 4}, 91--93.
+
 \bibitem[\protect\citeauthoryear{Anderson}{Anderson}{1984}]{Ande84}
 Anderson, J.~A. (1984).
 \newblock Regression and ordered categorical variables.
 \newblock {\em J. R. Statist. Soc. B\/}~{\em 46\/}(1), 1--30.
+
+\bibitem[\protect\citeauthoryear{Brouhns, Denuit, and Vermunt}{Brouhns
+  et~al.}{2002}]{BrouDenuVerm02}
+Brouhns, N., M.~Denuit, and J.~K. Vermunt (2002).
+\newblock A poisson log-bilinear regression approach to the construction of
+  projected lifetables.
+\newblock {\em Insurance Mathematics and Economics\/}~{\em 31}, 373--393.
 
 \bibitem[\protect\citeauthoryear{Catchpole and Morgan}{Catchpole and
   Morgan}{1997}]{CatcMorg97}
@@ -71,11 +83,25 @@ Hatzinger, R. and B.~J. Francis (2004).
 \newblock Technical Report~3, Department of Statistics and Mathematics,
   Wirtschaftsuniversit\"at Wien.
 
+\bibitem[\protect\citeauthoryear{Lee and Carter}{Lee and
+  Carter}{1992}]{LeeCart92}
+Lee, R.~D. and L.~Carter (1992).
+\newblock Modelling and forecasting the time series of {US} mortality.
+\newblock {\em Journal of the American Statistical Association\/}~{\em 87},
+  659--671.
+
 \bibitem[\protect\citeauthoryear{McCullagh and Nelder}{McCullagh and
   Nelder}{1989}]{McCu89}
 McCullagh, P. and J.~A. Nelder (1989).
 \newblock {\em Generalized Linear Models ({S}econd Edition)}.
 \newblock Chapman \& Hall Ltd.
+
+\bibitem[\protect\citeauthoryear{Renshaw and Haberman}{Renshaw and
+  Haberman}{2003}]{RensHabe03}
+Renshaw, A. and S.~Haberman (2003).
+\newblock Lee-carter mortality forecasting: a parallel generalized linear
+  modelling approach for {England} and {Wales} mortality projections.
+\newblock {\em Applied Statistics\/}~{\em 52}, 119--137.
 
 \bibitem[\protect\citeauthoryear{Seber and Wild}{Seber and Wild}{1989}]{Sebe89}
 Seber, G. A.~F. and C.~J. Wild (1989).
@@ -113,6 +139,13 @@ Wedderburn, R. W.~M. (1974).
 \newblock Quasi-likelihood functions, generalized linear models, and the
   {G}auss-{N}ewton method.
 \newblock {\em Biometrika\/}~{\em 61}, 439--447.
+
+\bibitem[\protect\citeauthoryear{Wilmoth}{Wilmoth}{1993}]{Wilm93}
+Wilmoth, J.~R. (1993).
+\newblock Computational methods for fitting and extrapolating the {Lee-Carter}
+  model of mortality change.
+\newblock Technical report, Department of Demography, University of California,
+  Berkeley.
 
 \bibitem[\protect\citeauthoryear{Xie}{Xie}{1992}]{Xie92}
 Xie, Y. (1992).

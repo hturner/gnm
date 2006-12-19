@@ -1,0 +1,16 @@
+citHeader("To cite package ‘gnm’ in publications use:")
+
+citEntry(entry="Manual",
+    title = {"Generalized nonlinear models in R: An overview of the gnm package"},
+    author = personList(as.person("Heather Turner"),
+                        as.person("David Firth")),
+    year = {2006},
+    note = {"R package version 0.9-1"},
+    url = {"http://go.warwick.ac.uk/heatherturner/gnm/gnmoverview.pdf"},
+    textVersion = paste(
+      "Heather Turner and David Firth (2006).",
+      "Generalized nonlinear models in R: An overview of the gnm package.",
+      "http://go.warwick.ac.uk/heatherturner/gnm/gnmoverview.pdf")
+)
+
+

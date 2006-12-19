@@ -79,11 +79,11 @@ form of standard help pages, as viewed in \R\ by, for example, \Rcode{?gnm} or
 \Rcode{help(gnm)}, is supplemented rather than replaced by the present
 document.
 
-We begin below with a preliminary note (Section \ref{glms}) on some
+We begin below with a preliminary note (Section \ref{sec:glms}) on some
 ways in which
 the \Rpackage{gnm} package extends \R's facilities for specifying, fitting
 and working with generalized \emph{linear} models.  Then (Section
-\ref{nonlinear} onwards) the facilities for nonlinear terms are introduced,
+\ref{sec:nonlinear} onwards) the facilities for nonlinear terms are introduced,
 explained and exemplified.
 
 The \Rpackage{gnm} package is installed in the standard way for CRAN packages,
@@ -94,7 +94,7 @@ library(gnm)
 @
 
 \section{Generalized Linear Models}
-\label{glms}
+\label{sec:glms}
 
 \subsection{Preamble}
 
@@ -108,7 +108,7 @@ package), and indeed
 In general there is no reason to prefer \Rfunction{gnm} to \Rfunction{glm} for
 fitting generalized linear models, except perhaps when the model involves a
 large number of incidental parameters which are treatable
-by \Rfunction{gnm}'s \emph{eliminate} mechanism (see Section \ref{eliminate}).
+by \Rfunction{gnm}'s \emph{eliminate} mechanism (see Section \ref{sec:eliminate}).
 
 While the main purpose of the \Rpackage{gnm} package is to extend the class of
 models to include nonlinear terms, some of the new functions and methods
@@ -123,7 +123,7 @@ and a new generic function \Rfunction{termPredictors} which
 extracts the contribution of each term to the predictor from a fitted model
 object.  These functions are briefly introduced here, before we move on to
 the main purpose of the package,
-nonlinear models, in Section \ref{nonlinear}.
+nonlinear models, in Section \ref{sec:nonlinear}.
 
 \subsection{\Rfunction{Diag} and \Rfunction{Symm}}
 
@@ -271,7 +271,7 @@ This agrees with the chi-squared value reported on page 331 of \citet{McCu89},
 which differs slightly from Wedderburn's own reported value.
 
 \subsection{\Rfunction{termPredictors}}
-\label{termPredictors}
+\label{sec:termPredictors}
 
 The generic function \Rfunction{termPredictors} extracts a term-by-term
 decomposition of the predictor function in a linear, generalized linear or
@@ -289,7 +289,7 @@ contributions of different terms or groups of terms.
 
 \subsection{Const}
 
-In Section \ref{nonlinear} we shall see how nonlinear terms may be specified
+In Section \ref{sec:nonlinear} we shall see how nonlinear terms may be specified
 using functions of class \Rclass{nonlin} that are analogous to basic
 mathematical functions. In order to specify certain nonlinear terms in this way,
 it is necessary to be able to specify a constant in the symbolic expression of a
@@ -304,7 +304,7 @@ is equivalent to
 where \Robject{nObs} is the number of observations.
 
 \section{Nonlinear Terms}
-\label{nonlinear}
+\label{sec:nonlinear}
 
 The main purpose of the \Rpackage{gnm} package is to provide
 a flexible framework for the specification and
@@ -324,13 +324,13 @@ functions.
 
 In previous versions of \Rpackage{gnm}, specialized nonlinear terms
 were implemented using plug-in functions and users could define custom plug-in
-functions as described in Section \ref{plug-ins}. Such functions still work in
+functions as described in Section \ref{sec:plug-ins}. Such functions still work in
 the current version of \Rpackage{gnm}, but as plug-in functions are less
 user-friendly than \Rclass{nonlin} functions, support for plug-in functions is
 likely to be withdrawn in future versions.
 
 \subsection{Basic Mathematical Functions of Predictors}
-\label{Basic}
+\label{sec:Basic}
 
 Most of the \Rclass{nonlin} functions included in \Rpackage{gnm} are basic
 mathematical functions of predictors:
@@ -357,7 +357,7 @@ would be as follows
 \end{Scode}
 However, this is rather convoluted and it may be preferable to define a
 specialized \Rclass{nonlin} function in such a case. Section
-\ref{nonlin.functions} explains how users can define custom \Rclass{nonlin}
+\ref{sec:nonlin.functions} explains how users can define custom \Rclass{nonlin}
 functions, with a function to specify logistic terms as an example.
 
 One family of models usefully specified with the basic functions is the
@@ -416,7 +416,7 @@ a common set of levels is obtained by taking the union of the levels of each
 factor, sorted into increasing order.
 
 \subsection{\Rfunction{Dref}}
-\label{Dref function}
+\label{sec:Dref function}
 
 \Rfunction{Dref} is a \Rclass{nonlin} function to fit diagonal reference terms
 involving
@@ -470,12 +470,12 @@ those that are directly estimated, i.e. the $\delta_f$ or the $\xi_{.f}$, rather
 than the implied weights $w_f$.
 
 \subsection{\Rfunction{instances}}
-\label{instances}
+\label{sec:instances}
 
 Multiple instances of a linear term will be aliased with each other, but this is
 not necessarily the case for nonlinear terms. Indeed, there are certain types of
 model where adding further instances of a nonlinear term is a natural way to extend
-the model. For example, Goodman's RC model, introduced in section \ref{Basic}
+the model. For example, Goodman's RC model, introduced in section \ref{sec:Basic}
 \[
 \log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c,
 \]
@@ -501,7 +501,7 @@ separate terms. The \Rfunction{instances} function may be used with any function
 with an \Rfunarg{inst} argument.
 
 \subsection{Custom \Rclass{nonlin} Functions}
-\label{nonlin.functions}
+\label{sec:nonlin.functions}
 
 \subsubsection{General description}
 
@@ -555,7 +555,7 @@ and may include any of the following components:
 Predictors which are matched to a specified argument of \Robject{call} should be
 given the same name as the argument. Matched predictors are labelled using ``dot-style''
 labelling, e.g. the label for the intercept in the first
-constituent multiplier of the term \Rcode{Mult(A, B)} would be \Rcode{"Mult(\. + A, 1 +
+constituent multiplier of the term \Rcode{Mult(A, B)} would be \Rcode{"Mult(.\ + A, 1 +
 B).(Intercept)"}. It is recommended that matches are specified wherever
 possible, to ensure parameter labels are well-defined.
 
@@ -563,7 +563,7 @@ The arguments of \Rclass{nonlin} functions are as suited to the particular term,
 but will usually include symbolic representations of predictors in the term
 and/or the names of variables in the term. The function may also have an
 \Rfunarg{inst} argument to allow specification of multiple instances (see
-\ref{instances}).
+\ref{sec:instances}).
 
 \subsubsection{Example: a logistic function}
 
@@ -675,7 +675,7 @@ vector of zeros is returned as the \Robject{match} component.
 
 
 \subsection{Using Custom Plug-ins to Fit Nonlinear Terms}
-\label{plug-ins}
+\label{sec:plug-ins}
 
 Prior to the introduction of \Rclass{nonlin} functions, nonlinear terms that
 could not be specified and estimated using the in-built capability of
@@ -722,14 +722,14 @@ element of the Fisher information matrix is less than 1e-20, the algorithm is
 deemed to have converged.
 
 \subsection{Using \Rfunarg{start}}
-\label{start}
+\label{sec:start}
 
 In some contexts, the default starting values may not be appropriate and the
 algorithm will fail to converge, or perhaps only converge after a large number
 of iterations. Alternative starting values may be passed on to \Rfunction{gnm}
 by specifying a \Rfunarg{start} argument. This should be a numeric vector of
 length equal to the number of parameters (or possibly the non-eliminated
-parameters, see Section \ref{eliminate}), however missing starting values
+parameters, see Section \ref{sec:eliminate}), however missing starting values
 (\Robject{NA}s) are allowed.
 
 If there is no user-specified starting value for a parameter, the
@@ -780,7 +780,7 @@ linear, or if all nonlinear parameters are specified by \Rfunarg{start} or a
 plug-in function.
 
 \subsection{Using \Rfunarg{constrain}}
-\label{constrain}
+\label{sec:constrain}
 
 By default, \Rfunction{gnm} only imposes identifiability constraints according
 to the general conventions used by \Robject{R} to handle linear aliasing. Therefore
@@ -789,7 +789,7 @@ models that have any nonlinear terms will be usually be over-parameterized and
 coefficients.
 
 To illustrate this point, consider the following application of \Rfunction{gnm},
-discussed later in Section \ref{RCmodels}:
+discussed later in Section \ref{sec:RCmodels}:
 <<RC_homogeneous_model_1>>=
 data(occupationalStatus)
 set.seed(1)
@@ -849,12 +849,12 @@ It is not usually so straightforward to constrain all the parameters in a
 generalized nonlinear model. However use of \Rfunarg{constrain} in conjunction
 with \Rfunarg{constrainTo} is usually sufficient to make coefficients of
 interest identifiable . The functions \Rfunction{checkEstimable} or
-\Rfunction{getContrasts}, described in Section \ref{Methods},
+\Rfunction{getContrasts}, described in Section \ref{sec:Methods},
 may be used to check whether particular combinations of parameters
 are estimable.
 
 \subsection{Using \Rfunarg{eliminate}}
-\label{eliminate}
+\label{sec:eliminate}
 
 When a model contains the additive effect of a factor which has a large
 number of levels, the iterative algorithm by which maximum likelihood estimates
@@ -883,7 +883,7 @@ otherwise specified through the \Rfunarg{ofInterest} argument to
 the \Robject{ofInterest} component of the returned model object
 indexes the non-eliminated parameters. Thus eliminated parameters are excluded
 from printed model summaries and default selection by \Rclass{gnm} methods. See
-Section \ref{ofInterest} for further details on the use of the
+Section \ref{sec:ofInterest} for further details on the use of the
 \Robject{ofInterest} component.
 
 The \Rfunarg{eliminate} feature is useful, for example, when
@@ -891,7 +891,7 @@ multinomial-response models are fitted by using the well known equivalence
 between multinomial and (conditional) Poisson likelihoods.  In such situations
 the sufficient statistic involves a potentially large number of fixed
 multinomial row totals, and the corresponding parameters are of no
-substantive interest.  For an application see Section \ref{Stereotype} below.
+substantive interest.  For an application see Section \ref{sec:Stereotype} below.
 Here we give an artificial illustration: 1000 randomly-generated trinomial
 responses, and a single predictor variable (whose effect on the data generation
 is null):
@@ -1000,10 +1000,10 @@ earlier work of \cite{Hatz04} to a broader class of models and to
 over-parameterized model representations.
 
 \section{Methods and Accessor functions}
-\label{Methods}
+\label{sec:Methods}
 
 \subsection{Methods}
-\label{specificMethods}
+\label{sec:specificMethods}
 
 The \Rfunction{gnm} function returns
 an object of class \Robject{c("gnm", "glm", "lm")}. There
@@ -1012,9 +1012,9 @@ or \Rclass{lm} to facilitate inspection of fitted models.
 Out of the generic functions in the \Rpackage{base},
 \Rpackage{stats} and \Rpackage{graphics} packages for which methods have been
 written
-for \Rclass{glm} or \Rclass{lm} objects, Figure \ref{glm.lm} shows those
+for \Rclass{glm} or \Rclass{lm} objects, Figure \ref{fig:glm.lm} shows those
 that can be used to analyse \Rclass{gnm} objects, whilst Figure
-\ref{!glm.lm} shows
+\ref{fig:!glm.lm} shows
 those that are not implemented for \Rclass{gnm} objects.
 
 \begin{figure}[!tbph]
@@ -1036,7 +1036,7 @@ those that are not implemented for \Rclass{gnm} objects.
     \caption{Generic functions in the \Rpackage{base}, \Rpackage{stats} and
       \Rpackage{graphics} packages that can be used to analyse
       \Rclass{gnm} objects.}
-    \label{glm.lm}
+    \label{fig:glm.lm}
 \end{figure}
 
 \begin{figure}[!tbph]
@@ -1057,17 +1057,17 @@ those that are not implemented for \Rclass{gnm} objects.
       \Rpackage{graphics} packages for which methods have been written for
       \Rclass{glm} or \Rclass{lm} objects, but which are \emph{not}
       implemented for \Rclass{gnm} objects.}
-    \label{!glm.lm}
+    \label{fig:!glm.lm}
 \end{figure}
 
-In addition to the accessor functions shown in Figure \ref{glm.lm}, the
+In addition to the accessor functions shown in Figure \ref{fig:glm.lm}, the
 \Rpackage{gnm} package provides a new generic function called
 \Rfunction{termPredictors}
 that has methods for objects of class \Rclass{gnm}, \Rclass{glm} and
 \Rclass{lm}. This function returns the additive contribution of each term to
-the predictor.  See Section \ref{termPredictors} for an example of its use.
+the predictor.  See Section \ref{sec:termPredictors} for an example of its use.
 
-Most of the functions listed in Figure \ref{glm.lm} can be used as they would be
+Most of the functions listed in Figure \ref{fig:glm.lm} can be used as they would be
 for \Rclass{glm} or \Rclass{lm} objects, however care must be taken with
 \Rmethod{vcov.gnm}, as the variance-covariance matrix will depend on the
 parameterization of the model. In particular, standard errors calculated using
@@ -1079,7 +1079,7 @@ to estimable parameters. The deviance function of a generalized nonlinear model
 can sometimes be far from quadratic and \Rmethod{profile.gnm} attempts to detect
 assymetry or asymptotic behaviour in order to return a sufficient profile for a
 given parameter. As an example, consider the following model, described later in
-Section \ref{Unidiff}:
+Section \ref{sec:Unidiff}:
 
 \begin{Scode}
 data(yaish)
@@ -1092,9 +1092,13 @@ prof <- profile(unidiff, which = 61:65, trace = TRUE)
 If the deviance is quadratic in a given parameter, the profile trace will be
 linear. We can plot the profile traces as follows:
 
+\begin{figure}
 \begin{center}
-\includegraphics{gnmOverview-profilePlot.pdf}
+\includegraphics{fig-profilePlot.pdf}
 \end{center}
+\caption{Profile traces for the multipliers of the orig:dest association}
+\label{fig:profilePlot}
+\end{figure}
 
 From these plots we can see that the deviance is approximately quadratic
 in \Robject{Mult(Exp(.), orig:dest).educ2}, assymetric in
@@ -1138,12 +1142,12 @@ confint(prof)
 \end{Scode}
 
 \subsection{\Rfunction{ofInterest} and \Rfunction{pickCoef}}
-\label{ofInterest}
+\label{sec:ofInterest}
 
 It is quite common for a statistical model to have a large number of
 parameters, but for only a subset of these parameters be of interest when it
 comes to interpreting the model. An example of this has been seen in
-Section~\ref{eliminate}, where a factor is required in the model in order
+Section~\ref{sec:eliminate}, where a factor is required in the model in order
 to represent
 a structural aspect of the data, but the estimated factor effects have no
 substantive interpretation. Even for models in which all parameters
@@ -1186,7 +1190,7 @@ then it would not have been necessary to specify the \Rfunarg{which} argument of
 
 
 \subsection{\Rfunction{checkEstimable}}
-\label{checkEstimable}
+\label{sec:checkEstimable}
 
 The \Rfunction{checkEstimable} function can be used to check the
 estimability of a linear combination of parameters.  For non-linear
@@ -1196,7 +1200,7 @@ function provides a numerical version of the sort of algebraic test
 described in \citet{CatcMorg97}.
 
 Consider the following model, that is described later in Section
-\ref{Unidiff}:
+\ref{sec:Unidiff}:
 <<Double_UNIDIFF_model>>=
 data(cautres)
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
@@ -1244,7 +1248,7 @@ checkEstimable(doubleUnidiff, contrMatrix)
 @
 
 \subsection{\Rfunction{getContrasts}, \Rfunction{se}}
-\label{getContrasts}
+\label{sec:getContrasts}
 
 To investigate simple ``sum to zero'' contrasts such as those above, it
 is easiest to use the \Rfunction{getContrasts} function, which checks the
@@ -1260,6 +1264,7 @@ myContrasts
 Visualization of estimated contrasts using
 `quasi standard errors' \citep{Firt03,FirtMene04} is achieved by plotting
 the resulting object:
+\begin{figure}
 \begin{center}
 <<qvplot, fig = TRUE>>=
 plot(myContrasts,
@@ -1267,6 +1272,9 @@ plot(myContrasts,
 xlab = "Election", levelNames = 1:4)
 @
 \end{center}
+\caption{Relative strength of religion-vote association, log scale}
+\label{fig:qvplot}
+\end{figure}
 %Attempting to obtain the equivalent contrasts for the second
 %(religion-vote association) multiplier produces the
 %following result:
@@ -1282,7 +1290,7 @@ the lower-level \Rfunction{se} function (which is called internally by
 can be used directly.  See \Rcode{help(se)} for details.
 
 \subsection{\Rfunction{residSVD}}
-\label{residSVD}
+\label{sec:residSVD}
 Sometimes it is useful to operate on the residuals of a model in order
 to create informative summaries of residual variation, or to obtain good
 starting values for additional parameters in a more elaborate model.  The
@@ -1297,7 +1305,7 @@ performing an appropriately weighted singular value decomposition on the
 working residuals.
 
 As an illustration, consider the biplot model described in
-Section~\ref{biplot} below.  We can proceed by fitting a smaller model,
+Section~\ref{sec:biplot} below.  We can proceed by fitting a smaller model,
 then use \Rfunction{residSVD} to obtain starting values for the parameters
 in the bilinear term:
 @
@@ -1314,34 +1322,37 @@ example is caused by a rather flat (quasi-)likelihood surface near the
 maximum, not by
 poor starting values.  In other situations, the use of \Rfunction{residSVD}
 may speed the calculations dramatically (see for example Section
-\ref{GAMMI}), or it may be crucial to success in
+\ref{sec:GAMMI}), or it may be crucial to success in
 locating the MLE (for example see \Rcode{help(House2001)}, where
 the number of multiplicative parameters is in the hundreds).
 
 The \Rfunction{residSVD} result in this instance
 provides a crude approximation to the MLE
 of the enlarged model, as can be seen in the following plot:
-\begin{center}
-<<residSVDplot, fig = TRUE, echo = FALSE>>=
-plot(coef(biplotModel), biplotStart,
-main = "Comparison of residSVD and MLE
-for a 2-dimensional biplot model")
-@ %def
-\end{center}
 
+\begin{figure}
+    \begin{center}
+        <<residSVDplot, fig = TRUE, echo = FALSE>>= plot(coef(biplotModel),
+        biplotStart, main = "Comparison of residSVD and MLE for a
+        2-dimensional biplot model") @ %def
+    \end{center}
+    \caption{Comparison of residSVD and the MLE for a 2-dimensional biplot
+      model}
+    \label{fig:residSVDplot}
+\end{figure}
 
 \section{Examples}
-\label{Examples}
+\label{sec:Examples}
 
 This section provides some examples of the wide range of models that may be fitted
-using the \Rpackage{gnm} package. Sections \ref{RCmodels}, \ref{Dref} and
-\ref{Unidiff} consider various models for contingency tables; Section
-\ref{GAMMI} considers AMMI and GAMMI models which are typically used in
-agricultural applications, and Section \ref{Stereotype} considers the stereotype
+using the \Rpackage{gnm} package. Sections \ref{sec:RCmodels}, \ref{sec:Dref} and
+\ref{sec:Unidiff} consider various models for contingency tables; Section
+\ref{sec:GAMMI} considers AMMI and GAMMI models which are typically used in
+agricultural applications, and Section \ref{sec:Stereotype} considers the stereotype
 model, which is used to model an ordinal response.
 
 \subsection{Row-column Association Models}
-\label{RCmodels}
+\label{sec:RCmodels}
 
 There are several models that have been proposed for modelling the relationship
 between the cell means of a contingency table and the cross-classifying
@@ -1447,7 +1458,7 @@ anova(RChomog, RCheterog)
 In this case there is little gain in allowing heterogeneous effects.
 
 \subsection{Diagonal Reference Models}
-\label{Dref}
+\label{sec:Dref}
 
 Diagonal reference models, proposed by \citet{Sobe81, Sobe85}, are designed for
 contingency tables classified by factors with the same levels. The cell
@@ -1480,7 +1491,7 @@ destination classes. This model may be expressed as
 \mu_{od} = \frac{e^{\delta_1}}{e^{\delta_1} + e^{\delta_2}}\gamma_o +
 \frac{e^{\delta_2}}{e^{\delta_1} + e^{\delta_2}}\gamma_d .
 \]
-See Section \ref{Dref function} for more detail on the parameterization.
+See Section \ref{sec:Dref function} for more detail on the parameterization.
 
 The basic diagonal reference model may be fitted using \Rfunction{gnm} as
 follows
@@ -1810,7 +1821,7 @@ Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM
 giving the same weights as in Table 4 of \citet{Vand02}.
 
 \subsection{Uniform Difference (UNIDIFF) Models}
-\label{Unidiff}
+\label{sec:Unidiff}
 
 Uniform difference models \citep{Xie92, Erik92} use a simplified three-way
 interaction to provide an interpretable model of contingency tables classified
@@ -1880,7 +1891,7 @@ getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, "[.]religion")))
 
 \subsection{Generalized Additive Main Effects and
 Multiplicative Interaction (GAMMI) Models}
-\label{GAMMI}
+\label{sec:GAMMI}
 
 Generalized additive main effects and multiplicative interaction models, or
 GAMMI models, were motivated by two-way contingency tables and comprise the row
@@ -1900,7 +1911,7 @@ multiplicative component $k$ and $\sigma_k$ is the singular value for component
 $k$. The number of multiplicative components, $K$, is less than or equal to the
 rank of the matrix of residuals from the main effects.
 
-The row-column association models discussed in Section \ref{RCmodels} are
+The row-column association models discussed in Section \ref{sec:RCmodels} are
 examples of GAMMI models, with a log link and poisson variance. Here we
 illustrate the use of an AMMI model, which is a GAMMI model with an identity
 link and a constant variance.
@@ -1920,7 +1931,7 @@ treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
 Now we can fit the AMMI-1 model, to the scaled yields using the combined
 treatment factor and the year factor from the \Robject{wheat} dataset.  We
 will proceed by first fitting the main effects model, then using
-\Rfunction{residSVD} (see Section \ref{residSVD}) for the parameters
+\Rfunction{residSVD} (see Section \ref{sec:residSVD}) for the parameters
 of the multiplicative term:
 @
 <<AMMI_model>>=
@@ -1939,7 +1950,7 @@ giving the same results as in Table 1 of \citet{Varg01} (up to error caused by
 rounding).
 
 \subsection{Biplot Models}
-\label{biplot}
+\label{sec:biplot}
 
 Biplots are used to display two-dimensional data transformed into a space
 spanned by linearly independent vectors, such as the principal components or
@@ -1964,7 +1975,7 @@ biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
                    family = wedderburn, data = barley)
 @ %def
 using the \Rfunction{wedderburn} family function introduced in Section
-\ref{glms}. Matrices of the row and column scores for the first two singular
+\ref{sec:glms}. Matrices of the row and column scores for the first two singular
 vectors can then be obtained by:
 @
 <<Row_and_column_scores>>=
@@ -1976,13 +1987,18 @@ B
 @ %def
 These matrices are essentially the same as in \citet{Gabr98}. From these the
 biplot can be produced, for sites $A \ldots I$ and varieties $1 \dots 9, X$:
-\begin{center}
-@
-<<Biplot, fig = TRUE>>=
-plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)),
-     xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data")
-@ %Def
-\end{center}
+@ 
+<<Biplot, include = FALSE>>=
+plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)), 
+     xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data")    
+@ %def 
+\begin{figure}
+    \begin{center}
+        \includegraphics{gnmOverview-Biplot.pdf}
+    \end{center}
+    \caption{Biplot for barley data}
+    \label{sec:Biplot1}
+\end{figure}
 The product of the matrices
 \Robject{A} and \Robject{B}
 is unaffected by rotation or reciprocal scaling along either axis,
@@ -1990,9 +2006,8 @@ so we can rotate the data so that the points for the sites are roughly parallel
 to the horizontal axis and the points for the varieties are roughly parallel to
 the vertical axis. In addition, we can scale the data so that points for the
 sites are about the line one unit about the horizontal axis, roughly
-\begin{center}
-@
-<<Rotate_and_scale, fig = TRUE>>=
+
+<<Rotate_and_scale,include = FALSE>>=
 a <- pi/5
 rotation <- matrix(c(cos(a), sin(a), -sin(a), cos(a)), 2, 2, byrow = TRUE)
 rA <- (2 * A/3) %*% rotation
@@ -2000,8 +2015,14 @@ rB <- (3 * B/2) %*% rotation
 plot(rbind(rA, rB), pch = c(levels(barley$site), levels(barley$variety)),
      xlim = c(-4, 4), ylim = c(-4, 4),
      main = "Biplot (rotated) for barley data")
-@ %def
-\end{center}
+@
+\begin{figure}
+    \begin{center}
+        \includegraphics{gnmOverview-Rotate_and_scale.pdf}
+    \end{center}
+    \caption{Rotated biplot for barley data}
+    \label{sec:Biplot2}
+\end{figure}
 In the original biplot, the co-ordinates for the sites and varieties were given
 by the rows of A and B respectively, i.e
 \begin{eqnarray*}
@@ -2035,7 +2056,7 @@ c(doubleAddChiSq - biplotModChiSq,
 @ %def
 
 \subsection{Stereotype Model}
-\label{Stereotype}
+\label{sec:Stereotype}
 
 The stereotype model was proposed by \citet{Ande84} for ordered categorical
 data. It is a linear logistic model, in which there is assumed to be a common
@@ -2174,7 +2195,7 @@ Convergence is to a fitted model with residual
 deviance 32422.68 on 6400 degrees of freedom --- representing
 clear evidence of substantial overdispersion relative to the Poisson
 distribution.  In order to explore the lack of fit a little further, we
-plot the distribution of Pearson residuals in Figure \ref{LCresplot}:
+plot the distribution of Pearson residuals in Figure \ref{fig:LCresplot}:
 \begin{Sinput}
 par(mfrow = c(2,2))
 age <- as.numeric(as.character(Canada$Age))
@@ -2192,15 +2213,16 @@ with(Canada,{
          main = "(d) Age group 50-65")
 })
 \end{Sinput}
-\begin{figure}[!tbph]
+%$
+\begin{figure}[!tbph] 
 \begin{center}
-\includegraphics[width=6in]{LCall.pdf}
+\includegraphics[width=6in]{fig-LCall.pdf}
+\end{center}
 \caption{Canada, males: plots of residuals from the Lee-Carter model
 of mortality}
-\end{center}
-\label{LCresplot}
+\label{fig:LCresplot}
 \end{figure}
-Panel (a) of Figure \ref{LCresplot} indicates that the overdispersion
+Panel (a) of Figure \ref{fig:LCresplot} indicates that the overdispersion
 is not evenly spread through the data, but is largely concentrated in
 two age groups, roughly ages 25--35 and 50--65\null.  Panels (c) and (d)
 focus on the residuals in each of these two age groups: there is a clear
@@ -2219,14 +2241,14 @@ LCmodel.maleOver45 <- gnm(mDeaths ~ Age + Mult(Exp(Age), Year),
 \end{Sinput}
 The residual deviance now is 12595.44 on 4375 degrees of freedom: still
 substantially overdispersed, but less severely so than before.  Again we plot
-the distributions of Pearson residuals (Figure \ref{LCresplot2}).
+the distributions of Pearson residuals (Figure \ref{fig:LCresplot2}).
 \begin{figure}[!tbph]
 \begin{center}
-\includegraphics[width=6in]{LCover45.pdf}
+\includegraphics[width=6in]{fig-LCover45.pdf}
+\end{center}
 \caption{Canada, males over 45: plots of residuals from the Lee-Carter model
 of mortality}
-\end{center}
-\label{LCresplot2}
+\label{fig:LCresplot2}
 \end{figure}
 Still clear departures from the assumed bilinear structure are evident,
 especially for age group 81--89; but they are less pronounced than in
@@ -2244,9 +2266,14 @@ and use these in a plot of the coefficients:
 \begin{Sinput}
 AgeContrasts <- getContrasts(LCmodel.maleOver45, 56:100) ## ages 45 to 89 only
 \end{Sinput}
+\begin{figure}
 \begin{center}
-\includegraphics{qvplot.pdf}
+\includegraphics{fig-LCqvplot.pdf}
 \end{center}
+\caption{Canada, males over 45, Lee-Carter model: relative sensitivity
+of different ages to change in total mortality.}
+\label{fig:LCqvplot}
+\end{figure}
 The plot shows that sensitivity to the general level of mortality is highest
 at younger ages, as expected.  An \emph{unexpected} feature is the clear
 outlying positions occupied by the estimates for ages 51, 61, 71 and 81:
@@ -2258,7 +2285,7 @@ comes from a look back at the raw death-count data.  In the years between
 1921 and 1940, the death counts for ages 31, 41, 51, 61, 71 and 81 all
 stand out as being very substantially lower than those of neighbouring
 ages
-(Figure \ref{deaths2140}: the ages concerned are highlighted in solid red).
+(Figure \ref{fig:deaths2140}: the ages concerned are highlighted in solid red).
 The same does \emph{not} hold for later years: after about 1940, the `1' ages
 fall in with the general pattern.    We do not know the reason for this,
 but it does explain our finding above regarding the
@@ -2272,10 +2299,10 @@ for ages $a=31$, $a=41$,\ldots, $a=81$.
 
 \begin{figure}[!tbph]
 \begin{center}
-\includegraphics{deaths1921-1940.pdf}
-\caption{Canada, males: Deaths 1921 to 1940 by age}
+\includegraphics{fig-deaths1921-1940.pdf}
 \end{center}
-\label{deaths2140}
+\caption{Canada, males: Deaths 1921 to 1940 by age}
+\label{fig:deaths2140}
 \end{figure}
 
 \subsection{Exponential and sum-of-exponentials models for decay curves}
@@ -2367,9 +2394,8 @@ with a single exponential (which has residual sum of squares 0.1589) and to the
 fit with no dependence at all on $x$
 (residual sum of squares 41.6), as we can see
 by comparing with:
-\begin{center}
-@
-<<doubleExp2, fig = TRUE>>=
+@ 
+<<doubleExp2, include = FALSE>>=
 singleExp <- gnm(y ~ Exp(1 + x), start = c(NA, NA, -0.1), verbose = FALSE)
 singleExp
 meanOnly <- gnm(y ~ 1, verbose = FALSE)
@@ -2377,8 +2403,15 @@ meanOnly
 plot(x, y, main = "Two sub-optimal fits to a sum-of-exponentials curve")
 lines(x, fitted(singleExp))
 lines(x, fitted(meanOnly), lty = "dashed")
-@ %def
-\end{center}
+@ %def 
+
+\begin{figure}
+    \centering
+    \includegraphics{gnmOverview-doubleExp2.pdf}
+    \caption{Two sub-optimal fits to a sum-of-exponentials curve}
+    \label{fig:doubleExp}
+\end{figure}
+
 In this example, it is clear that
 even a small amount of noise in the data would make it
 practically impossible to distinguish between competing

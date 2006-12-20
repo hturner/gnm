@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.0 (2006-04-24)
+R version 2.4.0 (2006-10-03)
+Copyright (C) 2006 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,15 +20,29 @@ Type 'q()' to quit R.
 > data(occupationalStatus)
 > 
 > RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
-+                Nonlin(MultHomog(origin, destination)), family = poisson,
++                MultHomog(origin, destination), family = poisson,
 +                data = occupationalStatus)
 Initialising
 Running start-up iterations..
-Running main iterations........
+Running main iterations.......
 Done
 > 
 > print(RChomog$deviance, digits=10)
 [1] 32.56097626
 > print(RChomog$df)
 [1] 34
+> 
+> data(friend)
+> 
+> ###  Fit an association model with homogeneous row-column effects
+> set.seed(4)
+> rc2 <- gnm(Freq ~ r + c + Diag(r,c) + instances(MultHomog(r, c), 2),
++            family = poisson, data = friend, start = runif(154))
+Running main iterations..................
+Done
+> 
+> print(rc2$deviance, digits=10)
+[1] 1006.906781
+> print(rc2$df)
+[1] 810
 > 

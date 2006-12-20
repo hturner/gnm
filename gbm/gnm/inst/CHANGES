@@ -1,3 +1,46 @@
+Changes in gnm 0.9-1
+====================
+
+New Features
+------------
+
+    o	introduction of functions of class "nonlin" for the unified specification 
+	of nonlinear terms. Mult(), Exp(), Dref() and MultHomog() have all been
+	converted to functions of this class.
+
+    o	added Inv() to specify the reciprocal of a predictor.
+
+    o	added Const() to specify a constant in a predictor.
+
+    o	added instances() to specify multiple instances of a nonlinear term.
+    
+
+Improvements
+------------
+
+    o	nonlinear terms can now be nested.
+
+    o	Exp() can now be used outside of Mult() or to exponentiate part of a 
+	constituent multiplier.
+
+Changes in Behaviour
+--------------------
+
+    o	to accommodate the increased functionality introduced by "nonlin" 
+	functions, new labelling conventions have been introduced. In 
+	particular, most "nonlin" functions use argument-matched parameter 
+	labels.
+
+    o	in the new implementation of Dref() the 'formula' argument has been
+	re-named 'delta' to provide more informative parameter labels under the
+	new conventions.
+
+Bug fixes
+---------
+
+    o	specifying 'ofInterest = "[?]"' in gnm() now works as documented.
+
+
 Changes in gnm 0.8-5
 ====================
 

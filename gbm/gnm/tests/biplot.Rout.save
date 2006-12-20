@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.0 (2006-04-24)
+R version 2.4.0 (2006-10-03)
+Copyright (C) 2006 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -19,12 +19,12 @@ Type 'q()' to quit R.
 > set.seed(1)
 > data(barley)
 > 
-> biplotModel <- gnm(y ~ -1 + Mult(site, variety, multiplicity = 2),
+> biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
 +                    family = wedderburn, data = barley)
 Initialising
 Running start-up iterations..
 Running main iterations.........................................................
-..........................................................................
+............................................................................
 Done
 > 
 > print(biplotModel$deviance, digits = 10)

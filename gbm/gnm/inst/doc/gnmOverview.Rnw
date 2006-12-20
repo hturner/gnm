@@ -43,7 +43,7 @@
 
 \setlength{\itemindent}{1cm}
 
-\title{Generalized nonlinear models in \R: an overview of the
+\title{Generalized nonlinear models in \R: An overview of the
 \Rpackage{gnm} package}
 
 \author{Heather Turner and David Firth\footnote{
@@ -93,7 +93,7 @@ package is loaded into an \R\ session by
 library(gnm)
 @
 
-\section{Generalized Linear Models}
+\section{Generalized linear models}
 \label{sec:glms}
 
 \subsection{Preamble}
@@ -303,7 +303,7 @@ is equivalent to
 \end{Scode}
 where \Robject{nObs} is the number of observations.
 
-\section{Nonlinear Terms}
+\section{Nonlinear terms}
 \label{sec:nonlinear}
 
 The main purpose of the \Rpackage{gnm} package is to provide
@@ -313,10 +313,11 @@ with \Rfunction{gnm} for the specification of nonlinear terms is designed to be
 compatible with the symbolic language used in \Rclass{formula}
 objects. Primarily, nonlinear terms are specified in the model formula as calls
 to functions of the class \Rclass{nonlin}.
-There are several \Rclass{nonlin} functions included in the
+There are a number of \Rclass{nonlin} functions included in the
 \Rpackage{gnm} package. Some of these specify simple mathematical functions of
-predictors: \Rfunction{Exp}, \Rfunction{Log}, \Rfunction{Mult}, \Rfunction{Inv},
-\Rfunction{Raise} (to raise to a constant power), and \Rfunction{Logit}. Others
+predictors: \Rfunction{Exp}, \Rfunction{Mult}, and \Rfunction{Inv}.
+%\Rfunction{Log}, \Rfunction{Raise} (to raise to a constant power), and \Rfunction{Logit}. 
+Others
 specify more specialized nonlinear terms, in particular \Rfunction{MultHomog}
 specifies homogeneous multiplicative interactions and \Rfunction{Dref} specifies
 diagonal reference terms. Users may also define their own \Rclass{nonlin}
@@ -329,7 +330,7 @@ the current version of \Rpackage{gnm}, but as plug-in functions are less
 user-friendly than \Rclass{nonlin} functions, support for plug-in functions is
 likely to be withdrawn in future versions.
 
-\subsection{Basic Mathematical Functions of Predictors}
+\subsection{Basic mathematical functions of predictors}
 \label{sec:Basic}
 
 Most of the \Rclass{nonlin} functions included in \Rpackage{gnm} are basic
@@ -338,22 +339,26 @@ mathematical functions of predictors:
 \setlength{\itemindent}{-0.5cm}
 \item[\Rfunction{Exp}:] the exponential of a predictor
 \item[\Rfunction{Inv}:] the reciprocal of a predictor
-\item[\Rfunction{Log}:] the natural logarithm of a predictor
-\item[\Rfunction{Logit}:] the logit of a predictor
+%\item[\Rfunction{Log}:] the natural logarithm of a predictor
+%\item[\Rfunction{Logit}:] the logit of a predictor
 \item[\Rfunction{Mult}:] the product of predictors
-\item[\Rfunction{Raise}:] a predictor raised to a constant power
+%\item[\Rfunction{Raise}:] a predictor raised to a constant power
 \end{description}
 Predictors are specified by symbolic expressions that are interpreted as the
 right-hand side of a \Rclass{formula} object, except that an intercept is
 \textbf{not} added by default.
 
 The predictors may contain nonlinear terms, allowing more complex functions to
-be built up. For example, one way to specify a logistic predictor function
-of the form
-\[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}\]
-would be as follows
+be built up. For example, suppose we wanted to specify a logistic predictor with
+the same form as that used by \Rfunction{SSlogis} (a
+  selfStart model for use with \Rfunction{nls} --- see \ref{sec:gnmVnls} for
+  more on \Rfunction{gnm} vs.\ \Rfunction{nls}})
+\[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
+This expression could be simplified by re-parameterizing in terms of xmid/scal
+and 1/scal, however we shall continue with this form for illustration. 
+We could express this predictor symbolically as follows
 \begin{Scode}
-~ -1 + Mult(1, Inv(Const(1) + Exp(Mult(1 + offset(-log(conc)), Inv(1)))))
+~ -1 + Mult(1, Inv(Const(1) + Exp(Mult(1 + offset(-x), Inv(1)))))
 \end{Scode}
 However, this is rather convoluted and it may be preferable to define a
 specialized \Rclass{nonlin} function in such a case. Section
@@ -500,7 +505,7 @@ The formula is expanded by \Rfunction{gnm}, so that the instances are treated as
 separate terms. The \Rfunction{instances} function may be used with any function
 with an \Rfunarg{inst} argument.
 
-\subsection{Custom \Rclass{nonlin} Functions}
+\subsection{Custom \Rclass{nonlin} functions}
 \label{sec:nonlin.functions}
 
 \subsubsection{General description}
@@ -568,7 +573,7 @@ and/or the names of variables in the term. The function may also have an
 \subsubsection{Example: a logistic function}
 
 As an example, consider writing a \Rclass{nonlin} function for
-the following logistic term:
+the logistic term discussed in \ref{sec:basic}:
 \[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
 We can consider \emph{Asym}, \emph{xmid} and \emph{scal}
 as the parameters of three separate predictors,
@@ -674,7 +679,7 @@ vector of zeros is returned as the \Robject{match} component.
 % parameterization is emphasised (see old plug-in section)?
 
 
-\subsection{Using Custom Plug-ins to Fit Nonlinear Terms}
+\subsection{Using custom plug-ins to fit nonlinear terms}
 \label{sec:plug-ins}
 
 Prior to the introduction of \Rclass{nonlin} functions, nonlinear terms that
@@ -686,7 +691,7 @@ used with the current version of \Rpackage{gnm} as documented in
 \Rcode{?Nonlin}. Nevertheless, support for plug-in functions is likely to be
 withdrawn in future versions, in favour of the simpler \Rclass{nonlin} functions.
 
-\section{Controlling the Fitting Procedure}
+\section{Controlling the fitting procedure}
 
 The \Rfunction{gnm} function has a number of arguments which affect the way a
 model will be fitted.  Basic control parameters can be set using the arguments
@@ -999,7 +1004,7 @@ The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
 over-parameterized model representations.
 
-\section{Methods and Accessor functions}
+\section{Methods and accessor functions}
 \label{sec:Methods}
 
 \subsection{Methods}
@@ -1092,7 +1097,7 @@ prof <- profile(unidiff, which = 61:65, trace = TRUE)
 If the deviance is quadratic in a given parameter, the profile trace will be
 linear. We can plot the profile traces as follows:
 
-\begin{figure}
+\begin{figure}[!tbph]
 \begin{center}
 \includegraphics{fig-profilePlot.pdf}
 \end{center}
@@ -1264,16 +1269,17 @@ myContrasts
 Visualization of estimated contrasts using
 `quasi standard errors' \citep{Firt03,FirtMene04} is achieved by plotting
 the resulting object:
-\begin{figure}
-\begin{center}
-<<qvplot, fig = TRUE>>=
+<<qvplot, fig = TRUE, include = FALSE>>=
 plot(myContrasts,
   main = "Relative strength of religion-vote association, log scale",
 xlab = "Election", levelNames = 1:4)
 @
-\end{center}
-\caption{Relative strength of religion-vote association, log scale}
-\label{fig:qvplot}
+\begin{figure}[!tbph]
+    \begin{center}
+        \includegraphics{gnmOVerview-qvplot.pdf}
+    \end{center}
+    \caption{Relative strength of religion-vote association, log scale}
+    \label{fig:qvplot}
 \end{figure}
 %Attempting to obtain the equivalent contrasts for the second
 %(religion-vote association) multiplier produces the
@@ -1328,18 +1334,49 @@ the number of multiplicative parameters is in the hundreds).
 
 The \Rfunction{residSVD} result in this instance
 provides a crude approximation to the MLE
-of the enlarged model, as can be seen in the following plot:
+of the enlarged model, as can be seen in \ref{fig:residSVDplot}:
 
-\begin{figure}
+@ 
+<<residSVDplot, fig = TRUE, include = FALSE, echo = FALSE>>=
+plot(coef(biplotModel), biplotStart, 
+     main = "Comparison of residSVD and MLE for a 2-dimensional biplot model")
+@ %def 
+
+\begin{figure}[!tbph]
     \begin{center}
-        <<residSVDplot, fig = TRUE, echo = FALSE>>= plot(coef(biplotModel),
-        biplotStart, main = "Comparison of residSVD and MLE for a
-        2-dimensional biplot model") @ %def
+        \includegraphics{gnmOverview-residSVDplot}
     \end{center}
     \caption{Comparison of residSVD and the MLE for a 2-dimensional biplot
       model}
     \label{fig:residSVDplot}
 \end{figure}
+
+
+\section{\Rfunction{gnm} or \Rfunction{nls}?}
+\label{sec:gnmVnls}
+
+The \Rfunction{nls} function in the \Rpackage{stats} package may be used to fit
+a nonlinear model via least-squares estimation. Statistically speaking,
+\Rfunction{gnm} is to \Rfunction{nls} what \Rfunction{glm} is to \Rfunction{lm},
+in that a \Rfunction{nls} model is equivalent to a \Rfunction{gnm} model with
+\Rcode{family = gaussian}. Whilst \Rfunction{nls} assumes that the responses are
+distributed with common variance or fixed relative variances, \Rfunction{gnm}
+allows for responses distributed with variances that are a common function of
+the mean. 
+
+In terms of the interface, however, \Rfunction{gnm} and \Rfunction{nls} are
+quite different. Models are specified to \Rfunction{nls} in terms of a
+mathematical formula, which is convenient for models that have a small number
+of parameters. For models that have a large number of parameters, or can not
+easily be represented by a mathematical formula, the symbolic model
+specification used by \Rfunction{gnm} may be more convenient. This would usually
+be the case for models involving factors, which would need to be represented by
+dummy variables in a \Rfunction{nls} formula. 
+
+When working with artificial data, \Rfunction{gnm} has a minor advantage over
+\Rfunction{nls} in that it does not fail when a model is an exact fit to the
+data. Therefore it is not necessary to add noise to artificial data, which can
+be useful when testing methods.
 
 \section{Examples}
 \label{sec:Examples}
@@ -1351,7 +1388,7 @@ using the \Rpackage{gnm} package. Sections \ref{sec:RCmodels}, \ref{sec:Dref} an
 agricultural applications, and Section \ref{sec:Stereotype} considers the stereotype
 model, which is used to model an ordinal response.
 
-\subsection{Row-column Association Models}
+\subsection{Row-column association models}
 \label{sec:RCmodels}
 
 There are several models that have been proposed for modelling the relationship
@@ -1457,7 +1494,7 @@ anova(RChomog, RCheterog)
 @
 In this case there is little gain in allowing heterogeneous effects.
 
-\subsection{Diagonal Reference Models}
+\subsection{Diagonal reference models}
 \label{sec:Dref}
 
 Diagonal reference models, proposed by \citet{Sobe81, Sobe85}, are designed for
@@ -1572,7 +1609,7 @@ prop.table(exp(coef(downwardMobility)[c(3, 5)] +
 prop.table(exp(coef(downwardMobility)[c(2, 4)]))
 @ %def
 
-\subsubsection*{\Rfunction{Dref} example 2: Conformity to parental rules}
+\subsubsection*{\Rfunction{Dref} example 2: conformity to parental rules}
 
 %\SweaveInput{vanDerSlikEg.Rnw}
 
@@ -1820,7 +1857,7 @@ Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM
 \end{Soutput}
 giving the same weights as in Table 4 of \citet{Vand02}.
 
-\subsection{Uniform Difference (UNIDIFF) Models}
+\subsection{Uniform difference (UNIDIFF) models}
 \label{sec:Unidiff}
 
 Uniform difference models \citep{Xie92, Erik92} use a simplified three-way
@@ -1889,8 +1926,8 @@ getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, ", religion:vote")))
 getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, "[.]religion")))
 @ %def
 
-\subsection{Generalized Additive Main Effects and
-Multiplicative Interaction (GAMMI) Models}
+\subsection{Generalized additive main effects and
+multiplicative interaction (GAMMI) models}
 \label{sec:GAMMI}
 
 Generalized additive main effects and multiplicative interaction models, or
@@ -1949,7 +1986,7 @@ anova(mainEffects, bilinear1)
 giving the same results as in Table 1 of \citet{Varg01} (up to error caused by
 rounding).
 
-\subsection{Biplot Models}
+\subsection{Biplot models}
 \label{sec:biplot}
 
 Biplots are used to display two-dimensional data transformed into a space
@@ -1988,11 +2025,11 @@ B
 These matrices are essentially the same as in \citet{Gabr98}. From these the
 biplot can be produced, for sites $A \ldots I$ and varieties $1 \dots 9, X$:
 @ 
-<<Biplot, include = FALSE>>=
+<<Biplot, fig = TRUE, include = FALSE>>=
 plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)), 
      xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data")    
 @ %def 
-\begin{figure}
+\begin{figure}[!tbph]
     \begin{center}
         \includegraphics{gnmOverview-Biplot.pdf}
     \end{center}
@@ -2007,7 +2044,7 @@ to the horizontal axis and the points for the varieties are roughly parallel to
 the vertical axis. In addition, we can scale the data so that points for the
 sites are about the line one unit about the horizontal axis, roughly
 
-<<Rotate_and_scale,include = FALSE>>=
+<<Rotate_and_scale, fig = TRUE, include = FALSE>>=
 a <- pi/5
 rotation <- matrix(c(cos(a), sin(a), -sin(a), cos(a)), 2, 2, byrow = TRUE)
 rA <- (2 * A/3) %*% rotation
@@ -2016,7 +2053,7 @@ plot(rbind(rA, rB), pch = c(levels(barley$site), levels(barley$variety)),
      xlim = c(-4, 4), ylim = c(-4, 4),
      main = "Biplot (rotated) for barley data")
 @
-\begin{figure}
+\begin{figure}[!tbph]
     \begin{center}
         \includegraphics{gnmOverview-Rotate_and_scale.pdf}
     \end{center}
@@ -2055,7 +2092,7 @@ c(doubleAddChiSq - biplotModChiSq,
   doubleAdditive$df.residual - biplotModel$df.residual)
 @ %def
 
-\subsection{Stereotype Model}
+\subsection{Stereotype model for multinomial response}
 \label{sec:Stereotype}
 
 The stereotype model was proposed by \citet{Ande84} for ordered categorical
@@ -2266,7 +2303,7 @@ and use these in a plot of the coefficients:
 \begin{Sinput}
 AgeContrasts <- getContrasts(LCmodel.maleOver45, 56:100) ## ages 45 to 89 only
 \end{Sinput}
-\begin{figure}
+\begin{figure}[!tbph]
 \begin{center}
 \includegraphics{fig-LCqvplot.pdf}
 \end{center}
@@ -2395,7 +2432,7 @@ fit with no dependence at all on $x$
 (residual sum of squares 41.6), as we can see
 by comparing with:
 @ 
-<<doubleExp2, include = FALSE>>=
+<<doubleExp2, fig = TRUE, include = FALSE>>=
 singleExp <- gnm(y ~ Exp(1 + x), start = c(NA, NA, -0.1), verbose = FALSE)
 singleExp
 meanOnly <- gnm(y ~ 1, verbose = FALSE)
@@ -2405,7 +2442,7 @@ lines(x, fitted(singleExp))
 lines(x, fitted(meanOnly), lty = "dashed")
 @ %def 
 
-\begin{figure}
+\begin{figure}[!tbph]
     \centering
     \includegraphics{gnmOverview-doubleExp2.pdf}
     \caption{Two sub-optimal fits to a sum-of-exponentials curve}
@@ -2434,7 +2471,7 @@ which reliably yields the (globally optimal) perfect fit to the data.
 \newpage
 \appendix
 
-\section{User-level Functions}
+\section{User-level functions}
 
 We list here, for easy reference, all of the user-level functions in the
 \Rpackage{gnm} package.  For full documentation see the package help pages.
@@ -2452,16 +2489,26 @@ We list here, for easy reference, all of the user-level functions in the
                                    diagonal elements \\
     &	\Rfunction{Symm}	&  create symmetric interaction of factors \\
     &   \Rfunction{Topo}        &  create `topological' interaction factors \\
-    &	\Rfunction{Mult}	&  specify a multiplicative interaction in a
+    &   \Rfunction(Const)       &  specify a constant in a \Rfunction{gnm} model
+                                   formula \\
+    &	\Rfunction{Dref}	&  specify a diagonal reference term in a \Rfunction{gnm}
+                                   model formula \\
+    &	\Rfunction{Mult}	&  specify a product of predictors in a
                                    \Rfunction{gnm} formula	\\
-    &	\Rfunction{Exp}	&  specify an exponentiated constituent multiplier in a
-                           \Rfunction{Mult} term	\\
+    &	\Rfunction{MultHomog}	&  specify a multiplicative interaction with
+                                   homogeneous effects in a \Rfunction{gnm} formula	\\
+    &	\Rfunction{Exp}	&  specify the exponential of a predictor in a
+                           \Rfunction{gnm} formula	\\
+%    &	\Rfunction{Log}	&  specify the natural logarithm of a predictor in a
+%                           \Rfunction{gnm} formula	\\
+%    &	\Rfunction{Logit}	&  specify the logit of a predictor in a
+%                           \Rfunction{gnm} formula	\\
+    &	\Rfunction{Inv}	&  specify the reciprocal of a predictor in a
+                           \Rfunction{gnm} formula	\\
+%    &	\Rfunction{Raise}	&  specify a predictor raised to a constant
+%                                   power in a  \Rfunction{gnm} formula	\\
     &	\Rfunction{Nonlin}	&  specify a special nonlinear term in a
-                                   \Rfunction{gnm} formula	\\
-    &	\Rfunction{Dref}	&  gnm plug-in function to fit diagonal
-                                   reference terms \\
-    &	\Rfunction{MultHomog}	&  gnm plug-in function to fit multiplicative
-                                   interactions with homogeneous effects	\\
+                                   \Rfunction{gnm} formula (using external plug-in function)\\
     &   \Rfunction{wedderburn}      &  specify the Wedderburn
                                        quasi-likelihood family \\
     \midrule

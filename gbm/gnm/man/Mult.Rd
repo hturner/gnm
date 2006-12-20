@@ -1,6 +1,6 @@
 \name{Multiplicative interaction}
 \alias{Mult}
-\title{Specify a Multiplicative Interaction in a gnm Model Formula}
+\title{Specify a Product of Predictors in a gnm Model Formula}
 \description{
 A function of class \code{"nonlin"} to specify a multiplicative interaction in
 the formula argument to \code{\link{gnm}}.

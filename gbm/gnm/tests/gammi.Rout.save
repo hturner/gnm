@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.0 (2006-04-24)
+R version 2.4.0 (2006-10-03)
+Copyright (C) 2006 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -23,12 +23,11 @@ Type 'q()' to quit R.
 > treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
 +                           wheat$N, sep = ""))
 > bilinear3 <- gnm(yield.scaled ~ year + treatment +
-+                  Mult(year, treatment, multiplicity = 3),
++                  instances(Mult(year, treatment), 3),
 +                  family = gaussian, data = wheat)
 Initialising
 Running start-up iterations..
-Running main iterations.........................................................
-......
+Running main iterations......................................................
 Done
 > 
 > print(bilinear3$deviance, digits=10)

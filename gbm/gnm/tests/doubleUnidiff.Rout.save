@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.0 (2006-04-24)
+R version 2.4.0 (2006-10-03)
+Copyright (C) 2006 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,12 +20,12 @@ Type 'q()' to quit R.
 > data(cautres)
 > 
 > doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
-+                      Mult(Exp(-1 + election), religion:vote) +
-+                      Mult(Exp(-1 + election), class:vote),
++                      Mult(Exp(election), religion:vote) +
++                      Mult(Exp(election), class:vote),
 +                      family = poisson, data = cautres)
 Initialising
 Running start-up iterations..
-Running main iterations..........
+Running main iterations...........
 Done
 > 
 > print(doubleUnidiff$deviance, digits=10)

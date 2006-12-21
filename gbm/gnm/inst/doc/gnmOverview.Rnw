@@ -316,7 +316,7 @@ to functions of the class \Rclass{nonlin}.
 There are a number of \Rclass{nonlin} functions included in the
 \Rpackage{gnm} package. Some of these specify simple mathematical functions of
 predictors: \Rfunction{Exp}, \Rfunction{Mult}, and \Rfunction{Inv}.
-%\Rfunction{Log}, \Rfunction{Raise} (to raise to a constant power), and \Rfunction{Logit}. 
+%\Rfunction{Log}, \Rfunction{Raise} (to raise to a constant power), and \Rfunction{Logit}.
 Others
 specify more specialized nonlinear terms, in particular \Rfunction{MultHomog}
 specifies homogeneous multiplicative interactions and \Rfunction{Dref} specifies
@@ -355,7 +355,7 @@ the same form as that used by \Rfunction{SSlogis} (a
   more on \Rfunction{gnm} vs.\ \Rfunction{nls}})
 \[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
 This expression could be simplified by re-parameterizing in terms of xmid/scal
-and 1/scal, however we shall continue with this form for illustration. 
+and 1/scal, however we shall continue with this form for illustration.
 We could express this predictor symbolically as follows
 \begin{Scode}
 ~ -1 + Mult(1, Inv(Const(1) + Exp(Mult(1 + offset(-x), Inv(1)))))
@@ -1336,11 +1336,12 @@ The \Rfunction{residSVD} result in this instance
 provides a crude approximation to the MLE
 of the enlarged model, as can be seen in \ref{fig:residSVDplot}:
 
-@ 
+@
 <<residSVDplot, fig = TRUE, include = FALSE, echo = FALSE>>=
-plot(coef(biplotModel), biplotStart, 
-     main = "Comparison of residSVD and MLE for a 2-dimensional biplot model")
-@ %def 
+plot(coef(biplotModel), biplotStart,
+     main = "Comparison of residSVD and MLE for a 2-dimensional
+ biplot model")
+@ %def
 
 \begin{figure}[!tbph]
     \begin{center}
@@ -1357,25 +1358,31 @@ plot(coef(biplotModel), biplotStart,
 
 The \Rfunction{nls} function in the \Rpackage{stats} package may be used to fit
 a nonlinear model via least-squares estimation. Statistically speaking,
-\Rfunction{gnm} is to \Rfunction{nls} what \Rfunction{glm} is to \Rfunction{lm},
-in that a \Rfunction{nls} model is equivalent to a \Rfunction{gnm} model with
-\Rcode{family = gaussian}. Whilst \Rfunction{nls} assumes that the responses are
-distributed with common variance or fixed relative variances, \Rfunction{gnm}
-allows for responses distributed with variances that are a common function of
-the mean. 
+\Rfunction{gnm} is to \Rfunction{nls} as \Rfunction{glm} is to \Rfunction{lm},
+in that a nonlinear least-squares model is equivalent to a
+generalized nonlinear model with
+\Rcode{family = gaussian}.
+Whilst \Rfunction{nls} assumes that the responses are
+distributed either
+with constant variance or with fixed relative variances, \Rfunction{gnm}
+allows for responses distributed with variances that are a specified
+(via the \Rfunarg{family} argument) function of the mean.
 
 In terms of the interface, however, \Rfunction{gnm} and \Rfunction{nls} are
 quite different. Models are specified to \Rfunction{nls} in terms of a
 mathematical formula, which is convenient for models that have a small number
 of parameters. For models that have a large number of parameters, or can not
 easily be represented by a mathematical formula, the symbolic model
-specification used by \Rfunction{gnm} may be more convenient. This would usually
+specification used by \Rfunction{gnm}
+may be more convenient. This would usually
 be the case for models involving factors, which would need to be represented by
-dummy variables in a \Rfunction{nls} formula. 
+dummy variables in a \Rfunction{nls} formula.
 
-When working with artificial data, \Rfunction{gnm} has a minor advantage over
-\Rfunction{nls} in that it does not fail when a model is an exact fit to the
-data. Therefore it is not necessary to add noise to artificial data, which can
+When working with artificial data, \Rfunction{gnm} has the
+minor advantage that it does not fail when a model is an exact fit to the
+data (see \Rcode{help(nls)})\null.
+Therefore it is not necessary with \Rfunction{gnm}
+to add noise to artificial data, which can
 be useful when testing methods.
 
 \section{Examples}
@@ -2024,11 +2031,11 @@ B
 @ %def
 These matrices are essentially the same as in \citet{Gabr98}. From these the
 biplot can be produced, for sites $A \ldots I$ and varieties $1 \dots 9, X$:
-@ 
+@
 <<Biplot, fig = TRUE, include = FALSE>>=
-plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)), 
-     xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data")    
-@ %def 
+plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)),
+     xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data")
+@ %def
 \begin{figure}[!tbph]
     \begin{center}
         \includegraphics{gnmOverview-Biplot.pdf}
@@ -2251,7 +2258,7 @@ with(Canada,{
 })
 \end{Sinput}
 %$
-\begin{figure}[!tbph] 
+\begin{figure}[!tbph]
 \begin{center}
 \includegraphics[width=6in]{fig-LCall.pdf}
 \end{center}
@@ -2431,7 +2438,7 @@ with a single exponential (which has residual sum of squares 0.1589) and to the
 fit with no dependence at all on $x$
 (residual sum of squares 41.6), as we can see
 by comparing with:
-@ 
+@
 <<doubleExp2, fig = TRUE, include = FALSE>>=
 singleExp <- gnm(y ~ Exp(1 + x), start = c(NA, NA, -0.1), verbose = FALSE)
 singleExp
@@ -2440,7 +2447,7 @@ meanOnly
 plot(x, y, main = "Two sub-optimal fits to a sum-of-exponentials curve")
 lines(x, fitted(singleExp))
 lines(x, fitted(meanOnly), lty = "dashed")
-@ %def 
+@ %def
 
 \begin{figure}[!tbph]
     \centering
@@ -2489,7 +2496,7 @@ We list here, for easy reference, all of the user-level functions in the
                                    diagonal elements \\
     &	\Rfunction{Symm}	&  create symmetric interaction of factors \\
     &   \Rfunction{Topo}        &  create `topological' interaction factors \\
-    &   \Rfunction(Const)       &  specify a constant in a \Rfunction{gnm} model
+    &   \Rfunction{Const}       &  specify a constant in a \Rfunction{gnm} model
                                    formula \\
     &	\Rfunction{Dref}	&  specify a diagonal reference term in a \Rfunction{gnm}
                                    model formula \\

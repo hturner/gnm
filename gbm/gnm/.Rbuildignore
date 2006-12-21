@@ -3,6 +3,9 @@
 .*\.aux
 .*\.bib
 .*\.bbl
+.*\.bst
+\.Rprofile
+.*\.sty
 .*\.tex
 .*\.ps
 .*\.eps
@@ -11,3 +14,5 @@
 .*\.toc
 .*\.blg
 .*\.out
+.*/auto
+.*auto/.*

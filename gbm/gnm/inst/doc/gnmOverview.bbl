@@ -1,0 +1,167 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Agresti}{Agresti}{2002}]{Agre02}
+Agresti, A. (2002).
+\newblock {\em Categorical Data Analysis\/} (2nd ed.).
+\newblock New York: Wiley.
+
+\bibitem[\protect\citeauthoryear{Alho}{Alho}{2000}]{Alho00}
+Alho, J.~M. (2000).
+\newblock Discussion of {Lee} (2000).
+\newblock {\em North American Actuarial Journal\/}~{\em 4}, 91--93.
+
+\bibitem[\protect\citeauthoryear{Anderson}{Anderson}{1984}]{Ande84}
+Anderson, J.~A. (1984).
+\newblock Regression and ordered categorical variables.
+\newblock {\em J. R. Statist. Soc. B\/}~{\em 46\/}(1), 1--30.
+
+\bibitem[\protect\citeauthoryear{Brouhns, Denuit, and Vermunt}{Brouhns
+  et~al.}{2002}]{BrouDenuVerm02}
+Brouhns, N., M.~Denuit, and J.~K. Vermunt (2002).
+\newblock A poisson log-bilinear regression approach to the construction of
+  projected lifetables.
+\newblock {\em Insurance Mathematics and Economics\/}~{\em 31}, 373--393.
+
+\bibitem[\protect\citeauthoryear{Catchpole and Morgan}{Catchpole and
+  Morgan}{1997}]{CatcMorg97}
+Catchpole, E. and B.~Morgan (1997).
+\newblock Detecting parameter redundancy.
+\newblock {\em Biometrika\/}~{\em 84}, 187--196.
+
+\bibitem[\protect\citeauthoryear{Cautres, Heath, and Firth}{Cautres
+  et~al.}{1998}]{Caut98}
+Cautres, B., A.~F. Heath, and D.~Firth (1998).
+\newblock Class, religion and vote in {B}ritain and {F}rance.
+\newblock {\em La Lettre de la Maison Fran\c{c}aise\/}~{\em 8}.
+
+\bibitem[\protect\citeauthoryear{Clifford and Heath}{Clifford and
+  Heath}{1993}]{Clif93}
+Clifford, P. and A.~F. Heath (1993).
+\newblock The political consequences of social mobility.
+\newblock {\em J. Roy. Stat. Soc. A\/}~{\em 156\/}(1), 51--61.
+
+\bibitem[\protect\citeauthoryear{Erikson and Goldthorpe}{Erikson and
+  Goldthorpe}{1992}]{Erik92}
+Erikson, R. and J.~H. Goldthorpe (1992).
+\newblock {\em The Constant Flux}.
+\newblock Oxford: Clarendon Press.
+
+\bibitem[\protect\citeauthoryear{Erikson, Goldthorpe, and Portocarero}{Erikson
+  et~al.}{1982}]{Erik82}
+Erikson, R., J.~H. Goldthorpe, and L.~Portocarero (1982).
+\newblock Social fluidity in industrial nations: {E}ngland, {F}rance and
+  {S}weden.
+\newblock {\em British Journal of Sociology\/}~{\em 33}, 1--34.
+
+\bibitem[\protect\citeauthoryear{Firth}{Firth}{2003}]{Firt03}
+Firth, D. (2003).
+\newblock Overcoming the reference category problem in the presentation of
+  statistical models.
+\newblock {\em Sociological Methodology\/}~{\em 33}, 1--18.
+
+\bibitem[\protect\citeauthoryear{Firth and {de Menezes}}{Firth and {de
+  Menezes}}{2004}]{FirtMene04}
+Firth, D. and R.~X. {de Menezes} (2004).
+\newblock Quasi-variances.
+\newblock {\em Biometrika\/}~{\em 91}, 65--80.
+
+\bibitem[\protect\citeauthoryear{Gabriel}{Gabriel}{1998}]{Gabr98}
+Gabriel, K.~R. (1998).
+\newblock Generalised bilinear regression.
+\newblock {\em Biometrika\/}~{\em 85}, 689--700.
+
+\bibitem[\protect\citeauthoryear{Goodman}{Goodman}{1979}]{Good79}
+Goodman, L.~A. (1979).
+\newblock Simple models for the analysis of association in
+  cross-classifications having ordered categories.
+\newblock {\em J. Amer. Statist. Assoc.\/}~{\em 74}, 537--552.
+
+\bibitem[\protect\citeauthoryear{Hatzinger and Francis}{Hatzinger and
+  Francis}{2004}]{Hatz04}
+Hatzinger, R. and B.~J. Francis (2004).
+\newblock Fitting paired comparison models in {R}.
+\newblock Technical Report~3, Department of Statistics and Mathematics,
+  Wirtschaftsuniversit\"at Wien.
+
+\bibitem[\protect\citeauthoryear{Lee and Carter}{Lee and
+  Carter}{1992}]{LeeCart92}
+Lee, R.~D. and L.~Carter (1992).
+\newblock Modelling and forecasting the time series of {US} mortality.
+\newblock {\em Journal of the American Statistical Association\/}~{\em 87},
+  659--671.
+
+\bibitem[\protect\citeauthoryear{McCullagh and Nelder}{McCullagh and
+  Nelder}{1989}]{McCu89}
+McCullagh, P. and J.~A. Nelder (1989).
+\newblock {\em Generalized Linear Models ({S}econd Edition)}.
+\newblock Chapman \& Hall Ltd.
+
+\bibitem[\protect\citeauthoryear{Renshaw and Haberman}{Renshaw and
+  Haberman}{2003}]{RensHabe03}
+Renshaw, A. and S.~Haberman (2003).
+\newblock Lee-carter mortality forecasting: a parallel generalized linear
+  modelling approach for {England} and {Wales} mortality projections.
+\newblock {\em Applied Statistics\/}~{\em 52}, 119--137.
+
+\bibitem[\protect\citeauthoryear{Seber and Wild}{Seber and Wild}{1989}]{Sebe89}
+Seber, G. A.~F. and C.~J. Wild (1989).
+\newblock {\em Nonlinear Regression}.
+\newblock Wiley.
+
+\bibitem[\protect\citeauthoryear{Sobel}{Sobel}{1981}]{Sobe81}
+Sobel, M.~E. (1981).
+\newblock Diagonal mobility models: A substantively motivated class of designs
+  for the analysis of mobility effects.
+\newblock {\em Amer. Soc. Rev.\/}~{\em 46}, 893--906.
+
+\bibitem[\protect\citeauthoryear{Sobel}{Sobel}{1985}]{Sobe85}
+Sobel, M.~E. (1985).
+\newblock Social mobility and fertility revisited: Some new models for the
+  analysis of the mobility effects hypothesis.
+\newblock {\em Amer. Soc. Rev.\/}~{\em 50}, 699--712.
+
+\bibitem[\protect\citeauthoryear{{van der Slik}, {de Graaf}, and Gerris}{{van
+  der Slik} et~al.}{2002}]{Vand02}
+{van der Slik}, F. W.~P., N.~D. {de Graaf}, and J.~R.~M. Gerris (2002, 4).
+\newblock Conformity to parental rules: Asymmetric influences of father's and
+  mother's levels of education.
+\newblock {\em Europ. Soc. Rev.\/}~{\em 18}, 489--502.
+
+\bibitem[\protect\citeauthoryear{Vargas, Crossa, {van Eeuwijk}, Sayre, and
+  Reynolds}{Vargas et~al.}{2001}]{Varg01}
+Vargas, M., J.~Crossa, F.~{van Eeuwijk}, K.~D. Sayre, and M.~P. Reynolds
+  (2001).
+\newblock Interpreting treatment by environment interaction in agronomy trials.
+\newblock {\em Agronomy Journal\/}~{\em 93}, 949--960.
+
+\bibitem[\protect\citeauthoryear{Wedderburn}{Wedderburn}{1974}]{Wedd74}
+Wedderburn, R. W.~M. (1974).
+\newblock Quasi-likelihood functions, generalized linear models, and the
+  {G}auss-{N}ewton method.
+\newblock {\em Biometrika\/}~{\em 61}, 439--447.
+
+\bibitem[\protect\citeauthoryear{Wilmoth}{Wilmoth}{1993}]{Wilm93}
+Wilmoth, J.~R. (1993).
+\newblock Computational methods for fitting and extrapolating the {Lee-Carter}
+  model of mortality change.
+\newblock Technical report, Department of Demography, University of California,
+  Berkeley.
+
+\bibitem[\protect\citeauthoryear{Xie}{Xie}{1992}]{Xie92}
+Xie, Y. (1992).
+\newblock The log-multiplicative layer effect model for comparing mobility
+  tables.
+\newblock {\em American Sociological Review\/}~{\em 57}, 380--395.
+
+\bibitem[\protect\citeauthoryear{Yaish}{Yaish}{1998}]{Yais98}
+Yaish, M. (1998).
+\newblock {\em Opportunities, Little Change. Class Mobility in {I}sraeli
+  Society, 1974--1991}.
+\newblock Ph.\ D. thesis, Nuffield College, University of Oxford.
+
+\bibitem[\protect\citeauthoryear{Yaish}{Yaish}{2004}]{Yais04}
+Yaish, M. (2004).
+\newblock {\em Class Mobility Trends in Israeli Society, 1974-1991}.
+\newblock Lewiston: Edwin Mellen Press.
+
+\end{thebibliography}

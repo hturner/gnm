@@ -134,27 +134,26 @@ A
 ##     Dref(MOPLM, FOPLF), family = gaussian, data = conformity, 
 ##     verbose = FALSE)
 ## 
-## 
 ## Coefficients:
 ##                     AGEM                      MRMM  
 ##                  0.06363                  -0.32425  
 ##                     FRMF                     MWORK  
 ##                 -0.25324                  -0.06430  
-##                     MFCM   Dref(., .).MOPLM|FOPLF1  
-##                 -0.06043                   4.95121  
+##                     MFCM  Dref(MOPLM, FOPLF)delta1  
+##                 -0.06043                  -0.33731  
+## Dref(MOPLM, FOPLF)delta2   Dref(., .).MOPLM|FOPLF1  
+##                 -0.02505                   4.95121  
 ##  Dref(., .).MOPLM|FOPLF2   Dref(., .).MOPLM|FOPLF3  
 ##                  4.86329                   4.86458  
 ##  Dref(., .).MOPLM|FOPLF4   Dref(., .).MOPLM|FOPLF5  
 ##                  4.72343                   4.43516  
 ##  Dref(., .).MOPLM|FOPLF6   Dref(., .).MOPLM|FOPLF7  
 ##                  4.18873                   4.43378  
-## Dref(MOPLM, FOPLF)delta1  Dref(MOPLM, FOPLF)delta2  
-##                 -0.33731                  -0.02505  
 ## 
 ## Deviance:            425.3389 
 ## Pearson chi-squared: 425.3389 
-## Residual df:         576
-## 
+## Residual df:         576    
+ 
 prop.table(exp(coef(A)[pickCoef(A, "delta")]))
 ## weights as in Table 4
 ## Dref(MOPLM, FOPLF)delta1 Dref(MOPLM, FOPLF)delta2 
@@ -181,6 +180,14 @@ F
 ##                                                 -0.07847  
 ##                                                     MFCM  
 ##                                                 -0.01694  
+## Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept)  
+##                                                  1.03515  
+##           Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM  
+##                                                 -1.77756  
+## Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept)  
+##                                                 -0.03515  
+##           Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM  
+##                                                  2.77756  
 ##              Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF1  
 ##                                                  4.82476  
 ##              Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF2  
@@ -195,14 +202,6 @@ F
 ##                                                  4.17957  
 ##              Dref(., ., delta = ~ 1 + MFCM).MOPLM|FOPLF7  
 ##                                                  4.40819  
-## Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept)  
-##                                                  1.03515  
-##           Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM  
-##                                                 -1.77756  
-## Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept)  
-##                                                 -0.03515  
-##           Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM  
-##                                                  2.77756  
 ## 
 ## Deviance:            420.9022 
 ## Pearson chi-squared: 420.9022 

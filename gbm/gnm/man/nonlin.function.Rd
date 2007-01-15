@@ -4,8 +4,8 @@
 \description{
   Nonlinear terms maybe be specified in the formula argument to gnm by
   a call to a function of class \code{"nonlin"}.  A \code{"nonlin"}
-  function takes a list of arguments and returns a list of information
-  on the term. 
+  function takes a list of arguments and returns a list of arguments for
+  the internal \code{nonlinTerms} function.
 }
 \arguments{
   \item{...}{ arguments required to define the term, e.g. symbolic
@@ -53,12 +53,12 @@
   \code{\link{Dref}} to specify a diagonal reference term,
   \code{\link{Exp}} to specify the exponential of a predictor,
   \code{\link{Inv}} to specify the reciprocal of a predictor,
-  \code{\link{Log}} to specify the natural logarithm of a predictor,
-  \code{\link{Logit}} to specify the logit of a predictor,
+%  \code{\link{Log}} to specify the natural logarithm of a predictor,
+%  \code{\link{Logit}} to specify the logit of a predictor,
   \code{\link{Mult}} to specify a multiplicative interaction,
   \code{\link{MultHomog}} to specify a homogeneous multiplicative
   interaction,
-  \code{\link{Raise}} to raise a predictor to a constant power. }
+%  \code{\link{Raise}} to raise a predictor to a constant power. }
 \examples{
 ### Equivalent of weighted.MM function in ?nls
 weighted.MM <- function(resp, conc){
@@ -82,7 +82,6 @@ Pur.wt.2
 ## Call:
 ## gnm(formula = ~-1 + weighted.MM(rate, conc), data = Treated, 
 ##     start = c(Vm = 200, K = 0.1), verbose = FALSE)
-## 
 ## 
 ## Coefficients:
 ##        Vm          K  
@@ -115,24 +114,23 @@ RChomog
 ## Call:
 ## 
 ## gnm(formula = Freq ~ origin + destination + Diag(origin, destination) + 
-##     MultHomog(origin, destination), ofInterest = "[|]", family = poisson, 
+##     MultHomog(origin, destination), ofInterest = "MultHomog", family = poisson, 
 ##     data = occupationalStatus, verbose = FALSE)
 ## 
-## 
 ## Coefficients of interest:
-## MultHomog(., .).`origin|destination`1  
+## MultHomog(origin, destination)1  
 ##                              -1.50089  
-## MultHomog(., .).`origin|destination`2  
+## MultHomog(origin, destination)2  
 ##                              -1.28260  
-## MultHomog(., .).`origin|destination`3  
+## MultHomog(origin, destination)3  
 ##                              -0.68443  
-## MultHomog(., .).`origin|destination`4  
+## MultHomog(origin, destination)4  
 ##                              -0.10055  
-## MultHomog(., .).`origin|destination`5  
+## MultHomog(origin, destination)5  
 ##                              -0.08338  
-## MultHomog(., .).`origin|destination`6  
+## MultHomog(origin, destination)6  
 ##                               0.42838  
-## MultHomog(., .).`origin|destination`7  
+## MultHomog(origin, destination)7  
 ##                               0.84452  
 ## MultHomog(., .).`origin|destination`8  
 ##                               1.08809  
@@ -163,10 +161,11 @@ exp1
 ## Call:
 ## gnm(formula = y ~ Exp(1 + x), verbose = FALSE)
 ## 
-## 
 ## Coefficients:
-##            (Intercept)  Exp(. + x).(Intercept)            Exp(1 + .).x  
-##              1.549e-11              -7.934e-11              -1.000e-01  
+##            (Intercept)  Exp(. + x).(Intercept)
+##              1.549e-11              -7.934e-11
+##           Exp(1 + .).x  
+##             -1.000e-01 
 ## 
 ## Deviance:            9.342418e-20 
 ## Pearson chi-squared: 9.342418e-20 

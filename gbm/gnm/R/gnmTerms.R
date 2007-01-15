@@ -19,9 +19,9 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     if (length(inst)) {
         termLabels <- c("0"[!attr(fullTerms, "intercept")],
                         attr(fullTerms, "term.labels"))
-        variables <- as.list(attr(fullTerms, "variables"))[-1]
-        instLabels <- variables[inst]
+        instLabels <- as.list(attr(fullTerms, "variables"))[inst + 1]
         termLabels[termLabels %in% instLabels] <- sapply(instLabels, eval)
+        variables <- as.character(attr(fullTerms, "variables"))[-1]
         offsetLabels <- variables[attr(fullTerms, "offset")]
         response <- variables[attr(fullTerms, "response")][1][[1]]
         fullTerms <- terms(reformulate(c(termLabels, offsetLabels), response),
@@ -104,7 +104,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
             if (length(bits) > 1) {
                 n <- length(tmp$hashLabels)
                 matched <- tmp$matchID > 0 & !duplicated(tmp$matchID)
-                dot <- (tmp$hashLabels[matched])[unique(tmp$matchID)]
+                dot <- (tmp$hashLabels[matched])[order(tmp$matchID[matched])]
                 prefix <- matrix(dot, max(tmp$matchID), n)
                 prefix[cbind(tmp$matchID, seq(n))] <- "."
                 prefix <- rbind(character(n), prefix)

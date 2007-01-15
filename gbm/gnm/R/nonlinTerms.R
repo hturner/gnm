@@ -31,13 +31,14 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
     for (i in order(match)) {
         if (inherits(predictors[[i]], "formula")){
             nonlinTerms <- terms(predictors[[i]], specials = "Const",
-                              keep.order = TRUE, data = data)
+                                 keep.order = TRUE, data = data)
             twiddle <- "~ "
         }
         else {
-            nonlinTerms <- terms(reformulate(c("-1", predictors[[i]])),
-                              specials = "Const", keep.order = TRUE,
-                              data = data)
+            nonlinTerms <- terms(eval(substitute(~ -1 + p,
+                                                 list(p = predictors[[i]]))),
+                                 specials = "Const", keep.order = TRUE,
+                                 data = data)
             twiddle <- ""
         }
         if (is.empty.model(nonlinTerms)) {
@@ -65,7 +66,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
             offsetLabels[[i]] <- vars[[i]][c(attr(nonlinTerms, "offset"),
                                                   const)]
             varLabels[[i]] <- as.list(paste("#", adj,
-                                            gsub("\`", ".", unitLabels[[i]]),
+                                            gsub("`", ".", unitLabels[[i]]),
                                             sep = ""))
             predictor[[i]] <- paste("`", varLabels[[i]], "`", sep = "")
             n <- length(unitLabels[[i]])
@@ -185,7 +186,6 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
             names(call)[match] <- ""
         else
             names(call)[match] <- names(predictors)[match > 0]
-        matched <- order(match)[(!duplicated(match) & match > 0)[order(match)]]
         sep <- character(length(call))
         sep[names(call) != ""] <- " = "
         call <- paste(names(call), sep, call, sep = "")

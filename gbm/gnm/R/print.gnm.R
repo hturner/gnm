@@ -1,5 +1,5 @@
 print.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...) {
-    cat("\nCall:\n", deparse(x$call), "\n\n", sep = "", fill = TRUE)    
+    cat("\nCall:\n", deparse(x$call), "\n", sep = "", fill = TRUE)    
     if (length(ofInterest(x)) || length(coef(x))) {
         cat("Coefficients", " of interest"[!is.null(ofInterest(x))], ":\n",
             sep = "")

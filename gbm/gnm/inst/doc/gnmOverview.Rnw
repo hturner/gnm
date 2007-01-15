@@ -352,7 +352,7 @@ The predictors may contain nonlinear terms, allowing more complex functions to
 be built up. For example, suppose we wanted to specify a logistic predictor with
 the same form as that used by \Rfunction{SSlogis} (a
   selfStart model for use with \Rfunction{nls} --- see \ref{sec:gnmVnls} for
-  more on \Rfunction{gnm} vs.\ \Rfunction{nls}})
+  more on \Rfunction{gnm} vs.\ \Rfunction{nls})
 \[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
 This expression could be simplified by re-parameterizing in terms of xmid/scal
 and 1/scal, however we shall continue with this form for illustration.
@@ -513,7 +513,8 @@ with an \Rfunarg{inst} argument.
 Users may write their own \Rclass{nonlin} functions to specify nonlinear terms
 which can not (easily) be specified using the \Rclass{nonlin} functions in the
 \Rpackage{gnm} package. A function of class \Rclass{nonlin} should return a list
-with the following components:
+of arguments for the internal function \Rfunction{nonlinTerms}. The following
+arguments must be specified in all cases:
 \begin{description}
 \setlength{\itemindent}{-0.5cm}
 \item[\Robject{predictors}:] a list of symbolic expressions or formulae with no
@@ -527,13 +528,10 @@ with the following components:
     rather than \Rfunction{sum}.
 \end{description}
 Intercepts are added by default to predictors that are specified by formulae.
-If
-predictors are named, these names are used as a prefix for parameter labels
+If predictors are named, these names are used as a prefix for parameter labels
 or as the parameter label itself in the single-parameter case.
 
-The list returned by the \Rclass{nonlin} function should also include the
-following
-components as necessary:
+The following arguments of \Rfunction{nonlinTerms} should be specified as necessary:
 \begin{description}
 \setlength{\itemindent}{-0.5cm}
 \item[\Robject{variables}:] a list of expressions representing variables in the term
@@ -542,7 +540,7 @@ components as necessary:
     duplicated indices identifying single factor predictors for which
     homologous effects are to be estimated.
 \end{description}
-and may include any of the following components:
+The arguments below are optional:
 \begin{description}
 \setlength{\itemindent}{-0.5cm}
 \item[\Robject{call}:] a call to be used as a prefix for parameter labels.
@@ -551,7 +549,7 @@ and may include any of the following components:
     predictors match to --- zero indicating no match. If \Rcode{NULL},
     predictors will be matched sequentially to the arguments of
     \Robject{call}.
-\item[\Robject{start}:] an optional function which takes a named vector of parameters
+\item[\Robject{start}:] a function which takes a named vector of parameters
     corresponding to the predictors and returns a vector of
     starting values for those parameters. This function is ignored if the
     term is nested within another nonlinear term.
@@ -577,41 +575,42 @@ the logistic term discussed in \ref{sec:basic}:
 \[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
 We can consider \emph{Asym}, \emph{xmid} and \emph{scal}
 as the parameters of three separate predictors,
-each with a single intercept term. Thus our \Robject{predictors} component would be
+each with a single intercept term. Thus we specify the \Rfunarg{predictors}
+argument to \Rfunction{nonlinTerms} as
 \begin{Scode}
-list(Asym = 1, xmid = 1, scal = 1)
+predictors = list(Asym = 1, xmid = 1, scal = 1)
 \end{Scode}
 The term also depends on the variable $x$, which would need to be specified by
 the user. Suppose this is specified to our \Rclass{nonlin} function through an
-argument named \Rfunarg{x}. Then our \Rclass{nonlin} function would return the
-following \Robject{variables} component
+argument named \Rfunarg{x}. Then our \Rclass{nonlin} function would specify the
+following \Rfunarg{variables} argument
 \begin{Scode}
-list(substitute(x))
+variables = list(substitute(x))
 \end{Scode}
 We need to use \Rfunction{substitute} here to list the variable specified by the user
 rather than the variable named \Rcode{``x''} (if it exists).
 
-Now we need to specify a function that will paste together an expression for
-the term, given labels for the predictors and the variables:
+Our \Rclass{nonlin} function must also specify the \Rfunarg{term} argument to
+\Rfunction{nonlinTerms}. This is a function that will paste together an
+expression for the term, given labels for the predictors and the variables:
 \begin{Scode}
-    function(predLabels, varLabels) {
+    term = function(predLabels, varLabels) {
       paste(predLabels[1], "/(1 + exp((", predLabels[2], "-",
       varLabels[1], ")/", predLabels[3], "))")
     }
 \end{Scode}
-This would be the \Robject{term} component returned by our \Rclass{nonlin} function.
 
 We now have all the necessary ingredients of a \Rclass{nonlin} function to specify
 the logistic term. Since the parameterization does not depend on user-specified
 values, it does not make sense to use call-matched labelling in this case. The
-labels for our parameters will be specified by the labels of the
-\Robject{predictors} component. Since we do not anticipate fitting models with
-multiple logistic terms, our \Rclass{nonlin} will not return a \Robject{call}
-component with which to prefix the parameter labels. We do however, have some
-idea of useful starting values, so we will specify the \Robject{start}
-component as
+labels for our parameters will be taken from the labels of the
+\Rfunarg{predictors} argument. Since we do not anticipate fitting models with
+multiple logistic terms, our \Rclass{nonlin} function will not specify a
+\Rfunarg{call} argument with which to prefix the parameter labels. We do
+however, have some idea of useful starting values, so we will specify the
+\Rfunarg{start} argument as
 \begin{Scode}
-function(theta){
+start = function(theta){
     theta[3] <- 1
     theta
 }
@@ -654,26 +653,23 @@ MultHomog <- function(..., inst = NULL){
 class(MultHomog) <- "nonlin"
 \end{Scode}
 Firstly, the interaction may be based on any number of factors, hence the use
-of the special ``\Robject{...}'' argument. The use of \Rfunction{match.call} is
+of the special ``\Rfunarg{...}'' argument. The use of \Rfunction{match.call} is
 equivalent to the use of \Rfunction{substitute} in the \Rfunction{Logistic}
 function: to obtain expressions for the factors as specified by the user.
 
-The \Robject{common} component specifies that homogeneous effects are to
-be estimated
-across all the specified factors. The term only depends on these factors,
-but the
-\Robject{term} function allows for the empty \Robject{varLabels} vector
-that will be
-passed to it, by having a ``\Robject{...}'' argument.
+The returned \Rfunarg{common} argument specifies that homogeneous effects are to
+be estimated across all the specified factors. The term only depends on these
+factors, but the \Rfunarg{term} function allows for the empty
+\Robject{varLabels} vector that will be passed to it, by having a
+``\Rfunarg{...}'' argument. 
 
-Since the user may wish to specify multiple instances, a \Robject{call}
-component
-is returned, so that parameters in different instances of the term will have
-unique labels (due to the \Rfunarg{inst} argument in the call). However as the
-expressions passed to ``\Robject{...}'' may only represent single factors,
-rather than
+Since the user may wish to specify multiple instances, the \Rfunarg{call}
+argument to \Rfunction{nonlinTerms} is specified, so that parameters in
+different instances of the term will have unique labels (due to the
+\Rfunarg{inst} argument in the call). However as the expressions passed to
+``\Rfunarg{...}'' may only represent single factors, rather than
 general predictors, it is not necessary to use call-matched labelling, so a
-vector of zeros is returned as the \Robject{match} component.
+vector of zeros is returned as the \Rfunarg{match} argument.
 
 % Dref starting values as example of ensuring the arbitrariness of the final
 % parameterization is emphasised (see old plug-in section)?
@@ -1657,7 +1653,6 @@ gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
     Dref(MOPLM, FOPLF), family = gaussian, data = conformity,
     verbose = FALSE)
 
-
 Coefficients:
                     AGEM                      MRMM                      FRMF
                  0.06363                  -0.32425                  -0.25324
@@ -1688,7 +1683,6 @@ Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
     Dref(MOPLM, FOPLF), family = gaussian, data = conformity,
     verbose = FALSE)
-
 
 Deviance Residuals:
      Min        1Q    Median        3Q       Max
@@ -1755,7 +1749,6 @@ gnm(formula = MCFM ~ -1 + AGEM + MRMM2 + FRMF2 + MWORK + MFCM +
     Dref(MOPLM, FOPLF), family = gaussian, data = conformity,
     verbose = FALSE)
 
-
 Coefficients:
                     AGEM                     MRMM2                     FRMF2
                  0.06363                   0.32425                   0.25324
@@ -1801,7 +1794,6 @@ Call:
 gnm(formula = MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM +
     Dref(MOPLM, FOPLF, delta = ~1 + MFCM), family = gaussian,
     data = conformity, verbose = FALSE)
-
 
 Coefficients:
                                                     AGEM

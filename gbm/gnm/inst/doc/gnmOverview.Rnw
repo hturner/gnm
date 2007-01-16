@@ -351,8 +351,9 @@ right-hand side of a \Rclass{formula} object, except that an intercept is
 The predictors may contain nonlinear terms, allowing more complex functions to
 be built up. For example, suppose we wanted to specify a logistic predictor with
 the same form as that used by \Rfunction{SSlogis} (a
-  selfStart model for use with \Rfunction{nls} --- see \ref{sec:gnmVnls} for
-  more on \Rfunction{gnm} vs.\ \Rfunction{nls})
+  selfStart model for use with \Rfunction{nls} --- see
+  section~\ref{sec:gnmVnls} for
+  more on \Rfunction{gnm} vs.\ \Rfunction{nls}):
 \[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
 This expression could be simplified by re-parameterizing in terms of xmid/scal
 and 1/scal, however we shall continue with this form for illustration.
@@ -571,7 +572,7 @@ and/or the names of variables in the term. The function may also have an
 \subsubsection{Example: a logistic function}
 
 As an example, consider writing a \Rclass{nonlin} function for
-the logistic term discussed in \ref{sec:basic}:
+the logistic term discussed in \ref{sec:Basic}:
 \[\frac{\text{Asym}}{1 + \exp((\text{xmid} - x)/\text{scal})}.\]
 We can consider \emph{Asym}, \emph{xmid} and \emph{scal}
 as the parameters of three separate predictors,
@@ -661,7 +662,7 @@ The returned \Rfunarg{common} argument specifies that homogeneous effects are to
 be estimated across all the specified factors. The term only depends on these
 factors, but the \Rfunarg{term} function allows for the empty
 \Robject{varLabels} vector that will be passed to it, by having a
-``\Rfunarg{...}'' argument. 
+``\Rfunarg{...}'' argument.
 
 Since the user may wish to specify multiple instances, the \Rfunarg{call}
 argument to \Rfunction{nonlinTerms} is specified, so that parameters in
@@ -917,14 +918,14 @@ either \Rfunction{glm} or \Rfunction{gnm}:
                               family = poisson))[1]
 \end{Sinput}
 \begin{Soutput}
-[1] 116.8
+[1] 121.007
 \end{Soutput}
 \begin{Sinput}
 > system.time(temp.gnm <- gnm(counts ~ resp + resp:x, eliminate = rowID,
                               family = poisson, verbose = FALSE))[1]
 \end{Sinput}
 \begin{Soutput}
-[1] 22.0
+[1] 19.985
 \end{Soutput}
 \begin{Sinput}
 > c(deviance(temp.glm), deviance(temp.gnm))
@@ -1272,7 +1273,7 @@ xlab = "Election", levelNames = 1:4)
 @
 \begin{figure}[!tbph]
     \begin{center}
-        \includegraphics{gnmOVerview-qvplot.pdf}
+        \includegraphics{gnmOverview-qvplot.pdf}
     \end{center}
     \caption{Relative strength of religion-vote association, log scale}
     \label{fig:qvplot}

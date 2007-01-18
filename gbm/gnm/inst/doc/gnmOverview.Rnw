@@ -1350,30 +1350,32 @@ plot(coef(biplotModel), biplotStart,
 \end{figure}
 
 
-\section{\Rfunction{gnm} or \Rfunction{nls}?}
+\section{\Rfunction{gnm} or \Rfunction{(g)nls}?}
 \label{sec:gnmVnls}
 
 The \Rfunction{nls} function in the \Rpackage{stats} package may be used to fit
 a nonlinear model via least-squares estimation. Statistically speaking,
 \Rfunction{gnm} is to \Rfunction{nls} as \Rfunction{glm} is to \Rfunction{lm},
 in that a nonlinear least-squares model is equivalent to a
-generalized nonlinear model with
-\Rcode{family = gaussian}.
-Whilst \Rfunction{nls} assumes that the responses are
-distributed either
-with constant variance or with fixed relative variances, \Rfunction{gnm}
-allows for responses distributed with variances that are a specified
-(via the \Rfunarg{family} argument) function of the mean.
+generalized nonlinear model with \Rcode{family = gaussian}.
+A \Rfunction{nls} model assumes that the responses are
+distributed either with constant variance or with fixed relative variances
+(specified via the \Rfunarg{weights} argument). The \Rfunction{gnls} function in
+the \Rpackage{nlme} package extends this model to allow correlated responses. 
+On the other hand, \Rfunction{gnm} allows for responses distributed with
+variances that are a specified (via the \Rfunarg{family} argument) function of
+the mean.   
 
-In terms of the interface, however, \Rfunction{gnm} and \Rfunction{nls} are
-quite different. Models are specified to \Rfunction{nls} in terms of a
-mathematical formula, which is convenient for models that have a small number
-of parameters. For models that have a large number of parameters, or can not
-easily be represented by a mathematical formula, the symbolic model
-specification used by \Rfunction{gnm}
-may be more convenient. This would usually
-be the case for models involving factors, which would need to be represented by
-dummy variables in a \Rfunction{nls} formula.
+The \Rfunction{gnm} function also differs from \Rfunction{nls}/\Rfunction{gnls}
+in terms of the interface. Models are specified to \Rfunction{nls} and
+\Rfunction{gnls} in terms of a mathematical formula or a \Rclass{selfStart}
+function based on such a formula, which is convenient for models that have a
+small number of parameters. For models that have a large 
+number of parameters, or can not easily be represented by a mathematical
+formula, the symbolic model specification used by \Rfunction{gnm} may be more
+convenient. This would usually be the case for models involving factors, which
+would need to be represented by dummy variables in a \Rfunction{nls}
+formula.
 
 When working with artificial data, \Rfunction{gnm} has the
 minor advantage that it does not fail when a model is an exact fit to the

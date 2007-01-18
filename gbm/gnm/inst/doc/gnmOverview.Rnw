@@ -1360,17 +1360,19 @@ in that a nonlinear least-squares model is equivalent to a
 generalized nonlinear model with \Rcode{family = gaussian}.
 A \Rfunction{nls} model assumes that the responses are
 distributed either with constant variance or with fixed relative variances
-(specified via the \Rfunarg{weights} argument). The \Rfunction{gnls} function in
-the \Rpackage{nlme} package extends this model to allow correlated responses. 
+(specified via the \Rfunarg{weights} argument).
+The \Rfunction{gnls} function in
+the \Rpackage{nlme} package extends \Rfunction{nls}
+to allow correlated responses.
 On the other hand, \Rfunction{gnm} allows for responses distributed with
 variances that are a specified (via the \Rfunarg{family} argument) function of
-the mean.   
+the mean; as with \Rfunction{nls}, no correlation is allowed.
 
 The \Rfunction{gnm} function also differs from \Rfunction{nls}/\Rfunction{gnls}
 in terms of the interface. Models are specified to \Rfunction{nls} and
 \Rfunction{gnls} in terms of a mathematical formula or a \Rclass{selfStart}
 function based on such a formula, which is convenient for models that have a
-small number of parameters. For models that have a large 
+small number of parameters. For models that have a large
 number of parameters, or can not easily be represented by a mathematical
 formula, the symbolic model specification used by \Rfunction{gnm} may be more
 convenient. This would usually be the case for models involving factors, which

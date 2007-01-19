@@ -58,7 +58,8 @@
   \code{\link{Mult}} to specify a multiplicative interaction,
   \code{\link{MultHomog}} to specify a homogeneous multiplicative
   interaction,
-%  \code{\link{Raise}} to raise a predictor to a constant power. }
+  %  \code{\link{Raise}} to raise a predictor to a constant power.
+}
 \examples{
 ### Equivalent of weighted.MM function in ?nls
 weighted.MM <- function(resp, conc){

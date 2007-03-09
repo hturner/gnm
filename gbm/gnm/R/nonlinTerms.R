@@ -3,12 +3,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                      match = if (!is.null(call)) seq(predictors)
                      else numeric(length(predictors)),
                      start = NULL) {
-    lapply(sys.calls(), "[[", 1)
-    badCall <- lapply(sys.calls(), "[[", 1) %in% c("model.frame.default",
-                                                   "model.matrix.default")
-    if (any(badCall))
-        stop(paste(sys.call(-1)[[1]], "terms are only valid in gnm models."))
-    
+
     shadow <- predictor <- predvars <- vars <- unitLabels <- hashLabels <-
         offsetLabels <- varLabels <- blockList <- NonlinID <- matchID <-
             suffix <-list()
@@ -23,7 +18,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
     }
     else
         suffix <- as.list(rep("", length(predictors)))
-    
+
     adj <- 0
     hash <- 0
     dup <- duplicated(match)
@@ -132,7 +127,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                         hashLabels[[i]][[j]] <- rep(hashLabels[[i]][[j]], nlbl)
                         matchID[[i]][[j]] <- rep(0, nlbl)
                     }
-                        
+
                     varLabels[[i]][[j]] <- gsub("#", paste("#", adj, sep = ""),
                                                 tmp$varLabels)
                     unitLabels[[i]][[j]] <- tmp$unitLabels
@@ -160,7 +155,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
         shadow[[i]] <- paste(twiddle, paste(c(unlist(shadow[i]),
                                               offsetLabels[[i]]),
                              collapse = " + "), sep = "")
-        if (length(offsetLabels[[i]])) 
+        if (length(offsetLabels[[i]]))
             predictor[i] <- paste(c(unlist(predictor[i]),
                                  paste(".(`", offsetLabels[[i]], "`)",
                                        sep = "")),
@@ -176,8 +171,8 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
         common <- match(common, unique(common))
     }
     else
-        common <- seq(unlist(varLabels))    
-    
+        common <- seq(unlist(varLabels))
+
     if (!is.null(call) && sum(match)) {
         fn <- call[[1]][[1]]
         call <- as.list(call[[1]][-1])
@@ -198,7 +193,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
 
     predictor <- term(unlist(predictor), sapply(variables, function(x){
         deparse(call(".", as.name(deparse(x))))}))
-    
+
     list(prefix = prefix,
          matchID = unlist(matchID),
          variables = union(unlist(vars), variables),

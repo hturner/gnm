@@ -29,18 +29,21 @@
     XWX <- NULL
     repeat {
         status <- "not.converged"
+        unspecifiedNonlin <- FALSE
         if (any(is.na(start))) {
             if (verbose == TRUE)
                 prattle("Initialising", "\n", sep = "")
             theta <- modelTools$start
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- constrainTo
-            linear <- modelTools$classID == "Linear" 
+            unspecified <- is.na(theta)
+            varPredictors <- modelTools$varPredictors(theta)
+            X <-  modelTools$localDesignFunction(theta, varPredictors)
+            linear <- !is.na(colSums(X))
             unspecifiedLin <- is.na(theta) & linear
             unspecifiedNonlin <- is.na(theta) & !linear
             theta[unspecifiedNonlin] <- gnmStart(sum(unspecifiedNonlin))
             if (any(unspecifiedLin)) {
-                varPredictors <- modelTools$varPredictors(theta)
                 varPredictors <- lapply(varPredictors, naToZero)
                 offsetSpecified <- offset + modelTools$predictor(varPredictors)
                 X <- modelTools$localDesignFunction(theta, varPredictors)
@@ -133,7 +136,8 @@
             X <-  modelTools$localDesignFunction(theta, varPredictors)
             X <- X[, !isConstrained, drop = FALSE]
             pns <- rep.int(nrow(X), ncol(X))
-            ridge <- c(0, rep.int(ridge, ncol(X)))
+            if (attempt == 1)
+                ridge <- c(0, rep.int(ridge, ncol(X)))
             for (iter in seq(iterMax)) {
                 if (any(!is.finite(X))){
                     status <- "X.not.finite"
@@ -246,7 +250,7 @@
                                  "Local design matrix has infinite elements",
                                no.deviance = "Deviance is NaN"))
             attempt <- attempt + 1
-            if (attempt > 5 || any(unspecifiedNonlin))
+            if (attempt > 5 || !any(unspecifiedNonlin))
                 return()
             else if (verbose)
                 message("Restarting")

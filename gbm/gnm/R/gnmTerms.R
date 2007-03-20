@@ -53,24 +53,24 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                    class = c("gnmTerms", "terms", "formula")))
         return(fullTerms)
     }
-        
+
     specialTerms <- rownames(attr(fullTerms, "factors"))[specials]
     specialTerms <- strsplit(specialTerms, ", inst = |,? ?\\)$", perl = TRUE)
     term <- sapply(specialTerms, "[", 1)
     inst <- as.numeric(sapply(specialTerms, "[", 2))
-    
+
     patch <- term %in% term[inst > 1] & is.na(inst)
     termLabels[termLabels %in% specials[patch]] <-
         paste(term[patch], ", inst = 1)")
     inst[patch] <- 1
-    
+
     nonsense <- tapply(inst, term, FUN = function(x)
                    {!is.na(x) && !identical(as.integer(x), seq(x))})
     if (any(nonsense))
         stop("Specified instances of ",
              paste(names(nonsense)[nonsense], ")"),
              " are not in sequence")
-    
+
     const <- attr(fullTerms, "specials")$Const
     if (length(const)) {
         termLabels <- termLabels[!termLabels %in% variables[const]]
@@ -80,7 +80,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     nonlinear <- termLabels %in% variables[specials]
     variables <- variables[-specials]
     predvars <- predvars[-specials]
-    
+
     unitLabels <- varLabels <- as.list(termLabels)
     predictor <- lapply(termLabels, as.name)
     names(predictor) <- unitLabels
@@ -92,10 +92,13 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     NonlinID <- prefixLabels <- as.list(character(n))
     start <- vector("list", n)
     adj <- 1
-    
+
     for (j in which(nonlinear)) {
-        if (identical(substr(unitLabels[[j]], 0, 7), "Nonlin("))
+        if (identical(substr(unitLabels[[j]], 0, 7), "Nonlin(")){
             tmp <- eval(parse(text = unitLabels[[j]]))
+            tmp$varLabels <- tmp$unitLabels <- unitLabels[[j]]
+            tmp$predictor <- paste("`", unitLabels[[j]], "`", sep = "")
+        }
         else
             tmp <- do.call("nonlinTerms", eval(parse(text = unitLabels[[j]])))
         unitLabels[[j]] <- tmp$unitLabels
@@ -150,7 +153,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         nObs <- call("length", as.name(names(data)[1]))
     else
         nObs <- 1
-    
+
     attributes(fullTerms) <-
         c(attributes(fullTerms),
           list(offset = which(unique(variables) %in% offsetVars),

@@ -37,11 +37,12 @@
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- constrainTo
             unspecified <- is.na(theta)
-            varPredictors <- modelTools$varPredictors(theta)
-            X <-  modelTools$localDesignFunction(theta, varPredictors)
-            linear <- !is.na(colSums(X))
-            unspecifiedLin <- is.na(theta) & linear
-            unspecifiedNonlin <- is.na(theta) & !linear
+            varPredictors <- suppressWarnings(modelTools$varPredictors(theta))
+            X <- suppressWarnings(modelTools$localDesignFunction(theta,
+                                                                 varPredictors))
+            fixed <- !is.na(colSums(X))
+            unspecifiedLin <- is.na(theta) & fixed
+            unspecifiedNonlin <- is.na(theta) & !fixed
             theta[unspecifiedNonlin] <- gnmStart(sum(unspecifiedNonlin))
             if (any(unspecifiedLin)) {
                 varPredictors <- lapply(varPredictors, naToZero)
@@ -93,9 +94,9 @@
                     eta <- offset + modelTools$predictor(varPredictors)
                     mu <- family$linkinv(eta)
                 }
-                if (status == "not.converged" && any(linear)) {
+                if (status == "not.converged" && any(fixed)) {
                     if (iter == 1) {
-                        which <- seq(theta)[linear & !isConstrained]
+                        which <- seq(theta)[fixed & !isConstrained]
                         if(!exists("X"))
                             X <- modelTools$localDesignFunction(theta,
                                                                 varPredictors)

@@ -7,7 +7,7 @@
   the deviance over a range of values about the fitted estimate.
 }
 \usage{
-profile.gnm(fitted, which = ofInterest(fitted), alpha = 0.05, maxsteps = 10,
+\method{profile}{gnm}(fitted, which = ofInterest(fitted), alpha = 0.05, maxsteps = 10,
             stepsize = NULL, trace = FALSE, ...) 
 }
 \arguments{

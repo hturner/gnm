@@ -100,7 +100,8 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
             tmp$predictor <- paste("`", unitLabels[[j]], "`", sep = "")
         }
         else
-            tmp <- do.call("nonlinTerms", eval(parse(text = unitLabels[[j]])))
+            tmp <- do.call("nonlinTerms",
+                           eval(parse(text = unitLabels[[j]]), data))
         unitLabels[[j]] <- tmp$unitLabels
         if (!identical(tmp$prefix, "#")) {
             bits <- hashSplit(tmp$prefix)

@@ -1,5 +1,5 @@
 myBellNoInt <- function(x, peakage = 1, pksharp = 1, left.ep = 1,
-                 right.ep = 1, constraint = c(min(x) - 1, max(x) + 1),
+                 right.ep = 1, constraint = c(min(x), max(x)),
                  inst = NULL){
     call <- match.call()
     match <- match(c("peakage", "pksharp", "left.ep", "right.ep"),
@@ -9,9 +9,11 @@ myBellNoInt <- function(x, peakage = 1, pksharp = 1, left.ep = 1,
          left.ep = substitute(left.ep), right.ep = substitute(right.ep)),
          variables = list(substitute(x)),
          term = function(predLabels, varLabels) {
-             SL <- paste("(", predLabels[1], " - ", constraint[1], " + 1e-5 + exp(",
-                         predLabels[3], "))", sep = "")
-             SR <- paste("(", constraint[2], " + 1e-5 + exp(", predLabels[4], ") - ",
+             SL <- paste("(", predLabels[1], " - ", constraint[1],
+                         " + 1e-5 + 1e5/(1 + exp(-",
+                         predLabels[3], ")))", sep = "")
+             SR <- paste("(", constraint[2],
+                         " + 1e-5 + 1e5/(1 + exp(-", predLabels[4], ")) - ",
                          predLabels[1], ")", sep = "")
              paste(" - exp(", predLabels[2], ") * ((",
                    SL, " * log(", SL, "/(",

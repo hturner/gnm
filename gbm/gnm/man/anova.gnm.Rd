@@ -6,7 +6,7 @@
   nonlinear models
 }
 \usage{
-anova.gnm(object, ..., dispersion = NULL, test = NULL)
+\method{anova}{gnm}(object, ..., dispersion = NULL, test = NULL)
 }
 \arguments{
   \item{object}{ an object of class \code{gnm} }

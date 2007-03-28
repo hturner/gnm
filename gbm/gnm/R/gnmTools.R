@@ -27,14 +27,12 @@
                 structure(rep.int(i, nTheta),
                           names = paste(prefixLabels[i], termTools[[i]]$labels,
                                         sep = ""))
-            thetaID[[i]] <- structure(adj + seq(nTheta) - 1,
-                                      names = termTools[[i]]$labels)
             adj <- adj + nTheta
         }
         else if (all(common[b])) {
             designList <- lapply(unitLabels[b],
                                  function(x) class.ind(gnmData[[x]]))
-            
+
             ## get labels for all levels
             allLevels <- lapply(designList, colnames)
             labels <- unique(unlist(allLevels))
@@ -55,31 +53,29 @@
             factorAssign[b] <- lapply(i, function(x, nLevels, nm)
                                       structure(rep(x, nLevels), names = nm),
                                       nLevels, nm)
-            thetaID[b] <- rep(list(structure(adj + seq(nLevels) - 1,
-                                             names = nm)),
-                              length(designList))
             adj <- adj + nLevels
         }
         else {
             tmp <- model.matrix(terms(reformulate(c(0, unitLabels[b])),
                                       keep.order = TRUE), data = gnmData)
             tmpAssign <- attr(tmp, "assign") + !attr(tmp, "assign")[1]
-            nm <- paste(prefixLabels[b], colnames(tmp)[match[b] | sum(b) > 1],
+            tmpAssign <- which(b)[tmpAssign]
+            nm <- paste(prefixLabels[tmpAssign], colnames(tmp)[match[b] | sum(b) > 1],
                         sep = "")
-            tmpAssign <- structure(which(b)[tmpAssign],
-                                   names = nm)
+            names(tmpAssign) <- nm
             termTools[b] <- lapply(split(1:ncol(tmp), tmpAssign),
                                    function(i, M) M[, i , drop = FALSE], tmp)
             factorAssign[b] <- split(tmpAssign, tmpAssign)
-            thetaID[b] <- split(structure(adj + seq(length(tmpAssign)) - 1,
-                                          names = nm), tmpAssign)
             adj <- adj + length(tmpAssign)
         }
     }
 
+    browser()
     factorAssign <- unlist(factorAssign)
     parLabels <- names(factorAssign)
     nTheta <- length(factorAssign)
+    thetaID <- split(structure(1:nTheta, names = parLabels), factorAssign)
+    names(thetaID) <- varLabels
     nr <- dim(gnmData)[1]
     tmp <- seq(factorAssign) * nr
     first <- c(0, tmp[-nTheta])
@@ -95,7 +91,7 @@
         storage.mode(last) <- storage.mode(a) <-
         storage.mode(z) <- storage.mode(lt) <- "integer"
     baseMatrix <- matrix(1, nrow = nr, ncol = nTheta)
-    for (i in seq(termTools)) 
+    for (i in seq(termTools))
         if (is.matrix(termTools[[i]]))
             baseMatrix[, factorAssign == i] <- termTools[[i]]
     X <- baseMatrix
@@ -129,7 +125,7 @@
             theta[termID] <- attr(modelTerms, "start")[[i]](theta[termID])
         }
     }
-    
+
     if (x || termPredictors) {
         termAssign <- attr(modelTerms, "assign")[factorAssign]
         if (attr(modelTerms, "intercept"))
@@ -154,7 +150,7 @@
         }
         prodList
     }
-    
+
     predictor <- function(varPredictors, term = FALSE) {
         if (term)
             sapply(attr(modelTerms, "predictor"), eval,
@@ -164,11 +160,11 @@
     }
 
     gnmData <- lapply(gnmData[, !names(gnmData) %in% varLabels, drop = FALSE],
-                      drop) 
+                      drop)
     e <- do.call("bquote",
                  list(sumExpression(attr(modelTerms, "predictor")), gnmData))
     varDerivs <- lapply(varLabels, deriv, expr = e)
-    
+
 
     commonAssign <- factorAssign[colID]
     nCommon <- table(commonAssign[!duplicated(factorAssign)])
@@ -179,7 +175,7 @@
         specialVarDerivs <- deriv(e, varLabels[(NonlinID | classID)])
     convIND <- unique(colID)
     vID <- cumsum(c(1, nCommon))[seq(nCommon)]
-    
+
     localDesignFunction <- function(theta, varPredictors, ind = NULL) {
         #browser()
         if (!any(common)) {
@@ -187,9 +183,9 @@
                 i1 <- convIND[ind]
                 tmpID <- commonAssign[i1]
             }
-                                       
+
             for (i in tmpID) {
-                fi <- unique(factorAssign[commonAssign == i]) 
+                fi <- unique(factorAssign[commonAssign == i])
                 if (is.null(ind)){
                     i1  <- a[fi][1]
                     i2 <- z[fi][1]
@@ -236,7 +232,7 @@
                 i1 <- convIND[ind]
                 fi <- unique(factorAssign[commonAssign == commonAssign[i1]])
                 v <- list()
-                for(j in fi) 
+                for(j in fi)
                     v[[j]] <- attr(eval(varDerivs[[j]], varPredictors),
                                    "gradient")
                 .Call("single", baseMatrix, as.double(unlist(v[fi])),

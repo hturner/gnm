@@ -13,9 +13,9 @@ myBellS <- function(x, peakage = 1, peak.ht = 1, pksharp = 1, left.S = 1,
              SR <- paste(predLabels[5], sep = "")
              paste(predLabels[2], " - exp(", predLabels[3], ") * ((",
                    SL, " * log(", SL, "/(",
-                   SL, " + ", varLabels[1], " - ", predLabels[1], ")) + ",
+                   SL, " + ", varLabels[1], " - (", predLabels[1], "))) + ",
                    SR, " * log(", SR, "/(",
-                   SR, " - ", varLabels[1], " + ", predLabels[1], ")))/(",
+                   SR, " - ", varLabels[1], " + (", predLabels[1], "))))/(",
                    SL, " * log(", SL, "/(", SL, " - ", D, ")) + ",
                    SR, " * log(", SR, "/(", SR, " + ", D, "))))", sep = "")
          },

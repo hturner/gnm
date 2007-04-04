@@ -12,8 +12,8 @@ myBeliSNoInt <- function(x, peakage = ~1, pksharp = 1, left.S = 1,
              SL <- paste(predLabels[3], sep = "")
              paste(" - exp(", predLabels[2], ") * ((",
                    SL, " * log(", SL, "/(",
-                   SL, " + ", varLabels[1], " - ", predLabels[1], ")) + ",
-                   varLabels[1], " - ", predLabels[1], ")/(",
+                   SL, " + ", varLabels[1], " - (", predLabels[1], "))) + ",
+                   varLabels[1], " - (", predLabels[1], "))/(",
                    SL, " * log(", SL, "/(", SL, " - ", D, ")) - ",
                    D, "))", sep = "")
          },

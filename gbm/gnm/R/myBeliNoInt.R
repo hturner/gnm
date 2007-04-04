@@ -30,9 +30,9 @@ myBeliNoInt <- function(x, peakage = ~1, pksharp = 1, left.ep = 1,
              formula <- update(peakage, y ~ .)
              peakage.start <- lm(formula,
                                  data = cbind(gnmData, y = peakage.start))
-             peakage <- grep("\)\.?peakage", nm)
-             pksharp <- grep("\)\.?pksharp", nm)
-             left.ep <- grep("\)\.?left.ep", nm)
+             peakage <- grep("[)]\\.?peakage", nm)
+             pksharp <- grep("[)]\\.?pksharp", nm)
+             left.ep <- grep("[)]\\.?left.ep", nm)
              theta[peakage] <- coef(peakage.start)
              theta[pksharp] <- pksharp.start
              theta[left.ep] <- left.ep.start

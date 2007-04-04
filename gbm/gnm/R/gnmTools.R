@@ -70,7 +70,6 @@
         }
     }
 
-    browser()
     factorAssign <- unlist(factorAssign)
     parLabels <- names(factorAssign)
     nTheta <- length(factorAssign)
@@ -177,7 +176,6 @@
     vID <- cumsum(c(1, nCommon))[seq(nCommon)]
 
     localDesignFunction <- function(theta, varPredictors, ind = NULL) {
-        #browser()
         if (!any(common)) {
             if (!is.null(ind)){
                 i1 <- convIND[ind]

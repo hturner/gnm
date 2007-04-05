@@ -45,6 +45,7 @@
             unspecifiedNonlin <- is.na(theta) & !fixed
             theta[unspecifiedNonlin] <- gnmStart(sum(unspecifiedNonlin))
             if (any(unspecifiedLin)) {
+                varPredictors <- modelTools$varPredictors(theta)
                 varPredictors <- lapply(varPredictors, naToZero)
                 offsetSpecified <- offset + modelTools$predictor(varPredictors)
                 X <- modelTools$localDesignFunction(theta, varPredictors)

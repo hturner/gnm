@@ -71,16 +71,21 @@
     }
 
     factorAssign <- unlist(factorAssign)
+    uniq <- !(duplicated(block) & common)[factorAssign]
     parLabels <- names(factorAssign)
     nTheta <- length(factorAssign)
-    thetaID <- split(structure(1:nTheta, names = parLabels), factorAssign)
+    thetaID <- rep(NA, nTheta)
+    thetaID[uniq] <- seq(sum(uniq))
+    thetaID[!uniq] <- thetaID[common[factorAssign] & uniq]
+    thetaID <- split(thetaID, factorAssign)
     names(thetaID) <- varLabels
+    colID <- unlist(thetaID)
     nr <- dim(gnmData)[1]
     tmp <- seq(factorAssign) * nr
     first <- c(0, tmp[-nTheta])
-    firstX <- first[unlist(thetaID)]
+    firstX <- first[colID]
     last <- tmp - 1
-    lastX <- last[unlist(thetaID)] + 1
+    lastX <- last[colID] + 1
     nc <- tabulate(factorAssign)
     tmp <- cumsum(nc)
     a <- c(1, tmp[-nFactor] + 1)
@@ -94,20 +99,20 @@
         if (is.matrix(termTools[[i]]))
             baseMatrix[, factorAssign == i] <- termTools[[i]]
     X <- baseMatrix
-    colID <- match(unlist(thetaID), unlist(thetaID))
-    if (any(duplicated(parLabels[unique(colID)]))){
-        parLabels[unique(colID)] <- make.unique(parLabels[unique(colID)])
+    if (any(duplicated(parLabels[uniq]))){
+        parLabels[uniq] <- make.unique(parLabels[uniq])
         warning("Using make.unique() to make default parameter labels unique",
                 call. = FALSE)
     }
     colnames(X) <- parLabels
-    X <- X[, unique(colID), drop = FALSE]
+    X <- X[, uniq, drop = FALSE]
 
     thetaClassID <- structure(classID[factorAssign], names = parLabels)
-    theta <- rep(NA, length(factorAssign))
+    theta <- rep(NA, nTheta)
     for (i in blockID) {
         b <- block == i
-        if (sum(b) == 1 && !is.na(termTools[[which(b)]]["start"])){
+        if (sum(b) == 1 && is.list(termTools[[which(b)]]) &&
+            !is.null(termTools[[which(b)]]$start)){
             theta[unlist(thetaID[b])] <- termTools[[which(b)]]$start
             thetaClassID[unlist(thetaID[b])][is.na(termTools[[which(b)]]$start)] <-
                 "Linear"
@@ -115,8 +120,8 @@
     }
     names(theta) <- parLabels
 
-    thetaClassID <- thetaClassID[unique(colID)]
-    theta <- theta[unique(colID)]
+    thetaClassID <- thetaClassID[uniq]
+    theta <- theta[uniq]
 
     for (i in seq(attr(modelTerms, "predictor"))) {
         if (!is.null(attr(modelTerms, "start")[[i]])) {
@@ -172,13 +177,13 @@
     nCommon <- as.integer(nCommon[as.character(tmpID)])
     if (any(NonlinID | classID))
         specialVarDerivs <- deriv(e, varLabels[(NonlinID | classID)])
-    convIND <- unique(colID)
+    convID <- colID[uniq]
     vID <- cumsum(c(1, nCommon))[seq(nCommon)]
 
     localDesignFunction <- function(theta, varPredictors, ind = NULL) {
         if (!any(common)) {
             if (!is.null(ind)){
-                i1 <- convIND[ind]
+                i1 <- convID[ind]
                 tmpID <- commonAssign[i1]
             }
 
@@ -227,7 +232,7 @@
                       nr, nCommon, max(nCommon), PACKAGE = "gnm")
             }
             else {
-                i1 <- convIND[ind]
+                i1 <- convID[ind]
                 fi <- unique(factorAssign[commonAssign == commonAssign[i1]])
                 v <- list()
                 for(j in fi)

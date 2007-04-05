@@ -21,10 +21,10 @@ Dref <- function(..., delta = ~ 1){
                    "))*", gamma, ")", sep = "", collapse = " + ")},
          start = function(theta) {
              theta[] <- 0.5
-             delta <- grep("[)]delta", names(theta))
+             delta <- grep("[).]delta", names(theta))
              theta[delta] <- runif(length(delta)) - 0.5
              theta
          },
-         call = as.expression(match.call()))            
+         call = as.expression(match.call()))
 }
 class(Dref) <- "nonlin"

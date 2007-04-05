@@ -107,7 +107,7 @@
     theta <- rep(NA, length(factorAssign))
     for (i in blockID) {
         b <- block == i
-        if (sum(b) == 1 && !is.null(termTools[[which(b)]]$start)){
+        if (sum(b) == 1 && !is.na(termTools[[which(b)]]["start"])){
             theta[unlist(thetaID[b])] <- termTools[[which(b)]]$start
             thetaClassID[unlist(thetaID[b])][is.na(termTools[[which(b)]]$start)] <-
                 "Linear"

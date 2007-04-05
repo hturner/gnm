@@ -158,9 +158,10 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     attributes(fullTerms) <-
         c(attributes(fullTerms),
           list(offset = which(unique(variables) %in% offsetVars),
-               variables = as.call(union(quote(list), variables)),
+               variables = as.call(c(quote(list), unique(variables))),
                predvars = {do.call("substitute",
-                                   list(as.call(union(quote(list), predvars)),
+                                   list(as.call(c(quote(list),
+                                                  unique(predvars))),
                                         list(nObs = nObs)))},
                unitLabels = unlist(unitLabels),
                common = unlist(common),

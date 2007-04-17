@@ -74,18 +74,15 @@
     uniq <- !(duplicated(block) & common)[factorAssign]
     parLabels <- names(factorAssign)
     nTheta <- length(factorAssign)
-    thetaID <- rep(NA, nTheta)
+    thetaID <- numeric(nTheta)
     thetaID[uniq] <- seq(sum(uniq))
     thetaID[!uniq] <- thetaID[common[factorAssign] & uniq]
-    thetaID <- split(thetaID, factorAssign)
-    names(thetaID) <- varLabels
-    colID <- unlist(thetaID)
     nr <- dim(gnmData)[1]
     tmp <- seq(factorAssign) * nr
     first <- c(0, tmp[-nTheta])
-    firstX <- first[colID]
+    firstX <- first[thetaID]
     last <- tmp - 1
-    lastX <- last[colID] + 1
+    lastX <- last[thetaID] + 1
     nc <- tabulate(factorAssign)
     tmp <- cumsum(nc)
     a <- c(1, tmp[-nFactor] + 1)
@@ -99,6 +96,9 @@
         if (is.matrix(termTools[[i]]))
             baseMatrix[, factorAssign == i] <- termTools[[i]]
     X <- baseMatrix
+    colID <- match(thetaID, thetaID)
+    thetaID <- split(thetaID, factorAssign)
+    names(thetaID) <- varLabels
     if (any(duplicated(parLabels[uniq]))){
         parLabels[uniq] <- make.unique(parLabels[uniq])
         warning("Using make.unique() to make default parameter labels unique",

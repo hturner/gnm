@@ -1,3 +1,24 @@
+Changes in gnm 0.9-2
+====================    
+
+Improvements
+------------
+
+    o	Calls to "nonlin" functions now evaluated in the same environment and 
+	enclosure as call to create model frame, so "nonlin" functions should 
+	be able to find variables in gnm calls - potentially useful for setting 
+	starting values.
+
+Bug fixes
+---------
+
+    o	gnm() algorithm now reinitiates correctly when restarting after 
+	non-convergence.
+
+    o	gnm() now works correctly when a model is specified with nonlinear terms 
+	inbetween linear terms.
+
+
 Changes in gnm 0.9-1
 ====================
 

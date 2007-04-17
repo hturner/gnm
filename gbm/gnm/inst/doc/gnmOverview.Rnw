@@ -694,10 +694,10 @@ The \Rfunction{gnm} function has a number of arguments which affect the way a
 model will be fitted.  Basic control parameters can be set using the arguments
 \Rfunarg{tolerance}, \Rfunarg{iterStart} and \Rfunarg{iterMax}. Starting values
 for the parameter estimates can be set by \Rfunarg{start} and parameters can be
-constrained to zero by specifying a \Rfunarg{constrain} argument.
-Parameters of a stratification factor can be handled more efficiently by
-specifying the factor in an \Rfunarg{eliminate} argument. These options are
-described in more detail below.
+constrained via \Rfunarg{constrain} and \Rfunarg{constrainTo}
+arguments. Parameters of a stratification factor can be
+handled more efficiently by specifying the factor in an \Rfunarg{eliminate}
+argument. These options are described in more detail below.
 
 \subsection{Basic control parameters}
 
@@ -750,9 +750,25 @@ specification of arguments such as \Rfunarg{start}.
 The starting procedure used by \Rfunction{gnm} is as follows
 \begin{enumerate}
 \item
-Generate starting values $\theta_i$ for all parameters $i = 1, \ldots, p$ from
-the Uniform($-0.1$, $0.1$) distribution. Shift these values away from zero as
-follows
+Begin with all parameters set to \Rcode{NA}.
+\item
+\label{i:nonlin}
+Replace \Rcode{NA} values with any starting values set by
+\Rclass{nonlin} functions or plug-in functions.
+\item
+\label{i:start}
+Replace current values with any (non-\Rcode{NA}) starting values specified by
+the \Rfunarg{start} argument of \Rfunction{gnm}.
+\item
+\label{i:constrain}
+Set any values specified by the \Rfunarg{constrain} argument to the values
+specified by the \Rfunarg{constrainTo} argument (see Section \ref{sec:constrain}).
+\item
+\label{i:gnmStart}
+Categorise remaining \Rcode{NA} parameters as linear or nonlinear, treating
+non-\Rcode{NA} parameters as fixed. Initialise the nonlinear parameters by
+generating values $\theta_i$ from the Uniform($-0.1$, $0.1$) distribution and
+shifting these values away from zero as follows
 \begin{equation*}
 \theta_i = \begin{cases}
     \theta_i - 0.1 &  \text{if } \theta_i < 1 \\
@@ -760,26 +776,17 @@ follows
 \end{cases}
 \end{equation*}
 \item
-\label{i:nonlin}
-Replace generic starting values with default starting values set by
-\Rclass{nonlin} functions or plug-in functions, where applicable.
+Compute the \Rfunction{glm} estimate of the linear parameters, offsetting the
+contribution to the predictor of any terms fully determined by steps
+\ref{i:nonlin} to \ref{i:gnmStart}.
 \item
-\label{i:start}
-Replace default starting values with any starting values specified by the
-\Rfunarg{start} argument of \Rfunction{gnm}.
-\item
-Compute the \Rfunction{glm} estimate of any parameters that may be treated as
-linear (i.e. those in linear terms or those with a default starting value of
-\Robject{NA} set by a plug-in function), offsetting the contribution to
-the predictor of any fully terms specified by steps \ref{i:nonlin} and \ref{i:start}.
-\item
-Run starting iterations: update one at a time any nonlinear parameters
-not specified by steps \ref{i:nonlin} and \ref{i:start}, updating \emph{all}
-parameters that may be treated as linear after each round of updates.
+\label{i:iter}
+Run starting iterations: update nonlinear parameters one at a time, jointly
+re-estimating linear parameters after each round of updates.
 \end{enumerate}
-Note that no starting iterations (step 5) will be run if all parameters are
-linear, or if all nonlinear parameters are specified by \Rfunarg{start} or a
-plug-in function.
+Note that no starting iterations (step \ref{i:iter}) will be run if all parameters are
+linear, or if all nonlinear parameters are specified by \Rfunarg{start},
+\Rfunarg{constrain} or a plug-in function.
 
 \subsection{Using \Rfunarg{constrain}}
 \label{sec:constrain}
@@ -2419,21 +2426,21 @@ for (i in 1:100)
     saved.fits[[i]] <- suppressWarnings(gnm(y ~ Exp(1 + x, inst = 1) +
                                             Exp(1 + x, inst = 2),
                                             verbose = FALSE))
-unlist(sapply(saved.fits, deviance))
+round(unlist(sapply(saved.fits, deviance)), 4)
 @ %def
-In this instance, only 14 of the 100 calls to \Rfunction{gnm} have successfully
-located a local maximum of the likelihood: in the remaining 86 cases the
+In this instance, only 37 of the 100 calls to \Rfunction{gnm} have successfully
+located a local maximum of the likelihood: in the remaining 63 cases the
 starting values generated were such that numerical problems resulted, and the
 fitting algorithm was abandoned (giving a \Robject{NULL} result).
-Among the 14 `successful'
+Among the 37 `successful'
 fits, it is evident that there are three distinct solutions (with respective
-residual sums of squares equal to 0.1589, 41.6, and essentially zero ---
-the last of these, the exact fit to the data, having been found 4 times
-out of the above 13).
+residual sums of squares equal to 0.1589, 41.64, and essentially zero ---
+the last of these, the exact fit to the data, having been found 12 times
+out of the above 37).
 The two non-optimal local maxima here correspond to the best fit
 with a single exponential (which has residual sum of squares 0.1589) and to the
 fit with no dependence at all on $x$
-(residual sum of squares 41.6), as we can see
+(residual sum of squares 41.64), as we can see
 by comparing with:
 @
 <<doubleExp2, fig = TRUE, include = FALSE>>=

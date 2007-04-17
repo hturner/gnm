@@ -1,6 +1,6 @@
 
-R version 2.4.0 (2006-10-03)
-Copyright (C) 2006 The R Foundation for Statistical Computing
+R version 2.5.0 alpha (2007-04-02 r41011)
+Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -39,9 +39,9 @@ Done
 +                       family = poisson, data = mentalHealth)
 Initialising
 Running start-up iterations..
-Running main iterations.........
+Running main iterations......
 Done
 > coef(RC1model)[1] - coef(RC1modelOffset)[1]
 (Intercept) 
-   2.971447 
+   2.998655 
 > 

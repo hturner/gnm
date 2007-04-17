@@ -32,7 +32,7 @@ Catchpole, E. and B.~Morgan (1997).
   et~al.}{1998}]{Caut98}
 Cautres, B., A.~F. Heath, and D.~Firth (1998).
 \newblock Class, religion and vote in {B}ritain and {F}rance.
-\newblock {\em La Lettre de la Maison Fran\c{c}aise\/}~{\em 8}.
+\newblock {\em La Lettre de la Maison Fran{\c{c}}aise\/}~{\em 8}.
 
 \bibitem[\protect\citeauthoryear{Clifford and Heath}{Clifford and
   Heath}{1993}]{Clif93}
@@ -81,7 +81,7 @@ Goodman, L.~A. (1979).
 Hatzinger, R. and B.~J. Francis (2004).
 \newblock Fitting paired comparison models in {R}.
 \newblock Technical Report~3, Department of Statistics and Mathematics,
-  Wirtschaftsuniversit\"at Wien.
+  Wirtschaftsuniversit{\"a}t Wien.
 
 \bibitem[\protect\citeauthoryear{Lee and Carter}{Lee and
   Carter}{1992}]{LeeCart92}

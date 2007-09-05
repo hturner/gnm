@@ -125,7 +125,7 @@
         }
         else {
             theta <- structure(replace(start, constrain, constrainTo),
-                               names = names(modelTools$classID))
+                               names = names(modelTools$start))
             varPredictors <- modelTools$varPredictors(theta)
             eta <- offset + modelTools$predictor(varPredictors)
             if (any(!is.finite(eta))) {

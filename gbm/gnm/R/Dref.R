@@ -20,10 +20,7 @@ Dref <- function(..., delta = ~ 1){
                    paste("exp(", delta, ")", collapse = " + "),
                    "))*", gamma, ")", sep = "", collapse = " + ")},
          start = function(theta) {
-             theta[] <- 0.5
-             delta <- grep("[).]delta", names(theta))
-             theta[delta] <- runif(length(delta)) - 0.5
-             theta
+             ifelse(attr(theta, "assign") == 3, 0.5, runif(length(theta)) - 0.5)
          },
          call = as.expression(match.call()))
 }

@@ -111,7 +111,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         else {
             modelTools <- gnmTools(modelTerms, modelData,
                                    method == "model.matrix" | x, termPredictors)
-            coefNames <- names(modelTools$classID)
+            coefNames <- names(modelTools$start)
         }
         if (method == "coefNames") return(coefNames)
         nParam <- length(coefNames)

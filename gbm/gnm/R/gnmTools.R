@@ -107,34 +107,32 @@
     colnames(X) <- parLabels
     X <- X[, uniq, drop = FALSE]
 
-    thetaClassID <- structure(classID[factorAssign], names = parLabels)
     theta <- rep(NA, nTheta)
     for (i in blockID) {
         b <- block == i
         if (sum(b) == 1 && is.list(termTools[[which(b)]]) &&
             !is.null(termTools[[which(b)]]$start)){
             theta[unlist(thetaID[b])] <- termTools[[which(b)]]$start
-            thetaClassID[unlist(thetaID[b])][is.na(termTools[[which(b)]]$start)] <-
-                "Linear"
         }
     }
     names(theta) <- parLabels
 
-    thetaClassID <- thetaClassID[uniq]
-    theta <- theta[uniq]
-
+    termAssign <- attr(modelTerms, "assign")[factorAssign]
+    block <- block[factorAssign]
     for (i in seq(attr(modelTerms, "predictor"))) {
         if (!is.null(attr(modelTerms, "start")[[i]])) {
-            termID <- unique(unlist(thetaID[attr(modelTerms, "assign") == i]))
-            theta[termID] <- attr(modelTerms, "start")[[i]](theta[termID])
+            termID <- termAssign == i & uniq
+            split <- block[termID]
+            split <- match(split, unique(split))
+            theta[termID] <-
+                attr(modelTerms, "start")[[i]](structure(theta[termID],
+                                                         assign = split))
         }
     }
+    theta <- theta[uniq]
 
-    if (x || termPredictors) {
-        termAssign <- attr(modelTerms, "assign")[factorAssign]
-        if (attr(modelTerms, "intercept"))
-            termAssign <- termAssign - 1
-    }
+    if (attr(modelTerms, "intercept"))
+        termAssign <- termAssign - 1
 
     prodList <- vector(mode = "list", length = nFactor)
     names(prodList) <- varLabels
@@ -156,9 +154,11 @@
     }
 
     predictor <- function(varPredictors, term = FALSE) {
-        if (term)
-            sapply(attr(modelTerms, "predictor"), eval,
-                   varPredictors)
+        if (term) {
+            es <- lapply(attr(modelTerms, "predictor"), function(x) {
+                do.call("bquote", list(x, gnmData))})
+            sapply(es, eval, varPredictors)
+        }
         else
             eval(e, varPredictors)
     }
@@ -245,9 +245,8 @@
         }
     }
 
-    toolList <- list(classID = thetaClassID, start = theta,
-                     varPredictors = varPredictors, predictor = predictor,
-                     localDesignFunction = localDesignFunction)
+    toolList <- list(start = theta, varPredictors = varPredictors,
+                     predictor = predictor, localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign
     toolList
 }

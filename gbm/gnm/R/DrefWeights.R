@@ -18,11 +18,11 @@ DrefWeights <- function(model) {
     }
     else {
         dat <- numeric(0)
-        X <- matrix(1, 1, length(ind))
+        X <- matrix(1)
     }
     nw <- length(preds)
     nmod <- nrow(X)
-    delta <- matrix(coef(model)[ind], nmod)
+    delta <- matrix(parameters(model)[ind], nmod)
     ind <- c(t(matrix(ind, nmod, nw - 1)))
     vcovDelta <- vcov(model)[ind, ind, drop = FALSE]
     wc <- unname(1 + rowSums(exp(X %*% delta)))^(-1)
@@ -31,12 +31,12 @@ DrefWeights <- function(model) {
     out <- list()
     d <- -wc * (1 - wc) * XX
     se <- sqrt(rowSums(d %*% vcovDelta * d))
-    out[[1]] <- cbind(dat, weight = wc, se = se)
+    out[[1]] <- drop(cbind(dat, weight = wc, se = se))
     for (i in 1:(nw - 1)) {
         d <- -wu[,i] * wu
-        d <- (d[,i] + wu[,i]) * XX
+        d <- c(wu[,i] * (col(wu) == i) + d) * XX
         se <- sqrt(rowSums(d %*% vcovDelta * d))
-        out[[i + 1]] <- cbind(dat, weight = wu[,i], se = se)
+        out[[i + 1]] <- drop(cbind(dat, weight = wu[,i], se = se))
     }
     names(out) <- as.character(preds)
     out

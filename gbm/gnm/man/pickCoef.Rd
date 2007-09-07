@@ -56,12 +56,6 @@ socialMobility <- gnm(yvar ~ -1 + Dref(origin, destination,
                                        delta = ~ 1 + downward + upward),
                       family = binomial, data = voting)
 ## calculate weights
-coefs <- coef(socialMobility)
-baseline <- coefs[pickCoef(socialMobility, "(Intercept)")]
-upwardTRUE <- coefs[pickCoef(socialMobility, "upwardTRUE")]
-downwardTRUE <- coefs[pickCoef(socialMobility, "downwardTRUE")]
-prop.table(exp(baseline))
-prop.table(exp(upwardTRUE + baseline))
-prop.table(exp(downwardTRUE + baseline))
+DrefWeights(socialMobility)
 }
 \keyword{ models }

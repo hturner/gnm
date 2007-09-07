@@ -153,17 +153,19 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (onlyLin) {
             offset <- offset + X[, constrain, drop = FALSE] %*% constrainTo
             X[, constrain] <- 0
+            if (method == "model.matrix")
+            return(X)
         }
-        else {
-            theta <- seq(start)
+        else if (method == "model.matrix"){
+            theta <- modelTools$start
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- constrainTo
+            theta[is.na(theta)] <- seq(start)[is.na(theta)]
             varPredictors <- modelTools$varPredictors(theta)
             X <- modelTools$localDesignFunction(theta, varPredictors)
             attr(X, "assign") <- modelTools$termAssign
-        }
-        if (method == "model.matrix")
             return(X)
+        }
 
         if (!is.numeric(tolerance) || tolerance <= 0)
             stop("value of 'tolerance' must be > 0")

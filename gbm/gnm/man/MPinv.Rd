@@ -71,7 +71,7 @@ MPinv(mat, eliminate = numeric(0), onlyFirstCol = FALSE,
   25--29
 }
 \author{ David Firth }
-\seealso{\code{\link{MASS:::ginv}}}
+\seealso{\code{\link[MASS]{ginv}}}
 \examples{
 A <- matrix(c(1, 1, 0,
               1, 1, 0,

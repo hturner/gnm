@@ -1,9 +1,10 @@
 \name{Dref}
 \alias{Dref}
+\alias{DrefWeights}
 \title{Specify a Diagonal Reference Term in a gnm Model Formula}
 \description{
-  A function of class \code{"nonlin"} to specify a diagonal
-  reference term in the formula argument to \code{\link{gnm}}.   
+  Dref is a function of class \code{"nonlin"} to specify a diagonal
+  reference term in the formula argument to \code{\link{gnm}}.
 }
 \usage{
 Dref(..., delta = ~ 1)
@@ -29,7 +30,10 @@ Dref(..., delta = ~ 1)
   and the \eqn{\delta_f}{delta_f} are modelled as specified by the
   \code{delta} argument (constant weights by default). The
   returned parameters are those in the model for
-  \eqn{\delta_f}{delta_f}, rather than the implied weights \eqn{w_f}.
+  \eqn{\delta_f}{delta_f}, rather than the implied weights
+  \eqn{w_f}. The \code{DrefWeights} function will take a fitted gnm
+  model and return the weights \eqn{w_f}, along with their standard
+  errors. 
 
   If the factors passed to \code{Dref} do not have exactly the same
   levels, the set of levels in the diagonal reference term is taken to
@@ -78,7 +82,7 @@ yvar <- cbind(count, voting$total - count)
 ## fit diagonal reference model with constant weights
 classMobility <- gnm(yvar ~ -1 + Dref(origin, destination), 
                      family = binomial, data = voting)
-prop.table(exp(coef(classMobility)[1:2]))
+DrefWeights(classMobility)
 
 ## create factors indicating movement in and out of salariat (class 1)
 upward <- with(voting, origin != 1 & destination == 1)
@@ -88,24 +92,13 @@ downward <- with(voting, origin == 1 & destination != 1)
 socialMobility <- gnm(yvar ~ -1 + Dref(origin, destination,
                                        delta = ~ 1 + downward + upward),
                       family = binomial, data = voting)
-coefs <- coef(socialMobility)
-baseline <- coefs[pickCoef(socialMobility, "(Intercept)")]
-upwardTRUE <- coefs[pickCoef(socialMobility, "upwardTRUE")]
-downwardTRUE <- coefs[pickCoef(socialMobility, "downwardTRUE")]
-prop.table(exp(baseline))
-prop.table(exp(upwardTRUE + baseline))
-prop.table(exp(downwardTRUE + baseline))
+DrefWeights(socialMobility)
 
 ## fit separate weights for downwardly mobile groups only
 downwardMobility <- gnm(yvar ~ -1 + Dref(origin, destination,
                                          delta = ~ 1 + downward),
                         family = binomial, data = voting)
-downwardMobility
-coefs <- coef(downwardMobility)
-baseline <- coefs[pickCoef(downwardMobility, "(Intercept)")]
-downwardTRUE <- coefs[pickCoef(downwardMobility, "downwardTRUE")]
-prop.table(exp(baseline))
-prop.table(exp(downwardTRUE + baseline))
+DrefWeights(downwardMobility)
 
 \dontrun{	       
 ### Examples from Van der Slik paper
@@ -154,10 +147,16 @@ A
 ## Pearson chi-squared: 425.3389 
 ## Residual df:         576    
  
-prop.table(exp(coef(A)[pickCoef(A, "delta")]))
-## weights as in Table 4
-## Dref(MOPLM, FOPLF)delta1 Dref(MOPLM, FOPLF)delta2 
-##                0.4225638                0.5774362 
+## Weights as in Table 4
+DrefWeights(A)
+## Refitting with first Dref weight constrained to zero
+## $MOPLM
+##    weight        se
+## 0.4225636 0.1439829
+## 
+## $FOPLF
+##    weight        se
+## 0.5774364 0.1439829 
 
 F <- gnm(MCFM ~ -1 + AGEM + MRMM + FRMF + MWORK + MFCM + 
          Dref(MOPLM, FOPLF, delta = ~1 + MFCM), family = gaussian,
@@ -206,19 +205,21 @@ F
 ## Deviance:            420.9022 
 ## Pearson chi-squared: 420.9022 
 ## Residual df:         575 
+##
+##
+
+## Standard error for MFCM == 1 lower than reported by Van der Slik et al
+DrefWeights(F)
+## Refitting with first Dref weight constrained to zero
+## $MOPLM
+##   MFCM     weight        se
+## 1    1 0.02974675 0.2277711
+## 2    0 0.74465224 0.2006916
 ## 
-baseline <- coef(F)[pickCoef(F, "(Intercept)")]
-prop.table(exp(baseline)) ## weights for MFCM = 0
-## Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept) 
-##                                                0.7446523 
-## Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept) 
-##                                                0.2553477
-MFCM1 <- coef(F)[pickCoef(F, "[1,2]MFCM")]
-prop.table(exp(MFCM1 + baseline)) ## weights for MFCM = 1
-## Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM 
-##                                     0.02974698 
-## Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM 
-##                                     0.97025302
+## $FOPLF
+##   MFCM    weight        se
+## 1    1 0.9702532 0.2277711
+## 2    0 0.2553478 0.2006916
 }
 }
 \keyword{ models }

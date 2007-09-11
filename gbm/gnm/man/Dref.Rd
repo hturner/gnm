@@ -149,7 +149,7 @@ A
  
 ## Weights as in Table 4
 DrefWeights(A)
-## Refitting with first Dref weight constrained to zero
+## Refitting with parameters of first Dref weight constrained to zero
 ## $MOPLM
 ##    weight        se
 ## 0.4225636 0.1439829
@@ -210,7 +210,7 @@ F
 
 ## Standard error for MFCM == 1 lower than reported by Van der Slik et al
 DrefWeights(F)
-## Refitting with first Dref weight constrained to zero
+## Refitting with parameters of first Dref weight constrained to zero
 ## $MOPLM
 ##   MFCM     weight        se
 ## 1    1 0.02974675 0.2277711

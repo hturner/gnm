@@ -473,7 +473,9 @@ specifies the generalized diagonal reference model
 The default value of \Rfunarg{delta} is \Robject{\twiddle 1}, so that
 constant weights are estimated. The coefficients returned by \Rfunction{gnm} are
 those that are directly estimated, i.e. the $\delta_f$ or the $\xi_{.f}$, rather
-than the implied weights $w_f$.
+than the implied weights $w_f$. However, these weights may be obtained from a
+fitted model using the \Rfunction{DrefWeights} function, which computes the
+corresponding standard errors using the delta method.
 
 \subsection{\Rfunction{instances}}
 \label{sec:instances}
@@ -1556,7 +1558,7 @@ classMobility
 and the origin and destination weights can be evaluated as below
 @
 <<Class_mobility_weights>>=
-prop.table(exp(coef(classMobility)[2:3]))
+DrefWeights(classMobility)
 @ %def
 These results are slightly different from those reported by \citet{Clif93}.
 The reason for this is unclear: we are confident that the
@@ -1603,25 +1605,20 @@ The weights for those moving into the salariat, those moving out of the
 salariat and those in any other group, can be evaluated as below
 @
 <<social_mobility_weights>>=
-prop.table(exp(coef(socialMobility)[c(4, 7)] +
-               coef(socialMobility)[c(2, 5)]))
-prop.table(exp(coef(socialMobility)[c(3, 6)] + coef(socialMobility)[c(2, 5)]))
-prop.table(exp(coef(socialMobility)[c(2, 5)]))
+DrefWeights(socialMobility)
 @ %def
 Again, the results differ slightly from those reported by \citet{Clif93}, but
 the essence of the results is the same: the origin weight is much larger for the
-downwardly mobile groups than for the other groups. The weights for the upwardly
-mobile groups are very similar to the base level weights, so the model may be
-simplified by only fitting separate weights for the downwardly mobile groups:
+downwardly mobile group than for the other groups. The weights for the upwardly
+mobile group are very similar to the base level weights, so the model may be
+simplified by only fitting separate weights for the downwardly mobile group:
 @
 <<Downward_mobility>>=
 downwardMobility <- gnm(yvar ~ Dref(origin, destination,
                                     delta = ~ 1 + downward),
                         family = binomial, data = voting)
 downwardMobility
-prop.table(exp(coef(downwardMobility)[c(3, 5)] +
-               coef(downwardMobility)[c(2, 4)]))
-prop.table(exp(coef(downwardMobility)[c(2, 4)]))
+DrefWeights(downwardMobility)
 @ %def
 
 \subsubsection*{\Rfunction{Dref} example 2: conformity to parental rules}
@@ -1728,15 +1725,31 @@ AIC: 1507.8
 
 Number of iterations: 15
 \end{Soutput}
-The over-parameterization of the weights is immaterial, since the weights have
-been constrained to sum to one as described earlier, so the weights themselves
-are estimable. The weights may be evaluated as follows:
+The weights have been constrained to sum to one as described in Section
+\ref{sec:Dref function}, so the weights themselves may be estimated as follows:
 \begin{Sinput}
-> prop.table(exp(coef(A)[6:7]))
+    > prop.table(exp(coef(A)[6:7]))
 \end{Sinput}
 \begin{Soutput}
-Dref(MOPLM, FOPLF)delta1 Dref(MOPLM, FOPLF)delta2
-               0.4225638                0.5774362
+    Dref(MOPLM, FOPLF)delta1 Dref(MOPLM, FOPLF)delta2
+                   0.4225638                0.5774362
+\end{Soutput}
+However, in order to estimate corresponding standard errors, the parameters of
+one of the weights must be constrained. If no such constraints were applied when
+the model was fitted, \Rfunction{DrefWeights} will refit the model constraining
+the parameters of the first weight to zero:
+\begin{Sinput}
+> DrefWeights(A)
+\end{Sinput}
+\begin{Soutput}
+Refitting with parameters of first Dref weight constrained to zero
+$MOPLM
+   weight        se
+0.4225636 0.1439829
+
+$FOPLF
+   weight        se
+0.5774364 0.1439829
 \end{Soutput}
 giving the values reported by \citet{Vand02}. All the other coefficients of
 model A are the same as those reported by \citet{Vand02} except the coefficients
@@ -1849,24 +1862,22 @@ In this case there are two sets of weights, one for when the mother's conflict
 score is less than average (coded as zero) and one for when the score is greater
 than average (coded as one). These can be evaluated as follows:
 \begin{Sinput}
-> prop.table(exp(coef(F))[c(6,8)])
+> DrefWeights(F)
 \end{Sinput}
 \begin{Soutput}
-Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta1(Intercept)
-                                               0.7446523
-Dref(MOPLM, FOPLF, delta = ~ . + MFCM).delta2(Intercept)
-                                               0.2553477
+Refitting with parameters of first Dref weight constrained to zero
+$MOPLM
+  MFCM     weight        se
+1    1 0.02974675 0.2277711
+2    0 0.74465224 0.2006916
+
+$FOPLF
+  MFCM    weight        se
+1    1 0.9702532 0.2277711
+2    0 0.2553478 0.2006916
 \end{Soutput}
-\begin{Sinput}
-> prop.table(exp(coef(F)[c(7,9)] + coef(F)[c(6,8)]))
-\end{Sinput}
-\begin{Soutput}
-Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta1MFCM
-                                    0.02974698
-Dref(MOPLM, FOPLF, delta = ~ 1 + .).delta2MFCM
-                                    0.97025302
-\end{Soutput}
-giving the same weights as in Table 4 of \citet{Vand02}.
+giving the same weights as in Table 4 of \citet{Vand02}, though we obtain a
+lower standard error in the case where MFCM is equal to one.
 
 \subsection{Uniform difference (UNIDIFF) models}
 \label{sec:Unidiff}
@@ -2552,9 +2563,11 @@ We list here, for easy reference, all of the user-level functions in the
     &	\Rfunction{checkEstimable}	&  check whether one or more parameter
                                            combinations in a
                                            \Rclass{gnm} model is identified \\
-
     &	\Rfunction{se}	&  get standard errors of linear parameter
                            combinations in \Rclass{gnm} models	\\
+    &   \Rfunction{Dref} & estimate weights and corresponding standard errors
+                           for a diagonal reference term in a \Rclass{gnm} model
+                           \\
     &	\Rfunction{termPredictors}	&  (\emph{generic}) extract term
                                            contributions to predictor	\\
     \midrule

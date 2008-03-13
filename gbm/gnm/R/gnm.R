@@ -13,13 +13,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     modelData <- as.list(match.call(expand.dots = FALSE))
     argPos <- match(c("data", "subset", "na.action", "weights", "offset"),
                     names(modelData), 0)
-    if (inherits(data, "table") && !is.empty.model(modelTerms)) {
-        xFactors <- as.call(c(as.name("model.frame"),
-                           formula = Freq ~ .,
-                           modelData[argPos[1:3]],
-                           drop.unused.levels = TRUE))
-        xFactors <- eval(xFactors, parent.frame())[, -1]
-    }
     modelData <- as.call(c(as.name("model.frame"),
                            formula = modelTerms,
                            modelData[argPos],
@@ -208,7 +201,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     }
 
     if (is.null(ofInterest) && !missing(eliminate))
-        ofInterest <- (nElim + 1):length(coefNames)
+        ofInterest <- (nElim:length(coefNames))[-1]
     if (identical(ofInterest, "[?]"))
         call$ofInterest <- ofInterest <-
             pickCoef(fit,
@@ -221,7 +214,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             ofInterest <- match(ofInterest, coefNames)
     }
     if (!is.null(ofInterest)) {
-        if (!any(ofInterest %in% seq(coefNames)))
+        if (any(ofInterest > length(coefNames)))
             stop("'ofInterest' does not specify a subset of the ",
                  "coefficients.")
         names(ofInterest) <- coefNames[ofInterest]
@@ -237,8 +230,11 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")
-    if (exists("xFactors", inherits = FALSE)) {
-        fit[asY] <- lapply(fit[asY], tapply, xFactors, sum)
+    if (inherits(data, "table")) {
+        fit[asY] <-  lapply(fit[asY], function(x, attr, na.action) {
+            if (!is.null(na.action)) x <- stats:::naresid.exclude(na.action, x)
+            attributes(x) <- attr
+            x}, attributes(data), fit$na.action)
         if (!is.null(fit$na.action)) fit$na.action <- NULL
     }
     else

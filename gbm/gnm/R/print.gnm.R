@@ -1,6 +1,6 @@
 print.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...) {
-    cat("\nCall:\n", deparse(x$call), "\n", sep = "", fill = TRUE)    
-    if (length(ofInterest(x)) || length(coef(x))) {
+    cat("\nCall:\n", deparse(x$call), "\n", sep = "", fill = TRUE)
+    if (length(coef(x)) && (is.null(ofInterest(x)) || length(ofInterest(x)))) {
         cat("Coefficients", " of interest"[!is.null(ofInterest(x))], ":\n",
             sep = "")
         if (!is.null(ofInterest(x)))
@@ -10,7 +10,8 @@ print.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...) {
             print.default(format(coef(x), digits = digits), print.gap = 2,
                           quote = FALSE)
     }
-    else cat("No coefficients. \n\n", sep = "")
+    else cat("No coefficients", " of interest"[!is.null(ofInterest(x))],
+             ". \n\n", sep = "")
     cat("\nDeviance:           ", format(x$deviance, digits),
         "\nPearson chi-squared:",
         format(sum(na.omit(c(residuals(x, type = "pearson")))^2), digits),

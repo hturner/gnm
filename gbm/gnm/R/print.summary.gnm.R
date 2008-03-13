@@ -1,13 +1,13 @@
 print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
                                signif.stars = getOption("show.signif.stars"),
-                               symbolic.cor = x$symbolic.cor, ...) 
+                               symbolic.cor = x$symbolic.cor, ...)
 {
     cat("\nCall:\n", deparse(x$call), "\n", sep = "", fill = TRUE)
-    
+
     cat("Deviance Residuals: \n")
     if (x$df.residual > 5) {
         x$deviance.resid <- quantile(x$deviance.resid, na.rm = TRUE)
-        names(x$deviance.resid) <- c("Min", "1Q", "Median", "3Q", 
+        names(x$deviance.resid) <- c("Min", "1Q", "Median", "3Q",
             "Max")
     }
     print.default(x$deviance.resid, digits = digits, na = "", print.gap = 2)
@@ -15,13 +15,13 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     tidy.zeros <- function(vec)
         ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
     coefs <- tidy.zeros(coef(x))
-    if (length(ofInterest(x)))
+    if (!is.null(ofInterest(x)))
         coefs <- coefs[ofInterest(x), , drop = FALSE]
-    
+
     if (nrow(coefs)) {
         cat("\nCoefficients", " of interest"[!is.null(ofInterest(x))], ":\n",
             sep = "")
-        printCoefmat(coefs, digits = digits, signif.stars = signif.stars, 
+        printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
             na.print = "NA", ...)
         if (any(!is.na(coefs[,2])))
             cat("\n(Dispersion parameter for ", x$family$family,
@@ -30,9 +30,9 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
             cat("\nStd. Error is NA where coefficient has been constrained or",
                 "is unidentified\n")
     }
-    else cat("\nNo ", "non-eliminated "[attr(x$cov.scaled, "eliminate") > 0],
-             "coefficients\n\n", sep = "")
-    
+    else cat("\nNo coefficients", " of interest"[!is.null(ofInterest(x))],
+             ". \n\n", sep = "")
+
     cat("\nResidual deviance: ", format(x$deviance,
                                         digits = max(5, digits + 1)),
         " on ", format(x$df.residual, digits = max(5, digits + 1)),

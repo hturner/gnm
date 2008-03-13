@@ -9,7 +9,6 @@ print.profile.gnm <- function (x, digits = max(3, getOption("digits") - 3), ...)
                 "is unidentified\n\n")
         print.default(x)
     }
-    else cat("\nNo ", "non-eliminated "[attr(x$cov.scaled, "eliminate") > 0],
-             "coefficients\n\n", sep = "")
+    else cat("\nNo coefficients profiled.\n\n", sep = "")
     invisible(x)
 }

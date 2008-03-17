@@ -2,15 +2,18 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
 {
     if (!is.null(substitute(e, list(e = eliminate)))) {
         tmp <- .Internal(update.formula(formula,
-                                        substitute(~ -1 + e + .,
+                                        substitute(~ e + .,
                                                    list(e = eliminate))))
-        environment(tmp) <- environment(formula)
         data <- data[!names(data) %in% deparse(eliminate)]
-        formula <- formula(terms.formula(tmp, simplify = TRUE,
-                                         keep.order = TRUE, data = data))
+        fullTerms <- terms.formula(tmp, specials = c("Const", "instances"),
+                                   simplify = TRUE, keep.order = TRUE,
+                                   data = data)
+        attr(fullTerms, "intercept") <- 0
     }
-    fullTerms <- terms(formula, specials = c("Const", "instances"),
-                       simplify = TRUE, keep.order = TRUE, data = data)
+    else {
+        fullTerms <- terms(formula, specials = c("Const", "instances"),
+                           simplify = TRUE, keep.order = TRUE, data = data)
+    }
 
     if (is.empty.model(fullTerms))
         return(fullTerms)
@@ -35,8 +38,6 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         length(x) > 1 && inherits(match.fun(x[[1]]), "nonlin")
     }))
     if (!length(specials)) {
-        if (is.null(eliminate))
-            return(fullTerms)
         n <- length(termLabels)
         attributes(fullTerms) <-
             c(attributes(fullTerms),

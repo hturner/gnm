@@ -1,5 +1,5 @@
 "gnmTools" <-
-    function(modelTerms, gnmData, x, termPredictors)
+    function(modelTerms, gnmData = NULL, x = TRUE, termPredictors = FALSE)
 {
     unitLabels <- attr(modelTerms, "unitLabels")
     common <- attr(modelTerms, "common")

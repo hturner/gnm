@@ -9,7 +9,8 @@ predict.gnm <- function (object, newdata = NULL,
         if(missing(newdata)) {
             pred <- switch(type, link = object$predictors,
                            response = object$fitted.values,
-                           terms = object$termPredictors)
+                           terms = {tp <- termPredictors(fit)
+                                    sweep(tp, 2, colMeans(tp))[, -1]})
             if (!is.null(na.act))
                 pred <- napredict(na.act, pred)
         }

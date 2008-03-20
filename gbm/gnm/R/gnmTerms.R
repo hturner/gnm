@@ -45,7 +45,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                    common = logical(n),
                    block = numeric(n),
                    match = !logical(n),
-                   assign = rep(1, n),
+                   assign = seq(length = n),
                    classID = rep.int("Linear", n),
                    NonlinID = character(n),
                    prefixLabels = character(n),

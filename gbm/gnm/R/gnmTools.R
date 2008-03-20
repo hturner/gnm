@@ -1,5 +1,5 @@
 "gnmTools" <-
-    function(modelTerms, gnmData = NULL, x = TRUE, termPredictors = FALSE)
+    function(modelTerms, gnmData = NULL, x = TRUE)
 {
     unitLabels <- attr(modelTerms, "unitLabels")
     common <- attr(modelTerms, "common")
@@ -157,7 +157,10 @@
         if (term) {
             es <- lapply(attr(modelTerms, "predictor"), function(x) {
                 do.call("bquote", list(x, gnmData))})
-            sapply(es, eval, varPredictors)
+            tp <- matrix(sapply(es, eval, varPredictors), nr)
+            colnames(tp) <- c("(Intercept)"[attr(modelTerms, "intercept")],
+                              attr(modelTerms, "term.labels"))
+            tp
         }
         else
             eval(e, varPredictors)

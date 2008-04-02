@@ -7,7 +7,7 @@ predict.gnm <- function (object, newdata = NULL,
     if(missing(newdata)) {
         pred <- switch(type, link = object$predictors,
                        response = object$fitted.values,
-                       terms = {pred <- termPredictors(fit)
+                       terms = {pred <- termPredictors(object)
                                 predc <- sweep(pred, 2, colMeans(pred))
                                 const <- sum(pred[1,]) - sum(predc[1,])
                                 structure(predc[, -1, drop = FALSE],
@@ -25,11 +25,11 @@ predict.gnm <- function (object, newdata = NULL,
         else
             offset <- eval(object$call$offset, newdata)
         modelTools <- gnmTools(modelTerms, modelData)
-        varPredictors <-modelTools$varPredictors(coef(object))
+        varPredictors <- modelTools$varPredictors(coef(object))
         pred <- modelTools$predictor(varPredictors, term = type == "terms")
         if (!is.null(offset))  pred <- offset + pred
         switch(type, response = {pred <- family(object)$linkinv(pred)},
-               terms = {predc <- sweep(pred, 2, colMeans(termPredictors(fit)))
+               terms = {predc <- sweep(pred, 2, colMeans(termPredictors(object)))
                         const <- sum(pred[1,]) - sum(predc[1,])
                         pred <- structure(predc[, -1, drop = FALSE],
                                           constant = const)},
@@ -41,7 +41,7 @@ predict.gnm <- function (object, newdata = NULL,
         if (missing(newdata))
             X <- model.matrix(object)
         else
-            X <- modelTools$localDesignFunction(theta, varPredictors)
+            X <- modelTools$localDesignFunction(coef(object), varPredictors)
         switch(type, link = {se.fit <- sqrt(diag(X %*% tcrossprod(V, X)))},
                response = {
                    eta <- family(object)$linkfun(pred)

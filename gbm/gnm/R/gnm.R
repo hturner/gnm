@@ -113,7 +113,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (identical(constrain, "[?]"))
             call$constrain <- constrain <-
                 relimp:::pickFrom(coefNames,
-                                  subset = (nElim + 1):nParam,
+                                  subset = (nElim:nParam)[-1],
                                   setlabels = "Coefficients to constrain",
                                   title =
                                   "Constrain one or more gnm coefficients",
@@ -167,6 +167,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             stop("maximum number of iterations must be > 0")
 
         if (onlyLin) {
+            browser()
             if (any(is.na(start))) start <- NULL
             if (verbose) cat("Linear predictor - using glm.fit\n")
             fit <- glm.fit(X, y, family = family, weights = weights,
@@ -182,8 +183,16 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             fit$constrain <- constrain
             fit$constrainTo <- constrainTo
             if (x) fit$x <- X
-            fit <- fit[-c(4,5,7,12,17,20)]
-            names(fit)[6] <- "predictors"
+            if (termPredictors) {
+                modelTools <- gnmTools(modelTerms, modelData)
+                varPredictors <- modelTools$varPredictors(naToZero(coef(fit)))
+                fit$termPredictors <- modelTools$predictor(varPredictors,
+                                                           term = TRUE)
+            }
+            extra <- match(c("effects",  "R", "qr", "null.deviance",
+                           "df.null", "boundary"), names(fit))
+            fit <- fit[-extra]
+            names(fit)[match("linear.predictors", names(fit))] <- "predictors"
         }
         else if (method != "gnmFit")
             fit <- do.call(method, list(modelTools, y, constrain, constrainTo,
@@ -202,7 +211,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     }
 
     if (is.null(ofInterest) && !missing(eliminate))
-        ofInterest <- (nElim:length(coefNames))[-1]
+        ofInterest <- (nElim:nParam)[-1]
     if (identical(ofInterest, "[?]"))
         call$ofInterest <- ofInterest <-
             pickCoef(fit,
@@ -232,11 +241,29 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")
     if (inherits(data, "table")) {
-        fit[asY] <-  lapply(fit[asY], function(x, attr, na.action) {
-            if (!is.null(na.action)) x <- stats:::naresid.exclude(na.action, x)
-            attributes(x) <- attr
-            x}, attributes(data), fit$na.action)
+        attr <- attributes(data)
+        ind <- as.numeric(rownames(modelData))
+        if (!missing(subset)) {
+            lev <- do.call("expand.grid", attr$dimnames)[ind,]
+            attr$dimnames <- apply(lev, 2, unique)
+            attr$dim <- unname(sapply(attr$dimnames, length))
+        }
+        retable <- function(x, attr, ind) {
+            out <- rep.int(NA, prod(attr$dim))
+            out[ind] <- x
+            attributes(out) <- attr
+            out
+        }
+        fit[asY] <-  lapply(fit[asY], retable0, attr, ind)
         if (!is.null(fit$na.action)) fit$na.action <- NULL
+        if (!is.null(fit$termPredictors)) {
+            nt <- ncol(fit$termPredictors)
+            attr$dim <- c(attr$dim, nt)
+            attr$dimnames <- c(attr$dimnames,
+                               term = attr(terms(object), "term.labels")
+            ind <- matrix(seq(prod(attr$dim)), , nc = nt)[ind,]
+            fit$termPredictors <- retable(fit$termPredictors, attr, ind)
+        }
     }
     else
         fit[asY] <- lapply(fit[asY], structure, names = names(y))

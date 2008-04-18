@@ -260,7 +260,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             nt <- ncol(fit$termPredictors)
             attr$dim <- c(attr$dim, nt)
             attr$dimnames <- c(attr$dimnames,
-                               term = attr(terms(object), "term.labels")
+                               term = attr(terms(object), "term.labels"))
             ind <- matrix(seq(prod(attr$dim)), , nc = nt)[ind,]
             fit$termPredictors <- retable(fit$termPredictors, attr, ind)
         }

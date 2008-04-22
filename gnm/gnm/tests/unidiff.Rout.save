@@ -1,0 +1,42 @@
+
+R version 2.5.0 alpha (2007-04-02 r41011)
+Copyright (C) 2007 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(gnm)
+> set.seed(1)
+> data(yaish)
+> 
+> unidiff <- gnm(Freq ~ educ*orig + educ*dest +
++                Mult(Exp(educ), orig:dest), family = poisson,
++                data = yaish, subset = (dest != 7))
+Initialising
+Running start-up iterations..
+Running main iterations..................................................
+Done
+> 
+> print(unidiff$deviance, digits = 10)
+[1] 200.3259229
+> print(unidiff$df)
+[1] 116
+> 
+> getContrasts(unidiff, grep("[.]educ", names(coef(unidiff))))
+                                estimate        SE    quasiSE   quasiVar
+Mult(Exp(.), orig:dest).educ1  0.0000000 0.0000000 0.09757438 0.00952076
+Mult(Exp(.), orig:dest).educ2 -0.2253718 0.1611874 0.12885847 0.01660450
+Mult(Exp(.), orig:dest).educ3 -0.7434235 0.2335083 0.21182122 0.04486823
+Mult(Exp(.), orig:dest).educ4 -1.0389385 0.3434256 0.32609377 0.10633714
+Mult(Exp(.), orig:dest).educ5 -2.2495024 0.9453762 0.93560622 0.87535900
+> 

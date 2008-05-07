@@ -8,7 +8,7 @@ Nonlin <- function(functionCall){
         warning("Plug-in functions are likely to be deprecated in future ",
                 "versions. \nFunctions of class \"nonlin\" should be used ",
                 "instead.", call. = FALSE)
-         
+
     envir <- environment(eval(functionCall[[1]]))
     varMethod <- paste(functionCall[[1]], "Variables", sep = "")
     if (exists(varMethod, envir)) {
@@ -24,7 +24,7 @@ Nonlin <- function(functionCall){
         stop("No variables in term!")
 
     Call <- deparse(sys.call())
-        
+
     list(prefix = deparse(functionCall),
          matchID = 0,
          variables = variables,
@@ -33,7 +33,7 @@ Nonlin <- function(functionCall){
          unitLabels = Call,
          block = 0,
          common = 1,
-         classID = "Nonlin",
+         type = "Nonlin",
          NonlinID = "Nonlin",
          predictor = paste("`", Call, "`", sep = ""))
 }

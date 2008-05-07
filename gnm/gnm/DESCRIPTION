@@ -1,11 +1,11 @@
 Package: gnm
 Title: Generalized Nonlinear Models
-Version: 0.9-3
-Date: 2007-09-10
+Version: 0.9-4
+Date: 2008-05-07
 Author: Heather Turner and David Firth
 Description: Functions to specify and fit generalized nonlinear models, including models with multiplicative interaction terms such as the UNIDIFF model from sociology and the AMMI model from crop science, and many others.  Over-parameterized representations of models are used throughout; functions are provided for inference on estimable parameter combinations, as well as standard methods for diagnostics etc.
 Maintainer: Heather Turner <Heather.Turner@warwick.ac.uk>
-URL: http://go.warwick.ac.uk/heatherturner/gnm
+URL: http://go.warwick.ac.uk/gnm
 License: GPL version 2 or later
 Depends: R (>= 2.3.0)
 Imports: MASS, stats, graphics, nnet

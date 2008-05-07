@@ -5,7 +5,6 @@ MultHomog <- function(..., inst = NULL){
          term = function(predLabels, ...) {
              paste("(", paste(predLabels, collapse = ")*("), ")", sep = "")
          },
-         call = as.expression(match.call()),
-         match = rep(0, length(dots)))
+         call = as.expression(match.call()))
 }
 class(MultHomog) <- "nonlin"

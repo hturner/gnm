@@ -3,6 +3,7 @@ Raise <- function(expression, power = 1, inst = NULL){
          term = function(predLabels, ...) {
              paste("(", predLabels, ")^", power, sep = "")
          },
-         call = as.expression(match.call()))
+         call = as.expression(match.call()),
+         match = 1)
 }
 class(Raise) <- "nonlin"

@@ -1,12 +1,12 @@
 useDynLib(gnm)
-export(asGnm, checkEstimable, confint.gnm, confint.profile.gnm, Const, Diag,
+export(asGnm, checkEstimable, Const, Diag,
        Dref, DrefWeights, exitInfo, Exp, expandCategorical, getContrasts,
        getModelFrame, gnm, instances, Inv, #Log, Logit,
        MPinv, Mult, MultHomog,
        Nonlin, ofInterest, "ofInterest<-", parameters,
-       pickCoef, plot.profile.gnm, profile.gnm, qrSolve, #Raise,
+       pickCoef, qrSolve, #Raise,
        residSVD, se,
-       Symm, summary.gnm, termPredictors, Topo, wedderburn)
+       Symm, termPredictors, Topo, wedderburn)
 
 import(MASS, stats)
 importFrom(graphics, plot)
@@ -21,28 +21,30 @@ S3method(asGnm, lm)
 S3method(asGnm, default)
 S3method(boxcox, gnm)
 S3method(coef, gnm)
-S3method(cooks.distance, gnm)
 S3method(confint, gnm)
 S3method(confint, profile.gnm)
+S3method(cooks.distance, gnm)
 S3method(dfbeta, gnm)
 S3method(dfbetas, gnm)
 S3method(drop1, gnm)
 S3method(dropterm, gnm)
 S3method(dummy.coef, gnm)
 S3method(effects, gnm)
+S3method(fitted, gnm)
 S3method(formula, gnm)
 S3method(hatvalues, gnm)
 S3method(influence, gnm)
 S3method(kappa, gnm)
 S3method(labels, gnm)
 S3method(logtrans, gnm)
-S3method(model.matrix, gnm)
 S3method(model.frame, gnm)
+S3method(model.matrix, gnm)
 S3method(plot, gnm)
 S3method(plot, profile.gnm)
 S3method(predict, gnm)
 S3method(print, gnm)
 S3method(print, coef.gnm)
+S3method(print, profile.gnm)
 S3method(print, summary.gnm)
 S3method(print, vcov.gnm)
 S3method(profile, gnm)
@@ -55,3 +57,4 @@ S3method(termPredictors, default)
 S3method(termPredictors, gnm)
 S3method(variable.names, gnm)
 S3method(vcov, gnm)
+S3method(weights, gnm)

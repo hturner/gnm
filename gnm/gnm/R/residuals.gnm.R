@@ -10,11 +10,15 @@ residuals.gnm <- function(object, type = "deviance", ...) {
             res[y < mu] <- -res[y < mu]
         }
         else res <- rep.int(0, length(mu))
-        
-        if (!is.null(object$na.action)) 
+
+        if (!is.null(object$na.action))
             res <- naresid(object$na.action, res)
-        return(res)
     }
     else
-        NextMethod("residuals")
+        res <- NextMethod("residuals")
+
+    if (!is.null(object$table.attr))
+        attributes(res) <- object$table.attr
+
+    res
 }

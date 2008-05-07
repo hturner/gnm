@@ -1,6 +1,6 @@
 
-R version 2.5.0 alpha (2007-04-02 r41011)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.6.2 (2008-02-08)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -28,7 +28,7 @@ Type 'q()' to quit R.
 Initialising
 Running start-up iterations..
 Running main iterations.........................................................
-......
+....
 Done
 > 
 > print(bilinear3$deviance, digits=10)

@@ -1,39 +1,46 @@
 predict.gnm <- function (object, newdata = NULL,
                          type = c("link", "response", "terms"), se.fit = FALSE,
-                         dispersion = NULL, terms = NULL, na.action = na.pass,
-                         ...) {
+                         dispersion = NULL, terms = NULL,
+                         na.action = na.exclude, ...) {
     type <- match.arg(type)
-    na.act <- object$na.action
+    if (type == "terms" && is.null(terms))
+        terms <- attr(object$terms, "term.labels")
     if(missing(newdata)) {
         pred <- switch(type, link = object$predictors,
                        response = object$fitted.values,
                        terms = {pred <- termPredictors(object)
                                 predc <- sweep(pred, 2, colMeans(pred))
                                 const <- sum(pred[1,]) - sum(predc[1,])
-                                structure(predc[, -1, drop = FALSE],
-                                          constant = const)})
-        if (!is.null(na.act))
+                                structure(predc[, terms, drop = FALSE],
+                                              constant = const)})
+        if (!is.null(na.act <- object$na.action)){
             pred <- napredict(na.act, pred)
+        }
+        if (!inherits(pred, "matrix") && !is.null(object$table.attr))
+            attributes(pred) <- object$table.attr
     }
     else {
         modelTerms <- delete.response(terms(object))
         modelData <- model.frame(modelTerms, newdata, na.action = na.action,
                                  xlev = object$xlevels)
-        if (!is.null(offID <- attr(modelTerms, "offset")))
+        if (length(offID <- attr(modelTerms, "offset")))
             offset <- eval(attr(modelTerms, "variables")[[offID + 1]],
                            newdata)
         else
             offset <- eval(object$call$offset, newdata)
         modelTools <- gnmTools(modelTerms, modelData)
-        varPredictors <- modelTools$varPredictors(coef(object))
+        varPredictors <- modelTools$varPredictors(parameters(object))
         pred <- modelTools$predictor(varPredictors, term = type == "terms")
+        names(pred) <- rownames(modelData)
         if (!is.null(offset))  pred <- offset + pred
         switch(type, response = {pred <- family(object)$linkinv(pred)},
                terms = {predc <- sweep(pred, 2, colMeans(termPredictors(object)))
                         const <- sum(pred[1,]) - sum(predc[1,])
-                        pred <- structure(predc[, -1, drop = FALSE],
-                                          constant = const)},
+                        pred <- structure(predc[, terms, drop = FALSE],
+                                              constant = const)},
                link = )
+        if (!is.null(na.act <- attr(modelData, "na.action")))
+            pred <- napredict(na.act, pred)
     }
     if (se.fit) {
         V <- vcov(object, dispersion = dispersion)
@@ -41,28 +48,39 @@ predict.gnm <- function (object, newdata = NULL,
         if (missing(newdata))
             X <- model.matrix(object)
         else
-            X <- modelTools$localDesignFunction(coef(object), varPredictors)
+            X <- modelTools$localDesignFunction(parameters(object),
+                                                varPredictors)
         switch(type, link = {se.fit <- sqrt(diag(X %*% tcrossprod(V, X)))},
                response = {
-                   eta <- family(object)$linkfun(pred)
+                   eta <- na.omit(c(family(object)$linkfun(pred)))
                    dX <- family(object)$mu.eta(eta) * X
                    se.fit <- sqrt(diag(dX %*% tcrossprod(V, dX)))},
                terms = {
-                   assign <- setdiff(unique(modelTools$termAssign), 0)
-                   int <- attr(terms(object), "intercept")
-                   if (missing(newdata))
+                   if (missing(newdata)) {
+                       assign <- split(seq(ncol(X)), attr(X, "assign"))
                        X <- sweep(X, 2, colMeans(X))
-                   else
-                       X <- sweep(X, 2, colMeans(model.matrix(object)))
-                   se.fit <- matrix(, nr = nrow(pred), nc = ncol(pred))
-                   for (i in assign + int)
-                       se.fit[,i - int] <-
-                           sqrt(diag(X[, i] %*% tcrossprod(V[i, i], X[, i])))
+                   }
+                   else {
+                       M <- model.matrix(object)
+                       assign <- split(seq(ncol(X)), attr(M, "assign"))
+                       X <- sweep(X, 2, colMeans(M))
+                   }
+                   se.fit <- matrix(, nr = nrow(X), nc = length(terms))
+                   s <- 0
+                   for (i in match(terms, colnames(pred))) {
+                       s <- s + 1
+                       t <- assign[[i]]
+                       se.fit[, s] <-
+                           sqrt(diag(X[, t] %*% tcrossprod(V[t, t], X[, t])))
+                   }
                })
-        if ( !is.null(na.act)) {
+        if (!is.null(na.act)) {
             se.fit <- napredict(na.act, se.fit)
         }
-        dimnames(se.fit) <- dimnames(pred)
+        if (inherits(pred, "table"))
+            attributes(se.fit) <- object$table.attr
+        else
+            attributes(se.fit) <- attributes(pred)
         pred <- list(fit = pred, se.fit = se.fit,
                      residual.scale = residual.scale)
     }

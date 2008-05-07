@@ -1,3 +1,34 @@
+     ofInterest(doubleUnidiff) <- pickCoef(doubleUnidiff, "class:vote[).]")Changes in gnm 0.9-4
+====================
+
+New Features
+------------
+
+    o	predict() now implemented for "gnm" objects	   
+
+Improvements
+------------
+
+    o	results formatted as contingency tables where appropriate by extractor 
+	functions (fitted(), etc), rather than gnm()
+
+Changes in Behaviour
+--------------------
+
+    o	default for `match' argument of nonlinTerms() now zero vector (i.e. no
+	matching to arguments of `call' by default)
+
+Bug fixes
+---------
+
+    o	termPredictors() now works on "gnm" objects fitted with glm.fit()
+    o	intercept removed when `eliminate' argument of gnm() is non-NULL
+    o	models with all parameters eliminated now summarised sensibly
+    o	Diag() and Symm() now work for factors of length 1
+    o	asGnm() now returns object with "gnm"-type terms component
+    o	print method for "profile.gnm" objects now exported
+
+
 Changes in gnm 0.9-3
 ====================
 

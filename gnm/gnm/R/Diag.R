@@ -5,12 +5,15 @@ Diag <- function(..., binary = FALSE){
     facMatrix <- sapply(dots, as.character)
     f <- function(row){
         if (all(is.na(row))) return(NA)
-        if (all(!is.na(row)) && all(row == row[1])) return(row[1])        
+        if (all(!is.na(row)) && all(row == row[1])) return(row[1])
         row <- na.omit(row)
         if (!all(row == row[1])) return(".")
-        return(NA)    
+        return(NA)
     }
-    result <- factor(apply(facMatrix, 1, f), levels = c(".", Levels))
+    if (inherits(facMatrix, "matrix"))
+        result <- factor(apply(facMatrix, 1, f), levels = c(".", Levels))
+    else
+        result <- factor(f(facMatrix))
     if (binary) result <- ifelse(result == ".", 0, 1)
-    result    
+    result
 }

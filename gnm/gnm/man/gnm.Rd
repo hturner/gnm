@@ -9,10 +9,11 @@
 \usage{
 gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     constrainTo = numeric(length(constrain)), family = gaussian, 
-    data = NULL, subset, weights, na.action,  method = "gnmFit", offset,
-    start = NULL, tolerance = 1e-6, iterStart = 2, iterMax = 500,
-    trace = FALSE, verbose = TRUE, model = TRUE, x = TRUE,
-    termPredictors = FALSE, lsMethod = "qr", ridge = 1e-8, ...)  
+    data = NULL, subset, weights, na.action,  method = "gnmFit", 
+    checkLinear = TRUE, offset, start = NULL, tolerance = 1e-06, 
+    iterStart = 2, iterMax = 500, trace = FALSE, verbose = TRUE, 
+    model = TRUE, x = TRUE, termPredictors = FALSE, lsMethod = "qr", 
+    ridge = 1e-08, ...) 
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -44,7 +45,8 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \item{weights}{ an optional vector of weights to be used in the fitting
     process.}
   \item{na.action}{ a function which indicates what should happen when the data
-    contain \code{NA}s.  The default is first, any
+    contain \code{NA}s. If \code{data} is a contingency table, the
+    default is \code{"exclude"}. Otherwise the default is first, any
     \code{na.action} attribute of \code{data}; second, any
     \code{na.action} setting of \code{options}, and third,
     \code{na.fail}.}
@@ -54,6 +56,8 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     coefficients in the model, \code{"model.matrix"} to return the model
     matrix, \code{"model.frame"} to return the model frame, or the name
     of a function providing an alternative fitting algorithm. }
+  \item{checkLinear}{ logical: if \code{TRUE} \code{glm.fit} is used
+    when the predictor is found to be linear }
   \item{offset}{ this can be used to specify an a priori known component to
     be added to the predictor during fitting. \code{offset} terms
     can be included in the formula instead or as well, and if both
@@ -231,7 +235,11 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \item{ rank }{ the numeric rank of the fitted model. }
   
   The list may also contain the components \code{model}, \code{x},
-  or \code{termPredictors} if requested in the arguments to \code{gnm}. 
+  or \code{termPredictors} if requested in the arguments to \code{gnm}.
+
+  If a table was passed to \code{data} and the default for
+  \code{na.action} was not overridden, the list will also contain a
+  \code{table.attr} component, for use by the extractor functions.
 
   If a binomial \code{gnm} model is specified by giving a two-column
   response, the weights returned by \code{prior.weights} are the total

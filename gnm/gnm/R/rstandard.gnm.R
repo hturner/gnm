@@ -4,5 +4,7 @@ rstandard.gnm <- function(model, ...) {
     res <- naresid(model$na.action, res)
     res <- res/sqrt(so$dispersion * (1 - hatvalues(model)))
     res[is.infinite(res)] <- NaN
+    if (!is.null(model$table.attr))
+        attributes(res) <- model$table.attr
     res
 }

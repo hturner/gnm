@@ -3,6 +3,7 @@ Exp <- function(expression, inst = NULL){
          term = function(predLabels, ...) {
              paste("exp(", predLabels, ")", sep = "")
          },
-         call = as.expression(match.call()))
+         call = as.expression(match.call()),
+         match = 1)
 }
 class(Exp) <- "nonlin"

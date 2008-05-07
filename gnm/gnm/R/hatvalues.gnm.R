@@ -6,6 +6,8 @@ hatvalues.gnm <- function(model, ...) {
     hat <- naresid(model$na.action, hat)
     hat[is.na(hat)] <- 0
     hat[hat > 1 - 100 * .Machine$double.eps] <- 1
+    if (!is.null(model$table.attr))
+        attributes(hat) <- model$table.attr
     hat
 }
-   
+

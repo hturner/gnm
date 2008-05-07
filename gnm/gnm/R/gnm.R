@@ -11,6 +11,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
     modelTerms <- gnmTerms(formula, substitute(eliminate), data)
     modelData <- as.list(match.call(expand.dots = FALSE))
+    if (inherits(data, "table") && missing(na.action))
+        modelData$na.action <- "na.exclude"
     argPos <- match(c("data", "subset", "na.action", "weights", "offset"),
                     names(modelData), 0)
     modelData <- as.call(c(as.name("model.frame"),
@@ -97,7 +99,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     }
     else {
         onlyLin <- {checkLinear && nElim == 0 &&
-                    all(attr(modelTerms, "classID") == "Linear")}
+                    all(attr(modelTerms, "type") == "Linear")}
         if (onlyLin) {
             X <- model.matrix(modelTerms, modelData)
             coefNames <- colnames(X)
@@ -112,15 +114,15 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
         if (identical(constrain, "[?]"))
             call$constrain <- constrain <-
-                relimp:::pickFrom(coefNames,
-                                  subset = (nElim:nParam)[-1],
-                                  setlabels = "Coefficients to constrain",
-                                  title =
-                                  "Constrain one or more gnm coefficients",
-                                  items.label = "Model coefficients:",
-                                  warningTest =
-                                  "No parameters were specified to constrain",
-                                  return.indices = TRUE)
+                unlist(relimp:::pickFrom(coefNames,
+                                         subset = (nElim:nParam)[-1],
+                                         edit.setlabels = FALSE,
+                                         title =
+                                         "Constrain one or more gnm coefficients",
+                                         items.label = "Model coefficients:",
+                                         warningText =
+                                         "No parameters were specified to constrain",
+                                         return.indices = TRUE))
         if (is.character(constrain)) {
             if (length(constrain) == 1)
                 constrain <- grep(constrain, coefNames)
@@ -167,7 +169,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             stop("maximum number of iterations must be > 0")
 
         if (onlyLin) {
-            browser()
             if (any(is.na(start))) start <- NULL
             if (verbose) cat("Linear predictor - using glm.fit\n")
             fit <- glm.fit(X, y, family = family, weights = weights,
@@ -183,6 +184,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             fit$constrain <- constrain
             fit$constrainTo <- constrainTo
             if (x) fit$x <- X
+            if (is.null(fit$offset))
+                fit$offset <- rep.int(0, length(coef(fit)))
             if (termPredictors) {
                 modelTools <- gnmTools(modelTerms, modelData)
                 varPredictors <- modelTools$varPredictors(naToZero(coef(fit)))
@@ -240,34 +243,20 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")
-    if (inherits(data, "table")) {
+    if (inherits(data, "table") &&
+        (is.null(fit$na.action) | inherits(fit$na.action, "exclude"))) {
         attr <- attributes(data)
-        ind <- as.numeric(rownames(modelData))
         if (!missing(subset)) {
+            ind <- as.numeric(names(y))
             lev <- do.call("expand.grid", attr$dimnames)[ind,]
             attr$dimnames <- apply(lev, 2, unique)
             attr$dim <- unname(sapply(attr$dimnames, length))
         }
-        retable <- function(x, attr, ind) {
-            out <- rep.int(NA, prod(attr$dim))
-            out[ind] <- x
-            attributes(out) <- attr
-            out
-        }
-        fit[asY] <-  lapply(fit[asY], retable0, attr, ind)
-        if (!is.null(fit$na.action)) fit$na.action <- NULL
-        if (!is.null(fit$termPredictors)) {
-            nt <- ncol(fit$termPredictors)
-            attr$dim <- c(attr$dim, nt)
-            attr$dimnames <- c(attr$dimnames,
-                               term = attr(terms(object), "term.labels"))
-            ind <- matrix(seq(prod(attr$dim)), , nc = nt)[ind,]
-            fit$termPredictors <- retable(fit$termPredictors, attr, ind)
-        }
+        fit$table.attr <- attr
     }
-    else
-        fit[asY] <- lapply(fit[asY], structure, names = names(y))
-
+    fit[asY] <- lapply(fit[asY], structure, dim = NULL, names = names(y))
+    if (termPredictors)
+        rownames(fit$termPredictors) <- names(y)
     if (model)
         fit$model <- modelData
     class(fit) <- c("gnm", "glm", "lm")

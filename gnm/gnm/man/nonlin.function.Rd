@@ -38,9 +38,8 @@
   \item{match}{ (if \code{call} is non-\code{NULL}) a numeric index
     of \code{predictors} specifying which arguments of \code{call} the
     predictors match to - zero indicating no match. If \code{NULL},
-    predictors will be matched sequentially to the arguments of
-    \code{call}. It is recommended that matches are specified
-    wherever possible, to ensure parameter labels are
+    predictors will not be matched. It is recommended that matches are
+    specified wherever possible, to ensure parameter labels are
     well-defined. Parameters in matched predictors 
     are labelled using "dot-style" labelling, see examples.} 
   \item{start}{ an optional function which takes a named vector of parameters

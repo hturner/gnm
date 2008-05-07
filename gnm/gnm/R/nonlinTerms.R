@@ -1,7 +1,6 @@
 nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                      common = seq(predictors), call = NULL,
-                     match = if (!is.null(call)) seq(predictors)
-                     else numeric(length(predictors)),
+                     match = numeric(length(predictors)),
                      start = NULL) {
 
     shadow <- predictor <- predvars <- vars <- unitLabels <- hashLabels <-
@@ -91,7 +90,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                         tmp <- do.call("Recall",
                                        eval(parse(text = unitLabels[[i]][[j]])))
                     if (match[i]) {
-                        if (any(tmp$matchID)) {
+                        if (any(tmp$matchID > 0)) {
                             shadow[[i]][[j]] <- tmp$prefix
                             matchID[[i]][[j]] <- tmp$matchID
                             matchID[[i]][[j]][tmp$matchID != 0] <-
@@ -203,7 +202,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
          hashLabels = unlist(hashLabels),
          block = unlist(blockList),
          common = common,
-         classID = rep.int("Special", length(common)),
+         type = rep.int("Special", length(common)),
          NonlinID = unlist(NonlinID),
          predictor = predictor,
          suffix = unlist(suffix),

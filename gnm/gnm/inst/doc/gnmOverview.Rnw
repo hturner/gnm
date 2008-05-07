@@ -550,8 +550,7 @@ The arguments below are optional:
 \item[\Robject{match}:] (if \Robject{call} is non-\Rcode{NULL}) a numeric index
     of \Robject{predictors} specifying which arguments of \Robject{call} the
     predictors match to --- zero indicating no match. If \Rcode{NULL},
-    predictors will be matched sequentially to the arguments of
-    \Robject{call}.
+    predictors will not be matched to the arguments of \Robject{call}.
 \item[\Robject{start}:] a function which takes a named vector of parameters
     corresponding to the predictors and returns a vector of
     starting values for those parameters. This function is ignored if the
@@ -650,8 +649,7 @@ MultHomog <- function(..., inst = NULL){
          common = rep(1, length(dots)),
          term = function(predLabels, ...) {
              paste("(", paste(predLabels, collapse = ")*("), ")", sep = "")},
-         call = as.expression(match.call()),
-         match = rep(0, length(dots)))
+         call = as.expression(match.call()))
 }
 class(MultHomog) <- "nonlin"
 \end{Scode}
@@ -671,8 +669,8 @@ argument to \Rfunction{nonlinTerms} is specified, so that parameters in
 different instances of the term will have unique labels (due to the
 \Rfunarg{inst} argument in the call). However as the expressions passed to
 ``\Rfunarg{...}'' may only represent single factors, rather than
-general predictors, it is not necessary to use call-matched labelling, so a
-vector of zeros is returned as the \Rfunarg{match} argument.
+general predictors, it is not necessary to use call-matched labelling, so the
+\Rfunarg{match} argument is not specified here.
 
 % Dref starting values as example of ensuring the arbitrariness of the final
 % parameterization is emphasised (see old plug-in section)?
@@ -1033,14 +1031,15 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
-              anova	&	formula	&	profile	\\
-              case.names	&	hatvalues	&	residuals	\\
-              coef	&	labels	&	rstandard	\\
-              cooks.distance	&	logLik	&	summary	\\
-              confint	&	model.frame	&	variable.names	\\
-              deviance	&	model.matrix	&	vcov	\\
-              extractAIC	&	plot	&	weights	\\
-              family	&	print	&		\\
+              anova 	&	 formula 	&	print \\
+              case.names	&	 hatvalues 	&	 profile \\
+              coef	&	 labels 	&	 residuals \\
+              cooks.distance	&	 logLik 	&	 rstandard \\
+              confint	&	 model.frame 	&	 summary \\
+              deviance	&	 model.matrix 	&	 variable.names \\
+              extractAIC	&	 plot 	&	 vcov \\
+              family	&	 predict	&	 weights \\
+
           \end{tabular*}
         }
     \end{fbox}
@@ -1058,9 +1057,9 @@ those that are not implemented for \Rclass{gnm} objects.
               add1	&	effects	\\
               alias	&	influence	\\
               dfbeta	&	kappa	\\
-              dfbetas	&	predict	\\
-              drop1	&	proj	\\
-              dummy.coef	&		\\
+              dfbetas	&	proj	\\
+              drop1	&	\\
+              dummy.coef	& \\
           \end{tabular*}
         }
     \end{fbox}
@@ -2540,6 +2539,7 @@ We list here, for easy reference, all of the user-level functions in the
                                    based on the profiled deviance	\\
     &   \Rmethod{confint.profile.gnm}   & compute confidence intervals of
                                           parameters from a \Rclass{profile.gnm} object \\
+    &	\Rmethod{predict.gnm}	&  predict from a \Rclass{gnm} model \\
     &	\Rmethod{profile.gnm}	&  profile deviance for parameters in a
                                    \Rclass{gnm} model \\
     &   \Rmethod{plot.profile.gnm}      & plot profile traces from a

@@ -7,7 +7,7 @@
     match <- attr(modelTerms, "match")
     varLabels <- attr(modelTerms, "varLabels")
     block <- attr(modelTerms, "block")
-    classID <- attr(modelTerms, "classID")
+    type <- attr(modelTerms, "type")
     NonlinID <- attr(modelTerms, "NonlinID")
 
     nFactor <- length(varLabels)
@@ -137,7 +137,7 @@
     prodList <- vector(mode = "list", length = nFactor)
     names(prodList) <- varLabels
     NonlinID <- NonlinID == "Nonlin"
-    classID <- classID == "Special"
+    type <- type == "Special"
 
     varPredictors <- function(theta) {
         for (i in seqFactor) {
@@ -176,10 +176,10 @@
     commonAssign <- factorAssign[colID]
     nCommon <- table(commonAssign[!duplicated(factorAssign)])
     tmpID <- unique(commonAssign)
-    tmpID <- tmpID[(NonlinID | classID)[tmpID]]
+    tmpID <- tmpID[(NonlinID | type)[tmpID]]
     nCommon <- as.integer(nCommon[as.character(tmpID)])
-    if (any(NonlinID | classID))
-        specialVarDerivs <- deriv(e, varLabels[(NonlinID | classID)])
+    if (any(NonlinID | type))
+        specialVarDerivs <- deriv(e, varLabels[(NonlinID | type)])
     convID <- colID[uniq]
     vID <- cumsum(c(1, nCommon))[seq(nCommon)]
 
@@ -208,14 +208,14 @@
                           coef = theta[factorAssign == fi],
                           predictor = varPredictors[[fi]], ind = ind)),
                           environment(), PACKAGE = "gnm")
-                    if (classID[fi]) {
+                    if (type[fi]) {
                         v <- attr(eval(varDerivs[[fi]], varPredictors),
                                   "gradient")
                         .Call("subprod", X, X, as.double(v),
                               first[i1], last[i2], nr, PACKAGE = "gnm")
                     }
                 }
-                else if (classID[fi]) {
+                else if (type[fi]) {
                     v <- attr(eval(varDerivs[[fi]], varPredictors),
                               "gradient")
                     .Call("subprod", X, baseMatrix, as.double(v),
@@ -250,6 +250,6 @@
 
     toolList <- list(start = theta, varPredictors = varPredictors,
                      predictor = predictor, localDesignFunction = localDesignFunction)
-    if (x) toolList$termAssign <- termAssign
+    if (x) toolList$termAssign <- termAssign[uniq]
     toolList
 }

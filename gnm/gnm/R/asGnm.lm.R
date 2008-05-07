@@ -11,6 +11,7 @@ asGnm.lm <- function(object, ...) {
                      family = gaussian(), predictors = fitted.values(object),
                      deviance = deviance(object),
                      y = model.response(modelData)), object)
+    object$terms <- gnmTerms(object$formula, data = modelData)
     object$weights <- object$prior.weights <- rep.int(1, length(object$y))
     object$aic <- 2 * object$rank +
         object$family$aic(object$y, object$weights, object$fitted.values,

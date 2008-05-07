@@ -3,6 +3,7 @@ Inv <- function(expression, inst = NULL){
          term = function(predLabels, ...) {
              paste("(", predLabels, ")^-1", sep = "")
          },
-         call = as.expression(match.call()))
+         call = as.expression(match.call()),
+         match = 1)
 }
 class(Inv) <- "nonlin"

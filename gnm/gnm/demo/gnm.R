@@ -4,49 +4,53 @@ data(occupationalStatus)
 message("2. Set seed as gnm returns random parameterization")
 set.seed(1)
 
-if (interactive()) {
-    cat("\nType <Return> to start fitting models: ")
-    readline()
+{
+    if (interactive()) {
+        cat("\n3. Type <Return> to fit (linear) uniform association model,  ",
+            "\n   using Diag() to fit diagonal effects: ")
+        readline()
+    }
+    else
+        message("3. Fit (linear) uniform association model, using Diag() to fit",
+                "   diagonal effects")
 }
-
-message("3. Fit (linear) uniform association model, using Diag() to fit ",
-        "diagonal effects")
 Rscore <- scale(as.numeric(row(occupationalStatus)), scale = FALSE)
 Cscore <- scale(as.numeric(col(occupationalStatus)), scale = FALSE)
-Uniform <- gnm(Freq ~ origin + destination + Diag(origin, destination) + 
+Uniform <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Rscore:Cscore, family = poisson, data = occupationalStatus)
-if (interactive()) {
-    cat("\nType <Return> to print summary of Uniform: ")
-    readline()
-}
 summary(Uniform)
-
-message("4. Fit an association model using Mult() to fit separate row and ",
-        "column effects")
+{
+    if (interactive()) {
+        cat("\n4. Type <Return> to fit an association model using Mult() to fit",
+            "\n   separate row and column effects:")
+        readline()
+    }
+    else message("4. Fit an association model using Mult() to fit separate row and ",
+                 "column effects")
+}
 RC <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
           Mult(origin, destination), family = poisson,
           data = occupationalStatus)
-if (interactive()) {
-    cat("\nType <Return> to print summary of RC: ")
-    readline()
-}
 summary(RC)
-
-message("5. Fit an association model using Nonlin() with MultHomog() plug-in\n",
-        "to fit homogeneous row-column effects")
+{
+    if (interactive()) {
+        cat("\n5. Type <Return> to fit an association model using MultHomog()",
+            "\n   to fit homogeneous row-column effects:")
+        readline()
+    }
+    else message("5. Fit an association model using MultHomog()\n",
+                 "to fit homogeneous row-column effects")
+}
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                MultHomog(origin, destination), family = poisson,
                data = occupationalStatus)
-if (interactive()) {
-    cat("\nType <Return> to print summary of RChomog: ")
-    readline()
-}
 summary(RChomog)
-
-message("6. Compare models using anova")
-if (interactive()) {
-    cat("\nType <Return> to print anova table : ")
-    readline()
+{
+    if (interactive()) {
+        cat("\n6. Type <Return> to compare models using anova:")
+        readline()
+    }
+    else message("6. Compare models using anova")
 }
 anova(Uniform, RChomog, RC)
 

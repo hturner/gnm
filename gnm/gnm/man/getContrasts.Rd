@@ -10,40 +10,51 @@ errors for those estimated differences.  Where possible, quasi standard
 errors are also computed.
 }
 \usage{
-getContrasts(model, sets = NULL, nSets = 1, dispersion = NULL,
+getContrasts(model, set = NULL,  refLevel = "first", dispersion = NULL,
   use.eliminate = TRUE, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}
-  \item{sets}{ a vector of indices or
-    a list of such vectors. If \code{NULL}, a Tk
-    dialog will open for parameter selection. }
-  \item{nSets}{ the number of vectors of indices to use when
-    \code{sets} is \code{NULL}.}
+  \item{set}{ a vector of indices (numeric) or coefficient names
+    (character). If \code{NULL}, a Tk dialog will open for parameter
+    selection. }
+  \item{refLevel}{either a single numeric index, or a vector
+    of non-negative real numbers which sum to 1, or one of the character
+    strings \code{"first"}, \code{"last"} or \code{"mean"}.}
   \item{dispersion}{either \code{NULL}, or a positive number by which
     the model's variance-covariance matrix should be scaled.}
   \item{use.eliminate}{ logical; see \code{\link{vcov.gnm}}}
   \item{\dots}{ arguments to pass to other functions. }
 }
 \details{
-  The indices must all be in \code{1:length(coef(object))}.  If
-  \code{sets = NULL}, a Tk dialog is presented for the selection
+  The indices in \code{set} must all be in \code{1:length(coef(object))}.  If
+  \code{set = NULL}, a Tk dialog is presented for the selection
   of indices (model coefficients).
 
-  For each set of coefficients selected, differences with the first
-  coefficient and their standard errors are computed.  
+  For the set of coefficients selected, contrasts
+  and their standard errors are computed.  
   A check is performed first on the estimability of all such
-  differences.
+  contrasts.  The specific contrasts to be computed are controlled by the
+  choice of \code{refLevel}: this may be \code{"first"} (the default),
+  for contrasts with the first of the selected coefficients, or
+  \code{"last"} for contrasts with the last, or \code{"mean"} for
+  contrasts with the arithmetic mean of the coefficients in the selected
+  set; or it may be an arbitrary vector of non-negative weights (summing
+  to 1) which specify a weighted mean against which contrasts are taken;
+  or it may be a single index specifying one of the coefficients with
+  which all contrasts should be taken.  Thus, for example,
+  \code{refLevel = 1} is equivalent to \code{refLevel = "first"}, and
+  \code{refLevel = c(1/3, 1/3, 1/3)} is equivalent to \code{refLevel =
+    "mean"} when there are three coefficients in the selected \code{set}.
 
-  If \code{sets} is non-\code{NULL}, the value of the \code{nsets}
-  argument is ignored.
+  The reported quasi-variances (and corresponding quasi standard errors), for
+  details of which see Firth (2003) or Firth and Menezes (2004), are
+  invariant to the choice of \code{refLevel}.
+  
 }
 \value{
-  EITHER a list (normally of length \code{nSets}) of objects of class
-  \code{qv} --- see \code{\link[qvcalc]{qvcalc}} --- (when \code{sets}
-  is a list, or when \code{sets} is \code{NULL} and \code{nSets > 1});
-
-  OR an object of class \code{qv} (otherwise).
+  An object of class
+  \code{qv} --- see \code{\link[qvcalc]{qvcalc}}.
 }
 \author{ David Firth }
 \seealso{ \code{\link{gnm}}, \code{\link{se}},

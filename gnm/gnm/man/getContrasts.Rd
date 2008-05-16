@@ -19,7 +19,7 @@ getContrasts(model, set = NULL,  refLevel = "first", dispersion = NULL,
     (character). If \code{NULL}, a Tk dialog will open for parameter
     selection. }
   \item{refLevel}{either a single numeric index, or a vector
-    of non-negative real numbers which sum to 1, or one of the character
+    of real numbers which sum to 1, or one of the character
     strings \code{"first"}, \code{"last"} or \code{"mean"}.}
   \item{dispersion}{either \code{NULL}, or a positive number by which
     the model's variance-covariance matrix should be scaled.}
@@ -39,8 +39,9 @@ getContrasts(model, set = NULL,  refLevel = "first", dispersion = NULL,
   for contrasts with the first of the selected coefficients, or
   \code{"last"} for contrasts with the last, or \code{"mean"} for
   contrasts with the arithmetic mean of the coefficients in the selected
-  set; or it may be an arbitrary vector of non-negative weights (summing
-  to 1) which specify a weighted mean against which contrasts are taken;
+  set; or it may be an arbitrary vector of weights (summing
+  to 1, not necessarily all non-negative)
+  which specify a weighted mean against which contrasts are taken;
   or it may be a single index specifying one of the coefficients with
   which all contrasts should be taken.  Thus, for example,
   \code{refLevel = 1} is equivalent to \code{refLevel = "first"}, and

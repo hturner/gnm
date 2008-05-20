@@ -5,6 +5,7 @@
 .*\.bbl
 .*\.bst
 \.Rprofile
+.*\.Rnw
 .*\.sty
 .*\.tex
 .*\.ps

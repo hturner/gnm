@@ -1,5 +1,6 @@
 getContrasts <- function(model, set = NULL,
                          refLevel = "first",
+                         scale = NULL,
                          dispersion = NULL,
                          use.eliminate = TRUE,
                          ...){
@@ -28,7 +29,6 @@ getContrasts <- function(model, set = NULL,
     if (is.numeric(set)) set <- coefNames[set]
 
     if (is.numeric(refLevel)){
-        if (length(refLevel) == 0) stop("The specified refLevel has zero length")
         if (length(refLevel) == 1){
             if (refLevel %in% seq(setLength)) {
                 temp <- rep(0, setLength)
@@ -41,13 +41,33 @@ getContrasts <- function(model, set = NULL,
         if ((sum(refLevel) - 1) ^ 2 > 1e-10) stop(
                                    "The refLevel weights do not sum to 1")
     }
-    if (identical(refLevel, "first")) refLevel <- c(1, rep(0, setLength - 1)) else
-    if (identical(refLevel, "last")) refLevel <- c(rep(0, setLength - 1), 1) else
-    if (identical(refLevel,"mean")) refLevel <- rep(1/setLength, setLength)
+    else
+        refLevel <- switch(refLevel,
+                           "first" = c(1, rep.int(0, setLength - 1)),
+                           "last" = c(rep.int(0, setLength - 1), 1),
+                           "mean"= rep.int(1/setLength, setLength))
 
     contr <- diag(rep(1, setLength))
     contr <- contr - refLevel
     rownames(contr) <- set
+
+    if (!is.null(scale)) {
+        if (any(refLevel == 1))
+            stop("Cannot scale contrast where one parameter is set to zero.")
+        if (is.numeric(scale)) {
+            if (length(scale) != setLength)
+                stop("The specified scale has the wrong length")
+            if ((sum(scale) - 1) ^ 2 > 1e-10)
+                stop("The scale weights do not sum to 1")
+        }
+        else if (scale == "spherical") scale <- rep.int(1/setLength, setLength)
+        setCoefs <- coefs[names(coefs) %in% set]
+        centred <- setCoefs - refLevel %*% setCoefs
+        vc <- scale * centred
+        vcc <- drop(vc %*% centred)
+        contr <- ((refLevel %*% vc - vc) %o% centred/vcc + contr)/sqrt(vcc)
+    }
+
     set <- list(coefNames = set, contr = contr)
 
     coefMatrix <- matrix(0, l, length(set$coefNames))
@@ -61,12 +81,13 @@ getContrasts <- function(model, set = NULL,
 
     iden <- checkEstimable(model, coefMatrix)
     if (any(!na.omit(iden))) {
-        cat("Estimability of the specified contrasts:\n")
-        print(iden)
-        if (all(!na.omit(iden))) stop(
-                 "None of the specified contrasts is estimable")
-        cat("Note: not all of the specified contrasts in this set are",
-            "estimable\n")
+        if (all(!na.omit(iden))) {
+            warning("None of the specified contrasts is estimable",
+                    call. = FALSE)
+            return(NULL)
+        }
+        cat("Note: the following contrasts are unestimable:\n")
+        print(names(iden)[iden %in% FALSE])
     }
     not.unestimable <- iden | is.na(iden)
     result <- se(model, coefMatrix[, not.unestimable, drop = FALSE],

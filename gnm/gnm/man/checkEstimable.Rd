@@ -9,7 +9,7 @@
 }
 \usage{
 checkEstimable(model, combMatrix = diag(seq(along = coef(model))),
-                           tolerance = 100 * .Machine$double.eps)
+                           tolerance = 1e6 * .Machine$double.eps)
 }
 \arguments{
   \item{model}{  a model object of class \code{"gnm"} }

@@ -3,15 +3,14 @@
 \title{ Estimated Contrasts and Standard Errors for Parameters in a gnm
  Model } 
 \description{
-For each set in a specified list of sets of parameters from a
-\code{\link{gnm}} model, computes the estimated simple contrasts (i.e.,
-differences) with the first parameter in the set, and estimated standard
-errors for those estimated differences.  Where possible, quasi standard
-errors are also computed.
+Computes scaled contrasts for a set of parameters from a
+\code{\link{gnm}} model and estimates standard errors for the
+estimated contrasts.  Where possible, quasi standard errors are also
+computed. 
 }
 \usage{
-getContrasts(model, set = NULL,  refLevel = "first", dispersion = NULL,
-  use.eliminate = TRUE, ...)
+getContrasts(model, set = NULL,  refLevel = "first", scale= NULL,
+  dispersion = NULL, use.eliminate = TRUE, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}
@@ -21,6 +20,8 @@ getContrasts(model, set = NULL,  refLevel = "first", dispersion = NULL,
   \item{refLevel}{either a single numeric index, or a vector
     of real numbers which sum to 1, or one of the character
     strings \code{"first"}, \code{"last"} or \code{"mean"}.}
+  \item{scale}{either \code{NULL}, a vector of real numbers which sum to
+    1, or \code{"spherical"}.}
   \item{dispersion}{either \code{NULL}, or a positive number by which
     the model's variance-covariance matrix should be scaled.}
   \item{use.eliminate}{ logical; see \code{\link{vcov.gnm}}}
@@ -46,7 +47,14 @@ getContrasts(model, set = NULL,  refLevel = "first", dispersion = NULL,
   which all contrasts should be taken.  Thus, for example,
   \code{refLevel = 1} is equivalent to \code{refLevel = "first"}, and
   \code{refLevel = c(1/3, 1/3, 1/3)} is equivalent to \code{refLevel =
-    "mean"} when there are three coefficients in the selected \code{set}.
+    "mean"} when there are three coefficients in the selected
+  \code{set}.
+
+  The contrasts, \eqn{c}, may be scaled by
+  \deqn{\frac{1}{\sqrt{\sum_r v_r * c_r^2}}}{1/sqrt(sum(v * c))}
+  where \eqn{v} is an R-length vector of weights specified by \code{scale}. The
+  default (\code{NULL}) is not to scale; \code{"spherical"} specifies
+  equal weights \eqn{1/R}.
 
   The reported quasi-variances (and corresponding quasi standard errors), for
   details of which see Firth (2003) or Firth and Menezes (2004), are

@@ -1,5 +1,5 @@
 checkEstimable <- function(model, combMatrix = diag(seq(along = coef(model))),
-                           tolerance = 100 * .Machine$double.eps)
+                           tolerance = 1e6 * .Machine$double.eps)
 {
     if (!inherits(model, "gnm")) stop("model not of class gnm")
     coefs <- coef(model)

@@ -29,6 +29,7 @@ getContrasts <- function(model, set = NULL,
     if (is.numeric(set)) set <- coefNames[set]
 
     if (is.numeric(refLevel)){
+        refLevel <- c(refLevel)
         if (length(refLevel) == 1){
             if (refLevel %in% seq(setLength)) {
                 temp <- rep(0, setLength)
@@ -45,41 +46,40 @@ getContrasts <- function(model, set = NULL,
         refLevel <- switch(refLevel,
                            "first" = c(1, rep.int(0, setLength - 1)),
                            "last" = c(rep.int(0, setLength - 1), 1),
-                           "mean"= rep.int(1/setLength, setLength))
+                           "mean"= rep.int(1/setLength, setLength),
+                           stop("Specified refLevel is not an opton."))
 
-    contr <- diag(rep(1, setLength))
-    contr <- contr - refLevel
-    rownames(contr) <- set
+    setCoefs <- coefs[names(coefs) %in% set]
+    contr <- setCoefs - refLevel %*% setCoefs
+    deriv <- diag(rep(1, setLength))
+    deriv <- deriv - refLevel
+    rownames(deriv) <- set
 
     if (!is.null(scale)) {
-        if (any(refLevel == 1))
-            stop("Cannot scale contrast where one parameter is set to zero.")
         if (is.numeric(scale)) {
+            scale <- c(scale)
             if (length(scale) != setLength)
                 stop("The specified scale has the wrong length")
             if ((sum(scale) - 1) ^ 2 > 1e-10)
                 stop("The scale weights do not sum to 1")
         }
-        else if (scale == "spherical") scale <- rep.int(1/setLength, setLength)
-        setCoefs <- coefs[names(coefs) %in% set]
-        centred <- setCoefs - refLevel %*% setCoefs
-        vc <- scale * centred
-        vcc <- drop(vc %*% centred)
-        contr <- ((refLevel %*% vc - vc) %o% centred/vcc + contr)/sqrt(vcc)
+        else scale <- switch(scale,
+                             spherical = rep.int(1/setLength, setLength),
+                             stop("Specified scale is not an opton."))
+        vc <- scale * contr
+        vcc <- sqrt(drop(vc %*% contr))
+        contr <- contr/vcc
+        deriv <- ((refLevel * sum(vc) - vc) %o% contr/vcc + deriv)/vcc
     }
 
-    set <- list(coefNames = set, contr = contr)
-
-    coefMatrix <- matrix(0, l, length(set$coefNames))
-    id <- match(set$coefNames, coefNames)
-
-    coefMatrix[id, ] <- set$contr
-    colnames(coefMatrix) <- set$coefNames
+    combMatrix <- matrix(0, l, setLength)
+    combMatrix[match(set, coefNames), ] <- deriv
+    colnames(combMatrix) <- set
 
     Vcov <-  vcov(model, dispersion = dispersion,
                   use.eliminate = use.eliminate)
 
-    iden <- checkEstimable(model, coefMatrix)
+    iden <- checkEstimable(model, combMatrix)
     if (any(!na.omit(iden))) {
         if (all(!na.omit(iden))) {
             warning("None of the specified contrasts is estimable",
@@ -90,8 +90,11 @@ getContrasts <- function(model, set = NULL,
         print(names(iden)[iden %in% FALSE])
     }
     not.unestimable <- iden | is.na(iden)
-    result <- se(model, coefMatrix[, not.unestimable, drop = FALSE],
-                 checkEstimability = FALSE, Vcov = Vcov)
+    sterr <- sqrt(diag(crossprod(combMatrix[, not.unestimable, drop = FALSE],
+                                 crossprod(Vcov, combMatrix))))
+    result <- data.frame(contr, sterr)
+    dimnames(result) <- list(set, c("Estimate", "Std. Error"))
+
     relerrs <- NULL
     V <- NULL
     if (any(not.unestimable)){
@@ -100,12 +103,12 @@ getContrasts <- function(model, set = NULL,
     }
     if (sum(not.unestimable) > 2) {
         QVs <- qvcalc:::qvcalc(V)
-            quasiSE <- sqrt(QVs$qvframe$quasiVar)
-            result <- cbind(result, quasiSE)
-            names(result)[1:2] <- c("estimate", "SE")
-            result$quasiVar <- QVs$qvframe$quasiVar
-            relerrs <- QVs$relerrs
-        }
+        quasiSE <- sqrt(QVs$qvframe$quasiVar)
+        result <- cbind(result, quasiSE)
+        names(result)[1:2] <- c("estimate", "SE")
+        result$quasiVar <- QVs$qvframe$quasiVar
+        relerrs <- QVs$relerrs
+    }
     return(structure(list(covmat = V,
                           qvframe = result,
                           relerrs = relerrs,

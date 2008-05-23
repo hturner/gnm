@@ -2054,9 +2054,9 @@ settings:
 @
 <<AMMI_model2>>=
 set.seed(1)
-data(barleyModel)
+data(barleyHeights)
 barleyModel <- gnm(height ~ year + genotype + Mult(year, genotype),
-                   data = barley)
+                   data = barleyHeights)
 @ %def
 To obtain the parameterization of Equation \ref{eq:GAMMI} in which $\sigma_k$ is
 the singular value for component $k$, the row and column scores must be
@@ -2071,16 +2071,26 @@ delta <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]g"),
 gammi
 delta
 @ %def
-On the basis of this information we can investigate simplifications of the model
-in which levels of the factors are combined or an additive model is fitted to a
-subset of the data.
+Confidence intervals based on the assumption of asymptotic normality can be
+computed as follows:
+@
+<<CI>>=
+gammi[[2]][,1] + (gammi[[2]][,2]) %o% c(-1.96, 1.96)
+delta[[2]][,1] + (delta[[2]][,2]) %o% c(-1.96, 1.96)
+@ %def
+which broadly agree with Table 8 of Chadouef and Denis (1991), allowing for the
+change in sign.
+
+On the basis of such confidence intervals we can investigate simplifications of
+the model such as combining levels of the factors or fitting an additive
+model to a subset of the data.
 
 The singular value $\sigma_k$ may be obtained as follows
 @
 <<SVD>>=
 height <- matrix(scale(barleyHeights$height, scale = FALSE), 15, 9)
 R <- height - outer(rowMeans(height), colMeans(height), "+")
-svd(R)$[1]
+svd(R)$d[1]
 @ %def
 This parameter is of little interest in itself, given that the significance of
 the term as a whole can be tested using ANOVA.

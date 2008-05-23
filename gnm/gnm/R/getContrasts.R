@@ -92,8 +92,8 @@ getContrasts <- function(model, set = NULL,
     not.unestimable <- iden | is.na(iden)
     sterr <- sqrt(diag(crossprod(combMatrix[, not.unestimable, drop = FALSE],
                                  crossprod(Vcov, combMatrix))))
-    result <- data.frame(contr, sterr)
-    dimnames(result) <- list(set, c("Estimate", "Std. Error"))
+    result <- data.frame(contr[not.unestimable], sterr)
+    dimnames(result) <- list(set[not.unestimable], c("Estimate", "Std. Error"))
 
     relerrs <- NULL
     V <- NULL

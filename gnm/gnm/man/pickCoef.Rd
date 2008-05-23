@@ -34,7 +34,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                family = poisson, data = yaish, subset = (dest != 7))
 
 ## set coefficients in first constituent multiplier as 'ofInterest'
-ofInterest(unidiff) <- pickCoef(unidiff, "Mult.*educ")
+ofInterest(unidiff) <- pickCoef(unidiff, "[.]educ")
 
 ## summarise model, only showing coefficients of interest
 summary(unidiff)

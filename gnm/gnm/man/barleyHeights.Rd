@@ -43,6 +43,6 @@ delta[[2]][,1] + (delta[[2]][,2]) \%o\% c(-1.96, 1.96)
 ## Multiplier of row and column scores
 height <- matrix(scale(barleyHeights$height, scale = FALSE), 15, 9)
 R <- height - outer(rowMeans(height), colMeans(height), "+")
-svd(R)$[1]
+svd(R)$d[1]
 }
 \keyword{datasets}

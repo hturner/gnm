@@ -9,7 +9,7 @@ estimated contrasts.  Where possible, quasi standard errors are also
 computed. 
 }
 \usage{
-getContrasts(model, set = NULL,  refLevel = "first", scale= NULL,
+getContrasts(model, set = NULL,  refLevel = "first", scaleWeights = NULL,
   dispersion = NULL, use.eliminate = TRUE, ...)
 }
 \arguments{
@@ -20,8 +20,8 @@ getContrasts(model, set = NULL,  refLevel = "first", scale= NULL,
   \item{refLevel}{either a single numeric index, or a vector
     of real numbers which sum to 1, or one of the character
     strings \code{"first"}, \code{"last"} or \code{"mean"}.}
-  \item{scale}{either \code{NULL}, a vector of real numbers which sum to
-    1, or \code{"spherical"}.}
+  \item{scaleWeights}{either \code{NULL}, a vector of real numbers,
+    \code{"unit"} or \code{"setLength"}.}
   \item{dispersion}{either \code{NULL}, or a positive number by which
     the model's variance-covariance matrix should be scaled.}
   \item{use.eliminate}{ logical; see \code{\link{vcov.gnm}}}
@@ -52,14 +52,16 @@ getContrasts(model, set = NULL,  refLevel = "first", scale= NULL,
 
   The contrasts, \eqn{c}, may be scaled by
   \deqn{\frac{1}{\sqrt{\sum_r v_r * c_r^2}}}{1/sqrt(sum(v * c))}
-  where \eqn{v} is an R-length vector of weights specified by \code{scale}. The
-  default (\code{NULL}) is not to scale; \code{"spherical"} specifies
-  equal weights \eqn{1/R}.
+  where \eqn{v} is an R-length vector of weights specified by
+  \code{scaleWeights}. The default (\code{NULL}) is not to scale;
+  \code{"unit"} specifies weights equal to one (so that the sum of
+  squared contrasts equals one), and \code{"setLength"}
+  specifies weights \eqn{1/R} (so that the sum of squared contrasts
+  equals R).
 
   The reported quasi-variances (and corresponding quasi standard errors), for
   details of which see Firth (2003) or Firth and Menezes (2004), are
-  invariant to the choice of \code{refLevel}.
-  
+  invariant to the choices of \code{refLevel} and \code{scaleWeights}.  
 }
 \value{
   An object of class

@@ -1003,6 +1003,7 @@ resp3:x  0.00000 0.00000 0.02163 0.000468
 resp2:x -0.02334 0.03761 0.03077 0.000947
 resp1:x -0.00773 0.02452 0.01154 0.000133
 \end{Soutput}
+see Section \ref{sec:getContrasts} for further details of this function.
 
 The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
@@ -1262,10 +1263,10 @@ checkEstimable(doubleUnidiff, contrMatrix)
 
 To investigate simple ``sum to zero'' contrasts such as those above, it
 is easiest to use the \Rfunction{getContrasts} function, which checks the
-estimability of the contrasts and returns the parameter estimates with their
-standard errors. Returning to the example of the first constituent multiplier
-in the first multiplicative interaction term, the differences between each
-election and the first can be obtained as follows:
+estimability of possibly scaled contrasts and returns the parameter estimates
+with their standard errors. Returning to the example of the first constituent
+multiplier in the first multiplicative interaction term, the differences between
+each election and the first can be obtained as follows:
 <<Get_contrasts_1>>=
 myContrasts <- getContrasts(doubleUnidiff,
                             pickCoef(doubleUnidiff, ", religion:vote"))
@@ -1293,6 +1294,23 @@ xlab = "Election", levelNames = 1:4)
 %coefs.of.interest <- grep("[.]religion", names(coef(doubleUnidiff)))
 %getContrasts(doubleUnidiff, coefs.of.interest)
 %@ %def
+By default, \Rfunction{getContrasts} uses the first parameter of the specified
+set as the reference level; alternatives may be set via the \Rfunarg{refLevel}
+argument.
+
+In the above example, the simple contrasts are estimable without scaling. This
+is not always the case and a more general family of contrasts for a set of
+parameters $\gamma_r, r = 1, \ldots, R$ is given by
+\begin{equation*}
+    \gamma^*_r = \frac{\gamma_r - \overline{gamma}_w}{
+      \sqrt{\sum v_r * (\gamma_r - \overline{\gamma_w})^2}
+\end{equation*}
+where $\overline{gamma}_w = \sum w_r \gamma_r$, the reference level against
+which the contrasts are taken, and $v_r$ is a set of weights which may be
+specified to \Rfunction{getContrasts} via the \Rfunarg{scaleWeights}
+argument. Equal scale weights lead to spherical contrasts, whilst unequal
+weights lead to elliptical contrasts; examples of these cases are given in
+Section \ref{sec:GAMMI} and Section \ref{sec:RCmodels} respectively.
 
 For more general linear combinations of parameters
 than contrasts,
@@ -1460,6 +1478,22 @@ assoc <- list(beta = beta1 * beta2,
               nu = colScores / beta2)
 assoc
 @ %def
+Alternatively, the elliptical contrasts \Robject{mu} and \Robject{nu} can be
+obtained using \Rfunction{getContrasts}, with the advantage that the standard
+errors for the contrasts will also be computed:
+@
+<<Elliptical_contrasts>>=
+mu <- getContrasts(RC1model, pickCoef(RC1model, "[.]SES"),
+                   refLevel = rowProbs, scaleWeights = rowProbs)
+nu <- getContrasts(RC1model, pickCoef(RC1model, "[.]MHS"),
+                   refLevel = colProbs, scaleWeights = colProbs)
+mu
+nu
+@ %def
+Since the value of \Robject{beta} is dependent on the scaling of the contrasts,
+it is not advisable to conduct inference on this parameter directly. However the
+standard error for \Robject{beta} could be obtained, if desired, via the delta
+method.
 
 \subsubsection{RC(2) model}
 
@@ -1959,10 +1993,12 @@ is often factored out, as a measure of the strength of association between the
 row and column scores, indicating the importance of the component, or axis.
 
 For cell means $\mu_{rc}$ a GAMMI-K model has the form
-\[
-g(\mu_{rc}) = \alpha_r + \beta_c + \sum_{k=1}^K
-\sigma_k\gamma_{kr}\delta_{kc},
-\]
+
+\begin{equation}
+    \label{eq:GAMMI}
+    g(\mu_{rc}) = \alpha_r + \beta_c + \sum_{k=1}^K
+    \sigma_k\gamma_{kr}\delta_{kc},
+\end{equation}
 in which $g$ is a link function, $\alpha_r$ and $\beta_c$ are the row and column
 main effects, $\gamma_{kr}$ and $\delta_{kc}$ are the row and column scores for
 multiplicative component $k$ and $\sigma_k$ is the singular value for component
@@ -2002,10 +2038,53 @@ bilinear1 <- update(mainEffects, . ~ . + Mult(year, treatment),
 We can compare the AMMI-1 model to the main effects model,
 @
 <<AOD>>=
-anova(mainEffects, bilinear1)
+anova(mainEffects, bilinear1, test = "F")
 @ %def
 giving the same results as in Table 1 of \citet{Varg01} (up to error caused by
 rounding).
+
+Thus the significance of the multiplicative interaction can be tested without
+applying constraints to this term. If the multiplicative interaction is
+significant, we may wish to apply constraints to obtain estimates of the row and
+column scores. We illustrate this using the \Robject{barleyHeights} data, which
+records the average height for 15 genotypes of barley over 9 years.
+
+For this small dataset the AMMI-1 model is easily estimated with the default
+settings:
+@
+<<AMMI_model2>>=
+set.seed(1)
+data(barleyModel)
+barleyModel <- gnm(height ~ year + genotype + Mult(year, genotype),
+                   data = barley)
+@ %def
+To obtain the parameterization of Equation \ref{eq:GAMMI} in which $\sigma_k$ is
+the singular value for component $k$, the row and column scores must be
+constrained so that the scores sum to zero and the squared scores sum to
+one. These contrasts can be obtained using \Robject{getContrasts}:
+@
+<<Spherical_contrasts>>=
+gammi <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]y"),
+                      refLevel = "mean", scale = "unit")
+delta <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]g"),
+                      refLevel = "mean", scale = "unit")
+gammi
+delta
+@ %def
+On the basis of this information we can investigate simplifications of the model
+in which levels of the factors are combined or an additive model is fitted to a
+subset of the data.
+
+The singular value $\sigma_k$ may be obtained as follows
+@
+<<SVD>>=
+height <- matrix(scale(barleyHeights$height, scale = FALSE), 15, 9)
+R <- height - outer(rowMeans(height), colMeans(height), "+")
+svd(R)$[1]
+@ %def
+This parameter is of little interest in itself, given that the significance of
+the term as a whole can be tested using ANOVA.
+
 
 \subsection{Biplot models}
 \label{sec:biplot}

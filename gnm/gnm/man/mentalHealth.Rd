@@ -42,14 +42,9 @@ RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS),
 ## The scores can be normalized as in Agresti's eqn (9.15):
 rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
 colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
-rowScores <- coef(RC1model)[pickCoef(RC1model, "[.]SES")]
-colScores <- coef(RC1model)[pickCoef(RC1model, "[.]MHS")]
-rowScores <- rowScores - sum(rowScores * rowProbs)
-colScores <- colScores - sum(colScores * colProbs)
-beta1 <- sqrt(sum(rowScores^2 * rowProbs))
-beta2 <- sqrt(sum(colScores^2 * colProbs))
-assoc <- list(beta = beta1 * beta2,
-              mu = rowScores / beta1,
-              nu = colScores / beta2)
+mu <- getContrasts(RC1model, pickCoef(RC1model, "[.]SES"),
+                   refLevel = rowProbs, scaleWeights = rowProbs)
+nu <- getContrasts(RC1model, pickCoef(RC1model, "[.]MHS"),
+                   refLevel = colProbs, scaleWeights = colProbs)
 }
 \keyword{datasets}

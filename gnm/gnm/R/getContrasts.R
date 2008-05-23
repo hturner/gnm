@@ -1,6 +1,6 @@
 getContrasts <- function(model, set = NULL,
                          refLevel = "first",
-                         scale = NULL,
+                         scaleWeights = NULL,
                          dispersion = NULL,
                          use.eliminate = TRUE,
                          ...){
@@ -55,18 +55,18 @@ getContrasts <- function(model, set = NULL,
     deriv <- deriv - refLevel
     rownames(deriv) <- set
 
-    if (!is.null(scale)) {
-        if (is.numeric(scale)) {
-            scale <- c(scale)
-            if (length(scale) != setLength)
-                stop("The specified scale has the wrong length")
-            if ((sum(scale) - 1) ^ 2 > 1e-10)
-                stop("The scale weights do not sum to 1")
+    if (!is.null(scaleWeights)) {
+        if (is.numeric(scaleWeights)) {
+            scaleWeights <- c(scaleWeights)
+            if (length(scaleWeights) != setLength)
+                stop("The specified scaleWeights has the wrong length")
         }
-        else scale <- switch(scale,
-                             spherical = rep.int(1/setLength, setLength),
-                             stop("Specified scale is not an opton."))
-        vc <- scale * contr
+        else scaleWeights <-
+            switch(scaleWeights,
+                   unit = rep.int(1, setLength),
+                   setLength = rep.int(1/setLength, setLength),
+                   stop("Specified scaleWeights is not an opton."))
+        vc <- scaleWeights * contr
         vcc <- sqrt(drop(vc %*% contr))
         contr <- contr/vcc
         deriv <- ((refLevel * sum(vc) - vc) %o% contr/vcc + deriv)/vcc

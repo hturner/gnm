@@ -1,6 +1,7 @@
 getContrasts <- function(model, set = NULL,
                          refLevel = "first",
                          scaleWeights = NULL,
+                         altscale = FALSE,
                          dispersion = NULL,
                          use.eliminate = TRUE,
                          ...){
@@ -70,6 +71,15 @@ getContrasts <- function(model, set = NULL,
         vcc <- sqrt(drop(vc %*% contr))
         contr <- contr/vcc
         deriv <- ((refLevel * sum(vc) - vc) %o% contr/vcc + deriv)/vcc
+    }
+
+    if (altscale) {
+        range <- setCoefs[setLength] - setCoefs[1]
+        contr <- contr/range
+        deriv <- matrix(0, setLength, setLength)
+        deriv[1,] <- (setCoefs - setCoefs[setLength])/range^2
+        deriv[setLength,] <- -(setCoefs - setCoefs[1])/range^2
+        deriv <- deriv + diag(rep(1/range, setLength))
     }
 
     combMatrix <- matrix(0, l, setLength)

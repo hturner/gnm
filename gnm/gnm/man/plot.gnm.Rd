@@ -17,7 +17,8 @@
          ask = prod(par("mfcol")) < length(which) && dev.interactive(),
          ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75,
          qqline = TRUE, cook.levels = c(0.5, 1),
-         add.smooth = getOption("add.smooth"), label.pos = c(4, 2))    
+         add.smooth = getOption("add.smooth"), label.pos = c(4, 2),
+         cex.caption = 1)    
 }
 \arguments{
   \item{x}{ a \code{"gnm"} object. }
@@ -46,6 +47,7 @@
     most plots; see also \code{panel} above.}
   \item{label.pos}{ positioning of labels, for the left half and right
     half of the graph respectively, for plots 1-3. }
+  \item{cex.caption}{ controls the size of 'caption'. }
 }
 \details{
   \code{sub.caption} - by default the function call - is shown as a subtitle

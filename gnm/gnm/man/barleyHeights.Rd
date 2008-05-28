@@ -30,14 +30,14 @@ barleyModel <- gnm(height ~ year + genotype + Mult(year, genotype),
                    data = barleyHeights)
 
 ## Get row and column scores with se's
-gammi <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]y"),
-                      refLevel = "mean", scale = "unit")
+gamma <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]y"),
+                      ref = "mean", scaleWeights = "unit")
 delta <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]g"),
-                      refLevel = "mean", scale = "unit")
+                      ref = "mean", scaleWeights = "unit")
 
 ## Corresponding CI's similar to Chadoeuf & Denis (1991) Table 8
 ## (allowing for change in sign)
-gammi[[2]][,1] + (gammi[[2]][,2]) \%o\% c(-1.96, 1.96)
+gamma[[2]][,1] + (gamma[[2]][,2]) \%o\% c(-1.96, 1.96)
 delta[[2]][,1] + (delta[[2]][,2]) \%o\% c(-1.96, 1.96)
 
 ## Multiplier of row and column scores

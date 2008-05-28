@@ -43,8 +43,8 @@ RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS),
 rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
 colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
 mu <- getContrasts(RC1model, pickCoef(RC1model, "[.]SES"),
-                   refLevel = rowProbs, scaleWeights = rowProbs)
+                   ref = rowProbs, scaleWeights = rowProbs)
 nu <- getContrasts(RC1model, pickCoef(RC1model, "[.]MHS"),
-                   refLevel = colProbs, scaleWeights = colProbs)
+                   ref = colProbs, scaleWeights = colProbs)
 }
 \keyword{datasets}

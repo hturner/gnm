@@ -98,16 +98,12 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   Nonlinear terms may be specified by calls to functions of class
   "nonlin". There are several "nonlin" functions in the \code{gnm}
   package. Some of these specify simple
-  mathematical functions of predictors: \code{Exp}, \code{Log},
-  \code{Mult}, \code{Inv}, \code{Raise} (to raise to a constant power),
-  and \code{Logit}. Others specify more specialised nonlinear terms, in
+  mathematical functions of predictors: \code{Exp}, \code{Mult}, and 
+  \code{Inv}. Others specify more specialised nonlinear terms, in
   particular \code{MultHomog} specifies homogeneous multiplicative
   interactions and \code{Dref} specifies diagonal reference terms. Users
   may also define their own "nonlin" functions, see
-  \code{\link{nonlin.function}} for details. (N.B. the "nonlin" class of
-  functions has replaced the old plug-in mechanism of previous
-  versions. Plug-ins currently work, but support is likely to be
-  withdrawn in future versions).
+  \code{\link{nonlin.function}} for details.
 
   The \code{eliminate} argument may be used to specify a factor that
   is to be included as the first term in the model (since an intercept
@@ -179,17 +175,19 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   The parameter estimates are ordered so that those for any linear terms
   appear first.
   
-  \code{\link{getContrasts}} may be used to obtain estimates of specified
-  contrasts, if these contrasts are identifiable. In particular,
-  \code{getContrasts} may be used to estimate the contrasts between the
-  first level of a factor and the rest, and obtain standard errors.
+  \code{\link{getContrasts}} may be used to obtain estimates of
+  specified scaled contrasts, if these contrasts are identifiable. For
+  example, \code{getContrasts} may be used to estimate the contrasts
+  between the first level of a factor and the rest, and obtain standard
+  errors. 
 
   If appropriate constraints are known in advance, or have been
   determined from a \code{gnm} fit, the model may be (re-)fitted using
   the \code{constrain} argument to specify coefficients which should be
-  set to zero. Constraints should only be specified for non-eliminated
-  parameters. \code{\link{update}} provides a convenient way of re-fitting a 
-  \code{gnm} model with new constraints.
+  set to values specified by \code{constrainTo}. Constraints should only
+  be specified for non-eliminated parameters. \code{\link{update}}
+  provides a convenient way of re-fitting a  \code{gnm} model with new
+  constraints. 
 }
 \value{
   If \code{method = "gnmFit"}, \code{gnm} returns \code{NULL} if the
@@ -282,9 +280,9 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \code{\link{Diag}} and \code{\link{Symm}} for specifying special types
   of interaction.
   
-  \code{\link{Mult}}, \code{\link{Nonlin}}, \code{\link{Dref}} and 
-  \code{\link{MultHomog}} for incorporating nonlinear terms in the
-  \code{formula} argument to \code{gnm}.
+  \code{Exp}, \code{Mult}, \code{Inv}, \code{\link{MultHomog}},
+  \code{\link{Dref}} and \code{\link{nonlin.function}} for incorporating
+  nonlinear terms in the  \code{formula} argument to \code{gnm}.
   
   \code{\link{residuals.glm}} and the generic functions
   \code{\link{coef}}, \code{\link{fitted}}, etc. for extracting
@@ -293,8 +291,8 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \code{\link{exitInfo}} to print more information on last iteration
   when \code{gnm} has not converged.
 
-  \code{\link{getContrasts}} to estimate (identifiable) contrasts from a
-  \code{gnm} model.
+  \code{\link{getContrasts}} to estimate (identifiable) scaled contrasts
+  from a \code{gnm} model.
 }
 \examples{
 ###  Analysis of a 4-way contingency table

@@ -8,7 +8,6 @@
     varLabels <- attr(modelTerms, "varLabels")
     block <- attr(modelTerms, "block")
     type <- attr(modelTerms, "type")
-    NonlinID <- attr(modelTerms, "NonlinID")
 
     nFactor <- length(varLabels)
     seqFactor <- seq(nFactor)
@@ -18,18 +17,7 @@
     adj <- 1
     for (i in blockID) {
         b <- block == i
-        if (sum(b) == 1 && length(grep("Nonlin\\(", unitLabels[b]))) {
-            i <- which(b)
-            termTools[[i]] <- eval(parse(text = unitLabels[b])[[1]][[2]],
-                                   gnmData, environment(modelTerms))
-            nTheta <- length(termTools[[i]]$labels)
-            factorAssign[[i]] <-
-                structure(rep.int(i, nTheta),
-                          names = paste(prefixLabels[i], termTools[[i]]$labels,
-                                        sep = ""))
-            adj <- adj + nTheta
-        }
-        else if (all(common[b])) {
+        if (all(common[b])) {
             designList <- lapply(unitLabels[b],
                                  function(x) class.ind(gnmData[[x]]))
 
@@ -136,19 +124,14 @@
 
     prodList <- vector(mode = "list", length = nFactor)
     names(prodList) <- varLabels
-    NonlinID <- NonlinID == "Nonlin"
     type <- type == "Special"
 
     varPredictors <- function(theta) {
         for (i in seqFactor) {
-            if (NonlinID[i])
-                prodList[[i]] <-
-                    drop(termTools[[i]]$predictor(theta[thetaID[[i]]]))
-            else
-                prodList[[i]] <- .Call("submatprod", baseMatrix,
-                                       theta[thetaID[[i]]],
-                                       first[a[i]], nr, nc[i],
-                                       PACKAGE = "gnm", NAOK = TRUE)
+            prodList[[i]] <- .Call("submatprod", baseMatrix,
+                                   theta[thetaID[[i]]],
+                                   first[a[i]], nr, nc[i],
+                                   PACKAGE = "gnm", NAOK = TRUE)
         }
         prodList
     }
@@ -176,10 +159,10 @@
     commonAssign <- factorAssign[colID]
     nCommon <- table(commonAssign[!duplicated(factorAssign)])
     tmpID <- unique(commonAssign)
-    tmpID <- tmpID[(NonlinID | type)[tmpID]]
+    tmpID <- tmpID[type[tmpID]]
     nCommon <- as.integer(nCommon[as.character(tmpID)])
-    if (any(NonlinID | type))
-        specialVarDerivs <- deriv(e, varLabels[(NonlinID | type)])
+    if (any(type))
+        specialVarDerivs <- deriv(e, varLabels[type])
     convID <- colID[uniq]
     vID <- cumsum(c(1, nCommon))[seq(nCommon)]
 
@@ -202,20 +185,7 @@
                     if (factorAssign[ind] > 1)
                         ind <- ind - z[factorAssign[ind] - 1]
                 }
-                if (NonlinID[fi]) {
-                    .Call("nonlin", X, first[i1], last[i2],
-                          quote(termTools[[fi]]$localDesignFunction(
-                          coef = theta[factorAssign == fi],
-                          predictor = varPredictors[[fi]], ind = ind)),
-                          environment(), PACKAGE = "gnm")
-                    if (type[fi]) {
-                        v <- attr(eval(varDerivs[[fi]], varPredictors),
-                                  "gradient")
-                        .Call("subprod", X, X, as.double(v),
-                              first[i1], last[i2], nr, PACKAGE = "gnm")
-                    }
-                }
-                else if (type[fi]) {
+                if (type[fi]) {
                     v <- attr(eval(varDerivs[[fi]], varPredictors),
                               "gradient")
                     .Call("subprod", X, baseMatrix, as.double(v),

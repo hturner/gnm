@@ -85,7 +85,8 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
   Firth, D and Menezes, R X de (2004).  Quasi-variances.
   \emph{Biometrika} \bold{91}, 65--80.
   }
-\examples{
+  \examples{
+### Unscaled contrasts ###
 set.seed(1)
 data(yaish)
 
@@ -100,6 +101,30 @@ plot(unidiffContrasts,
   main = "Unidiff multipliers (log scale): intervals based on
            quasi standard errors",
   xlab = "Education level", levelNames = 1:5)
+
+
+### Scaled contrasts (elliptical contrasts) ###
+set.seed(1)
+data(mentalHealth)
+
+##  Goodman Row-Column association model fits well (deviance 3.57, df 8)
+mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
+mentalHealth$SES <- C(mentalHealth$SES, treatment)
+RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS),
+                family = poisson, data = mentalHealth)
+## Row scores and column scores are both unnormalized in this
+## parameterization of the model 
+
+## The scores can be normalized as in Agresti's eqn (9.15):
+rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
+colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
+mu <- getContrasts(RC1model, pickCoef(RC1model, "[.]SES"),
+                   ref = rowProbs, scaleWeights = rowProbs)
+nu <- getContrasts(RC1model, pickCoef(RC1model, "[.]MHS"),
+                   ref = colProbs, scaleWeights = colProbs)
+
+
+
 }
 \keyword{ models }
 \keyword{ regression }

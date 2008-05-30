@@ -1,9 +1,9 @@
 \name{Const}
 \alias{Const}
-\title{ Specify a Constant in a gnm Model Formula }
+\title{ Specify a Constant in a "nonlin" Function Predictor }
 \description{
-  A symbolic wrapper to specify a constant in the formula argument to
-  \code{gnm}
+  A symbolic wrapper to specify a constant in the predictor of a
+  \code{"nonlin"} function.
 }
 \usage{
 Const(const)
@@ -11,13 +11,13 @@ Const(const)
 \arguments{
   \item{const}{ a numeric value. }
 }
-\details{
-  \code{Const} is equivalent to \code{offset(rep(const, nObs))} where
-  \code{nObs} is the number of observations being modelled.
-}
 \value{
   A call to \code{rep} used to create a variable representing the
   constant in the model frame.
+}
+\note{
+  \code{Const} may only be used in the predictor of a \code{"nonlin"}
+  function. Use \code{offset} to specify a constant in the model formula.
 }
 \author{ Heather Turner }
 \seealso{\code{\link{gnm}}, \code{\link{formula}}, \code{\link{offset}}}

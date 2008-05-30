@@ -287,22 +287,6 @@ rowSums(temp) - quasi.symm$linear.predictors
 Such a decomposition might be useful, for example, in assessing the relative
 contributions of different terms or groups of terms.
 
-\subsection{\Rfunction{Const}}
-
-In Section \ref{sec:nonlinear} we shall see how nonlinear terms may be specified
-using functions of class \Rclass{nonlin} that are analogous to basic
-mathematical functions. In order to specify certain nonlinear terms in this way,
-it is necessary to be able to specify a constant in the symbolic expression of a
-predictor. This is the function of \Rfunction{Const}, such that
-\begin{Scode}
-    Const(a)
-\end{Scode}
-is equivalent to
-\begin{Scode}
-    offset(rep(a, nObs))
-\end{Scode}
-where \Robject{nObs} is the number of observations.
-
 \section{Nonlinear terms}
 \label{sec:nonlinear}
 
@@ -322,13 +306,6 @@ specify more specialized nonlinear terms, in particular \Rfunction{MultHomog}
 specifies homogeneous multiplicative interactions and \Rfunction{Dref} specifies
 diagonal reference terms. Users may also define their own \Rclass{nonlin}
 functions.
-
-In previous versions of \Rpackage{gnm}, specialized nonlinear terms
-were implemented using plug-in functions and users could define custom plug-in
-functions as described in Section \ref{sec:plug-ins}. Such functions still work in
-the current version of \Rpackage{gnm}, but as plug-in functions are less
-user-friendly than \Rclass{nonlin} functions, support for plug-in functions is
-likely to be withdrawn in future versions.
 
 \subsection{Basic mathematical functions of predictors}
 \label{sec:Basic}
@@ -361,10 +338,13 @@ We could express this predictor symbolically as follows
 \begin{Scode}
 ~ -1 + Mult(1, Inv(Const(1) + Exp(Mult(1 + offset(-x), Inv(1)))))
 \end{Scode}
-However, this is rather convoluted and it may be preferable to define a
-specialized \Rclass{nonlin} function in such a case. Section
-\ref{sec:nonlin.functions} explains how users can define custom \Rclass{nonlin}
-functions, with a function to specify logistic terms as an example.
+where \Rfunction{Const} is a convenience function to specify a constant in a
+\Rclass{nonlin} term, equivalent to \Rcode{offset(rep(1, nObs))} where
+\Robject{nObs} is the number of observations. However, this is rather convoluted
+and it may be preferable to define a specialized \Rclass{nonlin} function in
+such a case. Section \ref{sec:nonlin.functions} explains how users can define
+custom \Rclass{nonlin} functions, with a function to specify logistic terms as
+an example.
 
 One family of models usefully specified with the basic functions is the
 family of models with multiplicative interactions. For example, the row-column
@@ -534,7 +514,8 @@ Intercepts are added by default to predictors that are specified by formulae.
 If predictors are named, these names are used as a prefix for parameter labels
 or as the parameter label itself in the single-parameter case.
 
-The following arguments of \Rfunction{nonlinTerms} should be specified as necessary:
+The following arguments of \Rfunction{nonlinTerms} must be specified whenever
+applicable to the nonlinear term:
 \begin{description}
 \setlength{\itemindent}{-0.5cm}
 \item[\Robject{variables}:] a list of expressions representing variables in the term
@@ -655,7 +636,7 @@ class(MultHomog) <- "nonlin"
 \end{Scode}
 Firstly, the interaction may be based on any number of factors, hence the use
 of the special ``\Rfunarg{...}'' argument. The use of \Rfunction{match.call} is
-equivalent to the use of \Rfunction{substitute} in the \Rfunction{Logistic}
+analogous to the use of \Rfunction{substitute} in the \Rfunction{Logistic}
 function: to obtain expressions for the factors as specified by the user.
 
 The returned \Rfunarg{common} argument specifies that homogeneous effects are to
@@ -675,32 +656,25 @@ general predictors, it is not necessary to use call-matched labelling, so the
 % Dref starting values as example of ensuring the arbitrariness of the final
 % parameterization is emphasised (see old plug-in section)?
 
-
-\subsection{Using custom plug-ins to fit nonlinear terms}
-\label{sec:plug-ins}
-
-Prior to the introduction (in \Rpackage{gnm} version 0.9-1) of \Rclass{nonlin} functions, nonlinear terms that
-could not be specified and estimated using the in-built capability of
-\Rfunction{gnm} had to be fitted using plug-in functions. The plug-in functions
-previously distributed with \Rpackage{gnm} have now been implemented as
-\Rclass{nonlin} functions, but user-specified plug-in functions may still be
-used with the current version of \Rpackage{gnm} as documented in
-\Rcode{?Nonlin}. Nevertheless, support for plug-in functions is likely to be
-withdrawn in future versions, in favour of the simpler \Rclass{nonlin} functions.
-
 \section{Controlling the fitting procedure}
 
 The \Rfunction{gnm} function has a number of arguments which affect the way a
 model will be fitted.  Basic control parameters can be set using the arguments
-\Rfunarg{tolerance}, \Rfunarg{iterStart} and \Rfunarg{iterMax}. Starting values
-for the parameter estimates can be set by \Rfunarg{start} and parameters can be
-constrained via \Rfunarg{constrain} and \Rfunarg{constrainTo}
-arguments. Parameters of a stratification factor can be
-handled more efficiently by specifying the factor in an \Rfunarg{eliminate}
-argument. These options are described in more detail below.
+%\Rfunarg{checkLinear},
+\Rfunarg{lsMethod}, \Rfunarg{ridge}, \Rfunarg{tolerance},
+\Rfunarg{iterStart} and \Rfunarg{iterMax}. Starting values for the parameter
+estimates can be set by \Rfunarg{start} and parameters can be constrained via
+\Rfunarg{constrain} and \Rfunarg{constrainTo} arguments. Parameters of a
+stratification factor can be handled more efficiently by specifying the factor
+in an \Rfunarg{eliminate} argument. These options are described in more detail below.
 
 \subsection{Basic control parameters}
 
+%By default, \Rfunction{gnm} will use \Rfunction{glm.fit} to fit models where the
+%predictor is linear and \Rfunarg{eliminate} is \Rcode{NULL}. This behaviour can
+%be overridden by setting \Rfunarg{checkLinear} to \Rcode{FALSE}.
+%%% At present there is no advantage to doing this! Parameterization would be
+%%% the same.
 The arguments \Rfunarg{iterStart} and \Rfunarg{iterMax} control respectively the
 number of starting iterations (where applicable) and the number of main
 iterations used by the fitting algorithm. The progress of these iterations can
@@ -712,6 +686,8 @@ the deviance is printed at the beginning of each iteration (over-riding the
 printing of ``.'' if necessary). Whenever \Rfunarg{verbose} is \Robject{TRUE},
 additional messages indicate each stage of the fitting process and diagnose any
 errors that cause that cause the algorithm to restart.
+
+%lsMethod and ridge here?
 
 The fitting algorithm will terminate before the number of main iterations has
 reached \Rfunarg{iterMax} if the convergence criteria have been met, with
@@ -762,7 +738,7 @@ Begin with all parameters set to \Rcode{NA}.
 \item
 \label{i:nonlin}
 Replace \Rcode{NA} values with any starting values set by
-\Rclass{nonlin} functions or plug-in functions.
+\Rclass{nonlin} functions.
 \item
 \label{i:start}
 Replace current values with any (non-\Rcode{NA}) starting values specified by
@@ -794,7 +770,7 @@ re-estimating linear parameters after each round of updates.
 \end{enumerate}
 Note that no starting iterations (step \ref{i:iter}) will be run if all parameters are
 linear, or if all nonlinear parameters are specified by \Rfunarg{start},
-\Rfunarg{constrain} or a plug-in function.
+\Rfunarg{constrain} or a \Rclass{nonlin} function.
 
 \subsection{Using \Rfunarg{constrain}}
 \label{sec:constrain}
@@ -2051,8 +2027,8 @@ doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(election), class:vote),
 
              family = poisson, data = cautres)
+getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, ", class:vote")))
 getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, ", religion:vote")))
-getContrasts(doubleUnidiff, rev(pickCoef(doubleUnidiff, "[.]religion")))
 @ %def
 
 \subsection{Generalized additive main effects and
@@ -2673,8 +2649,8 @@ We list here, for easy reference, all of the user-level functions in the
                                    diagonal elements \\
     &	\Rfunction{Symm}	&  create symmetric interaction of factors \\
     &   \Rfunction{Topo}        &  create `topological' interaction factors \\
-    &   \Rfunction{Const}       &  specify a constant in a \Rfunction{gnm} model
-                                   formula \\
+    &   \Rfunction{Const}       &  specify a constant in a \Rclass{nonlin}
+                                   function predictor \\
     &	\Rfunction{Dref}	&  specify a diagonal reference term in a \Rfunction{gnm}
                                    model formula \\
     &	\Rfunction{Mult}	&  specify a product of predictors in a
@@ -2691,8 +2667,6 @@ We list here, for easy reference, all of the user-level functions in the
                            \Rfunction{gnm} formula	\\
 %    &	\Rfunction{Raise}	&  specify a predictor raised to a constant
 %                                   power in a  \Rfunction{gnm} formula	\\
-    &	\Rfunction{Nonlin}	&  specify a special nonlinear term in a
-                                   \Rfunction{gnm} formula (using external plug-in function)\\
     &   \Rfunction{wedderburn}      &  specify the Wedderburn
                                        quasi-likelihood family \\
     \midrule

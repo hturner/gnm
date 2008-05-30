@@ -3,7 +3,7 @@ export(asGnm, checkEstimable, Const, Diag,
        Dref, DrefWeights, exitInfo, Exp, expandCategorical, getContrasts,
        getModelFrame, gnm, instances, Inv, #Log, Logit,
        MPinv, Mult, MultHomog,
-       Nonlin, ofInterest, "ofInterest<-", parameters,
+       ofInterest, "ofInterest<-", parameters,
        pickCoef, qrSolve, #Raise,
        residSVD, se,
        Symm, termPredictors, Topo, wedderburn)

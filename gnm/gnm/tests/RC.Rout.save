@@ -1,6 +1,6 @@
 
-R version 2.5.0 alpha (2007-04-02 r41011)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.7.0 Patched (2008-05-11 r45672)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -33,15 +33,4 @@ Done
 [1] 3.570562451
 > print(RC1model$df)
 [1] 8
-> 
-> RC1modelOffset <- gnm(count ~ SES + MHS + Const(3) + 
-+                       Mult(-1 + SES, -1 + MHS),
-+                       family = poisson, data = mentalHealth)
-Initialising
-Running start-up iterations..
-Running main iterations......
-Done
-> coef(RC1model)[1] - coef(RC1modelOffset)[1]
-(Intercept) 
-   2.998655 
 > 

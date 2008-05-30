@@ -5,14 +5,13 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                                         substitute(~ e + .,
                                                    list(e = eliminate))))
         data <- data[!names(data) %in% deparse(eliminate)]
-        fullTerms <- terms.formula(tmp, specials = c("Const", "instances"),
-                                   simplify = TRUE, keep.order = TRUE,
-                                   data = data)
+        fullTerms <- terms.formula(tmp, specials = "instances", simplify = TRUE,
+                                   keep.order = TRUE, data = data)
         attr(fullTerms, "intercept") <- 0
     }
     else {
-        fullTerms <- terms(formula, specials = c("Const", "instances"),
-                           simplify = TRUE, keep.order = TRUE, data = data)
+        fullTerms <- terms(formula, specials = "instances", simplify = TRUE,
+                           keep.order = TRUE, data = data)
     }
 
     if (is.empty.model(fullTerms))
@@ -28,12 +27,13 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         offsetLabels <- variables[attr(fullTerms, "offset")]
         response <- variables[attr(fullTerms, "response")][1][[1]]
         fullTerms <- terms(reformulate(c(termLabels, offsetLabels), response),
-                           keep.order = TRUE, data = data, specials = "Const")
+                           keep.order = TRUE, data = data)
     }
 
     termLabels <- c("1"[attr(fullTerms, "intercept")],
                     attr(fullTerms, "term.labels"))
     variables <- predvars <- as.list(attr(fullTerms, "variables"))[-1]
+
     specials <- which(sapply(variables, function(x) {
         length(x) > 1 && inherits(match.fun(x[[1]]), "nonlin")
     }))
@@ -47,7 +47,6 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                    match = !logical(n),
                    assign = seq(length = n),
                    type = rep.int("Linear", n),
-                   NonlinID = character(n),
                    prefixLabels = character(n),
                    varLabels = termLabels,
                    predictor = lapply(termLabels, as.name),
@@ -72,12 +71,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
              paste(names(nonsense)[nonsense], ")"),
              " are not in sequence")
 
-    const <- attr(fullTerms, "specials")$Const
-    if (length(const)) {
-        termLabels <- termLabels[!termLabels %in% variables[const]]
-        predvars[const] <- lapply(variables[const], eval)
-    }
-    offsetVars <- variables[c(attr(fullTerms, "offset"), const)]
+    offsetVars <- variables[attr(fullTerms, "offset")]
     nonlinear <- termLabels %in% variables[specials]
     variables <- variables[-specials]
     predvars <- predvars[-specials]
@@ -90,20 +84,14 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     match <- as.list(!logical(n))
     common <- as.list(logical(n))
     class <- as.list(rep.int("Linear", n))
-    NonlinID <- prefixLabels <- as.list(character(n))
+    prefixLabels <- as.list(character(n))
     start <- vector("list", n)
     adj <- 1
 
     for (j in which(nonlinear)) {
-        if (identical(substr(unitLabels[[j]], 0, 7), "Nonlin(")){
-            tmp <- eval(parse(text = unitLabels[[j]]))
-            tmp$varLabels <- tmp$unitLabels <- unitLabels[[j]]
-            tmp$predictor <- paste("`", unitLabels[[j]], "`", sep = "")
-        }
-        else
-            tmp <- do.call("nonlinTerms",
-                           eval(parse(text = unitLabels[[j]]),
-                                as.data.frame(data), environment(formula)))
+        tmp <- do.call("nonlinTerms",
+                       eval(parse(text = unitLabels[[j]]),
+                            as.data.frame(data), environment(formula)))
         unitLabels[[j]] <- tmp$unitLabels
         if (!identical(tmp$prefix, "#")) {
             bits <- hashSplit(tmp$prefix)
@@ -143,7 +131,6 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         match[[j]] <- as.logical(tmp$matchID)
         common[[j]] <- tmp$common %in% tmp$common[duplicated(tmp$common)]
         class[[j]] <- tmp$type
-        NonlinID[[j]] <- tmp$NonlinID
         start[j] <- list(tmp$start)
         adj <- max(c(0, blockList[[j]])) + 1
         variables <- c(variables, tmp$variables)
@@ -171,7 +158,6 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                match = unlist(match),
                assign = rep(seq(class), sapply(class, length)),
                type = unlist(class),
-               NonlinID = unlist(NonlinID),
                prefixLabels = unlist(prefixLabels),
                varLabels = unlist(varLabels),
                start = start,

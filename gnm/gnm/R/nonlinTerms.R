@@ -4,7 +4,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                      start = NULL) {
 
     shadow <- predictor <- predvars <- vars <- unitLabels <- hashLabels <-
-        offsetLabels <- varLabels <- blockList <- NonlinID <- matchID <-
+        offsetLabels <- varLabels <- blockList <- matchID <-
             suffix <-list()
 
     if (length(names(predictors))) {
@@ -39,7 +39,6 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
             predvars[[i]] <- vars[[i]] <-
                 as.list(attr(nonlinTerms, "variables"))[-1]
             offsetLabels[[i]] <- vars[[i]][attr(nonlinTerms, "offset")]
-            NonlinID[[i]] <- list()
             varLabels[[i]] <- predictor[[i]] <- unitLabels[[i]] <- NULL
             blockList[[i]] <- numeric(0)
             suffix[[i]] <- character(0)
@@ -76,19 +75,14 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
             else
                 nonlinear <- rep(FALSE, n)
             blockList[[i]] <- as.list(nonlinear - min(nonlinear))
-            NonlinID[[i]] <- as.list(character(n))
             if (dup[i])
                 hash <- last.hash
             else
                 last.hash <- hash
             for (j in seq(n)) {
                 if (nonlinear[j]) {
-                    if (identical(substr(unitLabels[[i]][[j]], 0, 7),
-                                  "Nonlin("))
-                        tmp <- eval(parse(text = unitLabels[[i]][[j]]))
-                    else
-                        tmp <- do.call("Recall",
-                                       eval(parse(text = unitLabels[[i]][[j]])))
+                    tmp <- do.call("Recall",
+                                   eval(parse(text = unitLabels[[i]][[j]])))
                     if (match[i]) {
                         if (any(tmp$matchID > 0)) {
                             shadow[[i]][[j]] <- tmp$prefix
@@ -135,11 +129,6 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                                               sep = "")[!is.null(tmp$suffix)]
                     predictor[[i]][[j]] <- gsub("#", paste("#", adj, sep = ""),
                                                 tmp$predictor)
-                    if (identical(tmp$NonlinID, "Nonlin"))
-                        NonlinID[[i]][[j]] <- rep.int("Nonlin",
-                                                      length(tmp$unitLabels))
-                    else
-                        NonlinID[[i]][[j]] <- character(length(tmp$unitLabels))
                     vars[[i]] <- c(vars[[i]], tmp$variables)
                     predvars[[i]] <- c(predvars[[i]], tmp$predvars)
                 }
@@ -203,7 +192,6 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
          block = unlist(blockList),
          common = common,
          type = rep.int("Special", length(common)),
-         NonlinID = unlist(NonlinID),
          predictor = predictor,
          suffix = unlist(suffix),
          start = start)

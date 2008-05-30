@@ -3,8 +3,8 @@
 \title{ Estimated Contrasts and Standard Errors for Parameters in a gnm
  Model } 
 \description{
-Computes scaled contrasts for a set of parameters from a
-\code{\link{gnm}} model and estimates standard errors for the
+Computes contrasts or scaled contrasts for a set of parameters from a
+\code{\link{gnm}} model, and computes standard errors for the
 estimated contrasts.  Where possible, quasi standard errors are also
 computed. 
 }
@@ -15,7 +15,7 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}
   \item{set}{ a vector of indices (numeric) or coefficient names
-    (character). If \code{NULL}, a Tk dialog will open for parameter
+    (character). If \code{NULL}, a dialog will open for parameter
     selection. }
   \item{ref}{either a single numeric index, or a vector
     of real numbers which sum to 1, or one of the character
@@ -29,8 +29,9 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
   \item{\dots}{ arguments to pass to other functions. }
 }
 \details{
-  The indices in \code{set} must all be in \code{1:length(coef(object))}.  If
-  \code{set = NULL}, a Tk dialog is presented for the selection
+  The indices in \code{set}
+  must all be in \code{1:length(coef(object))}.  If
+  \code{set = NULL}, a dialog is presented for the selection
   of indices (model coefficients).
 
   For the set of coefficients selected, contrasts and their standard
@@ -52,14 +53,16 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
   The contrasts may be scaled by
   \deqn{\frac{1}{\sqrt{\sum_r v_r * d_r^2}}}{1/sqrt(sum(v * d))}
   where \eqn{d_r} is a contrast of the r'th coefficient in \code{set}
-  with the reference level specified by \code{scaleRef} and \eqn{v} is an
-  R-length vector of weights specified by \code{scaleWeights}. If
+  with the reference level specified by \code{scaleRef} and \eqn{v} is a
+  vector of weights (of the same length as \code{set})
+  specified by \code{scaleWeights}. If
   \code{scaleWeights} is \code{NULL} (the default), \code{scaleRef}
   is ignored and no scaling is performed. Other options for
   \code{scaleWeights} are \code{"unit"} for weights equal to one and
-  \code{"setLength"} for weights equal to \eqn{1/R}. If \code{scaleRef}
-  is equivalent to \code{ref} these options constrain the sum of squared
-  contrasts to 1 and R respectively.
+  \code{"setLength"} for weights equal to the reciprocal of
+  \code{length(set)}. If \code{scaleRef}
+  is the same as \code{ref}, these options constrain the sum of squared
+  contrasts to 1 and \code{length(set)} respectively.
 
   Quasi-variances (and corresponding quasi standard errors) are
   reported for \bold{unscaled} contrasts where possible. These statistics are

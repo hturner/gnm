@@ -287,7 +287,7 @@ rowSums(temp) - quasi.symm$linear.predictors
 Such a decomposition might be useful, for example, in assessing the relative
 contributions of different terms or groups of terms.
 
-\subsection{Const}
+\subsection{\Rfunction{Const}}
 
 In Section \ref{sec:nonlinear} we shall see how nonlinear terms may be specified
 using functions of class \Rclass{nonlin} that are analogous to basic
@@ -425,7 +425,7 @@ factor, sorted into increasing order.
 \label{sec:Dref function}
 
 \Rfunction{Dref} is a \Rclass{nonlin} function to fit diagonal reference terms
-involving
+ \citep{Sobe81, Sobe85} involving
 two or more factors with a common set of levels. A diagonal reference term
 comprises an additive component for each factor. The component for factor $f$
 is given by
@@ -679,11 +679,11 @@ general predictors, it is not necessary to use call-matched labelling, so the
 \subsection{Using custom plug-ins to fit nonlinear terms}
 \label{sec:plug-ins}
 
-Prior to the introduction of \Rclass{nonlin} functions, nonlinear terms that
+Prior to the introduction (in \Rpackage{gnm} version 0.9-1) of \Rclass{nonlin} functions, nonlinear terms that
 could not be specified and estimated using the in-built capability of
 \Rfunction{gnm} had to be fitted using plug-in functions. The plug-in functions
 previously distributed with \Rpackage{gnm} have now been implemented as
-\Rclass{nonlin} functions, however user-specified plug-in functions may still be
+\Rclass{nonlin} functions, but user-specified plug-in functions may still be
 used with the current version of \Rpackage{gnm} as documented in
 \Rcode{?Nonlin}. Nevertheless, support for plug-in functions is likely to be
 withdrawn in future versions, in favour of the simpler \Rclass{nonlin} functions.
@@ -727,7 +727,7 @@ deemed to have converged.
 \label{sec:start}
 
 In some contexts, the default starting values may not be appropriate and the
-algorithm will fail to converge, or perhaps only converge after a large number
+fitting algorithm will fail to converge, or perhaps only converge after a large number
 of iterations. Alternative starting values may be passed on to \Rfunction{gnm}
 by specifying a \Rfunarg{start} argument. This should be a numeric vector of
 length equal to the number of parameters (or possibly the non-eliminated
@@ -745,9 +745,17 @@ model2 <- gnm(mu ~ R + C + instances(Mult(R, C), 2),
 \end{Scode}
 The \Rfunction{gnm} call can be made with \Rcode{method = "coefNames"} to
 identify the parameters of a model prior to estimation, to assist with the
-specification of arguments such as \Rfunarg{start}.
+specification of arguments such as \Rfunarg{start}.  For example, to get the number \Rcode{10} for the value of \Rfunarg{start} above, we could have done
+\begin{Scode}
+gnm(mu ~ R + C + instances(Mult(R, C), 2), method = "coefNames")
+\end{Scode}
+from whose output it would be seen that there are 10 new coefficients in
+\Robject{model2}.  When called with \Rcode{method = "coefNames"},
+\Rfunction{gnm} makes no attempt to fit the specified model;
+instead it returns just the
+names that the coefficients in the fitted model object would have.
 
-The starting procedure used by \Rfunction{gnm} is as follows
+The starting procedure used by \Rfunction{gnm} is as follows:
 \begin{enumerate}
 \item
 Begin with all parameters set to \Rcode{NA}.
@@ -793,9 +801,9 @@ linear, or if all nonlinear parameters are specified by \Rfunarg{start},
 
 By default, \Rfunction{gnm} only imposes identifiability constraints according
 to the general conventions used by \Robject{R} to handle linear aliasing. Therefore
-models that have any nonlinear terms will be usually be over-parameterized and
-\Rfunction{gnm} will return a random parameterization for unidentified
-coefficients.
+models that have any nonlinear terms will be typically be over-parameterized,
+and \Rfunction{gnm} will return a random parameterization for unidentified
+coefficients (determined by the randomly chosen starting values for the iterative algorithm, step 5 above).
 
 To illustrate this point, consider the following application of \Rfunction{gnm},
 discussed later in Section \ref{sec:RCmodels}:
@@ -1003,7 +1011,8 @@ resp3:x  0.00000 0.00000 0.02163 0.000468
 resp2:x -0.02334 0.03761 0.03077 0.000947
 resp1:x -0.00773 0.02452 0.01154 0.000133
 \end{Soutput}
-see Section \ref{sec:getContrasts} for further details of this function.
+See Section \ref{sec:getContrasts} for further details of the
+\Rfunction{getContrasts} function.
 
 The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
@@ -1148,9 +1157,17 @@ attribute of the returned profile:
 
 This information is used by \Rmethod{confint.gnm} to return infinite limits for
 confidence intervals, as appropriate:
-\begin{Scode}
-confint(prof)
-\end{Scode}
+\begin{Sinput}
+> confint(prof, level = 0.95)
+\end{Sinput}
+\begin{Soutput}
+                                   2.5 %     97.5 %
+Mult(Exp(.), orig:dest).educ1         NA         NA
+Mult(Exp(.), orig:dest).educ2 -0.5978901  0.1022447
+Mult(Exp(.), orig:dest).educ3 -1.4836854 -0.2362378
+Mult(Exp(.), orig:dest).educ4 -2.5792398 -0.2953420
+Mult(Exp(.), orig:dest).educ5       -Inf -0.7006889
+\end{Soutput}
 
 \subsection{\Rfunction{ofInterest} and \Rfunction{pickCoef}}
 \label{sec:ofInterest}
@@ -1210,7 +1227,7 @@ the (local) vector of partial derivatives.  The \Rfunction{checkEstimable}
 function provides a numerical version of the sort of algebraic test
 described in \citet{CatcMorg97}.
 
-Consider the following model, that is described later in Section
+Consider the following model, which is described later in Section
 \ref{sec:Unidiff}:
 <<Double_UNIDIFF_model>>=
 data(cautres)
@@ -1220,10 +1237,10 @@ doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
                      data = cautres)
 @
 The effects of the first constituent multiplier in the first multiplicative
-interaction are identified when the estimate of one of these effects is
-constrained to zero, say for the effect of the first level. The parameters to be
-estimated are then the differences between each effect and the effect of the
-first level. These differences can be represented by a contrast matrix as
+interaction are identified when the parameter for one of the levels --- say for the first level --- is
+constrained to zero. The parameters to be
+estimated are then the differences between each other level and the
+first. These differences can be represented by a contrast matrix as
 follows:
 <<Contrast_matrix>>=
 coefs <- names(coef(doubleUnidiff))
@@ -1298,18 +1315,36 @@ By default, \Rfunction{getContrasts} uses the first parameter of the specified
 set as the reference level; alternatives may be set via the \Rfunarg{ref}
 argument.
 
-In the above example, the simple contrasts are estimable without scaling. This
-is not always the case and a more general family of contrasts for a set of
+In the above example, the simple contrasts are estimable without scaling. In
+certain other applications, for example row-column association models (see
+Section~\ref{sec:RCmodels}), the contrasts are identified only after fixing
+their scale.  A more general family of \emph{scaled} contrasts for a set of
 parameters $\gamma_r, r = 1, \ldots, R$ is given by
 \begin{equation*}
     \gamma^*_r = \frac{\gamma_r - \overline{\gamma}_w}{
-      \sqrt{\sum v_r * (\gamma_r - \overline{\gamma}_u)^2}}
+      \sqrt{\sum_r v_r  (\gamma_r - \overline{\gamma}_u)^2}}
 \end{equation*}
-where $\overline{gamma}_w = \sum w_r \gamma_r$ is the reference level against
-which the contrasts are taken; $\overline{gamma}_u$ is a possibly different
-weighted mean of the parameters and $v_r$ is a set of weights. This type of
-scaling can be obtained by specifying the form of $\overline{gamma}_u$ and $v_r$
-to the \Rfunarg{scaleRef} and \Rfunarg{scaleWeights} arguments of
+where $\overline{\gamma}_w = \sum w_r \gamma_r$ is the reference level against
+which the contrasts are taken, $\overline{\gamma}_u = \sum u_r \gamma_r$
+is a possibly different
+weighted mean of the parameters to be used as reference level for a set
+of ``scaling contrasts'', and $v_r$ is a further
+set of weights. Thus, for example, the choice
+\[
+w_r=
+\begin{cases}
+1&(r=1)\\
+0&\hbox{(otherwise)}
+\end{cases},
+\qquad
+u_r=v_r=1/R
+\]
+specifies contrasts with the first level, with the coefficients scaled to have
+variance 1\null.
+This general type of
+scaling can be obtained by specifying the form of
+$\overline{\gamma}_u$ and $v_r$
+via the \Rfunarg{scaleRef} and \Rfunarg{scaleWeights} arguments of
 \Rfunction{getContrasts}.
 
 As an example, consider the following model, described in Section~\ref{sec:RCmodels}:
@@ -1322,8 +1357,8 @@ RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS),
                 family = poisson, data = mentalHealth)
 @ %def
 The effects of the constituent multipliers of the multiplicative interaction are
-identified when both their scale and location is constrained. A simple way to
-achieve this is to set the first effect to zero and the last effect to one:
+identified when both their scale and location are constrained. A simple way to
+achieve this is to set the first parameter to zero and the last parameter to one:
 @
 <<RCmodel_constrained>>=
 RC1model2 <- gnm(count ~ SES + MHS + Mult(1, SES, MHS),
@@ -1332,11 +1367,18 @@ RC1model2 <- gnm(count ~ SES + MHS + Mult(1, SES, MHS),
                  family = poisson, data = mentalHealth)
 summary(RC1model2)
 @ %def
-Note that a constant multiplier must be incorporated into the interaction term
-to maintain equivalence with the original parameterization. These constraints
-are equivalent to scaled contrasts with the first effect, in which the scaling
-also takes the first effect as the reference level and the scaling weights are
-all zero except the last:
+Note that a constant multiplier must be incorporated into the interaction term,
+i.e., the multiplicative
+term \Rcode{Mult(SES, MHS)} becomes \Rcode{Mult(1, SES, MHS)},
+in order
+to maintain equivalence with the original model specification. The constraints
+specified for \Robject{RC1model2} result in the estimation of
+scaled contrasts with level \Rcode{A} of \Rcode{SES}, in which the scaling
+fixes the magnitude of the contrast between   level \Rcode{F} and
+level \Rcode{A} to be equal to 1\null.
+The equivalent use of \Rfunction{getContrasts}, together
+with the \emph{unconstrained} fit (\Robject{RC1model}),
+in this case is as follows:
 @
 <<getContrasts_simple>>=
 getContrasts(RC1model, pickCoef(RC1model, "[.]SES"), ref = "first",
@@ -1344,8 +1386,9 @@ getContrasts(RC1model, pickCoef(RC1model, "[.]SES"), ref = "first",
 @ %def
 Quasi-variances and standard errors are not returned here as they can not
 (currently) be computed for scaled contrasts. When the scaling uses the same
-reference level as the contrasts, equal scale weights produce spherical
-contrasts, whilst unequal weights produce elliptical contrasts. Further examples
+reference level as the contrasts, equal scale weights produce ``spherical''
+contrasts, whilst unequal weights produce ``elliptical''
+contrasts. Further examples
 are given in Sections~\ref{sec:RCmodels} and \ref{sec:GAMMI}.
 
 For more general linear combinations of parameters
@@ -1451,13 +1494,6 @@ be useful when testing methods.
 \section{Examples}
 \label{sec:Examples}
 
-This section provides some examples of the wide range of models that may be fitted
-using the \Rpackage{gnm} package. Sections \ref{sec:RCmodels}, \ref{sec:Dref} and
-\ref{sec:Unidiff} consider various models for contingency tables; Section
-\ref{sec:GAMMI} considers AMMI and GAMMI models which are typically used in
-agricultural applications, and Section \ref{sec:Stereotype} considers the stereotype
-model, which is used to model an ordinal response.
-
 \subsection{Row-column association models}
 \label{sec:RCmodels}
 
@@ -1478,8 +1514,8 @@ log-multiplicative form of the RC(1) model for the cell means $\mu_{rc}$ is
 given by
 \[\log \mu_{rc} = \alpha_r + \beta_c + \gamma_r\delta_c. \]
 
-We shall fit this model to the \Robject{mentalHealth} data set taken from
-\citet{Agre02} page 381, which is a two-way contingency table classified
+We shall fit this model to the \Robject{mentalHealth} data set from
+\citet[][page 381]{Agre02}, which is a two-way contingency table classified
 by the child's
 mental impairment (MHS) and the parents' socioeconomic status (SES). Although
 both of these factors are ordered, we do not wish to use polynomial contrasts
@@ -1526,8 +1562,10 @@ nu <- getContrasts(RC1model, pickCoef(RC1model, "[.]MHS"),
 mu
 nu
 @ %def
-Since the value of \Robject{beta} is dependent on the scaling of the contrasts,
-it is not advisable to conduct inference on this parameter directly. However the
+Since the value of \Robject{beta} is dependent upon the particular
+scaling used for the contrasts,
+it is typically not of interest
+to conduct inference on this parameter directly. The
 standard error for \Robject{beta} could be obtained, if desired, via the delta
 method.
 

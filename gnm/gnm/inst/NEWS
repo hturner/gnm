@@ -1,3 +1,30 @@
+Changes in gnm 0.9-5
+====================	
+
+Improvements
+------------
+
+    o	getContrasts() can now estimate _scaled_ contrasts with more flexibility in
+	how the reference level is defined. 
+    o	changed tolerance level in checkEstimable to 1e6 * .Machine$double.eps as
+	previous tolerance too strict for some examples. 
+
+Changes in Behaviour
+--------------------
+
+    o	getContrasts() now only handles one set of parameters at a time.
+    o	use of Const() is now restricted to the symbolic predictors of "nonlin" 
+	functions.
+    o	Nonlin() - the wrapper function for plug-in functions - is now defunct. Use
+	"nonlin" functions to specify custom nonlinear terms.
+
+Bug fixes
+---------
+
+    o	plot.gnm now uses standardised Pearson residuals for plot 'which = 5' so 
+	that the Cook's distance contours are correct
+
+
 Changes in gnm 0.9-4
 ====================
 

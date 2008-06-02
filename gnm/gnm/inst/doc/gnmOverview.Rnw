@@ -687,7 +687,19 @@ printing of ``.'' if necessary). Whenever \Rfunarg{verbose} is \Robject{TRUE},
 additional messages indicate each stage of the fitting process and diagnose any
 errors that cause that cause the algorithm to restart.
 
-%lsMethod and ridge here?
+The \Rfunarg{lsMethod} argument specifies what numerical
+     method is to be used to solve the (typically rank-deficient) least
+     squares problem at the heart of the \Rfunction{gnm} fitting algorithm: the
+     options are  direct solution using a QR decomposition (\Rcode{``qr''}),
+     and matrix inversion via Cholesky decomposition (\Rcode{``chol''}).  In
+     both cases, the design matrix is standardized and regularized (in
+     the Levenberg-Marquardt sense) prior to solving; the \Rfunarg{ridge}
+     argument provides a degree of control over the regularization
+     performed (smaller values may sometimes give faster convergence
+     but can lead to numerical instability).  If \Rfunarg{lsMethod} is left
+     unspecified, the default is \Rcode{``qr''}, unless \Rfunarg{eliminate} 
+     is used in
+     which case the default \Rfunarg{lsMethod} used is \Rcode{``chol''}.
 
 The fitting algorithm will terminate before the number of main iterations has
 reached \Rfunarg{iterMax} if the convergence criteria have been met, with

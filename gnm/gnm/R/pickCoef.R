@@ -11,7 +11,7 @@ pickCoef <- function(object, regexpr = NULL, ...){
         dots <- list(...)
         dotArgs <- match(names(default), names(dots))
         allArgs <- c(list(object), dots, default[is.na(dotArgs)])
-        selection <- unname(unlist(do.call(relimp:::"pickFrom", allArgs)))
+        selection <- unname(unlist(do.call(relimp::pickFrom, allArgs)))
     }
     else
         selection <- grep(regexpr, object)

@@ -8,9 +8,10 @@ export(asGnm, checkEstimable, Const, Diag,
        residSVD, se,
        Symm, termPredictors, Topo, wedderburn)
 
-import(MASS, stats)
-importFrom(graphics, plot)
-importFrom(nnet, class.ind)
+import(MASS, stats) # classes
+importFrom(graphics, plot)  # in plot.gnm; plot.profile.gnm
+importFrom(nnet, class.ind) # in gnmTools, expandCategorical
+importFrom(qvcalc, qvcalc) # in getContrasts
 
 S3method(add1, gnm)
 S3method(addterm, gnm)

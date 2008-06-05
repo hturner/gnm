@@ -1,5 +1,4 @@
 %\VignetteIndexEntry{gnmOverview}
-%\VignetteDepends{gtools}
 %\VignetteKeywords{Generalized Nonlinear Models}
 %\VignettePackage{gnm}
 
@@ -697,7 +696,7 @@ The \Rfunarg{lsMethod} argument specifies what numerical
      argument provides a degree of control over the regularization
      performed (smaller values may sometimes give faster convergence
      but can lead to numerical instability).  If \Rfunarg{lsMethod} is left
-     unspecified, the default is \Rcode{``qr''}, unless \Rfunarg{eliminate} 
+     unspecified, the default is \Rcode{``qr''}, unless \Rfunarg{eliminate}
      is used in
      which case the default \Rfunarg{lsMethod} used is \Rcode{``chol''}.
 

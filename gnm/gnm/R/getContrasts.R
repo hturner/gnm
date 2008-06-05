@@ -20,7 +20,7 @@ getContrasts <- function(model, set = NULL,
                 stop("Model has no parameters of interest")
             of.interest <- (model$eliminate + 1):l
         }
-        set <- unlist(relimp:::pickFrom(coefNames[of.interest], 1, ...))
+        set <- unlist(relimp::pickFrom(coefNames[of.interest], 1, ...))
     }
     setLength <- length(set)
     if (setLength == 0) stop(
@@ -107,7 +107,7 @@ getContrasts <- function(model, set = NULL,
         V <- Vcov[estimable.names, estimable.names, drop = FALSE]
     }
     if (sum(not.unestimable) > 2 && is.null(scaleWeights)) {
-        QVs <- try(qvcalc:::qvcalc(V), silent = TRUE)
+        QVs <- try(qvcalc(V), silent = TRUE)
         if (inherits(QVs, "try-error"))
             message("Quasi-variances could not be computed")
         else {

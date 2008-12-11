@@ -1,16 +1,13 @@
 .*\.DS_Store
 .*\.log
 .*\.aux
-.*\.bib
 .*\.bbl
 .*\.bst
 \.Rprofile
-.*\.Rnw
 .*\.sty
 .*\.tex
-.*\.ps
 .*\.eps
-.*-.*\.pdf
+.*\.ps
 .*\.dvi
 .*\.toc
 .*\.blg

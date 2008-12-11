@@ -29,7 +29,7 @@ models.
   \code{gnm} package:
   \describe{
     \item{gnmOverview}{\code{vignette("gnmOverview", package = "gnm")}}
-    \item{CHANGES}{\code{file.show(system.file("CHANGES", package = "gnm"))}}
+    \item{NEWS}{\code{file.show(system.file("NEWS", package = "gnm"))}}
   }
 }
 \author{

@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{gnmOverview}
+%\VignetteIndexEntry{Generalized nonlinear models in R: An overview of the gnm package}
 %\VignetteKeywords{Generalized Nonlinear Models}
 %\VignettePackage{gnm}
 

@@ -95,19 +95,17 @@ getContrasts <- function(model, set = NULL,
         print(names(iden)[iden %in% FALSE])
     }
     not.unestimable <- iden | is.na(iden)
-    sterr <- sqrt(diag(crossprod(combMatrix[, not.unestimable, drop = FALSE],
-                                 crossprod(Vcov, combMatrix))))
-    result <- data.frame(contr[not.unestimable], sterr)
+
+    V <- crossprod(combMatrix[, not.unestimable, drop = FALSE],
+                   crossprod(Vcov, combMatrix))
+    result <- data.frame(contr[not.unestimable], sqrt(diag(V)))
     dimnames(result) <- list(set[not.unestimable], c("Estimate", "Std. Error"))
 
     relerrs <- NULL
-    V <- NULL
-    if (any(not.unestimable)){
-        estimable.names <- names(not.unestimable)[not.unestimable]
-        V <- Vcov[estimable.names, estimable.names, drop = FALSE]
-    }
     if (sum(not.unestimable) > 2 && is.null(scaleWeights)) {
-        QVs <- try(qvcalc(V), silent = TRUE)
+        estimable.names <- names(not.unestimable)[not.unestimable]
+        Vcov <- Vcov[estimable.names, estimable.names, drop = FALSE]
+        QVs <- try(qvcalc(Vcov), silent = TRUE)
         if (inherits(QVs, "try-error"))
             message("Quasi-variances could not be computed")
         else {

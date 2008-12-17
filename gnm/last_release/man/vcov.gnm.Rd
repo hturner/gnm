@@ -13,9 +13,9 @@
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{ a model object of class \code{gnm}. }
-  \item{dispersion} {the dispersion parameter for the fitting family. By
+  \item{dispersion}{the dispersion parameter for the fitting family. By
     default it is obtained from \code{object}. }
-  \item{use.eliminate} {logical; should a non-zero \code{eliminate} component
+  \item{use.eliminate}{logical; should a non-zero \code{eliminate} component
     of \code{object} be exploited in calculating the result here?}
     
   \item{\dots}{ as for \code{\link{vcov}}. }

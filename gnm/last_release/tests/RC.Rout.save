@@ -1,6 +1,6 @@
 
-R version 2.7.0 Patched (2008-05-11 r45672)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.9.0 Under development (unstable) (2009-01-08 r47515)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -33,4 +33,21 @@ Done
 [1] 3.570562451
 > print(RC1model$df)
 [1] 8
+> 
+> rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
+> colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
+> mu <- getContrasts(RC1model, pickCoef(RC1model, "[.]SES"),
++                    ref = rowProbs, scaleRef = rowProbs,
++                    scaleWeights = rowProbs)
+> nu <- getContrasts(RC1model, pickCoef(RC1model, "[.]MHS"),
++                    ref = colProbs, scaleRef = colProbs,
++                    scaleWeights = colProbs)
+> all.equal(sum(mu$qv[,1] * rowProbs), 0)
+[1] TRUE
+> all.equal(sum(nu$qv[,1] * colProbs), 0)
+[1] TRUE
+> all.equal(sum(mu$qv[,1]^2 * rowProbs), 1)
+[1] TRUE
+> all.equal(sum(nu$qv[,1]^2 * colProbs), 1)
+[1] TRUE
 > 

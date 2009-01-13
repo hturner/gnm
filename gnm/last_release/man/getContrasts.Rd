@@ -116,6 +116,8 @@ RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS),
 ## parameterization of the model 
 
 ## The scores can be normalized as in Agresti's eqn (9.15):
+rowProbs <- with(mentalHealth, tapply(count, SES, sum) / sum(count))
+colProbs <- with(mentalHealth, tapply(count, MHS, sum) / sum(count))
 mu <- getContrasts(RC1model, pickCoef(RC1model, "[.]SES"),
                    ref = rowProbs, scaleRef = rowProbs,
                    scaleWeights = rowProbs)

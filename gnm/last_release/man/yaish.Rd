@@ -18,7 +18,7 @@ A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
   Israeli Society: 1974-1991.  D.Phil. Thesis, Nuffield College,
   University of Oxford. 
   
-  Yaish, M (2004).  \em{Class Mobility Trends in Israeli Society, 1974-1991.}
+  Yaish, M (2004).  \emph{Class Mobility Trends in Israeli Society, 1974-1991.}
   Lewiston: Edwin Mellen Press.
 }
 \examples{

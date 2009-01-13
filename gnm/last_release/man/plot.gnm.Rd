@@ -3,10 +3,10 @@
 \title{ Plot Diagnostics for a gnm Object }
 \description{
   Five plots are available: a plot of residuals against fitted values, a
-  Scale-Location plot of sqrt{| residuals |} against fitted values, a
-  Normal Q-Q plot, a plot of Cook's distances versus row labels, and a
-  plot of residuals against leverages.  By default, all except the
-  fourth are produced.
+  Scale-Location plot of \eqn{\sqrt{| residuals |}}{sqrt{| residuals |}}
+  against fitted values, a Normal Q-Q plot, a plot of Cook's distances
+  versus row labels, and a plot of residuals against leverages.  By
+  default, all except the fourth are produced.
 }
 \usage{
 \method{plot}{gnm}(x, which = c(1:3, 5), caption = c("Residuals vs Fitted",
@@ -57,14 +57,15 @@
 
   The "Scale-Location" plot, also called "Spread-Location" or "S-L"
   plot, takes the square root of the absolute residuals in order to
-  diminish skewness (sqrt{| E |} is much less skewed than | E | for
-  Gaussian zero-mean E).
+  diminish skewness (\eqn{\sqrt{| E |}}{sqrt{| E |}} is much less skewed
+    than \eqn{| E |} for Gaussian zero-mean \eqn{E}).
 
   The S-L, the Q-Q, and the Residual-Leverage plot, use
   \emph{standardized} residuals which have identical variance (under the
-  hypothesis).  They are given as R[i] / (s*sqrt(1 - h.ii)) where
-  h.ii are the diagonal entries of the hat matrix,
-  \code{influence()$hat}, see also \code{\link{hat}}. 
+  hypothesis).  They are given as \eqn{R[i] / (s*\sqrt(1 - h_{ii}))}{R[i]
+    / (s*sqrt(1 - h.ii))} where \eqn{h_{ii}}{h.ii} are the diagonal
+  entries of the hat matrix, \code{influence()$hat}, see also
+  \code{\link{hat}}.  
 
   The Residual-Leverage plot shows contours of equal Cook's
   distance, for values of \code{cook.levels} (by default 0.5 and 1) and

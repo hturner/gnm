@@ -233,8 +233,11 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         names(ofInterest) <- coefNames[ofInterest]
     }
 
+    if (missing(data))
+        data <- environment(formula)
+
     fit <- c(list(call = call, formula = formula,
-                  terms = modelTerms, eliminate = nElim,
+                  terms = modelTerms, data = data, eliminate = nElim,
                   ofInterest = ofInterest,
                   na.action = attr(modelData, "na.action"),
                   xlevels = .getXlevels(modelTerms, modelData),

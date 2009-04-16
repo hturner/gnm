@@ -47,9 +47,9 @@ NULL, terms = NULL, na.action = na.exclude, ...)
 \value{
   If \code{se = FALSE}, a vector or matrix of predictions.  If \code{se =
   TRUE}, a list with components
-  \item{fit}{ predictions.}
+  \item{ fit }{ predictions.}
   \item{ se.fit }{ estimated standard errors.}
-  \item{residual.scale}{ a scalar giving the square root of the dispersion used
+  \item{ residual.scale }{ a scalar giving the square root of the dispersion used
           in computing the standard errors.}
 }
 \references{ Chambers, J. M. and Hastie, T. J. (1992) \emph{Statistical Models in S }}

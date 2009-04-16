@@ -47,7 +47,7 @@ Dref(..., delta = ~ 1)
     estimated across the factors. }
   \item{ term }{ a function to create a deparsed mathematical expression
     of the term, given labels for the predictors.}
-  \item{start }{ a function to generate starting values for the parameters.}
+  \item{ start }{ a function to generate starting values for the parameters.}
   \item{ call }{ the call to use as a prefix for parameter labels. }
 }
 \references{Sobel, M. E. (1981), Diagonal mobility models: A substantively

@@ -196,14 +196,15 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   and is a list containing the following components:     
   \item{ call }{ the matched call. }
   \item{ formula }{ the formula supplied. }
-  \item{constrain}{ a numeric vector specifying any coefficients that
+  \item{ constrain }{ a numeric vector specifying any coefficients that
     were constrained in the fitting process. }
-  \item{constrainTo}{ a numeric vector of the same length as
+  \item{ constrainTo }{ a numeric vector of the same length as
     \code{constrain} specifying the values which constrained parameters
     were set to. }  
   \item{ family }{ the \code{family} object used. }
   \item{ prior.weights }{ the case weights initially supplied. }
   \item{ terms }{ the \code{terms} object used. }
+  \item{ data }{ the \code{data} argument. }
   \item{ na.action }{ the \code{na.action} attribute of the model frame }
   \item{ xlevels }{ a record of the levels of the factors used in fitting. }
   \item{ y }{ the response used. }
@@ -248,12 +249,12 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   a summary of the results, whilst \code{\link{plot.gnm}} may be used
   for model diagnostics.
 
-  The generic functions \code{\link{formula}}, \code{\link{family}},
-  \code{\link{terms}}, \code{\link{coefficients}},
-  \code{\link{fitted.values}}, \code{\link{deviance}},
-  \code{\link{extractAIC}}, \code{\link{weights}},
-  \code{\link{residuals}}, \code{\link{df.residual}},
-  \code{\link{model.frame}}, \code{\link{model.matrix}},
+  The generic functions \code{\link{formula}}, \code{\link{family}}, 
+  \code{\link{terms}}, \code{\link{coefficients}}, 
+  \code{\link{fitted.values}}, \code{\link{deviance}}, 
+  \code{\link{extractAIC}}, \code{\link{weights}}, 
+  \code{\link{residuals}}, \code{\link{df.residual}}, 
+  \code{\link{model.frame}}, \code{\link{model.matrix}}, 
   \code{\link{vcov}} and \code{\link{termPredictors}} maybe used to
   extract components from the object returned by \code{\link{gnm}} or to
   construct the relevant objects where necessary. 

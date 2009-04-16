@@ -48,7 +48,7 @@
                                       keep.order = TRUE), data = gnmData)
             tmpAssign <- attr(tmp, "assign") + !attr(tmp, "assign")[1]
             tmpAssign <- which(b)[tmpAssign]
-            nm <- paste(prefixLabels[tmpAssign], colnames(tmp)[match[b] | sum(b) > 1],
+            nm <- paste(prefixLabels[tmpAssign], colnames(tmp)[!identical(colnames(tmp), "(Intercept)")],
                         sep = "")
             names(tmpAssign) <- nm
             termTools[b] <- lapply(split(1:ncol(tmp), tmpAssign),

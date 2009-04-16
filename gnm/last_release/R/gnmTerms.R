@@ -89,9 +89,12 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     adj <- 1
 
     for (j in which(nonlinear)) {
-        tmp <- do.call("nonlinTerms",
-                       eval(parse(text = unitLabels[[j]]),
-                            as.data.frame(data), environment(formula)))
+        nonlinCall <- parse(text = unitLabels[[j]])[[1]]
+        args <- eval(nonlinCall,
+                            as.data.frame(data), environment(formula))
+        args <- c(args, nonlin.function = deparse(nonlinCall[[1]]),
+                  list(data = data))
+        tmp <- do.call("nonlinTerms", args)
         unitLabels[[j]] <- tmp$unitLabels
         if (!identical(tmp$prefix, "#")) {
             bits <- hashSplit(tmp$prefix)

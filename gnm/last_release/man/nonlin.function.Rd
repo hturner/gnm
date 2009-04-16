@@ -21,8 +21,8 @@
     default to predictors specified by formulae. If predictors are
     named, these names will be used as a prefix for parameter labels or
     the parameter label itself in the single parameter case (in either
-    case, prefixed by the call if supplied.) Matched predictors should
-    be given the same name as the matching argument of \code{call}. }
+    case, prefixed by the call if supplied.) Predictors that may include
+    an intercept should always be named or matched to a call. }
   \item{variables}{ an optional list of expressions representing variables
     in the term. }
   \item{term}{ a function which takes the arguments \code{predLabels}
@@ -146,7 +146,8 @@ Exp <- function(expression, inst = NULL){
          term = function(predictors, ...) {
              paste("exp(", predictors, ")", sep = "")
          },
-         call = as.expression(match.call()))
+         call = as.expression(match.call()),
+         match = 1)
 }
 class(Exp) <- "nonlin"
 

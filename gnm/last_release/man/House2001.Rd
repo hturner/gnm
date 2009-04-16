@@ -54,7 +54,7 @@ iterated singular value decomposition.  \emph{Computational Statistics
 }
 \examples{
 \dontrun{
-## This example takes some while to run 
+## This example takes some time to run!
 data(House2001)
 summary(House2001)
 ## Put the votes in a matrix, and discard members with too many NAs etc:
@@ -113,8 +113,8 @@ House2001model2 <- gnm(
               start = Start2, lsMethod = "qr")
 ## Deviance is 1545.166, df = 5257
 ##
-memberParameters1 <- pickCoef(House2001model, "1[.]2")
-memberParameters2 <- pickCoef(House2001model, "2[.]2")
+memberParameters1 <- pickCoef(House2001model2, "1).member")
+memberParameters2 <- pickCoef(House2001model2, "2).member")
 plot(coef(House2001model2)[memberParameters1],
      coef(House2001model2)[memberParameters2],
      col = partyColors,
@@ -124,7 +124,7 @@ plot(coef(House2001model2)[memberParameters1],
 ##
 ## The second dimension is mainly due to rollCall 12, which does not
 ## correlate well with the rest -- look at the coefficients of
-## House2001model1, or at
+## House2001model1, or at the 12th row of
 cormat <- cor(na.omit(House2001m))
 }
 }

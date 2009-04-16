@@ -1,7 +1,7 @@
 nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                      common = seq(predictors), call = NULL,
                      match = numeric(length(predictors)),
-                     start = NULL) {
+                     start = NULL, nonlin.function = NULL, data = NULL) {
 
     shadow <- predictor <- predvars <- vars <- unitLabels <- hashLabels <-
         offsetLabels <- varLabels <- blockList <- matchID <-
@@ -21,7 +21,6 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
     adj <- 0
     hash <- 0
     dup <- duplicated(match)
-    data <- getData()
     for (i in order(match)) {
         if (inherits(predictors[[i]], "formula")){
             nonlinTerms <- terms(predictors[[i]], specials = "Const",
@@ -35,6 +34,10 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                                  data = data)
             twiddle <- ""
         }
+        if (attr(nonlinTerms, "intercept") & !match[i] & !nchar(suffix[[i]]))
+            stop("\"nonlin\" function ", nonlin.function, " must either name ",
+                 "predictors that may include an intercept \n or match them ",
+                 "to a call")
         if (is.empty.model(nonlinTerms)) {
             predvars[[i]] <- vars[[i]] <-
                 as.list(attr(nonlinTerms, "variables"))[-1]

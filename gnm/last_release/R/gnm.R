@@ -2,7 +2,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 constrain = numeric(0),
                 constrainTo = numeric(length(constrain)), family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
-                checkLinear = TRUE, offset, start = NULL, tolerance = 1e-6,
+                checkLinear = TRUE, offset, start = NULL,
+                etastart = NULL, mustart = NULL, tolerance = 1e-6,
                 iterStart = 2, iterMax = 500, trace = FALSE, verbose = TRUE,
                 model = TRUE, x = TRUE, termPredictors = FALSE, lsMethod = "qr",
                 ridge = 1e-8, ...) {
@@ -204,7 +205,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         trace, verbose, x, termPredictors, ...))
         else
             fit <- gnmFit(modelTools, y, constrain, constrainTo, nElim, family,
-                          weights, offset, nObs, start, tolerance, iterStart,
+                          weights, offset, nObs, start, etastart, mustart,
+                          tolerance, iterStart,
                           iterMax, trace, verbose, x, termPredictors,
                           lsMethod = lsMethod, ridge = ridge)
     }

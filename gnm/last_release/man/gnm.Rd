@@ -10,10 +10,10 @@
 gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     constrainTo = numeric(length(constrain)), family = gaussian, 
     data = NULL, subset, weights, na.action,  method = "gnmFit", 
-    checkLinear = TRUE, offset, start = NULL, tolerance = 1e-06, 
-    iterStart = 2, iterMax = 500, trace = FALSE, verbose = TRUE, 
-    model = TRUE, x = TRUE, termPredictors = FALSE, lsMethod = "qr", 
-    ridge = 1e-08, ...) 
+    checkLinear = TRUE, offset, start = NULL, etastart = NULL,
+    mustart = NULL, tolerance = 1e-06, iterStart = 2, iterMax = 500,
+    trace = FALSE, verbose = TRUE, model = TRUE, x = TRUE,
+    termPredictors = FALSE, lsMethod = "qr", ridge = 1e-08, ...) 
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -65,7 +65,9 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \item{start}{ a vector of starting values for the parameters in the
     model; if a starting value is \code{NA}, the default starting value
     will be used. Starting values need not be specified for eliminated
-    parameters. } 
+    parameters. }
+  \item{etastart}{ starting values for the linear predictor. }
+  \item{mustart}{ starting values for the vector of means. }
   \item{tolerance}{ a positive numeric value specifying the tolerance level for
     convergence. }
   \item{iterStart}{ a positive integer specifying the number of start-up iterations

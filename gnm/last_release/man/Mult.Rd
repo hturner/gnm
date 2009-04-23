@@ -78,7 +78,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
 \dontrun{
 ## (this example can take quite a while to run)
 ##
-## Fitting two instances of a multplicative interaction (i.e. a
+## Fitting two instances of a multiplicative interaction (i.e. a
 ## two-component interaction)
 data(wheat)
 yield.scaled <- wheat$yield * sqrt(3/1000)

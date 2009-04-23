@@ -8,6 +8,8 @@
               offset = rep.int(0, length(y)),
               nObs = length(y),
               start = rep.int(NA, length(y)),
+              etastart = NULL,
+              mustart = NULL,
               tolerance = 1e-4,
               iterStart = 2,
               iterMax = 500,
@@ -42,30 +44,48 @@
             X0 <- modelTools$localDesignFunction(theta, varPredictors)
             attr(X0, "tag") <- "reference"
             theta[unspecified] <-  gnmStart(sum(unspecified))
-            varPredictors <- modelTools$varPredictors(theta)
-            X <- modelTools$localDesignFunction(theta, varPredictors)
-            asLinear <- colSums(X - X0) == 0
-            unspecifiedLin <- unspecified & asLinear
-            unspecifiedNonlin <- unspecified & !asLinear
-            if (any(unspecifiedLin)) {
-                theta[unspecifiedLin] <- NA
+            if (!is.null(mustart))
+                etastart <- family$linkfun(mustart)
+            if (!is.null(etastart)){
+                theta <- suppressWarnings(gnmFit(modelTools, y = etastart,
+                                                 constrain, constrainTo,
+                                                 eliminate, family = gaussian(),
+                                                 weights, offset, nObs,
+                                                 start = theta, etastart = NULL,
+                                                 mustart = NULL, tolerance,
+                                                 iterStart, iterMax = 1,
+                                                 trace = FALSE, verbose = FALSE,
+                                                 x = FALSE,
+                                                 termPredictors = FALSE,
+                                                 lsMethod = lsMethod,
+                                                 ridge = ridge)$coefficients)
+            }
+            else {
                 varPredictors <- modelTools$varPredictors(theta)
-                varPredictors <- lapply(varPredictors, naToZero)
-                offsetSpecified <- offset + modelTools$predictor(varPredictors)
                 X <- modelTools$localDesignFunction(theta, varPredictors)
-                theta[unspecifiedLin] <- quick.glm.fit(X[, unspecifiedLin], y,
-                                                       weights = weights,
-                                                       offset = offsetSpecified,
-                                                       family = family,
-                                                       eliminate = eliminate)
-                if (sum(is.na(theta)) > length(constrain)) {
-                    extra <- setdiff(which(is.na(theta)), constrain)
-                    isConstrained[extra] <- TRUE
-                    ind <- order(c(constrain, extra))
-                    constrain <- c(constrain, extra)[ind]
-                    constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
+                asLinear <- colSums(X - X0) == 0
+                unspecifiedLin <- unspecified & asLinear
+                unspecifiedNonlin <- unspecified & !asLinear
+                if (any(unspecifiedLin)) {
+                    theta[unspecifiedLin] <- NA
+                    varPredictors <- modelTools$varPredictors(theta)
+                    varPredictors <- lapply(varPredictors, naToZero)
+                    offsetSpecified <- offset + modelTools$predictor(varPredictors)
+                    X <- modelTools$localDesignFunction(theta, varPredictors)
+                    theta[unspecifiedLin] <- quick.glm.fit(X[, unspecifiedLin], y,
+                                                           weights = weights,
+                                                           offset = offsetSpecified,
+                                                           family = family,
+                                                           eliminate = eliminate)
+                    if (sum(is.na(theta)) > length(constrain)) {
+                        extra <- setdiff(which(is.na(theta)), constrain)
+                        isConstrained[extra] <- TRUE
+                        ind <- order(c(constrain, extra))
+                        constrain <- c(constrain, extra)[ind]
+                        constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
+                    }
+                    theta <- naToZero(theta)
                 }
-                theta <- naToZero(theta)
             }
             varPredictors <- modelTools$varPredictors(theta)
             eta <- offset + modelTools$predictor(varPredictors)

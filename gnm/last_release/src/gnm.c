@@ -72,8 +72,8 @@ SEXP nonlin(SEXP X, SEXP a, SEXP z, SEXP expr, SEXP rho) {
   SEXP ans;
   double *dX, *dans;
   dX = REAL(X);
-  dans = REAL(ans);
   PROTECT(ans = coerceVector(eval(expr, rho), REALSXP));
+  dans = REAL(ans);
   for ( ; i <= last;) {
     dX[i++] = dans[i1++];
   }

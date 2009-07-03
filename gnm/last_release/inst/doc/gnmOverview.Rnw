@@ -662,8 +662,10 @@ model will be fitted.  Basic control parameters can be set using the arguments
 %\Rfunarg{checkLinear},
 \Rfunarg{lsMethod}, \Rfunarg{ridge}, \Rfunarg{tolerance},
 \Rfunarg{iterStart} and \Rfunarg{iterMax}. Starting values for the parameter
-estimates can be set by \Rfunarg{start} and parameters can be constrained via
-\Rfunarg{constrain} and \Rfunarg{constrainTo} arguments. Parameters of a
+estimates can be set by \Rfunarg{start} or they can be generated from starting
+values for the predictors on the link or response scale via \Rfunarg{etastart} or
+\Rfunarg{mustart} respectively. Parameters can be constrained via
+\Rfunarg{constrain} and \Rfunarg{constrainTo} arguments, while parameters of a
 stratification factor can be handled more efficiently by specifying the factor
 in an \Rfunarg{eliminate} argument. These options are described in more detail below.
 
@@ -710,8 +712,10 @@ or the corresponding diagonal
 element of the Fisher information matrix is less than 1e-20, the algorithm is
 deemed to have converged.
 
-\subsection{Using \Rfunarg{start}}
+\subsection{Specifying starting values}
 \label{sec:start}
+
+\subsubsection{Using \Rfunarg{start}}
 
 In some contexts, the default starting values may not be appropriate and the
 fitting algorithm will fail to converge, or perhaps only converge after a large number
@@ -782,6 +786,27 @@ re-estimating linear parameters after each round of updates.
 Note that no starting iterations (step \ref{i:iter}) will be run if all parameters are
 linear, or if all nonlinear parameters are specified by \Rfunarg{start},
 \Rfunarg{constrain} or a \Rclass{nonlin} function.
+
+\subsubsection{Using \Rfunarg{etastart} or \Rfunarg{mustart}}
+
+An alternative way to set starting values for the parameters is to specify
+starting values for the predictors. These values are then used as the
+response variable in a nonlinear least squares model with the right-hand side as
+originally specified in the \Rfunarg{formula} argument to \Rfunction{gnm}. One
+iteration of the \Rfunction{gnm} fitting algorithm is performed to estimate the
+parameters in this model which are then used as starting values for the desired
+\Rfunction{gnm} model.
+
+Starting values for the predictors can be specified explicitly via
+\Rfunarg{etastart} or implicitly by passing starting values for the fitted
+means to \Rfunarg{mustart}. For example, when extending a model, the fitted
+predictors from the first model can be used to find starting values for the
+parameters of the second model:
+\begin{Scode}
+model1 <- gnm(mu ~ R + C + Mult(R, C))
+model2 <- gnm(mu ~ R + C + instances(Mult(R, C), 2),
+              etastart = model1$predictors)
+\end{Scode}
 
 \subsection{Using \Rfunarg{constrain}}
 \label{sec:constrain}
@@ -2149,9 +2174,7 @@ model to a subset of the data.
 The singular value $\sigma_k$ may be obtained as follows
 @
 <<SVD>>=
-height <- matrix(scale(barleyHeights$height, scale = FALSE), 15, 9)
-R <- height - outer(rowMeans(height), colMeans(height), "+")
-svd(R)$d[1]
+svd(termPredictors(barleyModel)[, "Mult(year, genotype)"])$d
 @ %def
 This parameter is of little interest in itself, given that the significance of
 the term as a whole can be tested using ANOVA.

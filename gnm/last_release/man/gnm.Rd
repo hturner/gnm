@@ -25,8 +25,8 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     names, or "[?]" to select from a Tk dialog. If missing, it is
     assumed that all non-\code{eliminate}d coefficients are of interest. }
   \item{constrain}{ coefficients to constrain, specified by a regular
-    expression, a numeric vector of indices, a character vector of 
-    names, or "[?]" to select from a Tk dialog. }
+    expression, a numeric vector of indices, a logical vector, a
+    character vector of names, or "[?]" to select from a Tk dialog. }
   \item{constrainTo}{ a numeric vector of the same length as
     \code{constrain} specifying the values to constrain to. By default
     constrained parameters will be set to zero. } 

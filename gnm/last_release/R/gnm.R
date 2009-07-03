@@ -14,7 +14,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     modelData <- as.list(match.call(expand.dots = FALSE))
     if (inherits(data, "table") && missing(na.action))
         modelData$na.action <- "na.exclude"
-    argPos <- match(c("data", "subset", "na.action", "weights", "offset"),
+    argPos <- match(c("data", "subset", "weights", "na.action", "offset",
+                      "etastart", "mustart"),
                     names(modelData), 0)
     modelData <- as.call(c(as.name("model.frame"),
                            formula = modelTerms,
@@ -53,6 +54,9 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     offset <- as.vector(model.offset(modelData))
     if (is.null(offset))
         offset <- rep.int(0, nObs)
+
+    mustart <- model.extract(modelData, "mustart")
+    etastart <- model.extract(modelData, "etastart")
 
     if (is.character(family))
         family <- get(family, mode = "function", envir = parent.frame())
@@ -130,6 +134,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             else
                 constrain <- match(constrain, coefNames)
         }
+        if (is.logical(constrain))
+            constrain <- which(constrain)
         ## dropped logical option
         if (any(constrain < nElim))
             stop("'constrain' specifies one or more parameters",

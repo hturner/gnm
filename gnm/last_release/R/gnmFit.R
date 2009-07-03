@@ -40,30 +40,61 @@
             theta[constrain] <- constrainTo
             unspecified <- is.na(theta)
             theta[unspecified] <-  rnorm(sum(unspecified))
-            varPredictors <- modelTools$varPredictors(theta)
-            X0 <- modelTools$localDesignFunction(theta, varPredictors)
+            init <- gnmStart(length(theta))
+            varPredictors <- modelTools$varPredictors(init)
+            X0 <- modelTools$localDesignFunction(init, varPredictors)
             attr(X0, "tag") <- "reference"
-            theta[unspecified] <-  gnmStart(sum(unspecified))
+            varPredictors <- modelTools$varPredictors(theta)
+            X <- modelTools$localDesignFunction(theta, varPredictors)
+            asLinear <- colSums(X - X0) == 0
+            theta[unspecified] <-  init[unspecified]
             if (!is.null(mustart))
                 etastart <- family$linkfun(mustart)
             if (!is.null(etastart)){
-                theta <- suppressWarnings(gnmFit(modelTools, y = etastart,
-                                                 constrain, constrainTo,
-                                                 eliminate, family = gaussian(),
-                                                 weights, offset, nObs,
-                                                 start = theta, etastart = NULL,
-                                                 mustart = NULL, tolerance,
-                                                 iterStart, iterMax = 1,
-                                                 trace = FALSE, verbose = FALSE,
-                                                 x = FALSE,
-                                                 termPredictors = FALSE,
-                                                 lsMethod = lsMethod,
-                                                 ridge = ridge)$coefficients)
+                if (any(asLinear)) {
+                    ## only offset constrained
+                    fulltheta <- rep(NA, length(theta))
+                    fulltheta[constrain] <- constrainTo
+                    varPredictors <- modelTools$varPredictors(fulltheta)
+                    varPredictors <- lapply(varPredictors, naToZero)
+                    offsetConstrained <- offset +
+                        modelTools$predictor(varPredictors)
+                    theta[asLinear] <- quick.glm.fit(X[, asLinear],
+                                                     family$linkinv(etastart),
+                                                     weights = weights,
+                                                     offset = offsetConstrained,
+                                                     family = family,
+                                                     eliminate = eliminate)
+                    theta <- naToZero(theta)
+                    eta <- c(X[,asLinear] %*% theta[asLinear])
+                    if (isTRUE(all.equal(unname(etastart), eta))) {
+                        nobs <- length(y)
+                        etastart <- start <- mustart <- NULL
+                        eval(family$initialize)
+                        etastart <- family$linkfun(mustart)
+                    }
+                    offsetLin <- offset + eta
+                }
+                rss <- function(theta) {
+                    fulltheta <- numeric(length(asLinear))
+                    fulltheta[!asLinear] <- theta
+                    varPredictors <- modelTools$varPredictors(fulltheta)
+                    eta <- offsetLin + modelTools$predictor(varPredictors)
+                    sum((etastart - eta)^2)
+                }
+                gr.rss <- function(theta) {
+                    fulltheta <- numeric(length(asLinear))
+                    fulltheta[!asLinear] <- theta
+                    varPredictors <- modelTools$varPredictors(fulltheta)
+                    eta <- offsetLin + modelTools$predictor(varPredictors)
+                    X <- modelTools$localDesignFunction(theta, varPredictors)
+                    -2 * t(X[, !asLinear]) %*% ((etastart - eta))
+                }
+                theta[!asLinear] <- optim(theta[!asLinear], rss, gr.rss, method = c("L-BFGS-B"),
+                                          control = list(maxit = iterStart, trace = 3))$par
+                iterStart <- 0
             }
             else {
-                varPredictors <- modelTools$varPredictors(theta)
-                X <- modelTools$localDesignFunction(theta, varPredictors)
-                asLinear <- colSums(X - X0) == 0
                 unspecifiedLin <- unspecified & asLinear
                 unspecifiedNonlin <- unspecified & !asLinear
                 if (any(unspecifiedLin)) {
@@ -72,7 +103,10 @@
                     varPredictors <- lapply(varPredictors, naToZero)
                     offsetSpecified <- offset + modelTools$predictor(varPredictors)
                     X <- modelTools$localDesignFunction(theta, varPredictors)
-                    theta[unspecifiedLin] <- quick.glm.fit(X[, unspecifiedLin], y,
+                    if (!is.null(etastart)) resp <-  family$linkinv(etastart)
+                    else resp <- y
+                    theta[unspecifiedLin] <- quick.glm.fit(X[, unspecifiedLin],
+                                                           resp,
                                                            weights = weights,
                                                            offset = offsetSpecified,
                                                            family = family,

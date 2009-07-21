@@ -2290,30 +2290,53 @@ c(doubleAddChiSq - biplotModChiSq,
 \label{sec:Stereotype}
 
 The stereotype model was proposed by \citet{Ande84} for ordered categorical
-data. It is a linear logistic model, in which there is assumed to be a common
-relationship between the response and the covariates in the model, but the
-scale of this association varies between categories and there is an additional
-category main effect or category-specific intercept:
+data. It is a special case of the multinomial logistic model, in which the
+covariate coefficients are common to all categories but the scale of association
+is allowed to vary between categories such that
 \[
-\log \mu_{ic} =  \beta_{0c} + \gamma_c\sum_r
-\boldsymbol{\beta}_{r}\boldsymbol{x}_{ir}.
+p_{ic} =  \frac{\exp(\beta_{0c} + \gamma_c
+  \boldsymbol{\beta}^T\boldsymbol{x}_{i})}{\sum_{k = 1}^K \exp(\beta_{0k} + \gamma_k
+  \boldsymbol{\beta}^T\boldsymbol{x}_{i})}
 \]
-This model can be estimated by re-expressing the categorical data as counts and
-using a \Rclass{gnm} model with a log link and poisson variance function. The
-\Rpackage{gnm} package includes the utility function
-\Rfunction{expandCategorical} to facilitate the required data processing.
+where $p_{ic}$ is the probability that the response for individual $i$ is
+category $c$ and $K$ is the number of categories. Like the multinomial
+logistic model, the stereotype model specifies a simple form for the log
+odds of one category against another, e.g.
+\begin{equation*}
+\log\left(\frac{p_{ic}}{p_{ik}}\right) = (\beta_{0c} - \beta_{0k}) + (\gamma_c - \gamma_k)
+* \boldsymbol{\beta}^T\boldsymbol{x}_{i}
+\end{equation*}
+
+In order to model a multinomial response in the generalized nonlinear model
+framework, we must re-express the data as category counts $Y_i = (Y_{i1},
+\ldots, Y_{iK})$ for each individual (or group). Then assuming a Poisson distribution
+for the counts $Y_{ic}$, the joint distribution of $Y_i$ is $Multinomial(N_i,
+p_{i1}, \ldots, p_{iK})$ conditional on the total count for each individual
+$N_i$. The expected counts are then $\mu_{ic} = N_ip_{ic}$ and the parameters of
+the sterotype model can be estimated through fitting the following model
+\begin{align*}
+\log \mu_{ic} &= \log(N_i) + \log(p_{ic}) \\
+&= \alpha_i + \beta_{0c} + \gamma_c\sum_r \boldsymbol{\beta}_{r}\boldsymbol{x}_{ir} \\
+\end{align*}
+where the ``nuisance'' parameters $\alpha_i$ ensure that the multinomial
+denominators are reproduced exactly, as required.
+
+The \Rpackage{gnm} package includes the utility function
+\Rfunction{expandCategorical} to re-express the categorical response as category
+counts. By default, individuals with common values across all covariates are
+grouped together, to avoid redundacy.
 
 For example, the \Robject{backPain} data set from \citet{Ande84} describes the
 progress of patients with back pain. The data set consists of an ordered factor
-quantifying the progress of each patient, and three prognostic variables. These
-data can be re-expressed as follows:
+quantifying the progress of each patient, and three prognostic variables. We
+re-express the data as follows:
 @
 <<Re-express_data>>=
 set.seed(1)
 data(backPain)
-backPain[1:2,]
+subset(backPain, x1 == 1 & x2 == 1 & x3 == 1)
 backPainLong <- expandCategorical(backPain, "pain")
-backPainLong[1:12,]
+head(backPainLong)
 @ %def
 We can now fit the stereotype model to these data:
 @
@@ -2322,7 +2345,7 @@ oneDimensional <- gnm(count ~ pain + Mult(pain, x1 + x2 + x3),
                       eliminate = id, family = "poisson", data = backPainLong)
 oneDimensional
 @ %def
-specifying the \Robject{id} factor through \Rfunarg{eliminate} so that the 101
+specifying the \Robject{id} factor through \Rfunarg{eliminate} so that the 12
 \Robject{id} effects are estimated more efficiently and are excluded from
 printed model summaries by default. This model is one
 dimensional since it involves only one function of $\mathbf{x} = (x1, x2,
@@ -2335,24 +2358,25 @@ threeDimensional  <- gnm(count ~ pain + pain:(x1 + x2 + x3), eliminate = id,
 threeDimensional
 @ %def
 This model has the maximum dimensionality of three (as determined by the number
-of covariates). To obtain the log-likelihoods as reported in \citet{Ande84} we
-need to adjust for the extra parameters introduced to formulate the models as
-Poisson models. We write a simple function to do this and compare the
-log-likelihoods of the one dimensional model and the three dimensional model:
+of covariates). The ungrouped multinomial log-likelihoods reported in
+\citet{Ande84} are given by
+\begin{equation*}
+    \sum_{i,c} y_{ic}\log(p_{ic}) = \sum_{i,c} y_{ic}\log(\mu_{ic}/n_{ic})
+\end{equation*}
+We write a simple function to compute this and the corresponding degrees of
+freedom, then compare the log-likelihoods of the one dimensional model and the
+three dimensional model:
 @
 <<Calculate_log-likelihood>>=
-logLikMultinom <- function(model){
+logLikMultinom <- function(model, size){
     object <- get(model)
-    if (inherits(object, "gnm")) {
-        l <- logLik(object) + object$eliminate
-        c(nParameters = attr(l, "df") - object$eliminate, logLikelihood = l)
-    }
-    else
-        c(nParameters = object$edf, logLikelihood = -deviance(object)/2)
+    l <- sum(object$y * log(object$fitted/size))
+    c(nParameters = object$rank - object$eliminate, logLikelihood = l)
 }
-t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom))
+t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom,
+         backPainLong$size))
 @ %def
-which show that the \Robject{oneDimensional} model is adequate.
+showing that the \Robject{oneDimensional} model is adequate.
 
 To obtain estimates of the category-specific multipliers in the stereotype
 model, we need to constrain both the location and the scale of these

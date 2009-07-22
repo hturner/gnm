@@ -2447,7 +2447,7 @@ generality we assume $\beta_a>0$ for all $a$, and we impose this constraint
 by using \Rcode{Exp(Age)} instead of just \Rcode{Age} in the
 multiplicative term.
 Convergence is to a fitted model with residual
-deviance 32422.68 on 6400 degrees of freedom --- representing
+deviance 32419.83 on 6399 degrees of freedom --- representing
 clear evidence of substantial overdispersion relative to the Poisson
 distribution.  In order to explore the lack of fit a little further, we
 plot the distribution of Pearson residuals in Figure \ref{fig:LCresplot}:
@@ -2535,15 +2535,17 @@ outlying positions occupied by the estimates for ages 51, 61, 71 and 81:
 for each of those ages, the estimated $\beta_a$ coefficient is substantially
 less than it is for the neighbouring age groups (and the
 error bars indicate clearly that the deviations are larger than could plausibly
-be due to chance variation).  This is a curious finding.  A partial explanation
+be due to chance variation).  This is a curious finding.  An explanation
 comes from a look back at the raw death-count data.  In the years between
 1921 and 1940, the death counts for ages 31, 41, 51, 61, 71 and 81 all
 stand out as being very substantially lower than those of neighbouring
 ages
 (Figure \ref{fig:deaths2140}: the ages concerned are highlighted in solid red).
 The same does \emph{not} hold for later years: after about 1940, the `1' ages
-fall in with the general pattern.    We do not know the reason for this,
-but it does explain our finding above regarding the
+fall in with the general pattern.    This apparent
+`age heaping\footnote{Age heaping is common in mortality data: see
+\url{http://www.mortality.org/Public/Overview.php}}'  explains
+our finding above regarding the
 $\beta_a$ coefficients: whilst all age groups have benefited from the general
 trend of reduced mortality, the `1' age groups appear to have
 benefited least because

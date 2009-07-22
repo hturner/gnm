@@ -2420,10 +2420,10 @@ where $e_{ay}$ is the `exposure' (number of lives at risk).  This is
 a generalized nonlinear model with a single multiplicative term.
 
 The use of \Rpackage{gnm} to fit this model is straightforward.  We will
-illustrate by using data from the Human Mortality
+illustrate by using data downloaded on 2006-11-14 from the Human Mortality
 Database\footnote{Thanks to Iain Currie for helpful advice
 relating to this section}
-(HMD, at \texttt{http://www.mortality.org})
+(HMD, made available by the University of California, Berkeley, and Max Planck Institute for Demographic Research, at \texttt{http://www.mortality.org})
 on male deaths in Canada between 1921 and
 2003.  The data are not made available as part of \Rpackage{gnm} because
 of license restrictions; but they are readily available via the web simply by

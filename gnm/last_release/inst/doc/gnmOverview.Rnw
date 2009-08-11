@@ -816,7 +816,8 @@ parameters of the second model:
 model1 <- gnm(mu ~ R + C + Mult(R, C))
 model2 <- gnm(mu ~ R + C + instances(Mult(R, C), 2),
               etastart = model1$predictors)
-\end{Scode}$
+\end{Scode}
+%$
 Using \Rfunction{etastart} avoids the one-parameter-at-a-time starting
 iterations, so is quicker than using \Rfunction{start} to pass on information
 from a nested model. However \Rfunction{start} will generally produce better
@@ -2253,15 +2254,15 @@ and the variable effects can be similarly represented.
 
 Thus we can represent the sites and varieties separately as follows
 @
-<<Effect_plots, fig = TRUE, include = FALSE, width=8, height=4>>=
+<<Effect_plots, fig = TRUE, include = FALSE, width=10, height=5>>=
 sites <- pickCoef(biplotModel, "[.]site")
 coefs <- coef(biplotModel)
 A <- matrix(coefs[sites], nc = 2)
 B <- matrix(coefs[-sites], nc = 2)
 par(mfrow = c(1, 2))
-plot(A, pch = levels(barley$site), xlim = c(-4, 4), ylim = c(-4, 4),
+plot(A, pch = levels(barley$site), xlim = c(-5, 5), ylim = c(-5, 5),
     main = "Site Effects", xlab = "Component 1", ylab = "Component 2")
-plot(B, pch = levels(barley$variety), xlim = c(-4, 4), ylim = c(-4, 4),
+plot(B, pch = levels(barley$variety), xlim = c(-5, 5), ylim = c(-5, 5),
     main = "Variety Effects", xlab = "Component 1", ylab = "Component 2")
 @ %def
 \begin{figure}[!tbph]

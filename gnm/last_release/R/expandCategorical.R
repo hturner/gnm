@@ -1,6 +1,5 @@
 expandCategorical <- function(data, catvar, sep = ".", countvar = "count",
-                              idvar = "id", sizevar = "size",
-                              as.ordered = FALSE, group = TRUE) {
+                              idvar = "id", as.ordered = FALSE, group = TRUE) {
 
     cat <- interaction(data[catvar], sep = sep)
     ncat <- nlevels(cat)
@@ -11,8 +10,11 @@ expandCategorical <- function(data, catvar, sep = ".", countvar = "count",
         vars <- data[ord,]
         dupvars <- duplicated(vars)
         reps <- rle(dupvars)
-        n <- sum(reps$values)
-        ni <- reps$lengths[reps$values] + 1
+        n <- sum(!dupvars)
+        ni <- rep(1, n)
+        grp.ni <- reps$lengths[reps$values] + 1
+        grps <- cumsum(reps$lengths[!reps$values])[seq(grp.ni)]
+        ni[grps] <- grp.ni
         id <- factor(rep(seq(n), ni))
 
         counts <- as.data.frame(table(list(cat = cat[ord], id = id)))
@@ -20,7 +22,6 @@ expandCategorical <- function(data, catvar, sep = ".", countvar = "count",
         newData <- vars[which(!dupvars)[counts$id],]
         rownames(newData) <- NULL
         newData[c(catvar, idvar, countvar)] <- counts
-        newData[[sizevar]] <- rep(ni, each = ncat)
     }
     else {
         n <- nrow(data)

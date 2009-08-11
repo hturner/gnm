@@ -1,3 +1,25 @@
+Changes in gnm 0.10-1
+=====================
+
+Improvements
+------------
+
+    o	mustart/etastart now used to obtain starting values for linear and 
+	nonlinear parameters separately, improving performance.
+
+Changes in Behaviour
+--------------------
+
+    o	expandCategorical now groups together individuals with common covariate
+	values, by default. New 'group' argument added to switch this behaviour.
+
+Bug fixes
+---------
+
+    o	print.profile.gnm() now prints full result.
+
+    o	data now read in correctly for Lee-Carter example in vignette.
+
 Changes in gnm 0.9-9
 ====================
 

@@ -76,18 +76,19 @@ sixCategories <- polr(pain ~ x1 + x2 + x3, data = backPain)
 
 ### Obtain number of parameters and log-likelihoods for equivalent
 ### multinomial models as presented in Anderson (1984)
-logLikMultinom <- function(model){
+logLikMultinom <- function(model, size){
     object <- get(model)
     if (inherits(object, "gnm")) {
-        l <- logLik(object) + object$eliminate
-        c(nParameters = attr(l, "df") - object$eliminate, logLikelihood = l)
+        l <- sum(object$y * log(object$fitted/size))
+        c(nParameters = object$rank - object$eliminate, logLikelihood = l)
     }
     else
         c(nParameters = object$edf, logLikelihood = -deviance(object)/2)
 }
+size <- tapply(backPainLong$count, backPainLong$id, sum)[backPainLong$id]
 models <- c("threeDimensional", "oneDimensional", "noRelationship",
             "fiveGroups", "fourGroups", "threeGroups", "sixCategories")
-t(sapply(models, logLikMultinom))
+t(sapply(models, logLikMultinom, size))
 }
 }
 \keyword{datasets}

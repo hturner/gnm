@@ -14,8 +14,7 @@
 }
 \usage{
 expandCategorical(data, catvar, sep = ".", countvar = "count",
-                  idvar = "id", sizevar = "size", as.ordered = FALSE,
-                  group = TRUE) 
+                  idvar = "id", as.ordered = FALSE, group = TRUE) 
 }
 \arguments{
   \item{data}{ a data frame. }
@@ -27,9 +26,6 @@ expandCategorical(data, catvar, sep = ".", countvar = "count",
     of the new count variable. }
   \item{idvar}{ (optional) a character string to be used for the name
     of the new factor identifying the original rows (cases). }
-  \item{sizevar}{ (optional) a character string to be used for the name
-    of the new variable specifying the multinomial denominators (ignored
-    when \code{group == TRUE}. }
   \item{as.ordered}{ logical - whether the new interaction factor should
     be of class \code{"ordered"}.}
   \item{group}{logical: whether or not to group individuals with common values

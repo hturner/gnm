@@ -90,8 +90,10 @@
                     X <- modelTools$localDesignFunction(theta, varPredictors)
                     -2 * t(X[, !asLinear]) %*% ((etastart - eta))
                 }
-                theta[!asLinear] <- optim(theta[!asLinear], rss, gr.rss, method = c("L-BFGS-B"),
-                                          control = list(maxit = iterStart, trace = 3))$par
+                theta[!asLinear] <- optim(theta[!asLinear], rss, gr.rss,
+                                          method = c("L-BFGS-B"),
+                                          control = list(maxit = iterStart),
+                                          lower = -10, upper = 10)$par
                 iterStart <- 0
             }
             else {

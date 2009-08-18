@@ -51,6 +51,7 @@
             if (!is.null(mustart))
                 etastart <- family$linkfun(mustart)
             if (!is.null(etastart)){
+                offsetLin <- offset
                 if (any(asLinear)) {
                     ## only offset constrained
                     fulltheta <- rep(NA, length(theta))
@@ -75,22 +76,23 @@
                     }
                     offsetLin <- offset + eta
                 }
+                unspecifiedNonlin <- unspecified & !asLinear
                 rss <- function(theta) {
                     fulltheta <- numeric(length(asLinear))
-                    fulltheta[!asLinear] <- theta
+                    fulltheta[unspecifiedNonlin] <- theta
                     varPredictors <- modelTools$varPredictors(fulltheta)
                     eta <- offsetLin + modelTools$predictor(varPredictors)
                     sum((etastart - eta)^2)
                 }
                 gr.rss <- function(theta) {
                     fulltheta <- numeric(length(asLinear))
-                    fulltheta[!asLinear] <- theta
+                    fulltheta[unspecifiedNonlin] <- theta
                     varPredictors <- modelTools$varPredictors(fulltheta)
                     eta <- offsetLin + modelTools$predictor(varPredictors)
                     X <- modelTools$localDesignFunction(theta, varPredictors)
-                    -2 * t(X[, !asLinear]) %*% ((etastart - eta))
+                    -2 * t(X[, unspecifiedNonlin]) %*% ((etastart - eta))
                 }
-                theta[!asLinear] <- optim(theta[!asLinear], rss, gr.rss,
+                theta[unspecifiedNonlin] <- optim(theta[unspecifiedNonlin], rss, gr.rss,
                                           method = c("L-BFGS-B"),
                                           control = list(maxit = iterStart),
                                           lower = -10, upper = 10)$par

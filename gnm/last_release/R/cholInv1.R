@@ -26,7 +26,7 @@ cholInv1 <- function (W, Tvec = NULL, U = NULL, elim = NULL,
     nonElim <- which(!elim)
     Ti.U <- Ti * U
     Qmat <- W - crossprod(Ti.U)
-    Qi <- cholInv1(Qmat, result.as.vector = FALSE)
+    Qi <- as.matrix(cholInv1(Qmat, result.as.vector = FALSE)) #else S4 Matrix class
     result <- numeric(n + k)
     result[nonElim] <- Qi
     result[elim] <- -tcrossprod(Ti * Ti.U, Qi)

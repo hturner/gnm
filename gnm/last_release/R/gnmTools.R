@@ -1,6 +1,6 @@
-"gnmTools" <-
-    function(modelTerms, gnmData = NULL, x = TRUE)
+"gnmTools" <- function(modelTerms, gnmData = NULL, x = TRUE)
 {
+    eliminate <- attr(modelTerms, "eliminate")
     unitLabels <- attr(modelTerms, "unitLabels")
     common <- attr(modelTerms, "common")
     prefixLabels <- attr(modelTerms, "prefixLabels")
@@ -44,10 +44,15 @@
             adj <- adj + nLevels
         }
         else {
-            tmp <- model.matrix(terms(reformulate(c(0, unitLabels[b])),
+            intercept <- as.numeric(i == 0 && eliminate)
+            tmp <- model.matrix(terms(reformulate(c(intercept, unitLabels[b])),
                                       keep.order = TRUE), data = gnmData)
-            tmpAssign <- attr(tmp, "assign") + !attr(tmp, "assign")[1]
-            tmpAssign <- which(b)[tmpAssign]
+            tmpAssign <- attr(tmp, "assign")
+            if (intercept) {
+                tmp <- tmp[,-1]
+                tmpAssign <- tmpAssign[-1]
+            }
+            tmpAssign <- which(b)[tmpAssign + !tmpAssign[1]]
             nm <- paste(prefixLabels[tmpAssign], colnames(tmp)[!identical(colnames(tmp), "(Intercept)")],
                         sep = "")
             names(tmpAssign) <- nm

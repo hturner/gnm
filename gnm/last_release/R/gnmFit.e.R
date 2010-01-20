@@ -12,7 +12,7 @@
               start = rep.int(NA, length(y)),
               etastart = NULL,
               mustart = NULL,
-              tolerance = 1e-4,
+              tolerance = 1e-6,
               iterStart = 2,
               iterMax = 500,
               trace = FALSE,
@@ -42,7 +42,8 @@
         theta <- structure(replace(start, constrain, constrainTo),
                            names = names(modelTools$start))
         varPredictors <- modelTools$varPredictors(theta)
-        eta <- offset + alpha[eliminate] + modelTools$predictor(varPredictors)
+        eta <- offset + modelTools$predictor(varPredictors)
+        if (!missing(eliminate)) eta <- eta + alpha[eliminate]
         if (any(!is.finite(eta))) {
             stop("Values of 'start' and 'constrain' produce non-finite ",
                  "predictor values")
@@ -55,15 +56,17 @@
         if (status == "not.converged") {
             X <-  modelTools$localDesignFunction(theta, varPredictors)
             X <- X[, !isConstrained, drop = FALSE]
-            X <- Matrix(X)
-            classX <- class(X)
+            #X <- Matrix(X)
+            #classX <- class(X)
             if (!missing(eliminate)){
-                needToElim <- seq(nlevels(eliminate))
-                Tvec <- 1 + rep(ridge, length(needToElim))
+                needToElim <- rep(c(TRUE, FALSE), c(length(alpha), length(theta[!isConstrained])))
+                Tvec <- 1 + rep(ridge, sum(needToElim))
             }
+            else needToElim <- FALSE
             ridge <- 1 + ridge
             for (iter in seq(iterMax)) {
-                if (any(is.infinite(X@x))){
+                if (any(is.infinite(X))){
+                #if (any(is.infinite(X@x))){
                     status <- "X.not.finite"
                     break
                 }
@@ -110,21 +113,22 @@
                     Umat <- rowsum(as.matrix(wSqrt*t(W.Z)), eliminate)/elimXscales
                     Wmat <- tcrossprod(W.Z)
                     diag(Wmat) <- ridge
-                    ZWZinv <- cholInv1(Wmat, Tvec, Umat, 1 + needToElim)
+                    ZWZinv <- solve1(Wmat, Tvec, Umat, c(FALSE, needToElim))
                     theChange <- -ZWZinv[-1]/ZWZinv[1] * znorm / c(elimXscales, Xscales)
                 } else {
                     XWX <- tcrossprod(W.X.scaled)
                     diag(XWX) <- ridge
-                    theChange <- drop(solve(XWX, score/(znorm * Xscales)) * znorm/Xscales)
+                    theChange <- solve(XWX, score/(znorm * Xscales)) * znorm/Xscales
                 }
                 dev[2] <- dev[1]
                 j <- 1
                 while (dev[1] >= dev[2] && j < 11) {
                     alpha <- alpha + theChange[needToElim]
                     nextTheta <- replace(theta, !isConstrained,
-                                         theta[!isConstrained] + theChange[-needToElim])
+                                         theta[!isConstrained] + theChange[!needToElim])
                     varPredictors <- modelTools$varPredictors(nextTheta)
-                    eta <- offset + alpha[eliminate] + modelTools$predictor(varPredictors)
+                    eta <- offset + modelTools$predictor(varPredictors)
+                    if (!missing(eliminate)) eta <- eta + alpha[eliminate]
                     if (any(!is.finite(eta))) {
                         status <- "eta.not.finite"
                         break
@@ -147,7 +151,7 @@
                 theta <- nextTheta
                 X <- modelTools$localDesignFunction(theta, varPredictors)
                 X <- X[, !isConstrained, drop = FALSE]
-                X <- as(X, classX)
+                #X <- as(X, classX)
             }
         }
         if (status %in% c("converged", "not.converged")) {
@@ -176,7 +180,7 @@
     }
     theta[constrain] <- NA
     sv.tolerance <-  100 * .Machine$double.eps
-    if (is.null(XWX)) XWX <- crossprod(W.X.scaled)
+    if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
     Svd <- svd(XWX, nu = 0, nv = 0)
     ## when to do sweeping? roughly
     theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0)) + nlevels(eliminate)

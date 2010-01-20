@@ -10,12 +10,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
     call <- match.call()
 
-    modelTerms <- gnmTerms(formula, substitute(eliminate), data)
+    modelTerms <- gnmTerms(formula, !missing(eliminate), data)
     modelData <- as.list(match.call(expand.dots = FALSE))
     if (inherits(data, "table") && missing(na.action))
         modelData$na.action <- "na.exclude"
-    argPos <- match(c("data", "subset", "weights", "na.action", "offset",
-                      "etastart", "mustart"),
+    argPos <- match(c("eliminate", "data", "subset", "weights", "na.action",
+                      "offset", "etastart", "mustart"),
                     names(modelData), 0)
     modelData <- as.call(c(as.name("model.frame"),
                            formula = modelTerms,
@@ -24,9 +24,13 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     modelData <- eval(modelData, parent.frame())
 
     if (!missing(eliminate)) {
-        Elim <- suppressWarnings(eval(substitute(eliminate), modelData))
-        if (!is.factor(Elim))
+        if (!is.factor(modelData$`(eliminate)`))
             stop("'eliminate' must be a factor")
+        xtf <- xtfrm(modelData$`(eliminate)`)
+        ord <- order(xtf)
+        if (ordTRUE <- !identical(ord, xtf)) {
+            modelData <- modelData[ord,]
+        }
         nElim <- nlevels(Elim)
         if (missing(lsMethod)) lsMethod <- "chol"
     }

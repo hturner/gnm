@@ -26,13 +26,6 @@
     dev <- numeric(2)
     if (verbose)
         width <- as.numeric(options("width"))
-    ## should start and constrain etc include eliminate??
-    ## assume NOT for now
-    if (!missing(eliminate)) { # very temp fix - constrain intercept to zero
-        constrain <- 1
-        constrainTo <- 0
-        #ord <- order(xtfrm(eliminate))
-    }
     isConstrained <- is.element(seq(length(start)), constrain)
     XWX <- NULL
     repeat {
@@ -59,10 +52,13 @@
             #X <- Matrix(X)
             #classX <- class(X)
             if (!missing(eliminate)){
-                needToElim <- rep(c(TRUE, FALSE), c(length(alpha), length(theta[!isConstrained])))
-                Tvec <- 1 + rep(ridge, sum(needToElim))
+                nelim <- nlevels(eliminate)
+                elim <- seq_len(nelim) + 1
+                non.elim <- seq.int(elim + 1, length(theta))
+                Tvec <- 1 + rep.int(ridge, nelim)
+                grp.size <- tabulate(eliminate)
+                grp.end <- cumsum(grp.size)
             }
-            else needToElim <- FALSE
             ridge <- 1 + ridge
             for (iter in seq(iterMax)) {
                 if (any(is.infinite(X))){
@@ -95,9 +91,9 @@
                 Xscales[Xscales < 1e-3] <- 1e-3 ## to allow for zeros
                 W.X.scaled <- t(W.X)/Xscales
                 if (!missing(eliminate)) {
-                    elim.diagInfo <- sapply(split(w, eliminate), sum)
+                    elim.diagInfo <- grp.sum(w, grp.end)
                     diagInfo <- c(elim.diagInfo, diagInfo)
-                    score <- c(sapply(split(wSqrt * w.z, eliminate), sum), score)
+                    score <- c(grp.sum(wSqrt * w.z, grp.end), score)
                 }
                 if (all(diagInfo < 1e-20) ||
                     all(abs(score) <
@@ -113,8 +109,9 @@
                     Umat <- rowsum(as.matrix(wSqrt*t(W.Z)), eliminate)/elimXscales
                     Wmat <- tcrossprod(W.Z)
                     diag(Wmat) <- ridge
-                    ZWZinv <- solve1(Wmat, Tvec, Umat, c(FALSE, needToElim))
-                    theChange <- -ZWZinv[-1]/ZWZinv[1] * znorm / c(elimXscales, Xscales)
+                    ZWZinv <- solve1(Wmat, Tvec, Umat, elim)
+                    alphaChange <- -ZWZinv[elim]/ZWZinv[1] * znorm/elimXscales
+                    thetaChange <- -ZWZinv[non.elim]/ZWZinv[1] * znorm/Xscales
                 } else {
                     XWX <- tcrossprod(W.X.scaled)
                     diag(XWX) <- ridge
@@ -123,12 +120,14 @@
                 dev[2] <- dev[1]
                 j <- 1
                 while (dev[1] >= dev[2] && j < 11) {
-                    alpha <- alpha + theChange[needToElim]
                     nextTheta <- replace(theta, !isConstrained,
-                                         theta[!isConstrained] + theChange[!needToElim])
+                                         theta[!isConstrained] + thetaChange)
                     varPredictors <- modelTools$varPredictors(nextTheta)
                     eta <- offset + modelTools$predictor(varPredictors)
-                    if (!missing(eliminate)) eta <- eta + alpha[eliminate]
+                    if (!missing(eliminate)) {
+                        nextAlpha <- alpha + alphaChange
+                        eta <- eta + nextAlpha[eliminate]
+                    }
                     if (any(!is.finite(eta))) {
                         status <- "eta.not.finite"
                         break
@@ -179,11 +178,17 @@
         }
     }
     theta[constrain] <- NA
-    sv.tolerance <-  100 * .Machine$double.eps
-    if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
+    if (!missing(eliminate)) {
+        ## sweeps needed to get the rank right
+        subtracted <- rowsum(t(W.X.scaled), eliminate)/grp.size
+        subtracted[,1] <- 0
+        W.X.scaled <- t(W.X.scaled) - subtracted[eliminate,]
+        XWX <- crossprod(W.X.scaled)
+    }
+    else if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
     Svd <- svd(XWX, nu = 0, nv = 0)
-    ## when to do sweeping? roughly
-    theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0)) + nlevels(eliminate)
+    sv.tolerance <-  100 * .Machine$double.eps
+    theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0)) + nelim
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)

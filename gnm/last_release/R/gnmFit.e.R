@@ -9,7 +9,7 @@
               weights = rep.int(1, length(y)),
               offset = rep.int(0, length(y)),
               nObs = length(y),
-              start = rep.int(NA, length(y)),
+              start = rep.int(NA, length(modelTools$start) + nlevels(eliminate)),
               etastart = NULL,
               mustart = NULL,
               tolerance = 1e-6,
@@ -28,10 +28,9 @@
         width <- as.numeric(options("width"))
     nTheta <- length(modelTools$start)
     nelim <- nlevels(eliminate)
-    if (nelim) elim <- seq.int(nelim)
+    if (nelim)  elim <- seq.int(nelim)
     else eliminate <- 1
-    non.elim <- seq.int(nelim + 1, nTheta)
-    alpha <- 0
+    non.elim <- seq.int(nelim + 1, length(start))
     isConstrained <- is.element(seq(nTheta), constrain)
     XWX <- NULL
     repeat {
@@ -41,9 +40,16 @@
             if (verbose == TRUE)
                 prattle("Initialising", "\n", sep = "")
             ## only use start for elim par if all specified
-            if (nelim && initElim <- !any(is.na(start[elim]))) alpha <- start[elim]
+            initElim <- any(is.na(start[-non.elim]))
+            if (nelim) {
+                if (!initElim) alpha <- start[elim]
+                else alpha <- rep(0, nelim)
+                names(alpha) <- paste("(eliminate)", elim, sep = "")
+            }
+            else alpha <- 0
             theta <- start[non.elim]
             theta[is.na(theta)] <- modelTools$start[is.na(theta)]
+            names(theta) <- names(modelTools$start)
             theta[constrain] <- constrainTo
             tmpTheta <- as.double(rep(NA, nTheta))
             varPredictors <- modelTools$varPredictors(tmpTheta)
@@ -53,27 +59,30 @@
             unspecified <- is.na(theta)
             unspecifiedLin <- unspecified & isLinear
             unspecifiedNonlin <- unspecified & !isLinear
-            if (any(unspecifiedLin) || any(is.na(elim))) {
+            if (any(unspecifiedLin) || !initElim) {
                 ## offset any nonLin terms fully specified by start/modelTools$start/constrain
                 ## plus offset contribution of any specified lin par
                 theta[unspecifiedLin] <- 0
                 varPredictors <- modelTools$varPredictors(theta)
-                termPredictors <- modelTools$predictor(varPredictors, term = TRUE)
-                termPredictors <- do.call("psum", lapply(termPredictors, naToZero))
-                tmpOffset <- offset + alpha[eliminate] + termPredictors
+                tmpOffset <- modelTools$predictor(varPredictors, term = TRUE)
+                tmpOffset <- rowSums(naToZero(tmpOffset))
+                tmpOffset <- offset + alpha[eliminate] + tmpOffset
                 ## assume either elim all specified or all not specified
-                tmpTheta <- glm.fit.e(X[, unspecifiedLin], y,
-                                      weights = weights,
-                                      offset = tmpOffset,
-                                      family = family,
-                                      eliminate = if (!initElim) eliminate else NULL)
+                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin], y,
+                                                       weights = weights,
+                                                       offset = tmpOffset,
+                                                       family = family,
+                                                       intercept = FALSE,
+                                                       eliminate =
+                                                       if (initElim) eliminate
+                                                       else NULL)$coefficients)
                 if (initElim) {
-                    alpha <- tmpTheta[elim]
+                    alpha[] <- tmpTheta[elim]
                     theta[unspecifiedLin] <- tmpTheta[-elim]
                 }
                 else theta[unspecifiedLin] <- tmpTheta
-                if (sum(is.na(theta)) > length(constrain)) {
-                    extra <- setdiff(which(is.na(theta)), constrain)
+                if (sum(is.na(theta[isLinear])) > length(constrain)) {
+                    extra <- setdiff(which(is.na(theta[isLinear])), constrain)
                     isConstrained[extra] <- TRUE
                     ind <- order(c(constrain, extra))
                     constrain <- c(constrain, extra)[ind]
@@ -88,9 +97,9 @@
                 etastart <- family$linkfun(mustart)
             if (!is.null(etastart)){
                 varPredictors <- modelTools$varPredictors(theta)
-                termPredictors <- modelTools$predictor(varPredictors, term = TRUE)
-                termPredictors <- do.call("psum", lapply(termPredictors, naToZero))
-                tmpOffset  <- offset + alpha[eliminate] + termPredictors
+                tmpOffset <- modelTools$predictor(varPredictors, term = TRUE)
+                tmpOffset <- rowSums(naToZero(tmpOffset))
+                tmpOffset  <- offset + alpha[eliminate] + tmpOffset
                 if (any(isLinear) && isTRUE(all.equal(unname(etastart), tmpOffset))) {
                     etastart <- start <- mustart <- NULL
                     eval(family$initialize)
@@ -115,7 +124,8 @@
                 iterStart <- 0
             }
             varPredictors <- modelTools$varPredictors(theta)
-            eta <- offset + modelTools$predictor(varPredictors)
+            tmpOffset <- offset + alpha[eliminate]
+            eta <- tmpOffset + modelTools$predictor(varPredictors)
             mu <- family$linkinv(eta)
             dev[1] <- sum(family$dev.resids(y, mu, weights))
             if (trace)
@@ -128,7 +138,6 @@
                     if ((iter + 25)%%width == (width - 1))
                         cat("\n")
                 }
-                tmpOffset <- offset + alpha[eliminate]
                 for (i in rep.int(seq(nTheta)[unspecifiedNonlin], 2)) {
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
@@ -156,12 +165,13 @@
                     }
                     tmpTheta <- updateLinear(which, theta, y, mu, eta, offset,
                                              weights, family, modelTools, X,
-                                             eliminate)
+                                             if(nelim) eliminate else NULL)
                     if (nelim){
-                        alpha <- tmpTheta[elim]
+                        alpha[] <- tmpTheta[elim]
+                        theta[which] <- tmpTheta[-elim]
                         tmpOffset <- offset + alpha[eliminate]
                     }
-                    theta <- tmpTheta[non.elim]
+                    else theta[which] <- tmpTheta
                     varPredictors <- modelTools$varPredictors(theta)
                     eta <- tmpOffset + modelTools$predictor(varPredictors)
                     mu <- family$linkinv(eta)
@@ -178,7 +188,10 @@
             }
         }
         else {
-            if (nelim) alpha <- start[elim]
+            if (nelim) {
+                alpha <- start[elim]
+                names(alpha) <- paste("(eliminate)", elim, sep = "")
+            }
             theta <- structure(replace(start[non.elim], constrain, constrainTo),
                                names = names(modelTools$start))
             varPredictors <- modelTools$varPredictors(theta)
@@ -198,14 +211,12 @@
             #X <- Matrix(X)
             #classX <- class(X)
             if (nelim){
-                elim <- elim + 1
-                non.elim <- nelim + 1
                 Tvec <- 1 + rep.int(ridge, nelim)
                 grp.size <- tabulate(eliminate)
                 grp.end <- cumsum(grp.size)
             }
             tmpAlpha <- 0
-            ridge <- ridge + 1
+            ridge <- 1 + ridge
             for (iter in seq(iterMax)) {
                 if (any(is.infinite(X))){
                 #if (any(is.infinite(X@x))){
@@ -255,9 +266,9 @@
                     Umat <- rowsum(as.matrix(wSqrt*t(W.Z)), eliminate)/elimXscales
                     Wmat <- tcrossprod(W.Z)
                     diag(Wmat) <- ridge
-                    ZWZinv <- solve1(Wmat, Tvec, Umat, elim)
-                    alphaChange <- -ZWZinv[elim]/ZWZinv[1] * znorm/elimXscales
-                    thetaChange <- -ZWZinv[non.elim]/ZWZinv[1] * znorm/Xscales
+                    coef <- solve1(Wmat, Tvec, Umat, elim)
+                    alphaChange <- coef[elim] * znorm/elimXscales
+                    thetaChange <- coef[-elim] * znorm/Xscales
                 } else {
                     XWX <- tcrossprod(W.X.scaled)
                     diag(XWX) <- ridge
@@ -329,16 +340,18 @@
         subtracted[,1] <- 0
         W.X.scaled <- t(W.X.scaled) - subtracted[eliminate,]
         XWX <- crossprod(W.X.scaled)
-        theta <- c(alpha, theta)
     }
-    else if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
+    else {
+        alpha <- numeric(0)
+        if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
+    }
     Svd <- svd(XWX, nu = 0, nv = 0)
     sv.tolerance <-  100 * .Machine$double.eps
     theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0)) + nelim
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)
-    fit <- list(coefficients = theta, constrain = constrain,
+    fit <- list(coefficients = c(alpha, theta), constrain = constrain,
                 constrainTo = constrainTo, residuals = z, fitted.values = mu,
                 rank = theRank, family = family, predictors = eta,
                 deviance = dev[1], aic = modelAIC,

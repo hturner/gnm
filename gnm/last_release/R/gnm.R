@@ -31,7 +31,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (ordTRUE <- !identical(ord, xtf)) {
             modelData <- modelData[ord,]
         }
-        nElim <- nlevels(Elim)
+        nElim <- nlevels(eliminate)
         if (missing(lsMethod)) lsMethod <- "chol"
     }
     else nElim <- 0
@@ -95,7 +95,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
         fit <- list(coefficients = numeric(0), constrain = numeric(0),
-                    constrainTo = numeric(0), eliminate = 0,
+                    constrainTo = numeric(0), eliminate = NULL,
                     predictors = offset, fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0,
                     weights = weights*dmu^2/family$variance(mu),
@@ -124,7 +124,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (identical(constrain, "[?]"))
             call$constrain <- constrain <-
                 unlist(relimp::pickFrom(coefNames,
-                                        subset = (nElim:nParam)[-1],
                                         edit.setlabels = FALSE,
                                         title =
                                         "Constrain one or more gnm coefficients",
@@ -141,16 +140,13 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (is.logical(constrain))
             constrain <- which(constrain)
         ## dropped logical option
-        if (any(constrain < nElim))
-            stop("'constrain' specifies one or more parameters",
-                 "in the 'eliminate' term.")
-        if (!all(constrain %in% seq(coefNames)))
-            stop(" 'constrain' specifies non-existant parameters.")
+        if (!all(constrain %in% nElim + seq(coefNames)))
+            stop(" cannot match 'constrain' to non-eliminated parameters. ")
 
         if (is.null(start))
-            start <- rep.int(NA, nParam)
-        else if (length(start) != nParam) {
-            if (!missing(eliminate) && length(start) == (nParam - nElim))
+            start <- rep.int(NA, nElim + nParam)
+        else if (length(start) != nElim + nParam) {
+            if (!missing(eliminate) && length(start) == nParam)
                 start <- c(rep.int(NA, nElim), start)
             else
                 stop("length(start) must either equal the no. of parameters\n",
@@ -165,6 +161,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         }
         else if (method == "model.matrix"){
             theta <- modelTools$start
+            start <- start[seq.int(nElim + 1, length(start))]
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- constrainTo
             theta[is.na(theta)] <- seq(start)[is.na(theta)]
@@ -209,15 +206,28 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             names(fit)[match("linear.predictors", names(fit))] <- "predictors"
         }
         else if (method != "gnmFit")
-            fit <- do.call(method, list(modelTools, y, constrain, constrainTo,
-                                        nElim, family, weights, offset, nObs,
-                                        start, tolerance, iterStart, iterMax,
-                                        trace, verbose, x, termPredictors, ...))
+            fit <- do.call(method, list(modelTools = modelTools, y = y,
+                                        constrain = constrain,
+                                        constrainTo = constrainTo,
+                                        eliminate = eliminate, family = family,
+                                        weights = weights, offset = offset,
+                                        nObs = nObs, start = start,
+                                        etastart = etastart, mustart = mustart,
+                                        tolerance = tolerance,
+                                        iterStart = iterStart,
+                                        iterMax = iterMax, trace = trace,
+                                        verbose = verbose, x = x,
+                                        termPredictors = termPredictors,
+                                        ridge = ridge, ...))
         else
-            fit <- gnmFit(modelTools, y, constrain, constrainTo, nElim, family,
-                          weights, offset, nObs, start, etastart, mustart,
-                          tolerance, iterStart,
-                          iterMax, trace, verbose, x, termPredictors,
+            fit <- gnmFit(modelTools = modelTools, y = y, constrain = constrain,
+                          constrainTo = constrainTo, eliminate = eliminate,
+                          family = family, weights = weights, offset = offset,
+                          nObs = nObs, start = start, etastart = etastart,
+                          mustart = mustart, tolerance = tolerance,
+                          iterStart = iterStart, iterMax = iterMax,
+                          trace = trace, verbose = verbose, x = x,
+                          termPredictors = termPredictors,
                           lsMethod = lsMethod, ridge = ridge)
     }
     if (is.null(fit)) {
@@ -225,8 +235,9 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         return()
     }
 
+    coefNames <- names(fit$coefficients)
     if (is.null(ofInterest) && !missing(eliminate))
-        ofInterest <- (nElim:nParam)[-1]
+        ofInterest <- seq.int(nElim + 1, length(start))
     if (identical(ofInterest, "[?]"))
         call$ofInterest <- ofInterest <-
             pickCoef(fit,

@@ -10,20 +10,18 @@ solve1 <- function (W, Tvec = NULL, U = NULL, elim = NULL)
 ##
 ##  Result is only the first row/column of the inverse
 {
+    n <- nrow(W)
     if (is.null(Tvec)) { ## the basic routine, no eliminated submatrix
-        I1 <- numeric(nrow(W))
+        I1 <- numeric(n)
         I1[1] <- 1
         return(drop(solve(W, I1)))
     }
 ##  Now allow for the possibility of an eliminated submatrix
-    n <- ncol(W)
     Ti <- sqrt(1/Tvec)
-    k <- length(Tvec)
     Ti.U <- Ti * U
-    Qmat <- W - crossprod(Ti.U)
-    Qi <- solve1(Qmat)
-    result <- numeric(n + k)
-    result[!elim] <- Qi
+    Qi <- solve1(W - crossprod(Ti.U))
+    result <- numeric(n + length(Tvec) - 1)
     result[elim] <- -tcrossprod(Qi, Ti * Ti.U)
-    result
+    result[-elim] <- Qi[-1]
+    -result/Qi[1]
 }

@@ -24,7 +24,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     modelData <- eval(modelData, parent.frame())
 
     if (!missing(eliminate)) {
-        if (!is.factor(modelData$`(eliminate)`))
+        eliminate <- modelData$`(eliminate)`
+        if (!is.factor(eliminate))
             stop("'eliminate' must be a factor")
         xtf <- xtfrm(modelData$`(eliminate)`)
         ord <- order(xtf)
@@ -220,7 +221,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         termPredictors = termPredictors,
                                         ridge = ridge, ...))
         else
-            fit <- gnmFit(modelTools = modelTools, y = y, constrain = constrain,
+            fit <- gnmFit.e(modelTools = modelTools, y = y, constrain = constrain,
                           constrainTo = constrainTo, eliminate = eliminate,
                           family = family, weights = weights, offset = offset,
                           nObs = nObs, start = start, etastart = etastart,
@@ -228,7 +229,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                           iterStart = iterStart, iterMax = iterMax,
                           trace = trace, verbose = verbose, x = x,
                           termPredictors = termPredictors,
-                          lsMethod = lsMethod, ridge = ridge)
+                          ridge = ridge)#, lsMethod = lsMethod)
     }
     if (is.null(fit)) {
         warning("Algorithm failed - no model could be estimated", call. = FALSE)

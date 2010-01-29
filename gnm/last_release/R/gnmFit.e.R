@@ -28,8 +28,15 @@
         width <- as.numeric(options("width"))
     nTheta <- length(modelTools$start)
     nelim <- nlevels(eliminate)
-    if (nelim)  elim <- seq.int(nelim)
-    else eliminate <- 1
+    if (nelim)  {
+        elim <- seq.int(nelim)
+        alpha <- start[elim]
+        names(alpha) <- paste("(eliminate)", elim, sep = "")
+    }
+    else {
+        eliminate <- 1
+        alpha <- 0
+    }
     non.elim <- seq.int(nelim + 1, length(start))
     isConstrained <- is.element(seq(nTheta), constrain)
     XWX <- NULL
@@ -40,13 +47,8 @@
             if (verbose == TRUE)
                 prattle("Initialising", "\n", sep = "")
             ## only use start for elim par if all specified
-            initElim <- any(is.na(start[-non.elim]))
-            if (nelim) {
-                if (!initElim) alpha <- start[elim]
-                else alpha <- rep(0, nelim)
-                names(alpha) <- paste("(eliminate)", elim, sep = "")
-            }
-            else alpha <- 0
+            initElim <- any(is.na(alpha))
+            if (initElim) alpha <- numeric(nelim)
             theta <- start[non.elim]
             theta[is.na(theta)] <- modelTools$start[is.na(theta)]
             names(theta) <- names(modelTools$start)
@@ -75,7 +77,8 @@
                                                        intercept = FALSE,
                                                        eliminate =
                                                        if (initElim) eliminate
-                                                       else NULL)$coefficients)
+                                                       else NULL,
+                                                       control = glm.control(maxit = 15))$coefficients)
                 if (initElim) {
                     alpha[] <- tmpTheta[elim]
                     theta[unspecifiedLin] <- tmpTheta[-elim]
@@ -188,10 +191,6 @@
             }
         }
         else {
-            if (nelim) {
-                alpha <- start[elim]
-                names(alpha) <- paste("(eliminate)", elim, sep = "")
-            }
             theta <- structure(replace(start[non.elim], constrain, constrainTo),
                                names = names(modelTools$start))
             varPredictors <- modelTools$varPredictors(theta)
@@ -345,6 +344,7 @@
         alpha <- numeric(0)
         if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
     }
+    diag(XWX) <- diag(XWX) - ridge + 1
     Svd <- svd(XWX, nu = 0, nv = 0)
     sv.tolerance <-  100 * .Machine$double.eps
     theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0)) + nelim

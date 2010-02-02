@@ -48,7 +48,7 @@
                 prattle("Initialising", "\n", sep = "")
             ## only use start for elim par if all specified
             initElim <- any(is.na(alpha))
-            if (initElim) alpha <- numeric(nelim)
+            if (initElim) alpha[] <- numeric(nelim)
             theta <- start[non.elim]
             theta[is.na(theta)] <- modelTools$start[is.na(theta)]
             names(theta) <- names(modelTools$start)

@@ -1,3 +1,6 @@
+## returns vcov for the non-eliminated parameters
+## use.eliminate now means whether or not to return extra components
+## related to the eliminated parameters
 vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
     if (is.null(dispersion)) {
         if (any(object$family$family == c("poisson", "binomial")))
@@ -11,33 +14,41 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
         }
         else dispersion <- Inf
     }
-    coefNames <- names(coef(object))
     constrain <- object$constrain
     eliminate <- object$eliminate
-    needToElim <- seq(length.out = eliminate)
-    isConstrained <- is.element(seq(coefNames), constrain)
-    X <- model.matrix(object)[, !isConstrained, drop = FALSE]
+    nelim <- nlevels(eliminate)
+    X <- model.matrix(object)
+    ind <- !(seq_len(ncol(X)) %in% constrain)
+    cov.unscaled <- array(0, dim = rep(ncol(X), 2),
+                          dimnames = list(colnames(X), colnames(X)))
+    if (length(constrain)) X <- X[, -constrain, drop = FALSE]
     w <- as.vector(object$weights)
     W.X <- sqrt(w) * X
-    cov.unscaled <- array(0, dim = rep(length(coefNames), 2),
-                          dimnames = rep(list(coefNames), 2))
     if (object$rank == ncol(W.X)) {
-        invInfo <- chol2inv(chol(crossprod(W.X)))
+        cov.unscaled[ind, ind] <- chol2inv(chol(crossprod(W.X)))
     } else {
-        if (eliminate == 0 || !use.eliminate) {
-            invInfo <- MPinv(crossprod(W.X), method = "chol",
-                             rank = object$rank)
+        if (is.null(eliminate)) {
+            cov.unscaled[ind, ind] <- MPinv(crossprod(W.X), method = "chol",
+                                            rank = object$rank)
         } else {
-            Tvec <- colSums(w * X[, seq(eliminate), drop = FALSE])
-            Wmat <- W.X[, -needToElim, drop = FALSE]
-            Umat <- crossprod(W.X[, needToElim, drop = FALSE], Wmat)
-            Wmat <- crossprod(Wmat)
-            invInfo <- MPinv(list(Wmat, Tvec, Umat), eliminate = needToElim,
-                             method = "chol", rank = object$rank)
+            ## try without ridge and generalized inverse of Q
+            Ti <- 1/sapply(split(w, eliminate), sum)
+            U <- rowsum(sqrt(w) * W.X, eliminate)
+            W <- crossprod(W.X)
+            Ti.U <- Ti * U
+            UTU <- crossprod(U, Ti.U)
+            cov.unscaled[ind, ind] <- MPinv(W - UTU, method = "chol",
+                                            rank = nelim)
+            if (use.eliminate) {
+                rownames(Ti.U) <- names(object$coef)[seq_len(nelim)]
+                attr(cov.unscaled, "covElim") <- dispersion *
+                    -Ti.U %*% cov.unscaled[ind, ind]
+                attr(cov.unscaled, "varElim") <- dispersion *
+                    -diag(tcrossprod(attr(cov.unscaled, "covElim"), Ti.U)) + Ti
+            }
         }
     }
-    cov.unscaled[!isConstrained, !isConstrained] <- invInfo
-    attr(cov.unscaled, "rank") <- NULL
     structure(dispersion * cov.unscaled, dispersion = dispersion,
-              ofInterest = ofInterest(object), class = "vcov.gnm")
+              ofInterest = setdiff(ofInterest(object), 0:nelim),
+              class = "vcov.gnm")
 }

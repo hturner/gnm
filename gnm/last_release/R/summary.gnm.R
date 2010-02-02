@@ -6,6 +6,7 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
     coefs <- coef(object)
     if (object$rank > 0) {
         cov.scaled <- vcov(object, dispersion = dispersion)
+        ## non-eliminated par only
         estimable <- checkEstimable(object, ...)
         estimable[is.na(estimable)] <- FALSE
         if (is.matrix(cov.scaled))
@@ -13,6 +14,8 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         else
             sterr <- diag(cov.scaled)
         is.na(sterr[!estimable]) <- TRUE
+        if (!is.null(object$eliminate))
+            sterr <- c(sqrt(attr(cov.scaled, "varElim")), sterr)
         tvalue <- coefs/sterr
         dn <- c("Estimate", "Std. Error")
         if (!est.disp) {

@@ -1,48 +1,54 @@
-se <- function(model, estimate = ofInterest(model),
-               checkEstimability = TRUE, Vcov = NULL, dispersion = NULL, ...){
+## now only computes se for non-eliminated parameters
+se <- function(model, estimate = NULL, checkEstimability = TRUE,
+               Vcov = NULL, dispersion = NULL, ...){
     if (!inherits(model, "gnm")) stop("model is not of class \"gnm\"")
-    if (!is.null(Vcov) && !is.null(dispersion)) {
+    if (!is.null(Vcov) && !is.null(dispersion)){
         Vcov <- Vcov * dispersion
+    } else {
+        Vcov <- vcov(model, dispersion = dispersion, use.eliminate = FALSE)
     }
+    if (!length(Vcov)) stop("Model has no non-eliminated parameters")
     coefs <- coef(model)
-    l <- length(coefs)
-    eliminate <- model$eliminate
     coefNames <- names(coefs)
+    eliminate <- model$eliminate
+    nelim <- nlevels(eliminate)
+    non.elim <- (nelim + 1):length(coefs)
+    l <- length(non.elim)
+    coefs <- coefs[non.elim]
     if (identical(estimate, "[?]"))
-        estimate <- pickCoef(model, subset = (eliminate + 1):l,
+        estimate <- pickCoef(model, subset = non.elim,
                              title = paste("Estimate standard errors",
                              "for one or more gnm coefficients"))
     if (is.null(estimate))
-        return(data.frame(coef(summary(model)))[, 1:2])
+        estimate <- ofInterest(model)
+    if (is.character(estimate))
+        estimate <- match(estimate, coefNames, 0)
+    if (is.vector(estimate)) {
+        if (!length(estimate))
+            stop("no non-eliminated coefficients specified by 'estimate'",
+                 "argument")
+        if (length(ignored <- setdiff(estimate, non.elim)))
+            warning(length(ignored), " elements of 'estimate' do not match ",
+                    "non-eliminated coefficients")
+        estimate <- intersect(estimate, non.elim) - nelim
+        comb <- naToZero(coefs[estimate])
+        var <- Vcov[estimate, estimate]
+        coefMatrix <- matrix(0, l, length(comb))
+        coefMatrix[cbind(estimate, seq(length(comb)))] <- 1
+        colnames(coefMatrix) <- names(comb)
+    }
     else {
-        if (is.character(estimate))
-            estimate <- match(estimate, coefNames)
-        if (is.null(Vcov)) Vcov <- vcov(model, dispersion = dispersion)
-        if (is.vector(estimate) && all(estimate %in% seq(coefNames))) {
-            if (!length(estimate))
-                stop("no coefficients specified by 'estimate' argument")
-            comb <- naToZero(coefs[estimate])
-            var <- Vcov[estimate, estimate]
-            coefMatrix <- matrix(0, l, length(comb))
-            coefMatrix[cbind(estimate, seq(length(comb)))] <- 1
-            colnames(coefMatrix) <- names(comb)
-        }
-        else {
-            coefMatrix <- as.matrix(estimate)
-            if (!is.numeric(coefMatrix))
-                stop("'estimate' should specify parameters using ",
-                     "\"pick\" or a vector of \n names/indices; ",
-                     "or specify linear combinations using ",
-                     "a numeric vector/matrix.")
-            if (eliminate && nrow(coefMatrix) == l - eliminate)
-                coefMatrix <- cbind(matrix(0, eliminate, ncol(coefMatrix)),
-                                    coefMatrix)
-            if (nrow(coefMatrix) != l)
-                stop("NROW(estimate) should equal length(coef(model)) or \n",
-                     "length(coef(model)) - model$eliminate")
-            comb <- drop(crossprod(coefMatrix, naToZero(coefs)))
-            var <- crossprod(coefMatrix, crossprod(Vcov, coefMatrix))
-        }
+        coefMatrix <- as.matrix(estimate)
+        if (!is.numeric(coefMatrix))
+            stop("'estimate' should specify parameters using ",
+                 "\"pick\" or a vector of \n names/indices; ",
+                 "or specify linear combinations using ",
+                 "a numeric vector/matrix.")
+        if (nrow(coefMatrix) != l)
+            stop("NROW(estimate) should equal ",
+                 "length(coef(model)) - nlevels(model$eliminate)")
+        comb <- drop(crossprod(coefMatrix, naToZero(coefs)))
+        var <- crossprod(coefMatrix, crossprod(Vcov, coefMatrix))
     }
     estimable <- rep(TRUE, ncol(coefMatrix))
     if (checkEstimability) {

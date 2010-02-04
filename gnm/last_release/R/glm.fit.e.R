@@ -1,10 +1,10 @@
-##  Functions to help compute group sums/means quickly
-quickdiff <- function(x) {x[-1] - x[-length(x)]}
-
-grp.sum <- function(x, grp.end){
-    quickdiff(c(0, cumsum(as.numeric(x))[grp.end]))
+rowsum.unique <- function (x, group, ugroup,...)
+{
+    rval <- .Call("Rrowsum_matrix", x, NCOL(x), group, ugroup,
+        FALSE, PACKAGE = "base")
+    dimnames(rval) <- list(ugroup, colnames(x))
+    rval
 }
-
 "glm.fit.e" <-
 ##  This fits a glm with eliminated factor, and should be much quicker
 ##  than glm.fit when the number of levels of the eliminated factor is large.
@@ -30,8 +30,7 @@ grp.sum <- function(x, grp.end){
               control = glm.control(), ## only for compatibility with glm.fit
               intercept = TRUE, ## only for compatibility with glm.fit
               eliminate = NULL,  ## alternatively a factor
-              accelerate = 5 ## either numeric > 2, or FALSE
-              )
+              ridge = 1e-8)
 {
     if (is.null(eliminate)) { ## just revert to glm.fit
         return(glm.fit(x, y, weights = weights, start = start,
@@ -42,6 +41,7 @@ grp.sum <- function(x, grp.end){
     }
 ##  The rest handles the case of an eliminated factor
     nobs <- NROW(y)
+    non.elim <- ncol(x)
     if (is.null(weights))
         weights <- rep.int(1, nobs)
     if (is.null(offset))
@@ -54,16 +54,17 @@ grp.sum <- function(x, grp.end){
     aic <- family$aic
     ## sort data to help compute group means quickly
     ord <- order(xtfrm(eliminate))
-    if (ordTRUE <- !identical(ord, xtfrm(eliminate))) {
+    if (ordTRUE <- !identical(ord, seq(eliminate))) {
         y <- as.numeric(y[ord])
         weights <- weights[ord]
         offset <- offset[ord]
-        x <- x[ord,]
+        if (non.elim) x <- x[ord,]
         eliminate <- eliminate[ord]
     }
     size <- tabulate(eliminate)
     end <- cumsum(size)
     nelim <- nlevels(eliminate)
+    elim <- seq.int(nelim)
     if (is.null(start)) { # use either y or etastart or mustart
         if (is.null(mustart) && is.null(etastart)) {
             elim.means <- grp.sum(y, end)/size
@@ -72,7 +73,7 @@ grp.sum <- function(x, grp.end){
             if (!is.null(etastart)) mustart <- linkinv(etastart)
             os.by.level <- link(grp.sum(mustart, end)/size)
         }
-    } else start[seq(nelim)]
+    } else os.by.level <- start[elim]
     os.vec <- offset + os.by.level[eliminate]
     eta.stored <- eta <- os.vec
     mu <- linkinv(eta)
@@ -85,39 +86,36 @@ grp.sum <- function(x, grp.end){
 #        x <- cbind(1, x)  ## this typically results in fewer iterations
 #    }
     if (intercept) x <- x[, -1, drop = FALSE]
-    ## sweeps needed to get the rank right
-    subtracted <- rowsum(x, eliminate)/size
-    subtracted[,1] <- 0
-    x <- x - subtracted[eliminate,]
-    for (i in 1:control$maxit) {
-        model <- lm.wfit(x, z, w, offset = os.vec)
+    if (non.elim) {
+        ## sweeps needed to get the rank right
+        subtracted <- rowsum.unique(x, eliminate, elim)/size
+        subtracted[,1] <- 0
+        x <- x - subtracted[eliminate,]
+        ## initial fit to drop aliased columns
+        model <- lm.wfit(x, z, w, offset = os.vec, tol = 1e-02)
         eta <- model$fitted
         mu <- linkinv(eta)
         mu.eta <- linkder(eta)
-        res <- (y - mu) / mu.eta
+        z <- eta + (y - mu) / mu.eta
         w <- weights * (mu.eta)^2/variance(mu)
-        os.by.level <- os.by.level + grp.sum(w * res, end)/grp.sum(w, end)
-        if (accelerate > 2) {
-            ## store the current and previous two iterates
-            if (i > 2) os.by.level.lag2 <- os.by.level.lag1
-            if (i > 1) os.by.level.lag1 <- os.by.level.kept
-            os.by.level.kept <- os.by.level
-            counter <- counter + 1
-            ## if i is a multiple of accelerate, then make an Aitken
-            ## prediction step (for each eliminated parameter)
-            if (counter == accelerate) {
-                diff1 <- os.by.level.lag1 - os.by.level.lag2
-                diff0 <- os.by.level - os.by.level.lag1
-                if (all(abs(diff0 - diff1) > 1e-12)) {
-                    os.by.level <- os.by.level.lag2 - diff1^2/(diff0 - diff1)
-                } else accelerate <- 0 ## stop doing Aitken steps if
-                ## differences are too small
-                counter <- 0
-            }
-        }
-        old.os.vec <- os.vec
-        os.vec <- as.vector(offset + os.by.level[eliminate])
-        eta <- eta - old.os.vec + os.vec
+        full.theta <- model$coefficients
+        x <- x[, !is.na(full.theta)]
+        theta <- full.theta[!is.na(full.theta)]
+    }
+    Z <- cbind(z, x)
+    for (i in 1:control$maxit) {
+        ## try without scaling etc - already of full rank
+        W.Z <- w * Z
+        Tvec <- grp.sum(w, end)
+        Umat <- rowsum.unique(W.Z, eliminate, elim)
+        Wmat <- crossprod(Z, W.Z)
+        coefs <- solve1(Wmat, Tvec, Umat, elim) #Wmat empty?
+
+        theta <- coefs[-elim]
+        os.by.level <- coefs[elim]
+
+        if (non.elim) eta <- drop(x %*% theta + offset + os.by.level[eliminate])
+        else eta <- offset + os.by.level[eliminate]
         mu <- linkinv(eta)
         dev <- sum(dev.resids(y, mu, weights))
         if (control$trace)
@@ -130,16 +128,23 @@ grp.sum <- function(x, grp.end){
         }
         devold <- dev
         mu.eta <- linkder(eta)
-        z <- eta + (y - mu) / mu.eta
+        Z[,1] <- eta + (y - mu) / mu.eta
         w <- weights * (mu.eta)^2/variance(mu)
     }
     converged <- !(i == control$maxit)
     if (!converged) warning(paste("The convergence criterion was not met after",
                                   control$maxit, "iterations."))
-    rank <- (model$rank + nelim)
+    if (non.elim) {
+        rank <- (model$rank + nelim)
+        full.theta[!is.na(full.theta)] <- theta
+        os.by.level <- os.by.level - subtracted %*% naToZero(full.theta)
+    }
+    else {
+        rank <- nelim
+        full.theta <- numeric(0)
+    }
+    names(os.by.level) <- paste("(eliminate)", elim, sep = "")
     aic.model <- aic(y, sum(weights > 0), mu, weights, dev) + 2 * rank
-    na.to.zero <- function(vec) ifelse(is.na(vec), 0, vec)
-    coefs.elim <- os.by.level - subtracted %*% na.to.zero(model$coef)
     if (ordTRUE) {
         reorder <- order(ord)
         y <- y[reorder]
@@ -151,20 +156,18 @@ grp.sum <- function(x, grp.end){
     mu.eta <- linkder(eta)
     z <- eta + (y - mu) / mu.eta
     w <- weights * (mu.eta)^2/variance(mu)
-    list(coefficients = c(coefs.elim, model$coef),
+    list(coefficients = c(os.by.level, full.theta),
          residuals = (y - mu) / mu.eta,
          fitted.values = mu,
          rank = rank,
          family = family,
-         linear.predictors = eta,
+         predictors = eta,
          deviance = dev,
          aic = aic.model,
-         null.deviance = sum(dev.resids(y, linkinv(offset), weights)),
          iter = i,
          weights = weights * (mu.eta)^2/variance(mu),
          prior.weights = weights,
          df.residual = nobs - sum(weights == 0) - rank,
-         df.null = nobs - sum(weights == 0),
          y = y,
          converged = converged)
     ##  NB: some components of the result of glm.fit are missing from this list

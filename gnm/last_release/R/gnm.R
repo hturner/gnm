@@ -83,37 +83,25 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         }
     }
 
-    if (is.empty.model(modelTerms)) {
-        coefNames <- paste(rep("(eliminate)", nElim), seq_len(nElim), sep = "")
-        if (method == "coefNames")
-            return(structure(coefNames, ofInterest = numeric(0),
-                             class = "coef.gnm"))
+    if (is.empty.model(modelTerms) && is.missing(eliminate)) {
+        if (method == "coefNames") return(numeric(0))
         else if (method == "model.matrix")
             return(model.matrix(modelTerms))
-        if (!missing(eliminate)){
-            alpha <- sapply(split(y, eliminate), mean)
-            eta <- offset + alpha[eliminate]
-        }
-        else {
-            alpha <- numeric(0)
-            eta <- offset
-        }
-        names(alpha) <- coefNames
-        if (!family$valideta(eta))
+        if (!family$valideta(offset))
             stop("invalid predictor values in empty model")
-        mu <- family$linkinv(eta)
+        mu <- family$linkinv(offset)
         if (!family$validmu(mu))
             stop("invalid fitted values in empty model")
-        dmu <- family$mu.eta(eta)
+        dmu <- family$mu.eta(offset)
         dev <- sum(family$dev.resids(y, mu, weights))
         modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
                                                 weights, dev))
-        fit <- list(coefficients = alpha, constrain = numeric(0),
-                    constrainTo = numeric(0), eliminate = eliminate,
-                    predictors = eta, fitted.values = mu, deviance = dev,
+        fit <- list(coefficients = numeric(0), constrain = numeric(0),
+                    constrainTo = numeric(0), eliminate = NULL,
+                    predictors = offset, fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0,
                     weights = weights*dmu^2/family$variance(mu),
-                    residuals = (y - mu)/dmu, df.residual = nObs, rank = nElim,
+                    residuals = (y - mu)/dmu, df.residual = nObs, rank = 0,
                     family = family, prior.weights = weights, y = y,
                     converged = NA)
         if (x) fit <- c(fit, x = model.matrix(modelTerms))
@@ -167,10 +155,10 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         }
 
         if (onlyLin) {
-            offset <- offset + X[, constrain, drop = FALSE] %*% constrainTo
+            offset <- drop(offset +
+                           X[, constrain, drop = FALSE] %*% constrainTo)
             X[, constrain] <- 0
-            if (method == "model.matrix")
-            return(X)
+            if (method == "model.matrix") return(X)
         }
         else if (method == "model.matrix"){
             theta <- modelTools$start
@@ -215,10 +203,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 fit$termPredictors <- modelTools$predictor(varPredictors,
                                                            term = TRUE)
             }
-            extra <- match(c("effects",  "R", "qr", "null.deviance",
-                           "df.null", "boundary"), names(fit))
-            fit <- fit[-extra]
-            names(fit)[match("linear.predictors", names(fit))] <- "predictors"
         }
         else if (method != "gnmFit")
             fit <- do.call(method, list(modelTools = modelTools, y = y,

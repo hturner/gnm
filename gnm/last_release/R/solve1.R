@@ -14,14 +14,13 @@ solve1 <- function (W, Tvec = NULL, U = NULL, elim = NULL)
     if (is.null(Tvec)) { ## the basic routine, no eliminated submatrix
         I1 <- numeric(n)
         I1[1] <- 1
-        return(drop(solve(W, I1)))
+        return(drop(solve.default(W, I1, tol = .Machine$double.eps)))
     }
 ##  Now allow for the possibility of an eliminated submatrix
-    Ti <- sqrt(1/Tvec)
-    Ti.U <- Ti * U
-    Qi <- solve1(W - crossprod(Ti.U))
+    Ti.U <- 1/Tvec * U
+    Qi <- solve1(W - crossprod(U, Ti.U))
     result <- numeric(n + length(Tvec) - 1)
-    result[elim] <- -tcrossprod(Qi, Ti * Ti.U)
+    result[elim] <- -tcrossprod(Qi, Ti.U)
     result[-elim] <- Qi[-1]
     -result/Qi[1]
 }

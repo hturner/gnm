@@ -83,7 +83,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         }
     }
 
-    if (is.empty.model(modelTerms) && is.missing(eliminate)) {
+    if (is.empty.model(modelTerms) && missing(eliminate)) {
         if (method == "coefNames") return(numeric(0))
         else if (method == "model.matrix")
             return(model.matrix(modelTerms))
@@ -179,12 +179,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
         if (onlyLin) {
             if (any(is.na(start))) start <- NULL
-            if (verbose) cat("Linear predictor - using glm.fit\n")
             fit <- glm.fit.e(X, y, weights = weights, start = start,
                              etastart = etastart, mustart = mustart,
                              offset = offset, family = family,
                              control = glm.control(tolerance, iterMax, trace),
-                             intercept = attr(modelTerms, "intercept"),
+                             intercept = {attr(modelTerms, "intercept") |
+                                          !missing(eliminate)},
                              eliminate = eliminate)
             if (sum(is.na(coef(fit))) > length(constrain)) {
                 extra <- setdiff(which(is.na(coef(fit))), constrain)

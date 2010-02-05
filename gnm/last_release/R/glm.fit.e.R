@@ -82,9 +82,6 @@ rowsum.unique <- function (x, group, ugroup,...)
     w <- weights * (mu.eta)^2/variance(mu)
     counter <- 0
     devold <- 0
-#    if (!intercept) {
-#        x <- cbind(1, x)  ## this typically results in fewer iterations
-#    }
     if (intercept) x <- x[, -1, drop = FALSE]
     if (non.elim) {
         ## sweeps needed to get the rank right
@@ -92,27 +89,31 @@ rowsum.unique <- function (x, group, ugroup,...)
         subtracted[,1] <- 0
         x <- x - subtracted[eliminate,]
         ## initial fit to drop aliased columns
-        model <- lm.wfit(x, z, w, offset = os.vec, tol = 1e-02)
+        model <- lm.wfit(x, z, w, offset = os.vec)
         eta <- model$fitted
         mu <- linkinv(eta)
         mu.eta <- linkder(eta)
         z <- eta + (y - mu) / mu.eta
         w <- weights * (mu.eta)^2/variance(mu)
         full.theta <- model$coefficients
-        x <- x[, !is.na(full.theta)]
-        theta <- full.theta[!is.na(full.theta)]
+        est <- !is.na(full.theta)
+        x <- x[, est]
+        theta <- full.theta[est]
     }
     Z <- cbind(z, x)
+    I1 <- numeric(ncol(Z))
+    I1[1] <- 1
     for (i in 1:control$maxit) {
         ## try without scaling etc - already of full rank
         W.Z <- w * Z
         Tvec <- grp.sum(w, end)
         Umat <- rowsum.unique(W.Z, eliminate, elim)
         Wmat <- crossprod(Z, W.Z)
-        coefs <- solve1(Wmat, Tvec, Umat, elim) #Wmat empty?
-
-        theta <- coefs[-elim]
-        os.by.level <- coefs[elim]
+        diag(Wmat) <- diag(Wmat) + ridge
+        Ti.U <- Umat/Tvec
+        Qi <- solve(Wmat - crossprod(Umat, Ti.U), I1)
+        theta <- -Qi[-1]/Qi[1]
+        os.by.level <- (Ti.U %*% Qi)/Qi[1]
 
         if (non.elim) eta <- drop(x %*% theta + offset + os.by.level[eliminate])
         else eta <- offset + os.by.level[eliminate]
@@ -136,7 +137,7 @@ rowsum.unique <- function (x, group, ugroup,...)
                                   control$maxit, "iterations."))
     if (non.elim) {
         rank <- (model$rank + nelim)
-        full.theta[!is.na(full.theta)] <- theta
+        full.theta[est] <- theta
         os.by.level <- os.by.level - subtracted %*% naToZero(full.theta)
     }
     else {
@@ -154,8 +155,6 @@ rowsum.unique <- function (x, group, ugroup,...)
         offset <- offset[reorder]
     }
     mu.eta <- linkder(eta)
-    z <- eta + (y - mu) / mu.eta
-    w <- weights * (mu.eta)^2/variance(mu)
     list(coefficients = c(os.by.level, full.theta),
          residuals = (y - mu) / mu.eta,
          fitted.values = mu,

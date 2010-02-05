@@ -262,7 +262,7 @@
                     w.z <- w.z/znorm
                     W.Z <- rbind2(w.z, W.X.scaled)
                     elimXscales <- sqrt(elim.diagInfo)
-                    Umat <- rowsum(as.matrix(wSqrt*t(W.Z)), eliminate)/elimXscales
+                    Umat <- rowsum.unique(wSqrt*t(W.Z), eliminate, elim)/elimXscales
                     Wmat <- tcrossprod(W.Z)
                     diag(Wmat) <- ridge
                     coef <- solve1(Wmat, Tvec, Umat, elim)
@@ -335,7 +335,7 @@
     theta[constrain] <- NA
     if (nelim) {
         ## sweeps needed to get the rank right
-        subtracted <- rowsum(t(W.X.scaled), eliminate)/grp.size
+        subtracted <- rowsum.unique(t(W.X.scaled), eliminate, elim)/grp.size
         subtracted[,1] <- 0
         W.X.scaled <- t(W.X.scaled) - subtracted[eliminate,]
         XWX <- crossprod(W.X.scaled)

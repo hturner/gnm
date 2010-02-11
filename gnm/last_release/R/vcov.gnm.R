@@ -17,12 +17,21 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
     constrain <- object$constrain
     eliminate <- object$eliminate
     nelim <- nlevels(eliminate)
+    w <- as.vector(object$weights)
     X <- model.matrix(object)
     ind <- !(seq_len(ncol(X)) %in% constrain)
     cov.unscaled <- array(0, dim = rep(ncol(X), 2),
                           dimnames = list(colnames(X), colnames(X)))
+    if (!length(ind)) {
+        if (nelim && use.eliminate) {
+            Ti <- 1/sapply(split(w, eliminate), sum)
+            attr(cov.unscaled, "varElim") <- dispersion * Ti
+        }
+        return(structure(cov.unscaled, dispersion = dispersion,
+                         ofInterest = NULL, class = "vcov.gnm"))
+    }
+
     if (length(constrain)) X <- X[, -constrain, drop = FALSE]
-    w <- as.vector(object$weights)
     W.X <- sqrt(w) * X
     if (object$rank == ncol(W.X)) {
         cov.unscaled[ind, ind] <- chol2inv(chol(crossprod(W.X)))
@@ -38,7 +47,7 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
             Ti.U <- Ti * U
             UTU <- crossprod(U, Ti.U)
             cov.unscaled[ind, ind] <- MPinv(W - UTU, method = "chol",
-                                            rank = nelim)
+                                            rank = object$rank - nelim)
             if (use.eliminate) {
                 rownames(Ti.U) <- names(object$coef)[seq_len(nelim)]
                 attr(cov.unscaled, "covElim") <- dispersion *
@@ -49,6 +58,6 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
         }
     }
     structure(dispersion * cov.unscaled, dispersion = dispersion,
-              ofInterest = setdiff(ofInterest(object), 0:nelim),
+              ofInterest = setdiff(ofInterest(object), 0:nelim) - nelim,
               class = "vcov.gnm")
 }

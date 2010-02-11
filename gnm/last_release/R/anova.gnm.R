@@ -15,7 +15,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
                              test = test))
 
     x <- model.matrix(object)
-    if (object$eliminate) {
+    if (!is.null(object$eliminate)) {
         varlist <- labels(object)[-1]
         varseq <- attr(x, "assign") - 1
     }

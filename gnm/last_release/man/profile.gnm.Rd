@@ -158,8 +158,8 @@ confint(prof)
 ## Mult(Exp(.), orig:dest).educ3 -1.4836854 -0.2362378
 ## Mult(Exp(.), orig:dest).educ4 -2.5792398 -0.2953420
 ## Mult(Exp(.), orig:dest).educ5       -Inf -0.7006889
-## coefData <- se(unidiff)
-## cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
+coefData <- se(unidiff)
+cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ### A far from quadratic example, also with eliminated parameters
 data(backPain)

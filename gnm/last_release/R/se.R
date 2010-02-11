@@ -7,7 +7,7 @@ se <- function(model, estimate = NULL, checkEstimability = TRUE,
     } else {
         Vcov <- vcov(model, dispersion = dispersion, use.eliminate = FALSE)
     }
-    if (!length(Vcov)) stop("Model has no non-eliminated parameters")
+    if (!length(Vcov)) return("Model has no non-eliminated parameters")
     coefs <- coef(model)
     coefNames <- names(coefs)
     eliminate <- model$eliminate
@@ -19,8 +19,10 @@ se <- function(model, estimate = NULL, checkEstimability = TRUE,
         estimate <- pickCoef(model, subset = non.elim,
                              title = paste("Estimate standard errors",
                              "for one or more gnm coefficients"))
-    if (is.null(estimate))
-        estimate <- ofInterest(model)
+    if (is.null(estimate)){
+        if (!is.null(model$ofInterest)) estimate <- ofInterest(model)
+        else estimate <- seq(model$coefficients)
+    }
     if (is.character(estimate))
         estimate <- match(estimate, coefNames, 0)
     if (is.vector(estimate)) {

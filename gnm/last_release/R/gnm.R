@@ -112,6 +112,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         onlyLin <- checkLinear && all(attr(modelTerms, "type") == "Linear")
         if (onlyLin) {
             X <- model.matrix(modelTerms, modelData)
+            if (nElim) X <- X[,-1]
             coefNames <- colnames(X)
         }
         else {
@@ -134,14 +135,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         return.indices = TRUE))
         if (is.character(constrain)) {
             if (length(constrain) == 1)
-                constrain <- grep(constrain, coefNames)
+                constrain <- match(grep(constrain, coefNames), seq(coefNames), 0)
             else
-                constrain <- match(constrain, coefNames)
+                constrain <- match(constrain, coefNames, 0)
         }
-        if (is.logical(constrain))
-            constrain <- which(constrain)
         ## dropped logical option
-        if (!all(constrain %in% nElim + seq(coefNames)))
+        if (!all(constrain %in% seq(coefNames)))
             stop(" cannot match 'constrain' to non-eliminated parameters. ")
 
         if (is.null(start))
@@ -183,8 +182,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                              etastart = etastart, mustart = mustart,
                              offset = offset, family = family,
                              control = glm.control(tolerance, iterMax, trace),
-                             intercept = {attr(modelTerms, "intercept") |
-                                          !missing(eliminate)},
+                             intercept = attr(modelTerms, "intercept"),
                              eliminate = eliminate)
             if (sum(is.na(coef(fit))) > length(constrain)) {
                 extra <- setdiff(which(is.na(coef(fit))), constrain)
@@ -192,6 +190,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 constrain <- c(constrain, extra)[ind]
                 constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
             }
+            if (!is.null(fit$null.deviance)) {
+                extra <- match(c("effects",  "R", "qr", "null.deviance",
+                                 "df.null", "boundary"), names(fit))
+                fit <- fit[-extra]
+            }
+            names(fit)[match("linear.predictors", names(fit))] <- "predictors"
             fit$constrain <- constrain
             fit$constrainTo <- constrainTo
             if (x) fit$x <- X

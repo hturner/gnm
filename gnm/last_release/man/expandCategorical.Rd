@@ -70,7 +70,7 @@ bwt.mu <- multinom(low ~ ., data = bwt)
 ## that interactions with low0 automatically set to zero, else could use
 ## 'constrain' argument. 
 bwtLong <- expandCategorical(bwt, "low", group = FALSE)
-bwt.po <- gnm(count ~  low*(.), eliminate = id, data = bwtLong, family =
+bwt.po <- gnm(count ~  low*(. - id), eliminate = id, data = bwtLong, family =
               "poisson") 
 summary(bwt.po) # same deviance; df reflect extra id parameters
 

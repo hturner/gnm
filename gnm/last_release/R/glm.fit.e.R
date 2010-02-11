@@ -154,17 +154,16 @@ rowsum.unique <- function (x, group, ugroup,...)
         weights <- weights[reorder]
         offset <- offset[reorder]
     }
-    mu.eta <- linkder(eta)
     list(coefficients = c(os.by.level, full.theta),
-         residuals = (y - mu) / mu.eta,
+         residuals = (y - mu) / linkder(eta),
          fitted.values = mu,
          rank = rank,
          family = family,
-         predictors = eta,
+         linear.predictors = eta,
          deviance = dev,
          aic = aic.model,
          iter = i,
-         weights = weights * (mu.eta)^2/variance(mu),
+         weights = w,
          prior.weights = weights,
          df.residual = nobs - sum(weights == 0) - rank,
          y = y,

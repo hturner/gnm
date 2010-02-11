@@ -2,7 +2,7 @@
 ## ignore constrain, skip starting iterations (use start), assume nonlinear & method = chol
 "gnmFit.e" <-
     function (modelTools, y,
-              constrain = numeric(0),
+              constrain = numeric(0), # index of non-eliminated parameters
               constrainTo = numeric(length(constrain)),
               eliminate = NULL, # now a factor
               family = poisson(),
@@ -77,8 +77,7 @@
                                                        intercept = FALSE,
                                                        eliminate =
                                                        if (initElim) eliminate
-                                                       else NULL,
-                                                       control = glm.control(maxit = 15))$coefficients)
+                                                       else NULL)$coefficients)
                 if (initElim) {
                     alpha[] <- tmpTheta[elim]
                     theta[unspecifiedLin] <- tmpTheta[-elim]

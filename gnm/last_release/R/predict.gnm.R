@@ -3,16 +3,24 @@ predict.gnm <- function (object, newdata = NULL,
                          dispersion = NULL, terms = NULL,
                          na.action = na.exclude, ...) {
     type <- match.arg(type)
-    if (type == "terms" && is.null(terms))
-        terms <- attr(object$terms, "term.labels")
+    if (type == "terms") {
+        hasintercept <- attr(object$terms, "intercept") > 0L
+        if (is.null(terms))
+            terms <- c("(eliminate)"[!is.null(object$eliminate)],
+                       attr(object$terms, "term.labels"))
+    }
     if(missing(newdata)) {
         pred <- switch(type, link = object$predictors,
                        response = object$fitted.values,
                        terms = {pred <- termPredictors(object)
-                                predc <- sweep(pred, 2, colMeans(pred))
-                                const <- sum(pred[1,]) - sum(predc[1,])
-                                structure(predc[, terms, drop = FALSE],
-                                              constant = const)})
+                                ## see 6.3.6 white book & predict.lm
+                                if (hasintercept) {
+                                    predc <- sweep(pred, 2, colMeans(pred))
+                                    const <- sum(pred[1,]) - sum(predc[1,])
+                                    structure(predc[, terms, drop = FALSE],
+                                              constant = const)
+                                } else structure(pred[, terms, drop = FALSE],
+                                                 constant = 0)})
         if (!is.null(na.act <- object$na.action)){
             pred <- napredict(na.act, pred)
         }
@@ -50,11 +58,23 @@ predict.gnm <- function (object, newdata = NULL,
         else
             X <- modelTools$localDesignFunction(parameters(object),
                                                 varPredictors)
-        switch(type, link = {se.fit <- sqrt(diag(X %*% tcrossprod(V, X)))},
+        e <- object$eliminate
+        switch(type,
+               link = {
+                   if (is.null(e))
+                       se.fit <- sqrt(diag(X %*% tcrossprod(V, X)))
+                   else se.fit <- sqrt(diag(X %*% tcrossprod(V, X)) +
+                                       2 * rowSums(X * attr(V, "covElim")[e,]) +
+                                       attr(var, "varElim")[e])},
                response = {
                    eta <- na.omit(c(family(object)$linkfun(pred)))
-                   dX <- family(object)$mu.eta(eta) * X
-                   se.fit <- sqrt(diag(dX %*% tcrossprod(V, dX)))},
+                   d <- family(object)$mu.eta(eta)
+                   dX <- d * X
+                   if (is.null(e))
+                       se.fit <- sqrt(diag(dX %*% tcrossprod(V, dX)))
+                   else se.fit <- sqrt(diag(dX %*% tcrossprod(V, dX)) +
+                                       2*rowSums(dX * attr(V, "covElim")[e,]) +
+                                       d * attr(var, "varElim")[e])},
                terms = {
                    if (missing(newdata)) {
                        assign <- split(seq(ncol(X)), attr(X, "assign"))

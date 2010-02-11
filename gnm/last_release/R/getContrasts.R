@@ -7,21 +7,14 @@ getContrasts <- function(model, set = NULL,
                          ...){
     coefs <- parameters(model)
     l <- length(coefs)
+    nelim <- nlevels(model$eliminate)
+    if (l == nelim)
+        stop("Model has no non-eliminated parameters")
     of.interest <- ofInterest(model)
-    if (is.null(of.interest)) {
-        if (l == model$eliminate) stop("Model has no parameters of interest")
-        of.interest <- (model$eliminate + 1):l
-    }
+    if (!length(of.interest)) of.interest <- (nelim + 1):l
     coefNames <- names(coefs)
-    if (is.null(set)) {
-        of.interest <- ofInterest(model)
-        if (is.null(of.interest)) {
-            if (l == model$eliminate)
-                stop("Model has no parameters of interest")
-            of.interest <- (model$eliminate + 1):l
-        }
+    if (is.null(set))
         set <- unlist(relimp::pickFrom(coefNames[of.interest], 1, ...))
-    }
     setLength <- length(set)
     if (setLength == 0) stop(
             "No non-empty parameter set specified")
@@ -53,7 +46,7 @@ getContrasts <- function(model, set = NULL,
                           stop("Specified ", refName, " is not an opton.")))
     }
 
-    setCoefs <- coefs[names(coefs) %in% set]
+    setCoefs <- coefs[coefNames %in% set]
     contr <- setCoefs - ref %*% setCoefs
     grad <- diag(rep(1, setLength))
     grad <- grad - ref
@@ -77,8 +70,9 @@ getContrasts <- function(model, set = NULL,
         grad <- ((scaleRef * sum(vd) - vd) %o% contr/vdd + grad)/vdd
     }
 
+    l <- l - nelim
     combMatrix <- matrix(0, l, setLength)
-    combMatrix[match(set, coefNames), ] <- grad
+    combMatrix[match(set, coefNames) - nelim, ] <- grad
     colnames(combMatrix) <- set
 
     Vcov <-  vcov(model, dispersion = dispersion,

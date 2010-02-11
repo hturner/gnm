@@ -1,6 +1,6 @@
 gnmTerms <- function(formula, eliminate = FALSE, data = NULL)
 {
-    if (eliminate) formula <- update.formula(formula, . ~ . - 1)
+    if (eliminate) formula[[3]] <- call("-", formula[[3]], quote(1))
     fullTerms <- terms(formula, specials = "instances", simplify = TRUE,
                        keep.order = TRUE, data = data)
 

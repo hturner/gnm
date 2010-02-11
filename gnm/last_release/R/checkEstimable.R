@@ -5,7 +5,8 @@ checkEstimable <- function(model, combMatrix = NULL,
     coefs <- coef(model)
     X <- model.matrix(model)
     l <- ncol(X)
-    constrained <- seq(l) %in% model$constrain
+    if (!l) return(logical(0))
+    constrained <- seq(l) %in% (model$constrain - nlevels(model$eliminate))
     X <- X[, !constrained, drop = FALSE]
     if (is.null(combMatrix))
         combMatrix <- diag(seq_len(l))

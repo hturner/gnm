@@ -1,5 +1,5 @@
 gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
-                constrain = numeric(0),
+                constrain = numeric(0), #index of non-eliminated parameters
                 constrainTo = numeric(length(constrain)), family = gaussian,
                 data = NULL, subset, weights, na.action,  method = "gnmFit",
                 checkLinear = TRUE, offset, start = NULL,
@@ -120,7 +120,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                    method == "model.matrix" | x)
             coefNames <- names(modelTools$start)
         }
-        if (method == "coefNames") return(coefNames)
+        if (method == "coefNames") {
+            if (nElim)
+                coefNames <- c(paste("(eliminate)", seq(nElim), sep = ""),
+                               coefNames)
+            return(structure(coefNames, class = "coef.gnm"))
+        }
         nParam <- length(coefNames)
 
         if (identical(constrain, "[?]"))
@@ -238,9 +243,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         return()
     }
 
-    coefNames <- names(fit$coefficients)
     if (is.null(ofInterest) && !missing(eliminate))
-        ofInterest <- nElim + seq_len(length(coefNames) - nElim)
+        ofInterest <- nElim + seq_len(nParam)
     if (identical(ofInterest, "[?]"))
         call$ofInterest <- ofInterest <-
             pickCoef(fit,
@@ -248,14 +252,15 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                      "- assuming all are of interest."))
     if (is.character(ofInterest)) {
         if (length(ofInterest) == 1)
-            ofInterest <- grep(ofInterest, coefNames)
+            ofInterest <- match(grep(ofInterest, coefNames), 0)
         else
-            ofInterest <- match(ofInterest, coefNames)
+            ofInterest <- match(ofInterest, coefNames, 0)
+        if (!sum(ofInterest)) ofInterest <- NULL
     }
     if (!is.null(ofInterest)) {
-        if (any(ofInterest > length(coefNames)))
+        if (!all(ofInterest %in% seq(coefNames)))
             stop("'ofInterest' does not specify a subset of the ",
-                 "coefficients.")
+                 "non.eliminated coefficients.")
         names(ofInterest) <- coefNames[ofInterest]
     }
 

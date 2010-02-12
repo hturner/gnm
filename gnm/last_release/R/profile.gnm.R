@@ -1,5 +1,5 @@
 profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
-                         maxsteps = 10, stepsize = NULL, trace = FALSE, ...) 
+                         maxsteps = 10, stepsize = NULL, trace = FALSE, ...)
 {
     fittedCoef <- parameters(fitted)
     coefNames <- names(fittedCoef)
@@ -8,7 +8,7 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
         which <- 1:p
     else if (is.numeric(which))
         which <- which
-    else if (is.character(which)) 
+    else if (is.character(which))
         which <- match(which, coefNames)
     summ <- summary(fitted)
     sterr <- summ$coefficients[, "Std. Error"]
@@ -38,7 +38,7 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
             ## estimate quadratic in the region MLE +/- zmax*se
             margin <- zmax * sterr[i]
             updatedDev <- numeric(2)
-            for (sgn in c(-1, 1)) { 
+            for (sgn in c(-1, 1)) {
                 val <- fittedCoef[i] + sgn * margin
                 updated <-
                     suppressWarnings(update(fitted, constrain =
@@ -80,7 +80,7 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
                                                     start = fittedCoef))
                         if (!is.null(updated) &&
                             sqrt((deviance(updated) - fittedDev)/disp) < zmax)
-                            asymptote[dir] <- TRUE   
+                            asymptote[dir] <- TRUE
                     }
                     if (abs(root - firstApprox) > stepsize[dir] &&
                         !asymptote[dir]) {
@@ -92,7 +92,7 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
             }
         }
         for (sgn in c(-1, 1)) {
-            if (trace) 
+            if (trace)
                 prattle("\nParameter:", par, c("down", "up")[(sgn + 1)/2 + 1],
                         "\n")
             step <- 0
@@ -104,6 +104,7 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
                 if (prof[[par]][maxsteps + 1 + sgn * step] != 0)
                     next
                 val <- fittedCoef[i] + sgn * step * stepsize[(sgn + 1)/2 + 1]
+                browser()
                 updated <-
                     suppressWarnings(update(fitted, constrain =
                                             c(fittedConstrain, i),
@@ -117,7 +118,7 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
                 }
                 init <- parameters(updated)
                 zz <- (deviance(updated) - fittedDev)/disp
-                if (zz > -0.001) 
+                if (zz > -0.001)
                   zz <- max(zz, 0)
                 else stop("profiling has found a better solution, ",
                           "so original fit had not converged")

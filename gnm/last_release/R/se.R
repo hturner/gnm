@@ -12,11 +12,9 @@ se <- function(model, estimate = NULL, checkEstimability = TRUE,
     coefNames <- names(coefs)
     eliminate <- model$eliminate
     nelim <- nlevels(eliminate)
-    non.elim <- (nelim + 1):length(coefs)
-    l <- length(non.elim)
-    coefs <- coefs[non.elim]
+    l <- length(coefs)
     if (identical(estimate, "[?]"))
-        estimate <- pickCoef(model, subset = non.elim,
+        estimate <- pickCoef(model,
                              title = paste("Estimate standard errors",
                              "for one or more gnm coefficients"))
     if (is.null(estimate)){
@@ -25,14 +23,10 @@ se <- function(model, estimate = NULL, checkEstimability = TRUE,
     }
     if (is.character(estimate))
         estimate <- match(estimate, coefNames, 0)
-    if (is.vector(estimate)) {
+    if (is.vector(estimate) && all(estimate %in% seq(coefs))) {
         if (!length(estimate))
             stop("no non-eliminated coefficients specified by 'estimate'",
                  "argument")
-        if (length(ignored <- setdiff(estimate, non.elim)))
-            warning(length(ignored), " elements of 'estimate' do not match ",
-                    "non-eliminated coefficients")
-        estimate <- intersect(estimate, non.elim) - nelim
         comb <- naToZero(coefs[estimate])
         var <- Vcov[estimate, estimate]
         coefMatrix <- matrix(0, l, length(comb))

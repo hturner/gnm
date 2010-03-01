@@ -7,8 +7,9 @@ updateLinear <- function(which, theta, y, mu, eta, offset, weights, family,
     offsetVarPredictors <- modelTools$varPredictors(theta)
     offset <- offset + modelTools$predictor(offsetVarPredictors)
     z <- eta - offset + (y - mu)/dmu
-    suppressWarnings(naToZero(glm.fit.e(X[,which, drop = FALSE], z,
-                                        weights = w, intercept = FALSE,
-                                        eliminate = eliminate)$coef))
+    suppressWarnings(glm.fit.e(X[,which, drop = FALSE], z,
+                               weights = w, intercept = FALSE,
+                               eliminate = eliminate)[c("coefficients",
+                               "elim.coefs")])
 }
 

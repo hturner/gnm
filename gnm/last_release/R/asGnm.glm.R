@@ -6,7 +6,7 @@ asGnm.glm <- function(object, ...) {
     object$call[[1]] <- as.name("gnm")
     constrain <- which(is.na(coef(object)))
     object$terms <- gnmTerms(object$formula, data = modelData)
-    object <- c(list(eliminate = 0, ofInterest = NULL,
+    object <- c(list(eliminate = NULL, ofInterest = NULL,
                      na.action = na.action(modelData), constrain = constrain,
                      constrainTo = numeric(length(constrain))),
                 object)

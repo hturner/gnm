@@ -154,7 +154,8 @@ rowsum.unique <- function (x, group, ugroup,...)
         weights <- weights[reorder]
         offset <- offset[reorder]
     }
-    list(coefficients = c(os.by.level, full.theta),
+    list(coefficients = full.theta,
+         elim.coefs = c(os.by.level),
          residuals = (y - mu) / linkder(eta),
          fitted.values = mu,
          rank = rank,

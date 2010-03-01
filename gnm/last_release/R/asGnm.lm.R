@@ -4,7 +4,7 @@ asGnm.lm <- function(object, ...) {
     object[lmExtra] <- NULL
     object$call[[1]] <- as.name("gnm")
     constrain <- which(is.na(coef(object)))
-    object <- c(list(formula = formula(object), eliminate = 0,
+    object <- c(list(formula = formula(object), eliminate = NULL,
                      ofInterest = NULL, na.action = na.action(modelData),
                      constrain = constrain,
                      constrainTo = numeric(length(constrain)),

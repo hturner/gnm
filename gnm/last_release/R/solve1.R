@@ -19,8 +19,6 @@ solve1 <- function (W, Tvec = NULL, U = NULL, elim = NULL)
 ##  Now allow for the possibility of an eliminated submatrix
     Ti.U <- U/Tvec
     Qi <- solve1(W - crossprod(U, Ti.U))
-    result <- numeric(n + length(Tvec) - 1)
-    result[elim] <- -(Ti.U %*% Qi)
-    result[-elim] <- Qi[-1]
-    -result/Qi[1]
+    result <- list(coefficients = -Qi[-1]/Qi[1],
+                   elim.coefs = (Ti.U %*% Qi)/Qi[1])
 }

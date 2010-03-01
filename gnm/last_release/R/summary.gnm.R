@@ -1,11 +1,13 @@
 summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
-                          symbolic.cor = FALSE, ...)
+                         symbolic.cor = FALSE, include.elim = FALSE, ...)
 {
     est.disp <- (!object$family$family %in% c("poisson", "binomial") &&
                  is.null(dispersion) && object$df.residual > 0)
     coefs <- coef(object)
+    if (include.elim) coefs <- c(object$elim.coefs, coefs)
     if (object$rank > 0) {
-        cov.scaled <- vcov(object, dispersion = dispersion)
+        cov.scaled <- vcov(object, dispersion = dispersion,
+                           use.eliminate = include.elim)
         ## non-eliminated par only
         estimable <- checkEstimable(object, ...)
         estimable[is.na(estimable)] <- FALSE
@@ -14,7 +16,7 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         else
             sterr <- diag(cov.scaled)
         is.na(sterr[!estimable]) <- TRUE
-        if (!is.null(object$eliminate))
+        if (include.elim)
             sterr <- c(sqrt(attr(cov.scaled, "varElim")), sterr)
         tvalue <- coefs/sterr
         dn <- c("Estimate", "Std. Error")
@@ -42,10 +44,13 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         cov.scaled <- matrix(, 0, 0)
     }
     df.f <- nrow(coef.table)
+    non.elim <- seq(object$coef) + nlevels(object$eliminate)*include.elim
+    elim <- seq(length.out = length(object$eliminate)*include.elim)
     ans <- c(object[c("call", "ofInterest", "family", "deviance", "aic",
                       "df.residual", "iter")],
              list(deviance.resid = residuals(object, type = "deviance"),
-                  coefficients = coef.table,
+                  coefficients = coef.table[non.elim,],
+                  elim.coefs = coef.table[elim,],
                   dispersion = attr(cov.scaled, "dispersion"),
                   df = c(object$rank, object$df.residual, df.f),
                   cov.scaled = as.matrix(cov.scaled)))

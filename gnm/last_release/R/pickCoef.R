@@ -1,9 +1,7 @@
 pickCoef <- function(object, regexpr = NULL, ...){
-    nelim <- nlevels(object$eliminate)
-    coefs <- coef(object)
-    coefs <- names(coefs[(elim + 1):length(coefs)])
+    coefs <- names(coef(object))
     if (is.null(coefs))
-        stop("Coefficient names cannot be extracted from 'coefs'")
+        stop("Coefficient names cannot be extracted from 'object'")
     if (missing(regexpr)) {
         default <- list(setlabels = "Selected coefficients",
                         title = "Select coefficients of interest",

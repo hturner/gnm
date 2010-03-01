@@ -17,16 +17,24 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     coefs <- tidy.zeros(coef(x))
     if (!is.null(ofInterest(x)))
         coefs <- coefs[ofInterest(x), , drop = FALSE]
+    non.elim <- nrow(coefs)
+    elim <- length(x$elim.coefs)
 
-    if (nrow(coefs)) {
+    if (non.elim | elim) {
         cat("\nCoefficients", " of interest"[!is.null(ofInterest(x))], ":\n",
             sep = "")
         printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
-            na.print = "NA", ...)
-        if (any(!is.na(coefs[,2])))
+            signif.legend = !elim, na.print = "NA", ...)
+        if (elim){
+            cat("\nEliminated coefficients:\n", sep = "")
+            printCoefmat(x$elim.coefs, digits = digits,
+                         signif.stars = signif.stars, na.print = "NA", ...)
+        }
+        coefs <- c(coefs[,2], x$elim.coefs[,2])
+        if (any(!is.na(coefs)))
             cat("\n(Dispersion parameter for ", x$family$family,
                 " family taken to be ", format(x$dispersion), ")\n", sep = "")
-        if (any(is.na(coefs[,2])))
+        if (any(is.na(coefs)))
             cat("\nStd. Error is NA where coefficient has been constrained or",
                 "is unidentified\n")
     }

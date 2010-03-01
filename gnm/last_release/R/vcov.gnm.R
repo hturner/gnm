@@ -49,7 +49,7 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
             cov.unscaled[ind, ind] <- MPinv(W - UTU, method = "chol",
                                             rank = object$rank - nelim)
             if (use.eliminate) {
-                rownames(Ti.U) <- names(object$coef)[seq_len(nelim)]
+                rownames(Ti.U) <- names(object$elim.coefs)
                 attr(cov.unscaled, "covElim") <- dispersion *
                     -Ti.U %*% cov.unscaled[ind, ind]
                 attr(cov.unscaled, "varElim") <- dispersion *
@@ -58,6 +58,5 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
         }
     }
     structure(dispersion * cov.unscaled, dispersion = dispersion,
-              ofInterest = setdiff(ofInterest(object), 0:nelim) - nelim,
-              class = "vcov.gnm")
+              ofInterest = ofInterest(object), class = "vcov.gnm")
 }

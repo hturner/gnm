@@ -120,12 +120,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                    method == "model.matrix" | x)
             coefNames <- names(modelTools$start)
         }
-        if (method == "coefNames") {
-            if (nElim)
-                coefNames <- c(paste("(eliminate)", seq(nElim), sep = ""),
-                               coefNames)
-            return(structure(coefNames, class = "coef.gnm"))
-        }
+        if (method == "coefNames") return(coefNames)
         nParam <- length(coefNames)
 
         if (identical(constrain, "[?]"))
@@ -140,12 +135,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         return.indices = TRUE))
         if (is.character(constrain)) {
             if (length(constrain) == 1)
-                constrain <- match(grep(constrain, coefNames), seq(coefNames), 0)
+                constrain <- match(grep(constrain, coefNames), seq_len(nParam), 0)
             else
                 constrain <- match(constrain, coefNames, 0)
         }
         ## dropped logical option
-        if (!all(constrain %in% seq(coefNames)))
+        if (!all(constrain %in% seq_len(nParam)))
             stop(" cannot match 'constrain' to non-eliminated parameters. ")
 
         if (is.null(start))
@@ -166,7 +161,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         }
         else if (method == "model.matrix"){
             theta <- modelTools$start
-            start <- start[seq.int(nElim + 1, length(start))]
             theta[!is.na(start)] <- start[!is.na(start)]
             theta[constrain] <- constrainTo
             theta[is.na(theta)] <- seq(start)[is.na(theta)]
@@ -244,7 +238,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     }
 
     if (is.null(ofInterest) && !missing(eliminate))
-        ofInterest <- nElim + seq_len(nParam)
+        ofInterest <- seq_len(nParam)
     if (identical(ofInterest, "[?]"))
         call$ofInterest <- ofInterest <-
             pickCoef(fit,
@@ -252,13 +246,13 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                      "- assuming all are of interest."))
     if (is.character(ofInterest)) {
         if (length(ofInterest) == 1)
-            ofInterest <- match(grep(ofInterest, coefNames), 0)
+            ofInterest <- match(grep(ofInterest, coefNames), seq_len(nParam), 0)
         else
             ofInterest <- match(ofInterest, coefNames, 0)
-        if (!sum(ofInterest)) ofInterest <- NULL
+        if (!sum(ofInterest)) ofInterest <- seq_len(nParam)
     }
     if (!is.null(ofInterest)) {
-        if (!all(ofInterest %in% seq(coefNames)))
+        if (!all(ofInterest %in% seq_len(nParam)))
             stop("'ofInterest' does not specify a subset of the ",
                  "non.eliminated coefficients.")
         names(ofInterest) <- coefNames[ofInterest]

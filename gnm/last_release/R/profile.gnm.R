@@ -104,7 +104,6 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
                 if (prof[[par]][maxsteps + 1 + sgn * step] != 0)
                     next
                 val <- fittedCoef[i] + sgn * step * stepsize[(sgn + 1)/2 + 1]
-                browser()
                 updated <-
                     suppressWarnings(update(fitted, constrain =
                                             c(fittedConstrain, i),

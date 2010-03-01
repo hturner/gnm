@@ -70,19 +70,18 @@
                 tmpOffset <- rowSums(naToZero(tmpOffset))
                 tmpOffset <- offset + alpha[eliminate] + tmpOffset
                 ## assume either elim all specified or all not specified
-                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin], y,
-                                                       weights = weights,
-                                                       offset = tmpOffset,
-                                                       family = family,
-                                                       intercept = FALSE,
-                                                       eliminate =
-                                                       if (initElim) eliminate
-                                                       else NULL)$coefficients)
-                if (initElim) {
-                    alpha[] <- tmpTheta[elim]
-                    theta[unspecifiedLin] <- tmpTheta[-elim]
-                }
-                else theta[unspecifiedLin] <- tmpTheta
+                tmpTheta <-
+                    suppressWarnings(glm.fit.e(X[, unspecifiedLin], y,
+                                               weights = weights,
+                                               offset = tmpOffset,
+                                               family = family,
+                                               intercept = FALSE,
+                                               eliminate =
+                                               if (initElim) eliminate
+                                               else NULL)[c("coefficients",
+                                                            "elim.coefs")])
+                theta[unspecifiedLin] <- tmpTheta$coefficients
+                if (initElim) alpha <- tmpTheta$elim.coefs
                 if (sum(is.na(theta[isLinear])) > length(constrain)) {
                     extra <- setdiff(which(is.na(theta[isLinear])), constrain)
                     isConstrained[extra] <- TRUE
@@ -169,11 +168,10 @@
                                              weights, family, modelTools, X,
                                              if(nelim) eliminate else NULL)
                     if (nelim){
-                        alpha[] <- tmpTheta[elim]
-                        theta[which] <- tmpTheta[-elim]
+                        alpha <- tmpTheta$elim.coefs
                         tmpOffset <- offset + alpha[eliminate]
                     }
-                    else theta[which] <- tmpTheta
+                    theta[which] <- tmpTheta$coefficients
                     varPredictors <- modelTools$varPredictors(theta)
                     eta <- tmpOffset + modelTools$predictor(varPredictors)
                     mu <- family$linkinv(eta)
@@ -265,8 +263,8 @@
                     Wmat <- tcrossprod(W.Z)
                     diag(Wmat) <- ridge
                     coef <- solve1(Wmat, Tvec, Umat, elim)
-                    alphaChange <- coef[elim] * znorm/elimXscales
-                    thetaChange <- coef[-elim] * znorm/Xscales
+                    alphaChange <- coef$elim.coefs * znorm/elimXscales
+                    thetaChange <- coef$coefficients * znorm/Xscales
                 } else {
                     XWX <- tcrossprod(W.X.scaled)
                     diag(XWX) <- ridge
@@ -350,7 +348,9 @@
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)
-    fit <- list(coefficients = c(alpha, theta), constrain = constrain,
+    fit <- list(coefficients = theta,
+                elim.coefs = alpha,
+                constrain = constrain,
                 constrainTo = constrainTo, residuals = z, fitted.values = mu,
                 rank = theRank, family = family, predictors = eta,
                 deviance = dev[1], aic = modelAIC,

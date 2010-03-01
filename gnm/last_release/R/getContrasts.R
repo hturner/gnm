@@ -7,11 +7,10 @@ getContrasts <- function(model, set = NULL,
                          ...){
     coefs <- parameters(model)
     l <- length(coefs)
-    nelim <- nlevels(model$eliminate)
-    if (l == nelim)
+    if (!l)
         stop("Model has no non-eliminated parameters")
     of.interest <- ofInterest(model)
-    if (!length(of.interest)) of.interest <- (nelim + 1):l
+    if (!length(of.interest)) of.interest <- seq(l)
     coefNames <- names(coefs)
     if (is.null(set))
         set <- unlist(relimp::pickFrom(coefNames[of.interest], 1, ...))
@@ -70,9 +69,8 @@ getContrasts <- function(model, set = NULL,
         grad <- ((scaleRef * sum(vd) - vd) %o% contr/vdd + grad)/vdd
     }
 
-    l <- l - nelim
     combMatrix <- matrix(0, l, setLength)
-    combMatrix[match(set, coefNames) - nelim, ] <- grad
+    combMatrix[match(set, coefNames), ] <- grad
     colnames(combMatrix) <- set
 
     Vcov <-  vcov(model, dispersion = dispersion,

@@ -8,8 +8,8 @@
   estimate is invariant to re-parameterization of the model.
 }
 \usage{
-checkEstimable(model, combMatrix = diag(seq(along = coef(model))),
-                           tolerance = 1e6 * .Machine$double.eps)
+checkEstimable(model, combMatrix = diag(length(coef(model))),
+               tolerance = NULL)
 }
 \arguments{
   \item{model}{  a model object of class \code{"gnm"} }
@@ -17,7 +17,9 @@ checkEstimable(model, combMatrix = diag(seq(along = coef(model))),
     \code{length(coef(model))}, or a matrix with that number of rows.
     Coefficients of one or more linear combinations of the model's parameters.}
   \item{tolerance}{ numeric: a threshold value for detection of
-    non-estimability.  }
+    non-estimability.  If \code{NULL}, the default value of the
+    \code{tol} argument to \code{\link[Matrix]{rankMatrix}} is used.
+  }
 }
 \value{A logical vector of length equal to the number of parameter combinations
   tested; \code{NA} where a parameter combination is identically zero.}

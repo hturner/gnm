@@ -12,6 +12,7 @@ import(MASS, stats) # classes
 importFrom(graphics, plot)  # in plot.gnm; plot.profile.gnm
 importFrom(nnet, class.ind) # in gnmTools, expandCategorical
 importFrom(qvcalc, qvcalc) # in getContrasts
+importFrom(Matrix, rankMatrix) # in checkEstimable
 
 S3method(add1, gnm)
 S3method(addterm, gnm)

@@ -8,5 +8,5 @@ Maintainer: Heather Turner <Heather.Turner@warwick.ac.uk>
 URL: http://go.warwick.ac.uk/gnm
 License: GPL (>= 2)
 Depends: R (>= 2.3.0)
-Imports: MASS, stats, graphics, nnet, qvcalc (>= 0.8-3), relimp
+Imports: MASS, stats, graphics, Matrix, nnet, qvcalc (>= 0.8-3), relimp
 ZipData: no

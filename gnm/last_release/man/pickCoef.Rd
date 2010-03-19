@@ -2,8 +2,8 @@
 \alias{pickCoef}
 \title{ Get Indices For Selected Model Coefficients  }
 \description{
-  Get the indices for a subset of model coefficients selected via a Tk
-  dialog or by regular expression matching.
+  Get the indices for a subset of non-eliminated coefficients selected
+  via a Tk dialog or by regular expression matching.
 }
 \usage{
 pickCoef(object, regexpr = NULL, ...)
@@ -41,21 +41,5 @@ summary(unidiff)
 
 ## get contrasts of these coefficients
 getContrasts(unidiff, ofInterest(unidiff))
-
-### Use to pick out coefficients relating to different groups
-data(voting)
-## reconstruct counts voting Labour/non-Labour
-count <- with(voting, percentage/100 * total)
-yvar <- cbind(count, voting$total - count)
-## create factors indicating movement in and out of salariat (class 1)
-upward <- with(voting, origin != 1 & destination == 1)
-downward <- with(voting, origin == 1 & destination != 1)
-
-## fit separate weights for the "socially mobile" groups
-socialMobility <- gnm(yvar ~ -1 + Dref(origin, destination,
-                                       delta = ~ 1 + downward + upward),
-                      family = binomial, data = voting)
-## calculate weights
-DrefWeights(socialMobility)
 }
 \keyword{ models }

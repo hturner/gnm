@@ -68,17 +68,18 @@ rowsum.unique <- function (x, group, ugroup,...)
     if (is.null(start)) { # use either y or etastart or mustart
         if (is.null(mustart) && is.null(etastart)) {
             elim.means <- grp.sum(y, end)/size
-            os.by.level <- link(0.999 * elim.means + 0.001 * mean(y))
+            os.by.level <- link(0.999 * elim.means + 0.001 * mean(y)) -
+                grp.sum(offset, end)/size
         } else {
-            if (!is.null(etastart)) mustart <- linkinv(etastart)
-            os.by.level <- link(grp.sum(mustart, end)/size)
+            if (!is.null(mustart)) etastart <- link(mustart)
+            os.by.level <- grp.sum(etastart - offset, end)/size
         }
     } else os.by.level <- start[elim]
-    os.vec <- offset + os.by.level[eliminate]
-    eta.stored <- eta <- os.vec
+    os.vec <- os.by.level[eliminate]
+    eta.stored <- eta <- offset + os.vec
     mu <- linkinv(eta)
     mu.eta <- linkder(eta)
-    z <- eta + (y - mu) / mu.eta
+    z <- eta - offset + (y - mu) / mu.eta
     w <- weights * (mu.eta)^2/variance(mu)
     counter <- 0
     devold <- 0
@@ -90,10 +91,10 @@ rowsum.unique <- function (x, group, ugroup,...)
         x <- x - subtracted[eliminate,]
         ## initial fit to drop aliased columns
         model <- lm.wfit(x, z, w, offset = os.vec)
-        eta <- model$fitted
+        eta <- model$fitted + offset
         mu <- linkinv(eta)
         mu.eta <- linkder(eta)
-        z <- eta + (y - mu) / mu.eta
+        z <- eta - offset + (y - mu) / mu.eta
         w <- weights * (mu.eta)^2/variance(mu)
         full.theta <- model$coefficients
         est <- !is.na(full.theta)
@@ -114,7 +115,6 @@ rowsum.unique <- function (x, group, ugroup,...)
         Qi <- solve(Wmat - crossprod(Umat, Ti.U), I1)
         theta <- -Qi[-1]/Qi[1]
         os.by.level <- (Ti.U %*% Qi)/Qi[1]
-
         if (non.elim) eta <- drop(x %*% theta + offset + os.by.level[eliminate])
         else eta <- offset + os.by.level[eliminate]
         mu <- linkinv(eta)
@@ -129,7 +129,7 @@ rowsum.unique <- function (x, group, ugroup,...)
         }
         devold <- dev
         mu.eta <- linkder(eta)
-        Z[,1] <- eta + (y - mu) / mu.eta
+        Z[,1] <- eta - offset + (y - mu) / mu.eta
         w <- weights * (mu.eta)^2/variance(mu)
     }
     converged <- !(i == control$maxit)

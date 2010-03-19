@@ -1,6 +1,6 @@
 getModelFrame <- function() {
-    nFrame <- match(TRUE, sapply(sys.calls(),
-                       function(x)identical(x[[1]], as.name("gnmTools"))))  
-    get("gnmData", sys.frame(nFrame))
+    .Defunct(msg = paste("'getModelFrame' is defunct as it was designed to ",
+             "work with plug-in functions \nthat have been replaced by ",
+             "\"nonlin\" functions. \nSee ?nonlin.function for more details."))
 }
-    
+

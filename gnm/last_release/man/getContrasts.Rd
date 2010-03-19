@@ -3,10 +3,10 @@
 \title{ Estimated Contrasts and Standard Errors for Parameters in a gnm
  Model } 
 \description{
-Computes contrasts or scaled contrasts for a set of parameters from a
-\code{\link{gnm}} model, and computes standard errors for the
-estimated contrasts.  Where possible, quasi standard errors are also
-computed. 
+Computes contrasts or scaled contrasts for a set of (non-eliminated)
+parameters from a \code{\link{gnm}} model, and computes standard errors
+for the estimated contrasts.  Where possible, quasi standard errors are
+also computed. 
 }
 \usage{
 getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
@@ -25,7 +25,6 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
     \code{"unit"} or \code{"setLength"}.}
   \item{dispersion}{either \code{NULL}, or a positive number by which
     the model's variance-covariance matrix should be scaled.}
-  \item{use.eliminate}{ logical; see \code{\link{vcov.gnm}}}
   \item{\dots}{ arguments to pass to other functions. }
 }
 \details{

@@ -3,7 +3,6 @@ getContrasts <- function(model, set = NULL,
                          scaleRef = "mean",
                          scaleWeights = NULL,
                          dispersion = NULL,
-                         use.eliminate = TRUE,
                          ...){
     coefs <- parameters(model)
     l <- length(coefs)
@@ -73,8 +72,7 @@ getContrasts <- function(model, set = NULL,
     combMatrix[match(set, coefNames), ] <- grad
     colnames(combMatrix) <- set
 
-    Vcov <-  vcov(model, dispersion = dispersion,
-                  use.eliminate = use.eliminate)
+    Vcov <-  vcov(model, dispersion = dispersion)
 
     iden <- checkEstimable(model, combMatrix)
     if (any(!na.omit(iden))) {

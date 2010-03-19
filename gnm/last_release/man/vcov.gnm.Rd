@@ -8,15 +8,15 @@
   generalized nonlinear model.  
 }
 \usage{
-\method{vcov}{gnm}(object, dispersion = NULL, use.eliminate = TRUE, ...)
+\method{vcov}{gnm}(object, dispersion = NULL, with.eliminate = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{ a model object of class \code{gnm}. }
   \item{dispersion}{the dispersion parameter for the fitting family. By
     default it is obtained from \code{object}. }
-  \item{use.eliminate}{logical; should a non-zero \code{eliminate} component
-    of \code{object} be exploited in calculating the result here?}
+  \item{with.eliminate}{logical; should parts of the variance-covariance
+    matrix corresponding to eliminated coefficients be computed?}
     
   \item{\dots}{ as for \code{\link{vcov}}. }
 }
@@ -34,14 +34,22 @@
   Chi-squared statistic divided by the residual degrees of freedom. The
   dispersion used is returned as an attribute of the matrix.
 
-  The \code{use.eliminate = TRUE} setting can sometimes give appreciable
+  The dimensions of the matrix correspond to the non-eliminated
+  coefficients of the \code{"gnm"} object.  If \code{use.eliminate =
+    TRUE}  then setting can sometimes give appreciable
   speed gains; see \code{\link{gnm}} for details of the \code{eliminate}
   mechanism.  The \code{use.eliminate} argument is currently ignored if the
   model has full rank.
   }
 \value{
-  A square matrix, with number of rows/columns equal to
-  \code{length(coef(object))}.
+  A matrix with number of rows/columns equal to
+  \code{length(coef(object))}. If there are eliminated coefficients and
+  \code{use.eliminate = TRUE}, the matrix will have the following
+  attributes:
+  \item{covElim }{ a matrix of covariances between the
+    eliminated and non-eliminated parameters. }
+  \item{varElim }{ a vector of variances corresponding to the eliminated
+    parameters.} 
 }
 \references{ Turner, H and Firth, D (2005). Generalized nonlinear models
 in R: An overview of the gnm package.  At \url{http://cran.r-project.org}}

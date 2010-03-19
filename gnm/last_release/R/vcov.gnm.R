@@ -1,7 +1,5 @@
 ## returns vcov for the non-eliminated parameters
-## use.eliminate now means whether or not to return extra components
-## related to the eliminated parameters
-vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
+vcov.gnm <-  function(object, dispersion = NULL, with.eliminate = TRUE, ...){
     if (is.null(dispersion)) {
         if (any(object$family$family == c("poisson", "binomial")))
             dispersion <- 1
@@ -23,7 +21,7 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
     cov.unscaled <- array(0, dim = rep(ncol(X), 2),
                           dimnames = list(colnames(X), colnames(X)))
     if (!length(ind)) {
-        if (nelim && use.eliminate) {
+        if (nelim && with.eliminate) {
             Ti <- 1/sapply(split(w, eliminate), sum)
             attr(cov.unscaled, "varElim") <- dispersion * Ti
         }
@@ -48,7 +46,7 @@ vcov.gnm <-  function(object, dispersion = NULL, use.eliminate = TRUE, ...){
             UTU <- crossprod(U, Ti.U)
             cov.unscaled[ind, ind] <- MPinv(W - UTU, method = "chol",
                                             rank = object$rank - nelim)
-            if (use.eliminate) {
+            if (with.eliminate) {
                 rownames(Ti.U) <- names(object$elim.coefs)
                 attr(cov.unscaled, "covElim") <- dispersion *
                     -Ti.U %*% cov.unscaled[ind, ind]

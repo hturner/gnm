@@ -8,7 +8,7 @@
   check is made first on the estimability of each specified combination.
 }
 \usage{
-se(model, estimate = ofInterest(model), checkEstimability = TRUE, Vcov =
+se(model, estimate = NULL, checkEstimability = TRUE, Vcov =
 NULL, dispersion = NULL, ...)
 }
 \arguments{
@@ -19,9 +19,8 @@ NULL, dispersion = NULL, ...)
     numeric vector of indices or \code{"[?]"} to select from a Tk
     dialog. In the second case coefficients given as a vector or the
     rows of a matrix, such that \code{NROW(estimate)} is equal to 
-    \code{length(coef(model))} or \code{length(coef(model)) -
-      model$eliminate}. If missing, standard errors are returned for all
-    parameters in the model.}
+    \code{length(coef(model))}. If missing, standard errors are returned
+    for all (non-eliminated) parameters in the model.}
   \item{checkEstimability}{ logical: should the estimability of
     all specified combinations be checked?}
   \item{Vcov}{ either NULL, or a matrix }

@@ -14,12 +14,12 @@ ofInterest(object) <- value
 \arguments{
   \item{object}{ an object of class \code{"gnm"}. }
   \item{value}{ a numeric vector of indices specifying the subset of
-    coefficients of interest, or \code{NULL} to specify that all
-    non-\code{eliminate}-d coefficients are of interest.  }  
+    (non-eliminated) coefficients of interest, or \code{NULL} to specify
+    that all non-eliminated coefficients are of interest.  }  
 }
 \details{
   The \code{"ofInterest"} component of a \code{"gnm"} object is a named
-  numeric vector of indices specifying a subset of the model
+  numeric vector of indices specifying a subset of the non-eliminated
   coefficients which are of specific interest.
 
   If the \code{"ofInterest"} component is non-NULL, printed summaries of

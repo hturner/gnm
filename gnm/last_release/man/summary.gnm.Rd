@@ -7,7 +7,7 @@
 }
 \usage{
 \method{summary}{gnm}(object, dispersion = NULL, correlation = FALSE,
-                      symbolic.cor = FALSE, ...)
+                      symbolic.cor = FALSE, with.eliminate = FALSE, ...)
 
 \method{print}{summary.gnm}(x, digits = max(3, getOption("digits") - 3),
                             signif.stars = getOption("show.signif.stars"),
@@ -27,6 +27,8 @@
     \code{symnum}). }
   \item{signif.stars}{ logical. If \code{TRUE}, "significance stars" are
     printed for each coefficient. }
+  \item{with.eliminate}{ Logical. If \code{TRUE}, any eliminated
+    coefficients are included in the summary. }
   \item{\dots}{ further arguments passed to or from other methods. }
 }
 \details{
@@ -57,7 +59,7 @@
   \code{summary.gnm} returns an object of class \code{"summary.gnm"},
   which is a list with components
   \item{call }{ the \code{"call"} component from object.  }
-  \item{eliminate }{ the \code{"eliminate"} component from object. }
+  \item{ofInterest }{ the \code{"ofInterest"} component from object. }
   \item{family }{ the \code{"family"} component from object. }
   \item{deviance }{ the \code{"deviance"} component from object. }
   \item{aic }{ the \code{"aic"} component from object. }
@@ -67,6 +69,8 @@
     \code{\link{residuals.glm}}. } 
   \item{coefficients }{ the matrix of coefficients, standard errors,
     z-values and p-values. }
+  \item{elim.coefs }{ if \code{with.eliminate = TRUE} a matrix of
+    eliminated coefficients, standard errors, z-values and p-values. }
   \item{dispersion }{ either the supplied argument or the estimated dispersion if
           the latter is \code{NULL}. }
   \item{df}{ a 3-vector of the rank of the model; the number of
@@ -74,9 +78,9 @@
     coefficients. }
   \item{cov.scaled }{ the estimated covariance matrix scaled by
     \code{dispersion} (see \code{\link{vcov.gnm}} for more details). }
-  \item{correlation }{ (only if \code{correlation} is true) the
+  \item{correlation }{ (only if \code{correlation} is \code{TRUE}) the
     estimated correlations of the estimated coefficients. }
-  \item{symbolic.cor }{ (only if \code{correlation} is true) the value
+  \item{symbolic.cor }{ (only if \code{correlation} is \code{TRUE}) the value
     of the argument \code{symbolic.cor}. }
 }
 \note{ The \code{gnm} class includes generalized linear models, and it

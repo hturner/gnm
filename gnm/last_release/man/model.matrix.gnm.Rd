@@ -10,12 +10,13 @@
 }
 \arguments{
   \item{object}{ an object of class \code{gnm}. }
-  \item{coef}{ if specified, the vector of coefficients at which the
-    local design matrix is evaluated.  }
+  \item{coef}{ if specified, the vector of (non-eliminated) coefficients
+    at which the local design matrix is evaluated.  }
   \item{...}{ further arguments.  }
 }
 \value{
-  If \code{coef = NULL}, the local design matrix evaluated at
+  If \code{coef = NULL}, the local design matrix with columns
+  corresponding to the non-eliminated parameters evaluated at
   \code{coef(object)} (extracted from \code{object} if possible).
 
   Otherwise, the local design matrix evaluated at \code{coef}.

@@ -2,8 +2,8 @@
 \alias{parameters}
 \title{ Extract Constrained and Estimated Parameters from a gnm Object}
 \description{
-  A function to extract model parameters from a \code{"gnm"} object,
-  including parameters that were constrained.
+  A function to extract non-eliminated parameters from a \code{"gnm"}
+  object, including parameters that were constrained.
 }
 \usage{
 parameters(object)

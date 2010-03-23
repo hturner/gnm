@@ -18,7 +18,7 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     if (!is.null(ofInterest(x)))
         coefs <- coefs[ofInterest(x), , drop = FALSE]
     non.elim <- nrow(coefs)
-    elim <- length(x$elim.coefs)
+    elim <- length(x$eliminated)
 
     if (non.elim | elim) {
         cat("\nCoefficients", " of interest"[!is.null(ofInterest(x))], ":\n",
@@ -27,10 +27,10 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
             signif.legend = !elim, na.print = "NA", ...)
         if (elim){
             cat("\nEliminated coefficients:\n", sep = "")
-            printCoefmat(x$elim.coefs, digits = digits,
+            printCoefmat(x$eliminated, digits = digits,
                          signif.stars = signif.stars, na.print = "NA", ...)
         }
-        coefs <- c(coefs[,2], x$elim.coefs[,2])
+        coefs <- c(coefs[,2], x$eliminated[,2])
         if (any(!is.na(coefs)))
             cat("\n(Dispersion parameter for ", x$family$family,
                 " family taken to be ", format(x$dispersion), ")\n", sep = "")

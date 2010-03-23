@@ -10,7 +10,7 @@ also computed.
 }
 \usage{
 getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
-  scaleWeights = NULL, dispersion = NULL, use.eliminate = TRUE, ...)
+  scaleWeights = NULL, dispersion = NULL, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}

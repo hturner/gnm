@@ -7,7 +7,8 @@ termPredictors.gnm <- function(object, ...) {
         termPredictors <- modelTools$predictor(varPredictors, term = TRUE)
         rownames(termPredictors) <- rownames(modelData)
         if (!is.null(object$eliminate)) termPredictors <-
-            cbind("(eliminate)" = object$elim.coefs,
+            cbind("(eliminate)" =
+                  as.vector(attr(coef(object), "eliminated")[object$eliminate]),
                   termPredictors)
         termPredictors
     }

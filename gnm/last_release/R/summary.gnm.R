@@ -4,7 +4,8 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
     est.disp <- (!object$family$family %in% c("poisson", "binomial") &&
                  is.null(dispersion) && object$df.residual > 0)
     coefs <- parameters(object)
-    if (with.eliminate) coefs <- c(object$elim.coefs, coefs)
+    if (with.eliminate) coefs <- c(object$elim.coefs,
+                                   attr(object$elim.coefs, "eliminated"))
     if (object$rank > 0) {
         cov.scaled <- vcov(object, dispersion = dispersion,
                            with.eliminate = with.eliminate)
@@ -50,7 +51,7 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
                       "df.residual", "iter")],
              list(deviance.resid = residuals(object, type = "deviance"),
                   coefficients = coef.table[non.elim,],
-                  elim.coefs = coef.table[elim,],
+                  eliminated = coef.table[elim,],
                   dispersion = attr(cov.scaled, "dispersion"),
                   df = c(object$rank, object$df.residual, df.f),
                   cov.scaled = as.matrix(cov.scaled)))

@@ -9,7 +9,6 @@ updateLinear <- function(which, theta, y, mu, eta, offset, weights, family,
     z <- eta - offset + (y - mu)/dmu
     suppressWarnings(glm.fit.e(X[,which, drop = FALSE], z,
                                weights = w, intercept = FALSE,
-                               eliminate = eliminate)[c("coefficients",
-                               "elim.coefs")])
+                               eliminate = eliminate))$coefficients
 }
 

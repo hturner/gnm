@@ -1,7 +1,7 @@
 print.coef.gnm <- function(x, ...) {
     if (!is.null(attr(x, "ofInterest"))) {
         if (length(attr(x, "ofInterest"))){
-            cat("Coefficient of interest:\n", sep = "")
+            cat("Coefficients of interest:\n", sep = "")
             print.default(format(x[attr(x, "ofInterest")]), quote = FALSE)
         }
         else

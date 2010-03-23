@@ -20,5 +20,5 @@ solve1 <- function (W, Tvec = NULL, U = NULL, elim = NULL)
     Ti.U <- U/Tvec
     Qi <- solve1(W - crossprod(U, Ti.U))
     result <- list(coefficients = -Qi[-1]/Qi[1],
-                   elim.coefs = (Ti.U %*% Qi)/Qi[1])
+                   eliminated = (Ti.U %*% Qi)/Qi[1])
 }

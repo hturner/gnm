@@ -24,8 +24,8 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     regular expression, a numeric vector of indices, a character vector of
     names, or "[?]" to select from a Tk dialog. If missing, it is
     assumed that all non-\code{eliminate}d coefficients are of interest. }
-  \item{constrain}{ coefficients to constrain, specified by a regular
-    expression, a numeric vector of indices, a logical vector, a
+  \item{constrain}{ (non-eliminated) coefficients to constrain, specified
+    by a regular expression, a numeric vector of indices, a logical vector, a
     character vector of names, or "[?]" to select from a Tk dialog. }
   \item{constrainTo}{ a numeric vector of the same length as
     \code{constrain} specifying the values to constrain to. By default
@@ -211,10 +211,12 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \item{ xlevels }{ a record of the levels of the factors used in fitting. }
   \item{ y }{ the response used. }
   \item{ offset }{ the offset vector used. }
-  \item{ coefficients }{ a named vector of coefficients. }
-  \item{ eliminate }{ the number of eliminated parameters. }
-  \item{ ofInterest }{ a named numeric vector of indices, or
-    \code{NULL}. }
+  \item{ coefficients }{ a named vector of non-eliminated coefficients,
+    with an attribute \code{"eliminated"} specifying the eliminated
+    coefficients if \code{eliminate} is non-\code{NULL}. }
+  \item{ eliminate }{ the \code{eliminate} argument. }
+  \item{ ofInterest }{ a named numeric vector of indices corresponding
+    to non-eliminated coefficients, or \code{NULL}. }
   \item{ predictors }{ the fitted values on the link scale. }
   \item{ fitted.values }{ the fitted mean values, obtained by transforming the
     predictors by the inverse of the link function. }

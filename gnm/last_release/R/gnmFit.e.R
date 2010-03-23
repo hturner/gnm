@@ -78,10 +78,9 @@
                                                intercept = FALSE,
                                                eliminate =
                                                if (initElim) eliminate
-                                               else NULL)[c("coefficients",
-                                                            "elim.coefs")])
-                theta[unspecifiedLin] <- tmpTheta$coefficients
-                if (initElim) alpha <- tmpTheta$elim.coefs
+                                               else NULL))$coefficients
+                theta[unspecifiedLin] <- tmpTheta
+                if (initElim) alpha <- attr(tmpTheta, "eliminated")
                 if (sum(is.na(theta[isLinear])) > length(constrain)) {
                     extra <- setdiff(which(is.na(theta[isLinear])), constrain)
                     isConstrained[extra] <- TRUE
@@ -168,10 +167,10 @@
                                              weights, family, modelTools, X,
                                              if(nelim) eliminate else NULL)
                     if (nelim){
-                        alpha <- tmpTheta$elim.coefs
+                        alpha <- attr(tmpTheta, "eliminated")
                         tmpOffset <- offset + alpha[eliminate]
                     }
-                    theta[which] <- tmpTheta$coefficients
+                    theta[which] <- tmpTheta
                     varPredictors <- modelTools$varPredictors(theta)
                     eta <- tmpOffset + modelTools$predictor(varPredictors)
                     mu <- family$linkinv(eta)
@@ -263,7 +262,7 @@
                     Wmat <- tcrossprod(W.Z)
                     diag(Wmat) <- ridge
                     coef <- solve1(Wmat, Tvec, Umat, elim)
-                    alphaChange <- coef$elim.coefs * znorm/elimXscales
+                    alphaChange <- coef$eliminated * znorm/elimXscales
                     thetaChange <- coef$coefficients * znorm/Xscales
                 } else {
                     XWX <- tcrossprod(W.X.scaled)
@@ -341,22 +340,24 @@
         alpha <- numeric(0)
         if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
     }
-    diag(XWX) <- diag(XWX) - ridge + 1
-    Svd <- svd(XWX, nu = 0, nv = 0)
-    sv.tolerance <-  100 * .Machine$double.eps
-    theRank <- sum(Svd$d > max(sv.tolerance * Svd$d[1], 0)) + nelim
+    if (nelim) {
+        ## sweeps needed to get the rank right
+        subtracted <- rowsum.unique(X, eliminate, elim)/grp.size
+        subtracted[,1] <- 0
+        theRank <- rankMatrix(X - subtracted[eliminate,]) + nelim
+    }
+    else theRank <- rankMatrix(X)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)
-    fit <- list(coefficients = theta,
-                elim.coefs = alpha,
+    fit <- list(coefficients = structure(theta, eliminated = alpha),
                 constrain = constrain,
                 constrainTo = constrainTo, residuals = z, fitted.values = mu,
                 rank = theRank, family = family, predictors = eta,
                 deviance = dev[1], aic = modelAIC,
                 iter = iter - (iter != iterMax), weights = w,
                 prior.weights = weights,
-                df.residual = nObs - theRank,
+                df.residual = c(nObs - theRank),
                 y = y)
     if (status == "not.converged") {
         warning("Fitting algorithm has either not converged or converged\n",

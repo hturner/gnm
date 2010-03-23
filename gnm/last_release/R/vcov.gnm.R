@@ -1,5 +1,5 @@
 ## returns vcov for the non-eliminated parameters
-vcov.gnm <-  function(object, dispersion = NULL, with.eliminate = TRUE, ...){
+vcov.gnm <-  function(object, dispersion = NULL, with.eliminate = FALSE, ...){
     if (is.null(dispersion)) {
         if (any(object$family$family == c("poisson", "binomial")))
             dispersion <- 1
@@ -47,7 +47,7 @@ vcov.gnm <-  function(object, dispersion = NULL, with.eliminate = TRUE, ...){
             cov.unscaled[ind, ind] <- MPinv(W - UTU, method = "chol",
                                             rank = object$rank - nelim)
             if (with.eliminate) {
-                rownames(Ti.U) <- names(object$elim.coefs)
+                rownames(Ti.U) <- names(attr(coef(object), "eliminated"))
                 attr(cov.unscaled, "covElim") <- dispersion *
                     -Ti.U %*% cov.unscaled[ind, ind]
                 attr(cov.unscaled, "varElim") <- dispersion *

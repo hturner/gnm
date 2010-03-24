@@ -61,6 +61,9 @@
             unspecified <- is.na(theta)
             unspecifiedLin <- unspecified & isLinear
             unspecifiedNonlin <- unspecified & !isLinear
+            if (any(unspecifiedNonlin)){
+                theta[unspecifiedNonlin] <- gnmStart(sum(unspecifiedNonlin))
+            }
             if (any(unspecifiedLin) || !initElim) {
                 ## offset any nonLin terms fully specified by start/modelTools$start/constrain
                 ## plus offset contribution of any specified lin par
@@ -89,9 +92,6 @@
                     constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
                 }
                 theta <- naToZero(theta)
-            }
-            if (any(unspecifiedNonlin)){
-                theta[unspecifiedNonlin] <- gnmStart(sum(unspecifiedNonlin))
             }
             if (!is.null(mustart))
                 etastart <- family$linkfun(mustart)

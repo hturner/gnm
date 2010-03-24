@@ -86,7 +86,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     if (is.empty.model(modelTerms) && missing(eliminate)) {
         if (method == "coefNames") return(numeric(0))
         else if (method == "model.matrix")
-            return(model.matrix(modelTerms))
+            return(model.matrix(modelTerms, data = modelData))
         if (!family$valideta(offset))
             stop("invalid predictor values in empty model")
         mu <- family$linkinv(offset)
@@ -104,7 +104,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                     residuals = (y - mu)/dmu, df.residual = nObs, rank = 0,
                     family = family, prior.weights = weights, y = y,
                     converged = NA)
-        if (x) fit <- c(fit, x = model.matrix(modelTerms))
+        if (x) fit <- c(fit, x = model.matrix(modelTerms, data = modelData))
         if (termPredictors) fit <- c(fit, termPredictors =
                                      matrix(, nrow(modelData), 0))
     }

@@ -30,14 +30,18 @@ rowsum.unique <- function (x, group, ugroup,...)
               control = glm.control(), ## only for compatibility with glm.fit
               intercept = TRUE, ## only for compatibility with glm.fit
               eliminate = NULL,  ## alternatively a factor
-              ridge = 1e-8)
+              ridge = 1e-8,
+              coefonly = FALSE)
 {
     if (is.null(eliminate)) { ## just revert to glm.fit
-        return(glm.fit(x, y, weights = weights, start = start,
-                       etastart = etastart, mustart = mustart,
-                       offset = offset, family = family,
-                       control = control,
-                       intercept = intercept))
+        ## can make a difference in timing!
+        tmp <- glm.fit(x, y, weights = weights, start = start,
+                           etastart = etastart, mustart = mustart,
+                           offset = offset, family = family,
+                           control = control,
+                           intercept = intercept)
+        if (coefonly) return(tmp$coef)
+        else return(tmp)
     }
 ##  The rest handles the case of an eliminated factor
     nobs <- NROW(y)
@@ -135,6 +139,7 @@ rowsum.unique <- function (x, group, ugroup,...)
     converged <- !(i == control$maxit)
     if (!converged) warning(paste("The convergence criterion was not met after",
                                   control$maxit, "iterations."))
+    if (coefonly) return(structure(full.theta, eliminated = c(os.by.level)))
     if (non.elim) {
         rank <- (model$rank + nelim)
         full.theta[est] <- theta

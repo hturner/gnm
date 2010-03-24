@@ -172,8 +172,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
         if (!is.numeric(tolerance) || tolerance <= 0)
             stop("value of 'tolerance' must be > 0")
-        if (!is.numeric(iterMax) || iterMax <= 0)
-            stop("maximum number of iterations must be > 0")
+        if (!is.numeric(iterMax) || iterMax < 0)
+            stop("maximum number of iterations must be >= 0")
 
         if (onlyLin) {
             if (any(is.na(start))) start <- NULL
@@ -223,15 +223,16 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         ridge = ridge, ...))
         else
             fit <- gnmFit.e(modelTools = modelTools, y = y, constrain = constrain,
-                          constrainTo = constrainTo, eliminate = eliminate,
-                          family = family, weights = weights, offset = offset,
-                          nObs = nObs, start = start, etastart = etastart,
-                          mustart = mustart, tolerance = tolerance,
-                          iterStart = iterStart, iterMax = iterMax,
-                          trace = trace, verbose = verbose, x = x,
-                          termPredictors = termPredictors,
-                          ridge = ridge)#, lsMethod = lsMethod)
+                            constrainTo = constrainTo, eliminate = eliminate,
+                            family = family, weights = weights, offset = offset,
+                            nObs = nObs, start = start, etastart = etastart,
+                            mustart = mustart, tolerance = tolerance,
+                            iterStart = iterStart, iterMax = iterMax,
+                            trace = trace, verbose = verbose, x = x,
+                            termPredictors = termPredictors,
+                            ridge = ridge)#, lsMethod = lsMethod)
     }
+
     if (is.null(fit)) {
         warning("Algorithm failed - no model could be estimated", call. = FALSE)
         return()

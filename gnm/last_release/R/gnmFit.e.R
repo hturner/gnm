@@ -73,15 +73,15 @@
                 tmpOffset <- rowSums(naToZero(tmpOffset))
                 tmpOffset <- offset + alpha[eliminate] + tmpOffset
                 ## assume either elim all specified or all not specified
-                tmpTheta <-
-                    suppressWarnings(glm.fit.e(X[, unspecifiedLin], y,
-                                               weights = weights,
-                                               offset = tmpOffset,
-                                               family = family,
-                                               intercept = FALSE,
-                                               eliminate =
-                                               if (initElim) eliminate
-                                               else NULL))$coefficients
+                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin], y,
+                                                       weights = weights,
+                                                       offset = tmpOffset,
+                                                       family = family,
+                                                       intercept = FALSE,
+                                                       eliminate =
+                                                       if (initElim) eliminate
+                                                       else NULL,
+                                                       coefonly = TRUE))
                 theta[unspecifiedLin] <- tmpTheta
                 if (initElim) alpha <- attr(tmpTheta, "eliminated")
                 if (sum(is.na(theta[isLinear])) > length(constrain)) {
@@ -212,7 +212,7 @@
             }
             tmpAlpha <- 0
             ridge <- 1 + ridge
-            for (iter in seq(iterMax)) {
+            for (iter in seq(length.out = iterMax)) {
                 if (any(is.infinite(X))){
                 #if (any(is.infinite(X@x))){
                     status <- "X.not.finite"
@@ -331,17 +331,6 @@
     theta[constrain] <- NA
     if (nelim) {
         ## sweeps needed to get the rank right
-        subtracted <- rowsum.unique(t(W.X.scaled), eliminate, elim)/grp.size
-        subtracted[,1] <- 0
-        W.X.scaled <- t(W.X.scaled) - subtracted[eliminate,]
-        XWX <- crossprod(W.X.scaled)
-    }
-    else {
-        alpha <- numeric(0)
-        if (is.null(XWX)) XWX <- tcrossprod(W.X.scaled)
-    }
-    if (nelim) {
-        ## sweeps needed to get the rank right
         subtracted <- rowsum.unique(X, eliminate, elim)/grp.size
         subtracted[,1] <- 0
         theRank <- rankMatrix(X - subtracted[eliminate,]) + nelim
@@ -350,6 +339,13 @@
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)
+    if (iterMax == 0) {
+        dmu <- family$mu.eta(eta)
+        z <- (abs(dmu) >= eps) * (y - mu)/dmu
+        vmu <- family$variance(mu)
+        w <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu
+        score <- diagInfo <- NA
+    }
     fit <- list(coefficients = structure(theta, eliminated = alpha),
                 constrain = constrain,
                 constrainTo = constrainTo, residuals = z, fitted.values = mu,

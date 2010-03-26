@@ -87,11 +87,10 @@ rowsum.unique <- function (x, group, ugroup,...)
     w <- weights * (mu.eta)^2/variance(mu)
     counter <- 0
     devold <- 0
-    if (intercept) x <- x[, -1, drop = FALSE]
+    if (intercept) x <- x[, -1, drop = FALSE] #non-null eliminate
     if (non.elim) {
         ## sweeps needed to get the rank right
         subtracted <- rowsum.unique(x, eliminate, elim)/size
-        subtracted[,1] <- 0
         x <- x - subtracted[eliminate,]
         ## initial fit to drop aliased columns
         model <- lm.wfit(x, z, w, offset = os.vec)
@@ -102,7 +101,7 @@ rowsum.unique <- function (x, group, ugroup,...)
         w <- weights * (mu.eta)^2/variance(mu)
         full.theta <- model$coefficients
         est <- !is.na(full.theta)
-        x <- x[, est]
+        x <- x[, est, drop = FALSE]
         theta <- full.theta[est]
     }
     Z <- cbind(z, x)

@@ -111,8 +111,13 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     else {
         onlyLin <- checkLinear && all(attr(modelTerms, "type") == "Linear")
         if (onlyLin) {
-            X <- model.matrix(modelTerms, modelData)
-            if (nElim) X <- X[,-1]
+            if (nElim) {
+                X <- model.matrix(update(modelTerms, . ~ . + 1), modelData)
+                asgn <- attr(X, "assign")
+                X <- X[,-1, drop = FALSE]
+                attr(X, "assign") <- asgn[-1]
+            }
+            else X <- model.matrix(modelTerms, modelData)
             coefNames <- colnames(X)
         }
         else {

@@ -212,7 +212,7 @@
             }
             tmpAlpha <- 0
             ridge <- 1 + ridge
-            for (iter in seq(length.out = iterMax)) {
+            for (iter in seq(length.out = iterMax + 1)) {
                 if (any(is.infinite(X))){
                 #if (any(is.infinite(X@x))){
                     status <- "X.not.finite"
@@ -235,39 +235,38 @@
                 }
 
                 wSqrt <- sqrt(w)
-                W.X <- wSqrt * X
-                w.z <- wSqrt * z
-                score <- drop(crossprod(W.X, w.z))
-                diagInfo <- colSums(W.X^2)
-                Xscales <- sqrt(diagInfo)
-                Xscales[Xscales < 1e-3] <- 1e-3 ## to allow for zeros
-                W.X.scaled <- t(W.X)/Xscales
+                W.Z <- wSqrt * cbind(z, X)
+                ZWZ <- crossprod(W.Z)
+                score <- ZWZ[-1,1]
+                diagInfo <- diag(ZWZ)
+                Zscales <- sqrt(diagInfo)
+                Zscales[Zscales < 1e-3] <- 1e-3 ## to allow for zeros
                 if (nelim) {
+                    ## put elim coefs at end for convenience
                     elim.diagInfo <- grp.sum(w, grp.end)
-                    diagInfo <- c(elim.diagInfo, diagInfo)
-                    score <- c(grp.sum(wSqrt * w.z, grp.end), score)
+                    diagInfo <- c(diagInfo, elim.diagInfo)
+                    score <- c(score, grp.sum(wSqrt * W.Z[,1], grp.end))
                 }
                 if (all(diagInfo < 1e-20) ||
                     all(abs(score) <
-                        tolerance * sqrt(tolerance + diagInfo))) {
+                        tolerance * sqrt(tolerance + diagInfo[-1]))) {
                     status <- "converged"
                     break
                 }
-                znorm <- sqrt(sum(w.z^2))
+                if (iter > iterMax) break
                 if (nelim){
-                    w.z <- w.z/znorm
-                    W.Z <- rbind2(w.z, W.X.scaled)
                     elimXscales <- sqrt(elim.diagInfo)
-                    Umat <- rowsum.unique(wSqrt*t(W.Z), eliminate, elim)/elimXscales
-                    Wmat <- tcrossprod(W.Z)
-                    diag(Wmat) <- ridge
-                    coef <- solve1(Wmat, Tvec, Umat, elim)
-                    alphaChange <- coef$eliminated * znorm/elimXscales
-                    thetaChange <- coef$coefficients * znorm/Xscales
+                    Umat <- rowsum.unique(wSqrt*W.Z, eliminate, elim)/
+                        (elimXscales %o% Zscales)
+                    ZWZ <- ZWZ/(Zscales %o% Zscales)
+                    diag(ZWZ) <- ridge
+                    thetaChange <- solve1(ZWZ, Tvec, Umat, elim, Zscales,
+                                          elimXscales)
+                    alphaChange <- attr(thetaChange, "eliminated")
                 } else {
-                    XWX <- tcrossprod(W.X.scaled)
-                    diag(XWX) <- ridge
-                    thetaChange <- solve(XWX, score/(znorm * Xscales)) * znorm/Xscales
+                    ZWZ <- ZWZ/(Zscales %o% Zscales)
+                    diag(ZWZ) <- ridge
+                    thetaChange <- solve1(ZWZ, scale = Zscales)
                 }
                 dev[2] <- dev[1]
                 j <- scale <- 1
@@ -332,20 +331,13 @@
     if (nelim) {
         ## sweeps needed to get the rank right
         subtracted <- rowsum.unique(X, eliminate, elim)/grp.size
-        subtracted[,1] <- 0
+        if (modelTools$termAssign[1] == 0) subtracted[,1] <- 0
         theRank <- rankMatrix(X - subtracted[eliminate,]) + nelim
     }
     else theRank <- rankMatrix(X)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)
-    if (iterMax == 0) {
-        dmu <- family$mu.eta(eta)
-        z <- (abs(dmu) >= eps) * (y - mu)/dmu
-        vmu <- family$variance(mu)
-        w <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu
-        score <- diagInfo <- NA
-    }
     fit <- list(coefficients = structure(theta, eliminated = alpha),
                 constrain = constrain,
                 constrainTo = constrainTo, residuals = z, fitted.values = mu,
@@ -360,7 +352,7 @@
                 "to a non-solution of the likelihood equations.\n",
                 "Use exitInfo() for numerical details of last iteration.\n")
         fit$converged <- structure(FALSE, score = score, criterion =
-                                   tolerance * sqrt(tolerance + diagInfo))
+                                   tolerance * sqrt(tolerance + diagInfo[-1]))
     }
     else
         fit$converged <- TRUE

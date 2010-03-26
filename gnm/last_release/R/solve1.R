@@ -1,4 +1,5 @@
-solve1 <- function (W, Tvec = NULL, U = NULL, elim = NULL)
+solve1 <- function (W, Tvec = NULL, U = NULL, elim = NULL, scale = 1,
+                    elimscale = 1)
 ##  Inverse of partitioned matrix, essentially
 ##    T  U
 ##    U' W
@@ -10,15 +11,15 @@ solve1 <- function (W, Tvec = NULL, U = NULL, elim = NULL)
 ##
 ##  Result is only the first row/column of the inverse
 {
-    n <- nrow(W)
+    I1 <- numeric(nrow(W))
+    I1[1] <- 1
     if (is.null(Tvec)) { ## the basic routine, no eliminated submatrix
-        I1 <- numeric(n)
-        I1[1] <- 1
-        return(drop(solve(W, I1, tol = .Machine$double.eps)))
+        Qi <- solve(W, I1, tol = .Machine$double.eps)/scale
+        return(-Qi[-1]/Qi[1])
     }
 ##  Now allow for the possibility of an eliminated submatrix
     Ti.U <- U/Tvec
-    Qi <- solve1(W - crossprod(U, Ti.U))
-    result <- list(coefficients = -Qi[-1]/Qi[1],
-                   eliminated = (Ti.U %*% Qi)/Qi[1])
+    Qi <- solve(W - crossprod(U, Ti.U), I1, tol = .Machine$double.eps)
+    structure(-Qi[-1]/Qi[1] * scale[1]/scale[-1],
+              eliminated = (Ti.U %*% Qi)/Qi[1] * scale[1]/elimscale)
 }

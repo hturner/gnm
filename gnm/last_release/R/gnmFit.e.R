@@ -1,5 +1,3 @@
-## simplified gnmFit
-## ignore constrain, skip starting iterations (use start), assume nonlinear & method = chol
 "gnmFit.e" <-
     function (modelTools, y,
               constrain = numeric(0), # index of non-eliminated parameters
@@ -57,8 +55,8 @@
             varPredictors <- modelTools$varPredictors(tmpTheta)
             X <- modelTools$localDesignFunction(tmpTheta, varPredictors)
             ## update any unspecified linear parameters
-            isLinear <- !is.na(colSums(X))
-            unspecified <- is.na(theta)
+            isLinear <- unname(!is.na(colSums(X)))
+            unspecified <-  unname(is.na(theta))
             unspecifiedLin <- unspecified & isLinear
             unspecifiedNonlin <- unspecified & !isLinear
             if (any(unspecifiedNonlin)){
@@ -190,7 +188,8 @@
             theta <- structure(replace(start[non.elim], constrain, constrainTo),
                                names = names(modelTools$start))
             varPredictors <- modelTools$varPredictors(theta)
-            eta <- offset + alpha[eliminate] + modelTools$predictor(varPredictors)
+            eta <- offset + alpha[eliminate] +
+                modelTools$predictor(varPredictors)
             if (any(!is.finite(eta))) {
                 stop("Values of 'start' and 'constrain' produce non-finite ",
                      "predictor values")
@@ -203,21 +202,20 @@
         if (status == "not.converged") {
             X <-  modelTools$localDesignFunction(theta, varPredictors)
             X <- X[, !isConstrained, drop = FALSE]
+            np <- ncol(X) + 1
+            ZWZ <- array(dim = c(np, np))
+            I1 <- numeric(np)
+            I1[1] <- 1
+            if (nelim) Umat <- array(dim = c(nelim, np))
             #X <- Matrix(X)
             #classX <- class(X)
             if (nelim){
-                Tvec <- 1 + rep.int(ridge, nelim)
                 grp.size <- tabulate(eliminate)
                 grp.end <- cumsum(grp.size)
             }
             tmpAlpha <- 0
             ridge <- 1 + ridge
             for (iter in seq(length.out = iterMax + 1)) {
-                if (any(is.infinite(X))){
-                #if (any(is.infinite(X@x))){
-                    status <- "X.not.finite"
-                    break
-                }
                 if (verbose) {
                     if (iter == 1)
                         prattle("Running main iterations", "\n"[trace],
@@ -228,24 +226,22 @@
                 dmu <- family$mu.eta(eta)
                 z <- (abs(dmu) >= eps) * (y - mu)/dmu
                 vmu <- family$variance(mu)
-                w <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu
-                if (any(!is.finite(w))) {
-                    status <- "w.not.finite"
-                    break
-                }
+                w <- sqrt(weights * (abs(dmu) >= eps) * dmu * dmu/vmu)
 
-                wSqrt <- sqrt(w)
-                W.Z <- wSqrt * cbind(z, X)
-                ZWZ <- crossprod(W.Z)
-                score <- ZWZ[-1,1]
+                X <- w * X
+                z <- w * z
+                ZWZ[-1,-1] <- crossprod(X)
+                score <- ZWZ[1,-1] <- ZWZ[-1,1] <- crossprod(z, X)
+                ZWZ[1,1] <- sum(z * z)
                 diagInfo <- diag(ZWZ)
                 Zscales <- sqrt(diagInfo)
                 Zscales[Zscales < 1e-3] <- 1e-3 ## to allow for zeros
                 if (nelim) {
                     ## put elim coefs at end for convenience
-                    elim.diagInfo <- grp.sum(w, grp.end)
+                    z <- w * z
+                    elim.diagInfo <- grp.sum(w * w, grp.end)
                     diagInfo <- c(diagInfo, elim.diagInfo)
-                    score <- c(score, grp.sum(wSqrt * W.Z[,1], grp.end))
+                    score <- c(score, grp.sum(z, grp.end))
                 }
                 if (all(diagInfo < 1e-20) ||
                     all(abs(score) <
@@ -255,41 +251,43 @@
                 }
                 if (iter > iterMax) break
                 if (nelim){
-                    elimXscales <- sqrt(elim.diagInfo)
-                    Umat <- rowsum.unique(wSqrt*W.Z, eliminate, elim)/
-                        (elimXscales %o% Zscales)
+                    elimXscales <- sqrt(elim.diagInfo * ridge)
+                    Umat[,1] <- rowsum.unique(z, eliminate, elim)
+                    Umat[,-1] <- rowsum.unique(w * X, eliminate, elim)
+                    Umat <- Umat/(elimXscales %o% (Zscales * sqrt(ridge)))
                     ZWZ <- ZWZ/(Zscales %o% Zscales)
                     diag(ZWZ) <- ridge
-                    thetaChange <- solve1(ZWZ, Tvec, Umat, elim, Zscales,
-                                          elimXscales)
-                    alphaChange <- attr(thetaChange, "eliminated")
+                    z <- solve(ZWZ - crossprod(Umat), I1,
+                               tol = .Machine$double.eps)
+                    thetaChange <- -z[-1]/z[1] * Zscales[1]/Zscales[-1]
+                    alphaChange <- (Umat %*% (z * sqrt(ridge)))/z[1] *
+                        Zscales[1]/elimXscales
                 } else {
                     ZWZ <- ZWZ/(Zscales %o% Zscales)
                     diag(ZWZ) <- ridge
-                    thetaChange <- solve1(ZWZ, scale = Zscales)
+                    z <- solve(ZWZ, I1, tol = .Machine$double.eps)/Zscales
+                    thetaChange <- -z[-1]/z[1]
                 }
                 dev[2] <- dev[1]
                 j <- scale <- 1
                 while (dev[1] >= dev[2] && j < 11) {
                     if (nelim) tmpAlpha <- alpha + alphaChange/scale
                     tmpTheta <- replace(theta, !isConstrained,
-                                        theta[!isConstrained] + thetaChange/scale)
+                                        theta[!isConstrained] +
+                                        thetaChange/scale)
                     varPredictors <- modelTools$varPredictors(tmpTheta)
                     eta <- offset + tmpAlpha[eliminate] +
                         modelTools$predictor(varPredictors)
-                    if (any(!is.finite(eta))) {
-                        status <- "eta.not.finite"
-                        break
-                    }
                     mu <- family$linkinv(eta)
                     dev[1] <- sum(family$dev.resids(y, mu, weights))
-                    if (is.nan(dev[1])) {
+                    if (!is.finite(dev[1])) {
                         status <- "no.deviance"
                         break
                     }
                     scale <- scale*2
                     j <- j + 1
                 }
+                if (status == "no.deviance") break
                 if (trace){
                     prattle("Iteration ", iter, ". Deviance = ", dev[1],
                             "\n", sep = "")
@@ -309,6 +307,13 @@
             break
         }
         else {
+             if (any(!is.finite(eta)))
+                 status <- "eta.not.finite"
+             if (any(!is.finite(w)))
+                 status <- "w.not.finite"
+             if (any(is.infinite(X)))
+                 status <- "X.not.finite"
+
             if (verbose)
                 message("\n"[!trace],
                         switch(status,
@@ -319,9 +324,9 @@
                                  "Iterative weights are not all finite",
                                X.not.finite =
                                  "Local design matrix has infinite elements",
-                               no.deviance = "Deviance is NaN"))
+                               no.deviance = "Deviance is not finite"))
             attempt <- attempt + 1
-            if (attempt > 5)#|| !any(unspecifiedNonlin))
+            if (attempt > 5 || (any(is.na(start)) && !any(unspecifiedNonlin)))
                 return()
             else if (verbose)
                 message("Restarting")
@@ -358,14 +363,8 @@
         fit$converged <- TRUE
 
     if (x) {
-        if (length(constrain) > 0) {
-            fit$x <- array(0, dim = c(nrow(X), length(theta)),
-                           dimnames = list(NULL, names(theta)))
-            fit$x[, !isConstrained] <- X
-            attr(fit$x, "assign") <- modelTools$termAssign
-        }
-        else
-            fit$x <- structure(X, assign = modelTools$termAssign)
+        X <- modelTools$localDesignFunction(theta, varPredictors)
+        fit$x <- structure(X, assign = modelTools$termAssign)
     }
     if (termPredictors) {
         theta[is.na(theta)] <- 0

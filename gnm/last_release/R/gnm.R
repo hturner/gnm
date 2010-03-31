@@ -10,7 +10,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
     call <- match.call()
 
-    modelTerms <- gnmTerms(formula, !missing(eliminate), data)
+    modelTerms <- gnmTerms(formula, substitute(eliminate), data)
     modelData <- as.list(match.call(expand.dots = FALSE))
     if (inherits(data, "table") && missing(na.action))
         modelData$na.action <- "na.exclude"
@@ -227,7 +227,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         termPredictors = termPredictors,
                                         ridge = ridge, ...))
         else
-            fit <- gnmFit.e(modelTools = modelTools, y = y, constrain = constrain,
+            fit <- gnmFit.e(modelTools = modelTools, y = unname(y), constrain = constrain,
                             constrainTo = constrainTo, eliminate = eliminate,
                             family = family, weights = weights, offset = offset,
                             nObs = nObs, start = start, etastart = etastart,

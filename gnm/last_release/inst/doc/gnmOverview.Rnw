@@ -1069,21 +1069,21 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
-              anova 	&	 formula 	&	print \\
-              case.names	&	 hatvalues 	&	 profile \\
-              coef	&	 labels 	&	 residuals \\
-              cooks.distance	&	 logLik 	&	 rstandard \\
-              confint	&	 model.frame 	&	 summary \\
-              deviance	&	 model.matrix 	&	 variable.names \\
-              extractAIC	&	 plot 	&	 vcov \\
-              family	&	 predict	&	 weights \\
-
+              add1$^*$	&	              family		&		print 	\\
+              anova 		&		 formula 		&		 profile 	\\
+              case.names		&		 hatvalues 		&		 residuals 	\\
+              coef		&		 labels 		&		 rstandard 	\\
+              cooks.distance		&		 logLik 		&		 summary 	\\
+              confint		&		 model.frame 		&		 variable.names 	\\
+              deviance		&		 model.matrix 		&		 vcov 	\\
+              drop1$^*$	&		 plot 		&		 weights 	\\
+              extractAIC		&		 predict		&		\\
           \end{tabular*}
         }
     \end{fbox}
     \caption{Generic functions in the \Rpackage{base}, \Rpackage{stats} and
       \Rpackage{graphics} packages that can be used to analyse
-      \Rclass{gnm} objects.}
+      \Rclass{gnm} objects. Starred functions are implemented for models with linear terms only.}
     \label{fig:glm.lm}
 \end{figure}
 
@@ -1092,12 +1092,10 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{4.5cm}{@{\extracolsep{\fill}}ll@{\extracolsep{\fill}}}
-              add1	&	effects	\\
-              alias	&	influence	\\
-              dfbeta	&	kappa	\\
-              dfbetas	&	proj	\\
-              drop1	&	\\
-              dummy.coef	& \\
+              alias		&		effects		\\
+              dfbeta		&		influence		\\
+              dfbetas		&		kappa		\\
+              dummy.coef		&		proj		\\
           \end{tabular*}
         }
     \end{fbox}
@@ -2729,15 +2727,15 @@ for (i in 1:100)
                                             verbose = FALSE))
 round(unlist(sapply(saved.fits, deviance)), 4)
 @ %def
-In this instance, only 37 of the 100 calls to \Rfunction{gnm} have successfully
-located a local maximum of the likelihood: in the remaining 63 cases the
+In this instance, only 36 of the 100 calls to \Rfunction{gnm} have successfully
+located a local maximum of the likelihood: in the remaining 64 cases the
 starting values generated were such that numerical problems resulted, and the
 fitting algorithm was abandoned (giving a \Robject{NULL} result).
-Among the 37 `successful'
+Among the 36 `successful'
 fits, it is evident that there are three distinct solutions (with respective
 residual sums of squares equal to 0.1589, 41.64, and essentially zero ---
-the last of these, the exact fit to the data, having been found 12 times
-out of the above 37).
+the last of these, the exact fit to the data, having been found 11 times
+out of the above 36).
 The two non-optimal local maxima here correspond to the best fit
 with a single exponential (which has residual sum of squares 0.1589) and to the
 fit with no dependence at all on $x$

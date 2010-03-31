@@ -1,6 +1,9 @@
-gnmTerms <- function(formula, eliminate = FALSE, data = NULL)
+gnmTerms <- function(formula, eliminate = NULL, data = NULL)
 {
-    if (eliminate) formula[[3]] <- call("-", formula[[3]], quote(1))
+    if (!is.null(eliminate)){
+        eliminate <- substitute( . ~ . - e - 1, list(e = eliminate))
+        formula <- as.formula(.Internal(update.formula(formula, eliminate)))
+    }
     fullTerms <- terms(formula, specials = "instances", simplify = TRUE,
                        keep.order = TRUE, data = data)
 
@@ -31,7 +34,7 @@ gnmTerms <- function(formula, eliminate = FALSE, data = NULL)
         n <- length(termLabels)
         attributes(fullTerms) <-
             c(attributes(fullTerms),
-              list(eliminate = eliminate,
+              list(eliminate = !is.null(eliminate),
                    unitLabels = termLabels,
                    common = logical(n),
                    block = numeric(n),
@@ -139,7 +142,7 @@ gnmTerms <- function(formula, eliminate = FALSE, data = NULL)
         nObs <- 1
     attributes(fullTerms) <-
         c(attributes(fullTerms),
-          list(eliminate = eliminate,
+          list(eliminate = !is.null(eliminate),
                offset = which(unique(variables) %in% offsetVars),
                variables = as.call(c(quote(list), unique(variables))),
                predvars = {do.call("substitute",

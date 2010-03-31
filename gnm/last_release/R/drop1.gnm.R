@@ -69,7 +69,7 @@ drop1.gnm <- function (object, scope, scale = 0, test = c("none", "Chisq",
             "LRT"
         else "scaled dev."
         aod[, LRT] <- dev
-        dev[nas] <- safe_pchisq(dev[nas], aod$Df[nas], lower.tail = FALSE)
+        dev[nas] <- stats:::safe_pchisq(dev[nas], aod$Df[nas], lower.tail = FALSE)
         aod[, "Pr(Chi)"] <- dev
     }
     else if (test == "F") {
@@ -85,7 +85,7 @@ drop1.gnm <- function (object, scope, scale = 0, test = c("none", "Chisq",
         Fs[dfs < 1e-04] <- NA
         P <- Fs
         nas <- !is.na(Fs)
-        P[nas] <- safe_pf(Fs[nas], dfs[nas], rdf, lower.tail = FALSE)
+        P[nas] <- stats:::safe_pf(Fs[nas], dfs[nas], rdf, lower.tail = FALSE)
         aod[, c("F value", "Pr(F)")] <- list(Fs, P)
     }
     head <- c("Single term deletions", "\nModel:", deparse(as.vector(formula(object))),

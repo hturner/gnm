@@ -793,16 +793,17 @@ An alternative way to set starting values for the parameters is to specify
 starting values for the predictors.
 
 If there are linear parameters in the model, the predictor starting values are
-first used to fit a model with only the linear terms (offsetting any terms that
-are constrained). In this case the parameters corresponding to the predictor
+first used to fit a model with only the linear terms (offsetting any terms fully
+specified by starting values given by \Rfunarg{start}, \Rfunarg{constrain} or a
+\Rclass{nonlin} function). In this case the parameters corresponding to the predictor
 starting values can be computed analytically. If the fitted model reproduces
 the predictor starting values, then these values contain no further information
 and they are replaced using the \Rfunction{initialize} function of the specified
 \Rfunarg{family}.
 
 The predictor starting values or their replacement are then used as the response
-variable in a nonlinear least squares model with only the nonlinear terms,
-offsetting the fitted linear predictors. Since the model is over-parameterized,
+variable in a nonlinear least squares model with only the unspecified nonlinear terms,
+offsetting the contribution of any other terms. Since the model is over-parameterized,
 the model is approximated using \Rfunarg{iterStart} iterations of the
 ``L-BFGS-B'' algorithm of \Rfunction{optim}, assuming parameters lie in the
 range (-10, 10).
@@ -882,7 +883,7 @@ setting the last level of the homogeneous multiplicative factor to zero,
 <<RC_homogeneous_constrained_model>>=
 multCoef <- coef(RChomog1)[pickCoef(RChomog1, "Mult")]
 set.seed(1)
-RChomogConstrained1 <- update(RChomog1, constrain = 31,
+RChomogConstrained1 <- update(RChomog1, constrain = length(coef(RChomog1)),
                               start = c(rep(NA, 23), multCoef - multCoef[8]))
 set.seed(2)
 RChomogConstrained2 <- update(RChomogConstrained1)
@@ -906,14 +907,12 @@ number of levels, the iterative algorithm by which maximum likelihood estimates
 are computed can usually
 be accelerated by use of the \Rfunarg{eliminate} argument to \Rfunction{gnm}.
 
-The factor to be \Rfunarg{eliminate}-d should be specified by an expression,
-which is then
-interpreted as the first term in the model formula, replacing any intercept
-term. So, for example, in terms of the structure of the model,
+A factor passed to \Rfunarg{eliminate} specifies the first term in the
+model, replacing any intercept term. So, for example
 \begin{Scode}
 gnm(mu ~ A + B + Mult(A, B), eliminate = strata1:strata2)
 \end{Scode}
-is equivalent to
+is equivalent, in terms of the structure of the model, to
 \begin{Scode}
 gnm(mu ~ -1 + strata1:strata2 + A + B + Mult(A, B))
 \end{Scode}
@@ -922,14 +921,11 @@ advantages over the standard specification. First, the structure of the
 eliminated factor is exploited so that computational speed is
 improved ---
 substantially so if the number of eliminated parameters is large.
-Second, unless
-otherwise specified through the \Rfunarg{ofInterest} argument to
-\Rfunction{gnm},
-the \Robject{ofInterest} component of the returned model object
-indexes the non-eliminated parameters. Thus eliminated parameters are excluded
-from printed model summaries and default selection by \Rclass{gnm} methods. See
-Section \ref{sec:ofInterest} for further details on the use of the
-\Robject{ofInterest} component.
+Second, eliminated parameters are returned separately from non-eliminated
+parameters (as an attribute of the \Robject{coefficients} component of the
+returned object). Thus eliminated parameters are excluded from printed model
+summaries by default and disregarded by \Rclass{gnm} methods that would not be
+relevant to such parameters (see Section \ref{sec:Methods}).
 
 The \Rfunarg{eliminate} feature is useful, for example, when
 multinomial-response models are fitted by using the well known equivalence
@@ -956,19 +952,21 @@ recommended package \Rpackage{nnet}).  But fitting as here via the
 framework using \Rfunction{Mult} or other \Rclass{nonlin} terms.}, using
 either \Rfunction{glm} or \Rfunction{gnm}:
 \begin{Sinput}
-> ## Timings on a Pentium M 1.6GHz, under Linux
+> ## Timings on a Xeon 2.33GHz, under Linux
 > system.time(temp.glm <- glm(counts ~ rowID + resp + resp:x,
                               family = poisson))[1]
 \end{Sinput}
 \begin{Soutput}
-[1] 121.007
+user.self
+   37.126
 \end{Soutput}
 \begin{Sinput}
 > system.time(temp.gnm <- gnm(counts ~ resp + resp:x, eliminate = rowID,
                               family = poisson, verbose = FALSE))[1]
 \end{Sinput}
 \begin{Soutput}
-[1] 19.985
+user.self
+     0.04
 \end{Soutput}
 \begin{Sinput}
 > c(deviance(temp.glm), deviance(temp.gnm))
@@ -977,15 +975,9 @@ either \Rfunction{glm} or \Rfunction{gnm}:
 [1] 2462.556 2462.556
 \end{Soutput}
 Here the use of \Rfunarg{eliminate} causes the \Rfunction{gnm} calculations to
-run more quickly than \Rfunction{glm}.  The speed advantage\footnote{In fact
-\Rfunarg{eliminate} is, in principle, capable of much bigger time savings
-than this: its
-implementation in the current version of \Rpackage{gnm} is really just a proof
-of concept, and it has not yet been optimized for speed.} increases with
-the number of eliminated parameters (here 1000).
-Since the default behaviour has not been over-ridden
-by an \Rfunarg{ofInterest} argument, the eliminated parameters do
-not appear in printed model summaries:
+run much more quickly than \Rfunction{glm}.  The speed advantage increases with
+the number of eliminated parameters (here 1000). By default,the eliminated
+parameters do not appear in printed model summaries as here:
 \begin{Sinput}
 > summary(temp.gnm)
 \end{Sinput}
@@ -995,18 +987,17 @@ Call:
 gnm(formula = counts ~ resp + resp:x, eliminate = rowID, family = poisson,
     verbose = FALSE)
 
-
 Deviance Residuals:
       Min         1Q     Median         3Q        Max
 -2.852038  -0.786172  -0.004534   0.645278   2.755013
 
 Coefficients of interest:
-          Estimate Std. Error z value Pr(>|z|)
-resp2   -1.9614483  0.0340074  -57.68   <2e-16
-resp3   -1.2558460  0.0253589  -49.52   <2e-16
-resp1:x  0.0001049         NA      NA       NA
-resp2:x -0.0155083         NA      NA       NA
-resp3:x  0.0078314         NA      NA       NA
+         Estimate Std. Error z value Pr(>|z|)
+resp2   -1.961448   0.034007 -57.678   <2e-16
+resp3   -1.255846   0.025359 -49.523   <2e-16
+resp1:x -0.007726   0.024517  -0.315    0.753
+resp2:x -0.023340   0.037611  -0.621    0.535
+resp3:x  0.000000         NA      NA       NA
 
 (Dispersion parameter for poisson family taken to be 1)
 
@@ -1015,32 +1006,10 @@ Std. Error is NA where coefficient has been constrained or is unidentified
 Residual deviance: 2462.6 on 1996 degrees of freedom
 AIC: 12028
 
-Number of iterations: 3
+Number of iterations: 4
 \end{Soutput}
-As usual, \Rfunction{gnm} has worked here with an over-parameterized
-representation of the model.  The parameterization used by \Rfunction{glm}
-can be seen from
-\begin{Sinput}
-> coef(temp.glm)[-(1:1000)]
-\end{Sinput}
-\begin{Soutput}
-   resp2    resp3  resp1:x  resp2:x  resp3:x
--1.96145 -1.25585 -0.00773 -0.02334       NA
-\end{Soutput}
-(we will not print the full summary of \Robject{temp.glm} here, since it gives
-details of all 1005 parameters!), which easily can be obtained, if required,
-by using \Rfunction{getContrasts}:
-\begin{Sinput}
-> getContrasts(temp.gnm, ofInterest(temp.gnm)[5:3])
-\end{Sinput}
-\begin{Soutput}
-        estimate      SE quasiSE quasiVar
-resp3:x  0.00000 0.00000 0.02163 0.000468
-resp2:x -0.02334 0.03761 0.03077 0.000947
-resp1:x -0.00773 0.02452 0.01154 0.000133
-\end{Soutput}
-See Section \ref{sec:getContrasts} for further details of the
-\Rfunction{getContrasts} function.
+although the \Rmethod{summary} method has a logical \Rfunarg{with.eliminate}
+that can toggled so that the eliminated parameters are included if desired.
 
 The \Rfunarg{eliminate} feature as implemented in \Rpackage{gnm} extends the
 earlier work of \cite{Hatz04} to a broader class of models and to
@@ -1069,21 +1038,22 @@ those that are not implemented for \Rclass{gnm} objects.
     \begin{fbox}
         {
           \begin{tabular*}{7.5cm}{@{\extracolsep{\fill}}lll@{\extracolsep{\fill}}}
-              add1$^*$	&	              family		&		print 	\\
-              anova 		&		 formula 		&		 profile 	\\
-              case.names		&		 hatvalues 		&		 residuals 	\\
-              coef		&		 labels 		&		 rstandard 	\\
-              cooks.distance		&		 logLik 		&		 summary 	\\
-              confint		&		 model.frame 		&		 variable.names 	\\
-              deviance		&		 model.matrix 		&		 vcov 	\\
-              drop1$^*$	&		 plot 		&		 weights 	\\
-              extractAIC		&		 predict		&		\\
+              add1$^*$	&	family		&		print	\\
+              anova	&	formula	&	profile	\\
+              case.names		&	hatvalues	&	residuals	\\
+              coef		&	labels	&	rstandard	\\
+              cooks.distance		&	logLik	&	summary	\\
+              confint		&	model.frame	&	variable.names	\\
+              deviance		&	model.matrix	&	vcov	\\
+              drop1$^*$	&	plot	&	weights	\\
+              extractAIC		&	predict		&		\\
           \end{tabular*}
         }
     \end{fbox}
     \caption{Generic functions in the \Rpackage{base}, \Rpackage{stats} and
       \Rpackage{graphics} packages that can be used to analyse
-      \Rclass{gnm} objects. Starred functions are implemented for models with linear terms only.}
+      \Rclass{gnm} objects. Starred functions are implemented for models with
+      linear terms only.}
     \label{fig:glm.lm}
 \end{figure}
 
@@ -1200,14 +1170,7 @@ Mult(Exp(.), orig:dest).educ5       -Inf -0.7006889
 
 It is quite common for a statistical model to have a large number of
 parameters, but for only a subset of these parameters be of interest when it
-comes to interpreting the model. An example of this has been seen in
-Section~\ref{sec:eliminate}, where a factor is required in the model in order
-to represent
-a structural aspect of the data, but the estimated factor effects have no
-substantive interpretation. Even for models in which all parameters
-correspond to variables of potential interest, the substantive focus
-may still be on a subset of
-parameters.
+comes to interpreting the model.
 
 The \Rfunarg{ofInterest} argument to \Rfunction{gnm} allows the user to specify
 a subset of the parameters which are of interest, so that \Rclass{gnm} methods
@@ -2234,7 +2197,7 @@ Section \ref{sec:glms}):
 @
 <<Biplot_model>>=
 data(barley)
-set.seed(138)
+set.seed(83)
 biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
                    family = wedderburn, data = barley)
 @ %def
@@ -2251,8 +2214,7 @@ in the space spanned by the linearly independent basis vectors
 and the variable effects can be similarly represented.
 
 Thus we can represent the sites and varieties separately as follows
-@
-<<Effect_plots, fig = TRUE, include = FALSE, width=10, height=5>>=
+\begin{Sinput}
 sites <- pickCoef(biplotModel, "[.]site")
 coefs <- coef(biplotModel)
 A <- matrix(coefs[sites], nc = 2)
@@ -2262,10 +2224,11 @@ plot(A, pch = levels(barley$site), xlim = c(-5, 5), ylim = c(-5, 5),
     main = "Site Effects", xlab = "Component 1", ylab = "Component 2")
 plot(B, pch = levels(barley$variety), xlim = c(-5, 5), ylim = c(-5, 5),
     main = "Variety Effects", xlab = "Component 1", ylab = "Component 2")
-@ %def
+\end{Sinput}
+
 \begin{figure}[!tbph]
     \begin{center}
-        \includegraphics{gnmOverview-Effect_plots.pdf}
+        \includegraphics[width = 6in]{fig-Effect_plots.pdf}
     \end{center}
     \caption{Plots of site and variety effects from the generalized bilinear
       model of the barley data.}
@@ -2461,7 +2424,7 @@ three dimensional model:
 logLikMultinom <- function(model, size){
     object <- get(model)
     l <- sum(object$y * log(object$fitted/size))
-    c(nParameters = object$rank - object$eliminate, logLikelihood = l)
+    c(nParameters = object$rank - nlevels(object$eliminate), logLikelihood = l)
 }
 size <- tapply(backPainLong$count, backPainLong$id, sum)[backPainLong$id]
 t(sapply(c("oneDimensional", "threeDimensional"), logLikMultinom, size))

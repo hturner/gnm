@@ -216,7 +216,7 @@
                 for(j in fi)
                     v[[j]] <- attr(eval(varDerivs[[j]], varPredictors),
                                    "gradient")
-                .Call("single", baseMatrix, as.double(unlist(v[fi])),
+                .Call("onecol", baseMatrix, as.double(unlist(v[fi])),
                       first[i1], lt[fi[1]], nr, as.integer(length(fi)),
                       PACKAGE = "gnm")
             }

@@ -1,0 +1,78 @@
+
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(gnm)
+> set.seed(1)
+> DNase1 <- subset(DNase, Run == 1)
+> 
+> test <- gnm(density ~ -1 +
++             Mult(1, Inv(Const(1) + Exp(Mult(1 + offset(-log(conc)),
++                                                 Inv(1))))),
++             start = c(NA, 0, 1), data = DNase1, trace = TRUE)
+Initialising
+Initial Deviance = 15.30101
+Running start-up iterations
+Start-up iteration 1. Deviance = 0.7139315
+Start-up iteration 2. Deviance = 0.7139315
+Running main iterations
+Iteration 1. Deviance = 0.4943494
+Iteration 2. Deviance = 0.03849465
+Iteration 3. Deviance = 0.004895279
+Iteration 4. Deviance = 0.004789635
+Iteration 5. Deviance = 0.004789569
+Done
+> coef(test)
+Coefficients:
+Mult(., Inv(Exp(Mult(1 + offset(-log(conc)), Inv(1))) + Const(1))). 
+                                                           2.345183 
+Mult(1, Inv(Exp(Mult(. + offset(-log(conc)), Inv(1))) + Const(1))). 
+                                                           1.483093 
+Mult(1, Inv(Exp(Mult(1 + offset(-log(conc)), Inv(.))) + Const(1))). 
+                                                           1.041456 
+> 
+> Logistic <- function(x, inst = NULL){
++     list(predictors = list(Asym = 1, xmid = 1, scal = 1),
++          variables = list(substitute(x)),
++          term = function(predLabels, varLabels) {
++              paste(predLabels[1], "/(1 + exp((", predLabels[2], "-",
++                    varLabels[1], ")/", predLabels[3], "))")
++          },
++          start = function(theta){
++              theta[3] <- 1
++              theta
++          }
++          )
++ }
+> class(Logistic) <- "nonlin"
+> 
+> test <- gnm(density ~ -1 + Logistic(log(conc)),
++             data = DNase1, trace = TRUE)
+Initialising
+Initial Deviance = 14.86554
+Running start-up iterations
+Start-up iteration 1. Deviance = 0.2026326
+Start-up iteration 2. Deviance = 0.0663733
+Running main iterations
+Iteration 1. Deviance = 0.01595068
+Iteration 2. Deviance = 0.00479133
+Iteration 3. Deviance = 0.004789569
+Done
+> coef(test)
+Coefficients:
+    Asym     xmid     scal 
+2.345168 1.483077 1.041450 
+> 

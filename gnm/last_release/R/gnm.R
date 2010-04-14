@@ -47,19 +47,19 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         method <- "gnmFit"
     }
 
-    nObs <- nrow(modelData)
+    nobs <- nrow(modelData)
     y <- model.response(modelData, "numeric")
     if (is.null(y))
-        y <- rep(0, nObs)
+        y <- rep(0, nobs)
 
     weights <- as.vector(model.weights(modelData))
     if (!is.null(weights) && any(weights < 0))
         stop("negative weights are not allowed")
     if (is.null(weights))
-        weights <- rep.int(1, nObs)
+        weights <- rep.int(1, nobs)
     offset <- as.vector(model.offset(modelData))
     if (is.null(offset))
-        offset <- rep.int(0, nObs)
+        offset <- rep.int(0, nobs)
 
     mustart <- model.extract(modelData, "mustart")
     etastart <- model.extract(modelData, "etastart")
@@ -94,14 +94,14 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             stop("invalid fitted values in empty model")
         dmu <- family$mu.eta(offset)
         dev <- sum(family$dev.resids(y, mu, weights))
-        modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs), mu,
+        modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nobs), mu,
                                                 weights, dev))
         fit <- list(coefficients = numeric(0), constrain = numeric(0),
                     constrainTo = numeric(0), eliminate = NULL,
                     predictors = offset, fitted.values = mu, deviance = dev,
                     aic = modelAIC, iter = 0,
                     weights = weights*dmu^2/family$variance(mu),
-                    residuals = (y - mu)/dmu, df.residual = nObs, rank = 0,
+                    residuals = (y - mu)/dmu, df.residual = nobs, rank = 0,
                     family = family, prior.weights = weights, y = y,
                     converged = NA)
         if (x) fit <- c(fit, x = model.matrix(modelTerms, data = modelData))
@@ -159,9 +159,11 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         }
 
         if (onlyLin) {
-            offset <- drop(offset +
-                           X[, constrain, drop = FALSE] %*% constrainTo)
-            X[, constrain] <- 0
+            if (length(constrain)) {
+                offset <- drop(offset +
+                               X[, constrain, drop = FALSE] %*% constrainTo)
+                X[, constrain] <- 0
+            }
             if (method == "model.matrix") return(X)
         }
         else if (method == "model.matrix"){
@@ -218,7 +220,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         constrainTo = constrainTo,
                                         eliminate = eliminate, family = family,
                                         weights = weights, offset = offset,
-                                        nObs = nObs, start = start,
+                                        nobs = nobs, start = start,
                                         etastart = etastart, mustart = mustart,
                                         tolerance = tolerance,
                                         iterStart = iterStart,
@@ -227,15 +229,15 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         termPredictors = termPredictors,
                                         ridge = ridge, ...))
         else
-            fit <- gnmFit.e(modelTools = modelTools, y = unname(y), constrain = constrain,
-                            constrainTo = constrainTo, eliminate = eliminate,
-                            family = family, weights = weights, offset = offset,
-                            nObs = nObs, start = start, etastart = etastart,
-                            mustart = mustart, tolerance = tolerance,
-                            iterStart = iterStart, iterMax = iterMax,
-                            trace = trace, verbose = verbose, x = x,
-                            termPredictors = termPredictors,
-                            ridge = ridge)#, lsMethod = lsMethod)
+            fit <- gnmFit(modelTools = modelTools, y = y, constrain = constrain,
+                          constrainTo = constrainTo, eliminate = eliminate,
+                          family = family, weights = weights, offset = offset,
+                          nobs = nobs, start = start, etastart = etastart,
+                          mustart = mustart, tolerance = tolerance,
+                          iterStart = iterStart, iterMax = iterMax,
+                          trace = trace, verbose = verbose, x = x,
+                          termPredictors = termPredictors,
+                          ridge = ridge)
     }
 
     if (is.null(fit)) {

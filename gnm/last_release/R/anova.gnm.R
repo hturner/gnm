@@ -17,8 +17,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
     x <- model.matrix(object)
     varlist <- labels(object)
     varseq <- attr(x, "assign")
-    if (length(object$constrain)) varseq[object$constrain] <- 0
-    pars <- setdiff(unique(varseq), 0)
+    pars <- setdiff(unique(varseq), c(0, varseq[object$constrain]))
 
     nvars <- length(varlist)
 

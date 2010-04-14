@@ -1,6 +1,6 @@
 
-R version 2.6.2 (2008-02-08)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -27,8 +27,7 @@ Type 'q()' to quit R.
 +                  family = gaussian, data = wheat)
 Initialising
 Running start-up iterations..
-Running main iterations.........................................................
-....
+Running main iterations......................................................
 Done
 > 
 > print(bilinear3$deviance, digits=10)

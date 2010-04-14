@@ -119,7 +119,7 @@ SEXP newsubprod(SEXP M, SEXP V, SEXP X, SEXP a, SEXP b, SEXP c,
   return(X);
 }
 /* computes single column of design matrix */
-SEXP single(SEXP M, SEXP V, SEXP a, SEXP lt, SEXP nr, SEXP nc) {
+SEXP onecol(SEXP M, SEXP V, SEXP a, SEXP lt, SEXP nr, SEXP nc) {
   int j, k, l, nrow = INTEGER(nr)[0], common = INTEGER(nc)[0], jump;
   double *p[common], *q[common], *dcol;
   SEXP col;

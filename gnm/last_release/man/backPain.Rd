@@ -80,7 +80,8 @@ logLikMultinom <- function(model, size){
     object <- get(model)
     if (inherits(object, "gnm")) {
         l <- sum(object$y * log(object$fitted/size))
-        c(nParameters = object$rank - object$eliminate, logLikelihood = l)
+        c(nParameters = object$rank - nlevels(object$eliminate),
+          logLikelihood = l)
     }
     else
         c(nParameters = object$edf, logLikelihood = -deviance(object)/2)

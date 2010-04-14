@@ -67,9 +67,9 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
                         (2 * quad)
                     firstApprox <- par.vals[maxsteps + 1 + sgn * sub, i]
                     ## if likelihood approx quadratic use default stepsize, else
-                    if (sgn * (root - firstApprox) > stepsize[dir]) {
+                    if (sgn * (root - firstApprox) > 0) {
                         ## not gone out far enough, check for asymptote
-                        val <- fittedCoef[i] + sgn * 1000
+                        val <- fittedCoef[i] + sgn * 10 * sterr[i]
                         updated <-
                             suppressWarnings(update(fitted, constrain =
                                                     c(fittedConstrain, i),
@@ -82,7 +82,9 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
                             sqrt((deviance(updated) - fittedDev)/disp) < zmax)
                             asymptote[dir] <- TRUE
                     }
-                    if (abs(root - firstApprox) > stepsize[dir] &&
+                    ## if root more than one step away from firstApprox, i.e.
+                    ## less than two steps away from fittedCoef, halve stepsize
+                    if (abs(sgn * (firstApprox - root)) > stepsize[dir] &&
                         !asymptote[dir]) {
                         prof[[par]][maxsteps + 1 + sgn * sub] <- 0
                         par.vals[maxsteps + 1 + sgn * sub, ] <- NA

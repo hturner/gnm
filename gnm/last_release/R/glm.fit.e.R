@@ -1,10 +1,3 @@
-rowsum.unique <- function (x, group, ugroup,...)
-{
-    rval <- .Call("Rrowsum_matrix", x, NCOL(x), group, ugroup,
-        FALSE, PACKAGE = "base")
-    dimnames(rval) <- list(ugroup, colnames(x))
-    rval
-}
 "glm.fit.e" <-
 ##  This fits a glm with eliminated factor, and should be much quicker
 ##  than glm.fit when the number of levels of the eliminated factor is large.
@@ -44,6 +37,7 @@ rowsum.unique <- function (x, group, ugroup,...)
         else return(tmp)
     }
 ##  The rest handles the case of an eliminated factor
+    names(y) <- rownames(x) <- NULL
     nobs <- NROW(y)
     non.elim <- ncol(x)
     if (is.null(weights))
@@ -67,7 +61,7 @@ rowsum.unique <- function (x, group, ugroup,...)
     }
     size <- tabulate(eliminate)
     end <- cumsum(size)
-    nelim <- nlevels(eliminate)
+    nelim <- rank <- nlevels(eliminate)
     elim <- seq.int(nelim)
     if (is.null(start)) { # use either y or etastart or mustart
         if (is.null(mustart) && is.null(etastart)) {
@@ -90,16 +84,18 @@ rowsum.unique <- function (x, group, ugroup,...)
     if (intercept) x <- x[, -1, drop = FALSE] #non-null eliminate
     if (non.elim) {
         ## sweeps needed to get the rank right
-        subtracted <- rowsum.unique(x, eliminate, elim)/size
+        subtracted <- quick.rowsum(x, eliminate, elim)/size
         x <- x - subtracted[eliminate,]
         ## initial fit to drop aliased columns
         model <- lm.wfit(x, z, w, offset = os.vec)
+        full.theta <- model$coefficients
         eta <- model$fitted + offset
+        rank <- model$rank + nelim
+        rm(model)
         mu <- linkinv(eta)
         mu.eta <- linkder(eta)
         z <- eta - offset + (y - mu) / mu.eta
         w <- weights * (mu.eta)^2/variance(mu)
-        full.theta <- model$coefficients
         est <- !is.na(full.theta)
         x <- x[, est, drop = FALSE]
         theta <- full.theta[est]
@@ -109,15 +105,14 @@ rowsum.unique <- function (x, group, ugroup,...)
     I1[1] <- 1
     for (i in 1:control$maxit) {
         ## try without scaling etc - already of full rank
-        W.Z <- w * Z
-        Tvec <- grp.sum(w, end)
-        Umat <- rowsum.unique(W.Z, eliminate, elim)
-        Wmat <- crossprod(Z, W.Z)
+        Tvec <- sqrt(grp.sum(w, end))
+        Umat <- quick.rowsum(w * Z, eliminate, elim)
+        Umat <- Umat/Tvec
+        Wmat <- crossprod(sqrt(w) * Z)
         diag(Wmat) <- diag(Wmat) + ridge
-        Ti.U <- Umat/Tvec
-        Qi <- solve(Wmat - crossprod(Umat, Ti.U), I1)
+        Qi <- solve(Wmat - crossprod(Umat), I1)
         theta <- -Qi[-1]/Qi[1]
-        os.by.level <- (Ti.U %*% Qi)/Qi[1]
+        os.by.level <- ((Umat %*% Qi)/Qi[1])/Tvec
         if (non.elim) eta <- drop(x %*% theta + offset + os.by.level[eliminate])
         else eta <- offset + os.by.level[eliminate]
         mu <- linkinv(eta)
@@ -140,14 +135,10 @@ rowsum.unique <- function (x, group, ugroup,...)
                                   control$maxit, "iterations."))
     if (coefonly) return(structure(full.theta, eliminated = c(os.by.level)))
     if (non.elim) {
-        rank <- (model$rank + nelim)
         full.theta[est] <- theta
         os.by.level <- os.by.level - subtracted %*% naToZero(full.theta)
     }
-    else {
-        rank <- nelim
-        full.theta <- numeric(0)
-    }
+    else full.theta <- numeric(0)
     names(os.by.level) <- paste("(eliminate)", elim, sep = "")
     aic.model <- aic(y, sum(weights > 0), mu, weights, dev) + 2 * rank
     if (ordTRUE) {

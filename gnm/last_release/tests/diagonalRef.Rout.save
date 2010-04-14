@@ -1,6 +1,6 @@
 
-R version 2.6.0 Under development (unstable) (2007-09-03 r42749)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -40,7 +40,7 @@ Done
 +                                   delta = ~ 1 + downward + upward),
 +                       family = binomial, data = voting)
 Initialising
-Running main iterations..........
+Running main iterations...........
 Done
 > 
 > print(socialMobility$deviance, digits = 10)

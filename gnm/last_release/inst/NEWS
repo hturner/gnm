@@ -1,3 +1,32 @@
+Changes in gnm 0.10-1
+=====================
+
+Improvements
+------------
+
+    o	eliminated coefficients now treated entirely separately, in particular 
+	the design matrix no longer has columns for these coefficients, making
+	the algorithm far more efficient for models with many eliminated
+	coefficients.
+
+    o	more reliable calculation of rank via rankMatrix from the Matrix 
+	package.
+
+Changes in Behaviour
+--------------------
+
+    o	ofInterest and constrain now index non-eliminated coefficients.
+
+    o	eliminated coefficients now returned as attribute of returned coefficient 
+	vector.
+
+Bug fixes
+---------
+
+    o	etastart now works for models with no linear parameters.
+
+    o	anova now ignores terms that are completely constrained.
+
 Changes in gnm 0.10-0
 =====================
 

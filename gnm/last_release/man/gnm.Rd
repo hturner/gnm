@@ -76,9 +76,9 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     iterations to perform. }
   \item{trace}{ a logical value indicating whether the deviance
     should be printed after each iteration. }
-  \item{verbose}{ logical: if \code{TRUE} progress indicators are
-    printed as the model is fitted, including a diagnostic error message
-    if the algorithm restarts. } 
+  \item{verbose}{ logical: if \code{TRUE} and model includes nonlinear
+    terms, progress indicators are printed as the model is fitted,
+    including a diagnostic error message if the algorithm restarts. } 
   \item{model}{ logical: if \code{TRUE} the model frame is returned. }
   \item{x}{ logical: if \code{TRUE} the local design matrix from the last
     iteration is included as a component of returned model object. }

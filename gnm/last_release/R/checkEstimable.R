@@ -20,10 +20,10 @@ checkEstimable <- function(model,
         if (attr(terms(model), "intercept") == 1) subtracted[,1] <- 0
         X <- X - subtracted[eliminate,]
     }
-    rankX <- rankMatrix(X)
+    rankX <- model$rank - nlevels(eliminate)
     check.1 <- function(comb){
         Xc <- rbind(X, comb)
-        rankXc <- rankMatrix(Xc, tol = tolerance)
+        rankXc <- quickRank(Xc, tol = tolerance)
         return(rankXc == rankX)
     }
     result[!resultNA] <- apply(combMatrix[, !resultNA, drop = FALSE],

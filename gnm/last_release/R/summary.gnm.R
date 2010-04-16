@@ -19,11 +19,6 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         if (with.eliminate){
             ## check estimability of eliminated coefficients
             X <- cbind(1, model.matrix(object)[,!is.na(coef(object))])
-            ## as tolNorm2 method in rankMatrix but avoids validity checks
-            quickRank <- function(X) {
-                sval <- svd(X, 0, 0)$d
-                sum(sval >= max(dim(X)) * .Machine$double.eps * sval[1])
-            }
             estimable2 <- sapply(split(1:nrow(X), object$eliminate),
                                  function(i) {
                                      quickRank(X[i, , drop = FALSE]) ==

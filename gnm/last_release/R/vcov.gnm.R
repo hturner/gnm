@@ -51,7 +51,7 @@ vcov.gnm <-  function(object, dispersion = NULL, with.eliminate = FALSE, ...){
                 attr(cov.unscaled, "covElim") <- dispersion *
                     -Ti.U %*% cov.unscaled[ind, ind]
                 attr(cov.unscaled, "varElim") <- dispersion *
-                    -diag(tcrossprod(attr(cov.unscaled, "covElim"), Ti.U)) + Ti
+                    -rowSums(attr(cov.unscaled, "covElim") *  Ti.U) + Ti
             }
         }
     }

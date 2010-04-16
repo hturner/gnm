@@ -1,6 +1,6 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.11.0 beta (2010-04-12 r51702)
+Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -41,5 +41,5 @@ Done
 > print(oneDimensional$deviance, digits=10)
 [1] 303.1002779
 > print(oneDimensional$df)
-[1] 492
+[1] 493
 > 

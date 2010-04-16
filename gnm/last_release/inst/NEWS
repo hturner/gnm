@@ -9,8 +9,7 @@ Improvements
 	the algorithm far more efficient for models with many eliminated
 	coefficients.
 
-    o	more reliable calculation of rank via rankMatrix from the Matrix 
-	package.
+    o	more reliable calculation of rank
 
 Changes in Behaviour
 --------------------

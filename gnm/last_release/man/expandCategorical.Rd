@@ -53,7 +53,7 @@ expandCategorical(data, catvar, sep = ".", countvar = "count",
   response to be modelled as a poisson response, see examples.
 }
 \seealso{ \code{\link{gnm}}, \code{\link[nnet]{multinom}},
-  \code{\link{reshape}}, \code{\link[catspec]{mclgen}} }
+  \code{\link{reshape}}, \code{\link[catspec:mcl]{mclgen}} }
 \references{
   Anderson, J. A. (1984) Regression and Ordered Categorical
   Variables. \emph{J. R. Statist. Soc. B}, \bold{46(1)}, 1-30.

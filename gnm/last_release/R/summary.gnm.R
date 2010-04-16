@@ -17,26 +17,17 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
             sterr <- diag(cov.scaled)
         is.na(sterr[!estimable]) <- TRUE
         if (with.eliminate){
-            ## will need to do in gnmFit/checkestimable to get rank of whole model right in first place
-            ## then can do object$rank - sum(estimable) to get rank of elim
             ## check estimability of eliminated coefficients
-            browser()
             X <- cbind(1, model.matrix(object)[,!is.na(coef(object))])
-            nelim <- nlevels(object$eliminate)
-            rank <- object$rank - nelim
-            estimable2 <- tapply(1:nrow(X), object$eliminate,
-                                 function(ind) rankMatrix(X[ind,]) == rankMatrix(X[ind, -1]) + 1)
-            ## OR
-            X <- cbind(0, model.matrix(object)[,!is.na(coef(object))])
-            nelim <- nlevels(object$eliminate)
-            rank <- object$rank - nelim
-            estimable2 <- tapply(1:nrow(X), object$eliminate,
-                                 function(ind) {
-                                     X[ind, 1] <- 1
-                                     check <- rankMatrix(X) == rank + 1
-                                     X[ind, 1] <- 0
-                                     check
-                                     })
+            ## as tolNorm2 method in rankMatrix but avoids validity checks
+            quickRank <- function(X) {
+                sval <- svd(X, 0, 0)$d
+                sum(sval >= max(dim(X)) * .Machine$double.eps * sval[1])
+            }
+            estimable2 <- sapply(split(1:nrow(X), object$eliminate),
+                                 function(i) {
+                                     quickRank(X[i, , drop = FALSE]) ==
+                                         quickRank(X[i, -1, drop = FALSE]) + 1})
             sterr <- c(ifelse(estimable2, sqrt(attr(cov.scaled, "varElim")), NA), sterr)
         }
         tvalue <- coefs/sterr

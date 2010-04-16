@@ -4,8 +4,7 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
     est.disp <- (!object$family$family %in% c("poisson", "binomial") &&
                  is.null(dispersion) && object$df.residual > 0)
     coefs <- parameters(object)
-    if (with.eliminate) coefs <- c(object$elim.coefs,
-                                   attr(object$elim.coefs, "eliminated"))
+    if (with.eliminate) coefs <- c(attr(coef(object), "eliminated"), coefs)
     if (object$rank > 0) {
         cov.scaled <- vcov(object, dispersion = dispersion,
                            with.eliminate = with.eliminate)
@@ -17,8 +16,29 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         else
             sterr <- diag(cov.scaled)
         is.na(sterr[!estimable]) <- TRUE
-        if (with.eliminate)
-            sterr <- c(sqrt(attr(cov.scaled, "varElim")), sterr)
+        if (with.eliminate){
+            ## will need to do in gnmFit/checkestimable to get rank of whole model right in first place
+            ## then can do object$rank - sum(estimable) to get rank of elim
+            ## check estimability of eliminated coefficients
+            browser()
+            X <- cbind(1, model.matrix(object)[,!is.na(coef(object))])
+            nelim <- nlevels(object$eliminate)
+            rank <- object$rank - nelim
+            estimable2 <- tapply(1:nrow(X), object$eliminate,
+                                 function(ind) rankMatrix(X[ind,]) == rankMatrix(X[ind, -1]) + 1)
+            ## OR
+            X <- cbind(0, model.matrix(object)[,!is.na(coef(object))])
+            nelim <- nlevels(object$eliminate)
+            rank <- object$rank - nelim
+            estimable2 <- tapply(1:nrow(X), object$eliminate,
+                                 function(ind) {
+                                     X[ind, 1] <- 1
+                                     check <- rankMatrix(X) == rank + 1
+                                     X[ind, 1] <- 0
+                                     check
+                                     })
+            sterr <- c(ifelse(estimable2, sqrt(attr(cov.scaled, "varElim")), NA), sterr)
+        }
         tvalue <- coefs/sterr
         dn <- c("Estimate", "Std. Error")
         if (!est.disp) {
@@ -46,7 +66,7 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
     }
     df.f <- nrow(coef.table)
     non.elim <- seq(object$coef) + nlevels(object$eliminate)*with.eliminate
-    elim <- seq(length.out = length(object$eliminate)*with.eliminate)
+    elim <- seq(length.out = nlevels(object$eliminate)*with.eliminate)
     ans <- c(object[c("call", "ofInterest", "family", "deviance", "aic",
                       "df.residual", "iter")],
              list(deviance.resid = residuals(object, type = "deviance"),

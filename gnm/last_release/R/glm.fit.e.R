@@ -133,13 +133,13 @@
     converged <- !(i == control$maxit)
     if (!converged) warning(paste("The convergence criterion was not met after",
                                   control$maxit, "iterations."))
+    names(os.by.level) <- paste("(eliminate)", elim, sep = "")
     if (coefonly) return(structure(full.theta, eliminated = c(os.by.level)))
     if (non.elim) {
         full.theta[est] <- theta
         os.by.level <- os.by.level - subtracted %*% naToZero(full.theta)
     }
     else full.theta <- numeric(0)
-    names(os.by.level) <- paste("(eliminate)", elim, sep = "")
     aic.model <- aic(y, sum(weights > 0), mu, weights, dev) + 2 * rank
     if (ordTRUE) {
         reorder <- order(ord)

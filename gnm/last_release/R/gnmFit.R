@@ -30,7 +30,6 @@ gnmFit <-
     if (nelim)  {
         elim <- seq.int(nelim)
         alpha <- start[elim]
-        names(alpha) <- paste("(eliminate)", elim, sep = "")
     }
     else {
         eliminate <- 1
@@ -86,7 +85,7 @@ gnmFit <-
                                                        else NULL,
                                                        coefonly = TRUE))
                 theta[unspecifiedLin] <- tmpTheta
-                if (initElim) alpha <- attr(tmpTheta, "eliminated")
+                if (initElim) alpha <- unname(attr(tmpTheta, "eliminated"))
                 if (sum(is.na(theta[isLinear])) > length(constrain)) {
                     extra <- setdiff(which(is.na(theta[isLinear])), constrain)
                     isConstrained[extra] <- TRUE
@@ -170,7 +169,7 @@ gnmFit <-
                                              weights, family, modelTools, X,
                                              if(nelim) eliminate else NULL)
                     if (nelim){
-                        alpha <- attr(tmpTheta, "eliminated")
+                        alpha <- unname(attr(tmpTheta, "eliminated"))
                         tmpOffset <- offset + alpha[eliminate]
                     }
                     theta[which] <- tmpTheta
@@ -259,7 +258,7 @@ gnmFit <-
                     z <- solve(ZWZ - crossprod(Umat), I1,
                                          tol = .Machine$double.eps)
                     thetaChange <- -z[-1]/z[1] * Zscales[1]/Zscales[-1]
-                    alphaChange <- (Umat %*% (z * sqrt(ridge)))/z[1] *
+                    alphaChange <- c(Umat %*% (z * sqrt(ridge)))/z[1] *
                                     Zscales[1]/elimXscales
                 } else {
                     ZWZ <- ZWZ/(Zscales %o% Zscales)
@@ -337,6 +336,7 @@ gnmFit <-
         subtracted <- quick.rowsum(X, eliminate, elim)/grp.size
         if (modelTools$termAssign[1] == 0) subtracted[,1] <- 0
         theRank <- rankMatrix(X - subtracted[eliminate,]) + nelim
+        names(alpha) <- paste("(eliminate)", elim, sep = "")
     }
     else theRank <- rankMatrix(X)
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nobs),

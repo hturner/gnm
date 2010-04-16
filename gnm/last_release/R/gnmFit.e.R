@@ -6,7 +6,7 @@
               family = poisson(),
               weights = rep.int(1, length(y)),
               offset = rep.int(0, length(y)),
-              nObs = length(y),
+              nobs = length(y),
               start = rep.int(NA, length(modelTools$start) + nlevels(eliminate)),
               etastart = NULL,
               mustart = NULL,
@@ -59,20 +59,24 @@
             unspecified <-  unname(is.na(theta))
             unspecifiedLin <- unspecified & isLinear
             unspecifiedNonlin <- unspecified & !isLinear
-            if (any(unspecifiedNonlin)){
+            if (any(unspecifiedNonlin) && is.null(etastart)){
                 theta[unspecifiedNonlin] <- gnmStart(sum(unspecifiedNonlin))
             }
-            if (any(unspecifiedLin) || !initElim) {
-                ## offset any nonLin terms fully specified by start/modelTools$start/constrain
+            if (!is.null(mustart))
+                etastart <- family$linkfun(mustart)
+            if (any(unspecifiedLin) || initElim) {
+                ## offset nonLin terms (currently NA if using etastart)
                 ## plus offset contribution of any specified lin par
-                theta[unspecifiedLin] <- 0
+                if (!is.null(etastart)) z <-  family$linkinv(etastart)
+                else z <- y
                 varPredictors <- modelTools$varPredictors(theta)
                 tmpOffset <- modelTools$predictor(varPredictors, term = TRUE)
                 tmpOffset <- rowSums(naToZero(tmpOffset))
                 tmpOffset <- offset + alpha[eliminate] + tmpOffset
                 ## assume either elim all specified or all not specified
-                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin], y,
+                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin], z,
                                                        weights = weights,
+                                                       etastart = etastart,
                                                        offset = tmpOffset,
                                                        family = family,
                                                        intercept = FALSE,
@@ -89,11 +93,11 @@
                     constrain <- c(constrain, extra)[ind]
                     constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
                 }
-                theta <- naToZero(theta)
+                theta[unspecifiedLin] <- naToZero(theta[unspecifiedLin])
             }
-            if (!is.null(mustart))
-                etastart <- family$linkfun(mustart)
-            if (!is.null(etastart)){
+            if (any(unspecifiedNonlin) && !is.null(etastart)){
+                ## offset linear terms
+                ## plus contribution of specified nonlin terms
                 varPredictors <- modelTools$varPredictors(theta)
                 tmpOffset <- modelTools$predictor(varPredictors, term = TRUE)
                 tmpOffset <- rowSums(naToZero(tmpOffset))
@@ -103,18 +107,18 @@
                     eval(family$initialize)
                     etastart <- family$linkfun(mustart)
                 }
-                tmpTheta <- numeric(nTheta)
-                rss <- function(theta) {
-                    tmpTheta[unspecifiedNonlin] <<- theta
-                    varPredictors <<- modelTools$varPredictors(tmpTheta)
+                tmpOffset <- offset + alpha[eliminate]
+                rss <- function(par) {
+                    theta[unspecifiedNonlin] <<- par
+                    varPredictors <<- modelTools$varPredictors(theta)
                     eta <<- tmpOffset + modelTools$predictor(varPredictors)
                     sum((etastart - eta)^2)
                 }
-                gr.rss <- function(theta) {
+                gr.rss <- function(par) {
                     X <- modelTools$localDesignFunction(theta, varPredictors)
                     -2 * t(X[, unspecifiedNonlin]) %*% ((etastart - eta))
                 }
-                theta[unspecifiedNonlin] <- optim(theta[unspecifiedNonlin],
+                theta[unspecifiedNonlin] <- optim(gnmStart(sum(unspecifiedNonlin)),
                                                   rss, gr.rss,
                                                   method = c("L-BFGS-B"),
                                                   control = list(maxit = iterStart),
@@ -340,7 +344,7 @@
         theRank <- rankMatrix(X - subtracted[eliminate,]) + nelim
     }
     else theRank <- rankMatrix(X)
-    modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nObs),
+    modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nobs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)
     fit <- list(coefficients = structure(theta, eliminated = alpha),
@@ -350,7 +354,7 @@
                 deviance = dev[1], aic = modelAIC,
                 iter = iter - (iter != iterMax), weights = w,
                 prior.weights = weights,
-                df.residual = c(nObs - theRank),
+                df.residual = c(nobs - theRank),
                 y = y)
     if (status == "not.converged") {
         warning("Fitting algorithm has either not converged or converged\n",

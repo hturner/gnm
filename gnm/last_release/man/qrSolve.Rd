@@ -1,5 +1,5 @@
-\name{qrSolve}
-\alias{qrSolve}
+\name{qrSolve-deprecated}
+\alias{qrSolve-deprecated}
 \title{ Minimum-length solution of a linear system }
 \description{
   This function solves the linear system Ax = b, producing

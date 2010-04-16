@@ -3,6 +3,8 @@ cholInv <- function (mat,
                      onlyFirstCol = FALSE,
                      onlyNonElim = FALSE)
 {
+    .Deprecated(msg = paste("'cholInv' is deprecated as it is no longer used ",
+                "by gnm."))
     m <- nrow(mat)
     n <- ncol(mat)
     if (length(eliminate) == 0) { ## the basic routine, no eliminated submatrix

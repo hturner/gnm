@@ -53,8 +53,11 @@
                 tmpAssign <- tmpAssign[-1]
             }
             tmpAssign <- which(b)[tmpAssign + !tmpAssign[1]]
-            nm <- paste(prefixLabels[tmpAssign], colnames(tmp)[!identical(colnames(tmp), "(Intercept)")],
-                        sep = "")
+            ## paste unless prefix == "" and identical(colnames(tmp), "(Intercept)")
+            if (length(tmpAssign) == 1 && tmpAssign == 0)
+                nm <- "(Intercept)"
+            else
+                nm <- paste(prefixLabels[tmpAssign], colnames(tmp), sep = "")
             names(tmpAssign) <- nm
             termTools[b] <- lapply(split(1:ncol(tmp), tmpAssign),
                                    function(i, M) M[, i , drop = FALSE], tmp)
@@ -119,7 +122,8 @@
             split <- match(split, unique(split))
             theta[termID] <-
                 attr(modelTerms, "start")[[i]](structure(theta[termID],
-                                                         assign = split))
+                                                         assign = split),
+                                               gnmData)
         }
     }
     theta <- theta[uniq]

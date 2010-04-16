@@ -1,4 +1,6 @@
 qrSolve <- function(A, b, rank = NULL, ...) {
+    .Deprecated(msg = paste("'qrSolve' is deprecated as it is no longer used ",
+                "by gnm."))
     ## Function to solve Ax = b, giving the minimum norm solution
     ## (which corresponds to use of the Moore-Penrose inverse) in
     ## the non-full-rank case

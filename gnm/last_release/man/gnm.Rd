@@ -13,7 +13,7 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     checkLinear = TRUE, offset, start = NULL, etastart = NULL,
     mustart = NULL, tolerance = 1e-06, iterStart = 2, iterMax = 500,
     trace = FALSE, verbose = TRUE, model = TRUE, x = TRUE,
-    termPredictors = FALSE, lsMethod = "qr", ridge = 1e-08, ...) 
+    termPredictors = FALSE, ridge = 1e-08, ...) 
 }
 \arguments{
   \item{formula}{ a symbolic description of the nonlinear predictor. }
@@ -85,7 +85,6 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   \item{termPredictors}{ logical: if \code{TRUE}, a matrix is returned
     with a column for each term in the model, containing the additive
     contribution of that term to the predictor. }
-  \item{lsMethod}{ character: must be one of "chol" or "qr".}
   \item{ridge}{numeric, a positive value for the ridge constant to be
     used in the fitting algorithm}
   \item{\dots}{ further arguments passed to fitting function. }
@@ -147,20 +146,13 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
   updated one parameter at a time, then the linear parameters are
   jointly updated before the next iteration. In the main iterations, all
   the parameters are jointly updated, until convergence is reached or
-  the number or iterations reaches \code{iterMax}.    The
-  \code{lsMethod} argument specifies
-  what numerical method is to be used to solve the
+  the number or iterations reaches \code{iterMax}. To solve the
   (typically rank-deficient) least squares problem at the heart of the
-  \code{gnm} fitting algorithm: the options are 
-  direct solution using a QR decomposition (\code{"qr"}), and matrix
-  inversion via Cholesky decomposition (\code{"chol"}).  In both cases,
-  the design matrix is standardized and regularized (in the
-  Levenberg-Marquardt sense) prior to solving; the \code{ridge} argument
-  provides a degree of control over the regularization performed
-  (smaller values may sometimes give faster convergence but can lead
-  to numerical instability).  If \code{lsMethod} is
-  left unspecified, the default is \code{"qr"}, unless \code{eliminate}
-  is used in which case the default \code{lsMethod} used is \code{"chol"}. 
+  \code{gnm} fitting algorithm,  the design matrix is standardized and
+  regularized (in the Levenberg-Marquardt sense) prior to solving; the
+  \code{ridge} argument provides a degree of control over the
+  regularization performed (smaller values may sometimes give faster
+  convergence but can lead to numerical instability).
 
   Convergence is judged by comparing the squared components of the score vector
   with corresponding elements of the diagonal of the Fisher information

@@ -16,8 +16,15 @@ Changes in Behaviour
 
     o	ofInterest and constrain now index non-eliminated coefficients.
 
-    o	eliminated coefficients now returned as attribute of returned coefficient 
-	vector.
+    o	eliminated coefficients now returned as attribute of returned 
+	coefficient vector.
+
+    o	"lsMethod" argument to gnm() removed as now the LAPACK routines are  
+	always used to determine the least squares solution at the heart of 
+	the fitting algorithm. Hence qrSolve() and cholInv() deprecated.
+
+    o	the "eliminate", "onlyFirstCol" and "onlyNonElim" arguments to
+	MPinv() have been removed as no longer used.
 
 Bug fixes
 ---------

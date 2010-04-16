@@ -5,7 +5,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 checkLinear = TRUE, offset, start = NULL,
                 etastart = NULL, mustart = NULL, tolerance = 1e-6,
                 iterStart = 2, iterMax = 500, trace = FALSE, verbose = TRUE,
-                model = TRUE, x = TRUE, termPredictors = FALSE, lsMethod = "qr",
+                model = TRUE, x = TRUE, termPredictors = FALSE,
                 ridge = 1e-8, ...) {
 
     call <- match.call()
@@ -34,7 +34,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             eliminate <- modelData$`(eliminate)`
         }
         nElim <- nlevels(eliminate)
-        if (missing(lsMethod)) lsMethod <- "chol"
     }
     else nElim <- 0
 

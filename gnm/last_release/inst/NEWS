@@ -1,5 +1,5 @@
-Changes in gnm 0.10-1
-=====================
+Changes in gnm 1.0-0
+====================
 
 Improvements
 ------------
@@ -14,7 +14,7 @@ Improvements
 Changes in Behaviour
 --------------------
 
-    o	ofInterest and constrain now index non-eliminated coefficients.
+    o	ofInterest and constrain now index non-eliminated coefficients only.
 
     o	eliminated coefficients now returned as attribute of returned 
 	coefficient vector.

@@ -1,7 +1,7 @@
 useDynLib(gnm)
 export(asGnm, checkEstimable, Const, Diag,
        Dref, DrefWeights, exitInfo, Exp, expandCategorical, getContrasts,
-       gnm, instances, Inv, #Log, Logit,
+       getModelFrame, gnm, instances, Inv, #Log, Logit,
        MPinv, Mult, MultHomog,
        ofInterest, "ofInterest<-", parameters,
        pickCoef, qrSolve, #Raise,

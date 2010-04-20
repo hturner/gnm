@@ -1,4 +1,4 @@
-\name{getModelFrame}
+\name{getModelFrame-deprecated}
 \alias{getModelFrame}
 \title{ Get the Model Frame in Use by 'gnm'   }
 \description{

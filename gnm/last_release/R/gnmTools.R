@@ -53,11 +53,11 @@
                 tmpAssign <- tmpAssign[-1]
             }
             tmpAssign <- which(b)[tmpAssign + !tmpAssign[1]]
-            ## paste unless prefix == "" and identical(colnames(tmp), "(Intercept)")
-            if (length(tmpAssign) == 1 && tmpAssign == 0)
-                nm <- "(Intercept)"
-            else
-                nm <- paste(prefixLabels[tmpAssign], colnames(tmp), sep = "")
+            ## don't paste "(Intercept)" if non-empty prefix and only parameter
+            prefixOnly <- {identical(colnames(tmp), "(Intercept)")  &&
+                           prefixLabels[tmpAssign] != ""}
+            nm <- paste(prefixLabels[tmpAssign], colnames(tmp)[!prefixOnly],
+                        sep = "")
             names(tmpAssign) <- nm
             termTools[b] <- lapply(split(1:ncol(tmp), tmpAssign),
                                    function(i, M) M[, i , drop = FALSE], tmp)
@@ -122,8 +122,7 @@
             split <- match(split, unique(split))
             theta[termID] <-
                 attr(modelTerms, "start")[[i]](structure(theta[termID],
-                                                         assign = split),
-                                               gnmData)
+                                                         assign = split))
         }
     }
     theta <- theta[uniq]

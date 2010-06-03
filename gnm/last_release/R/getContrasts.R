@@ -3,7 +3,9 @@ getContrasts <- function(model, set = NULL,
                          scaleRef = "mean",
                          scaleWeights = NULL,
                          dispersion = NULL,
+                         check = TRUE,
                          ...){
+    if (!is.logical(check)) stop("check must be TRUE or FALSE")
     coefs <- parameters(model)
     l <- length(coefs)
     if (!l)
@@ -19,7 +21,6 @@ getContrasts <- function(model, set = NULL,
     if (setLength < 1.5) stop(
             "For contrasts, at least 2 parameters are needed in a set")
     if (is.numeric(set)) set <- coefNames[set]
-
     for (refName in c("ref", "scaleRef"[!is.null(scaleWeights)])) {
         refSpec <- c(get(refName))
         if (is.numeric(refSpec)){
@@ -43,7 +44,6 @@ getContrasts <- function(model, set = NULL,
                           "mean"= rep.int(1/setLength, setLength),
                           stop("Specified ", refName, " is not an opton.")))
     }
-
     setCoefs <- coefs[coefNames %in% set]
     contr <- setCoefs - ref %*% setCoefs
     grad <- diag(rep(1, setLength))
@@ -74,7 +74,11 @@ getContrasts <- function(model, set = NULL,
 
     Vcov <-  vcov(model, dispersion = dispersion)
 
-    iden <- checkEstimable(model, combMatrix)
+    if (check) iden <- checkEstimable(model, combMatrix)
+    else {
+        warning("Estimability not checked")
+        iden <- rep(TRUE, ncol(combMatrix))
+    }
     if (any(!na.omit(iden))) {
         if (all(!na.omit(iden))) {
             warning("None of the specified contrasts is estimable",
@@ -86,8 +90,8 @@ getContrasts <- function(model, set = NULL,
     }
     not.unestimable <- iden | is.na(iden)
 
-    V <- crossprod(combMatrix[, not.unestimable, drop = FALSE],
-                   crossprod(Vcov, combMatrix))
+    combMatrix <- combMatrix[, not.unestimable, drop = FALSE]
+    V <- crossprod(combMatrix, crossprod(Vcov, combMatrix))
     result <- data.frame(contr[not.unestimable], sqrt(diag(V)))
     dimnames(result) <- list(set[not.unestimable], c("Estimate", "Std. Error"))
 
@@ -106,7 +110,7 @@ getContrasts <- function(model, set = NULL,
             relerrs <- QVs$relerrs
         }
     }
-    return(structure(list(covmat = V,
+    return(structure(list(covmat = Vcov,
                           qvframe = result,
                           relerrs = relerrs,
                           modelcall = model$call),

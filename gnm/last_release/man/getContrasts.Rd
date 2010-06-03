@@ -10,7 +10,7 @@ also computed.
 }
 \usage{
 getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
-  scaleWeights = NULL, dispersion = NULL, ...)
+  scaleWeights = NULL, dispersion = NULL, check = TRUE, ...)
 }
 \arguments{
   \item{model}{ a model object of class \code{"gnm"}.}
@@ -25,6 +25,8 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
     \code{"unit"} or \code{"setLength"}.}
   \item{dispersion}{either \code{NULL}, or a positive number by which
     the model's variance-covariance matrix should be scaled.}
+  \item(check}{\code{TRUE} or \code{FALSE} -- should estimability of the
+    specified parameter combinations be checked?}
   \item{\dots}{ arguments to pass to other functions. }
 }
 \details{
@@ -35,11 +37,11 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
 
   For the set of coefficients selected, contrasts and their standard
   errors are computed. A check is performed first on the estimability of
-  all such contrasts.  The specific contrasts to be computed are
-  controlled by the choice of \code{ref}: this may be \code{"first"}
-  (the default), for contrasts with the first of the selected
-  coefficients, or \code{"last"} for contrasts with the last, or
-  \code{"mean"} for contrasts with the arithmetic mean of the
+  all such contrasts (provided that \code{check = TRUE}).  The specific
+  contrasts to be computed are controlled by the choice of \code{ref}:
+  this may be \code{"first"} (the default), for contrasts with the first
+  of the selected coefficients, or \code{"last"} for contrasts with the
+  last, or \code{"mean"} for contrasts with the arithmetic mean of the
   coefficients in the selected set; or it may be an arbitrary vector of
   weights (summing to 1, not necessarily all non-negative) which specify
   a weighted mean against which contrasts are taken; or it may be a

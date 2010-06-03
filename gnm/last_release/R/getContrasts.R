@@ -5,7 +5,6 @@ getContrasts <- function(model, set = NULL,
                          dispersion = NULL,
                          check = TRUE,
                          ...){
-    if (!is.logical(check)) stop("check must be TRUE or FALSE")
     coefs <- parameters(model)
     l <- length(coefs)
     if (!l)
@@ -74,11 +73,16 @@ getContrasts <- function(model, set = NULL,
 
     Vcov <-  vcov(model, dispersion = dispersion)
 
-    if (check) iden <- checkEstimable(model, combMatrix)
-    else {
-        warning("Estimability not checked")
-        iden <- rep(TRUE, ncol(combMatrix))
+    if (!is.logical(check) && !(all(check %in% seq(setLength)))) {
+        stop("check must be TRUE or FALSE or a suitable numeric index vector")
     }
+    iden <- rep(TRUE, ncol(combMatrix))  ## all unchecked as yet
+    names(iden) <- colnames(combMatrix)
+    if (is.logical(check)) {
+        if (check) iden <- checkEstimable(model, combMatrix)
+    }
+    else iden[check] <- checkEstimable(model, combMatrix[, check])
+
     if (any(!na.omit(iden))) {
         if (all(!na.omit(iden))) {
             warning("None of the specified contrasts is estimable",

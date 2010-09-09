@@ -17,6 +17,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
     }
     else
         suffix <- as.list(rep("", length(predictors)))
+    common <- as.list(common)
 
     adj <- 0
     hash <- 0
@@ -134,9 +135,12 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                                                 tmp$predictor)
                     vars[[i]] <- c(vars[[i]], tmp$variables)
                     predvars[[i]] <- c(predvars[[i]], tmp$predvars)
+                    common[[i]] <- common[[i]] * 10 + tmp$common
                 }
-                else
-                    if (match[i]) matchID[[i]][[j]] <- hash + 1
+                else {
+                  if (match[i]) matchID[[i]][[j]] <- hash + 1
+                  common[[i]] <- common[[i]]*10 + seq(varLabels[[i]])
+                }
                 hash <- max(c(hash, matchID[[i]][[j]]))
             }
         }
@@ -154,12 +158,12 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
         else
             predictor[i] <- paste(unlist(predictor[i]), collapse = " + ")
     }
-
+    common <- unlist(common)
     if (any(duplicated(common))) {
         common <- match(common, common)
-        blockList <- blockList[common]
-        common <- unlist(varLabels[common])
-        common <- match(common, unique(common))
+        #common <- unlist(varLabels[common])
+        #common <- match(common, unique(common))
+        blockList <- unlist(blockList)[common]
     }
     else
         common <- seq(unlist(varLabels))

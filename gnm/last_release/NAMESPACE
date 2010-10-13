@@ -2,7 +2,7 @@ useDynLib(gnm)
 export(asGnm, checkEstimable, Const, Diag,
        Dref, DrefWeights, exitInfo, Exp, expandCategorical, getContrasts,
        getModelFrame, gnm, instances, Inv, #Log, Logit,
-       MPinv, Mult, MultHomog,
+       meanResiduals, MPinv, Mult, MultHomog,
        ofInterest, "ofInterest<-", parameters,
        pickCoef, qrSolve, #Raise,
        residSVD, se,

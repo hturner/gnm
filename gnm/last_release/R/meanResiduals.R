@@ -27,16 +27,25 @@ meanResiduals <- function(object, by = NULL, standardized = TRUE, as.table = TRU
                    object$family$variance(object$fitted))
   if (is.null(by))
     stop("`by' must be specified in order to compute grouped residuals")
-  if (!is.list(by))
-    stop("`by' must be a list")
+  ## find factors as in mosaic.glm
+  by <- do.call("model.frame", list(formula = by,
+            data = object$data, subset = object$call$subset, na.action = na.pass))
   agg.wts <- tapply(w, by, sum) #unlike rowsum, keeps all levels of interaction
   res <- tapply(r * w, by, sum)/agg.wts
   if (standardized) res <- res * sqrt(agg.wts)
   if (!as.table){
-    structure(c(res), weights = c(agg.wts))
+    res <- structure(c(res), weights = c(agg.wts))
   }
   else
-    structure(as.table(res), weights = as.table(agg.wts))
+    res <- structure(as.table(res), weights = as.table(agg.wts))
+  ## now compute degrees of freedom
+  fac <- interaction(by) # drop levels?
+  Xreduced <- rowsum(model.matrix(object), fac, na.rm = TRUE)
+  res <- list(call = object$call, by = match.call()$by, residuals = res,
+              df = nlevels(fac) - rankMatrix(Xreduced))
+  class(res) <- "meanResiduals"
+  return(res) # chi-squared test?
 }
+
 
 

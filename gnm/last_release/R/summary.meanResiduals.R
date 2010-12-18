@@ -4,9 +4,9 @@ summary.meanResiduals <- function (object, digits = max(3, getOption("digits") -
         "\n", sep = "", fill = TRUE)
 
     cat("Mean residuals by ", object$by,  ":\n\n", sep = "")
-    object$residuals <- quantile(object$residuals, na.rm = TRUE)
-    names(object$residuals) <- c("Min", "1Q", "Median", "3Q", "Max")
-    print.default(object$residuals, digits = digits, na = "", print.gap = 2)
+    q <- quantile(object$residuals, na.rm = TRUE)
+    names(q) <- c("Min", "1Q", "Median", "3Q", "Max")
+    print.default(q, digits = digits, na = "", print.gap = 2)
 
     if (object$standardized) {
         cat("\nTest of Normality:\n")

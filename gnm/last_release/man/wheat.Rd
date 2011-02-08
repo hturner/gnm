@@ -80,5 +80,37 @@ anova(mainEffects, bilinear1, bilinear2, bilinear3)
 bilinear1mTF <- gnm(yield.scaled ~ year + treatment + Mult(1 + mTF, treatment),
                     family = gaussian, data = wheat)
 anova(mainEffects, bilinear1mTF, bilinear1)
+
+##  How to get the standard SVD representation of an AMMI-n model
+##
+##  We'll work with the AMMI-2 model, which here is called "bilinear2"
+##
+##  First, extract the contributions of the 5 terms in the model:
+##
+wheat.terms <- termPredictors(bilinear2)
+##
+##  That's a matrix, whose 4th and 5th columns are the interaction terms
+##
+##  Combine those two interaction terms, to get the total estimated
+##  interaction effect:
+##
+wheat.interaction <- wheat.terms[, 4] + wheat.terms[, 5]
+##
+##  That's a vector, so we need to re-shape it as a 24 by 10 matrix
+##  ready for calculating the SVD:
+##
+wheat.interaction <- matrix(wheat.interaction, 24, 10)
+##
+##  Now we can compute the SVD:
+##
+wheat.interaction.SVD <- svd(wheat.interaction)
+##
+##  Only the first two singular values are nonzero, as expected
+##  (since this is an AMMI-2 model, the interaction has rank 2)
+##
+##  So the result object can be simplified by re-calculating the SVD with
+##  just two dimensions:
+##
+wheat.interaction.SVD <- svd(wheat.interaction, nu = 2, nv = 2)
 }
 \keyword{datasets}

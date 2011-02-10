@@ -60,6 +60,10 @@ through Professorial Fellowship RES-051-27-0055.}\\
  \tableofcontents
 }
 
+<<echo=false,results=hide>>=
+options(SweaveHooks = list(eval = function() options(show.signif.stars = FALSE)))
+@
+
 \section{Introduction}
 
 The \Rpackage{gnm} package provides facilities for fitting
@@ -1796,22 +1800,20 @@ Deviance Residuals:
 Coefficients:
                          Estimate Std. Error t value Pr(>|t|)
 AGEM                      0.06363    0.07375   0.863  0.38859
-MRMM                     -0.32425    0.07766  -4.175 3.44e-05 ***
-FRMF                     -0.25324    0.07681  -3.297  0.00104 **
+MRMM                     -0.32425    0.07766  -4.175 3.44e-05
+FRMF                     -0.25324    0.07681  -3.297  0.00104
 MWORK                    -0.06430    0.07431  -0.865  0.38727
 MFCM                     -0.06043    0.07123  -0.848  0.39663
 Dref(MOPLM, FOPLF)delta1 -0.33731         NA      NA       NA
 Dref(MOPLM, FOPLF)delta2 -0.02505         NA      NA       NA
-Dref(., .).MOPLM|FOPLF1   4.95121    0.16639  29.757  < 2e-16 ***
-Dref(., .).MOPLM|FOPLF2   4.86329    0.10436  46.602  < 2e-16 ***
-Dref(., .).MOPLM|FOPLF3   4.86458    0.12855  37.842  < 2e-16 ***
-Dref(., .).MOPLM|FOPLF4   4.72343    0.13523  34.929  < 2e-16 ***
-Dref(., .).MOPLM|FOPLF5   4.43516    0.19314  22.963  < 2e-16 ***
-Dref(., .).MOPLM|FOPLF6   4.18873    0.17142  24.435  < 2e-16 ***
-Dref(., .).MOPLM|FOPLF7   4.43378    0.16903  26.231  < 2e-16 ***
+Dref(., .).MOPLM|FOPLF1   4.95121    0.16639  29.757  < 2e-16
+Dref(., .).MOPLM|FOPLF2   4.86329    0.10436  46.602  < 2e-16
+Dref(., .).MOPLM|FOPLF3   4.86458    0.12855  37.842  < 2e-16
+Dref(., .).MOPLM|FOPLF4   4.72343    0.13523  34.929  < 2e-16
+Dref(., .).MOPLM|FOPLF5   4.43516    0.19314  22.963  < 2e-16
+Dref(., .).MOPLM|FOPLF6   4.18873    0.17142  24.435  < 2e-16
+Dref(., .).MOPLM|FOPLF7   4.43378    0.16903  26.231  < 2e-16
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
 (Dispersion parameter for gaussian family taken to be 0.7384355)
 
 Std. Error is NA where coefficient has been constrained or is unidentified
@@ -2156,6 +2158,11 @@ svd(termPredictors(barleyModel)[, "Mult(year, genotype)"])$d
 This parameter is of little interest in itself, given that the significance of
 the term as a whole can be tested using ANOVA.
 
+The SVD representation can also be obtained quite easily for AMMI and GAMMI models with
+interaction rank greater than 1\null.  See \Rcode{example(wheat)} for an example of
+this in an AMMI model with rank 2\null.  (The calculation of \emph{standard errors} and
+\emph{confidence regions} for the SVD representation with rank greater than 1 is not
+yet implemented, though.)
 
 \subsection{Biplot models}
 \label{sec:biplot}

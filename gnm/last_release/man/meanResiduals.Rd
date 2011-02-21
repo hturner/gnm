@@ -10,15 +10,30 @@
 \arguments{
   \item{object}{model object for which \code{object$residuals} gives the
     working residuals and \code{object$weights} gives the working weights.}
-  \item{by}{either a formula specifying one or more factors (recommended)
-    or a list of factors (the elements of which must correspond exactly to
-    observations in the model frame). When more than one factor is specified,
-    their interaction is used to specify the grouping factor.}
+  \item{by}{either a formula specifying a factor or interaction of
+    factors (recommended), or a list of factors (the elements of which
+    must correspond exactly to observations in the model frame). When a
+    list of factors is specified, their interaction is used to specify
+    the grouping factor.}
   \item{standardized}{logical: if \code{TRUE}, the mean residuals are
     standardized to be approximately standard normal.}
-  \item{as.table}{logical: if \code{TRUE} the result is returned as a table
-    cross-classified by the factors passed to \code{by}.}
+  \item{as.table}{logical: logical: if \code{TRUE} and \code{by}
+    specifies an interaction of factors, the result is returned as a
+    table cross-classified by these factors.}
   \item{...}{currently ignored}
+}
+\details{
+  For level \eqn{i} of the grouping factor \eqn{A} the mean working
+  residual is defined as
+  \deqn{\frac{r_{ij} * w_{ij}}{\sum_{j = 1}^{n_i} w_{ij}}}{
+    (r_ij * w_ij)/(sum_(j = 1)^(n_i) w_ij)}
+  where \eqn{r_{ij}}{r_ij} is the \eqn{j}'th residual for level \eqn{i},
+  \eqn{w_{ij}}{w_ij} is the corresponding working weight and \eqn{n_i}
+  is the number of observations for level \eqn{i}. The denominator gives
+  the weight corresponding to mean residual.
+
+  For non-aggregated residuals, i.e. when the factor has one level per
+  observation, the residuals are the same as Pearson residuals.
 }
 \author{Heather Turner}
 \value{An object of class \code{"meanResiduals"}, for which \code{print}
@@ -31,6 +46,7 @@
   \item{ df }{ the degrees of freedom associated with the mean
     residuals. }
   \item{ standardized }{ the \code{standardized} argument. }
+  \item{ weights }{ the weights corresponding to the mean residuals. }
 }
 \examples{data(yaish)
 ## Fit a conditional independence model, leaving out
@@ -39,12 +55,12 @@ CImodel <- gnm(Freq ~ educ*orig + educ*dest, family = poisson,
                data = yaish, subset = (dest != 7))
 
 ## compute mean residuals over origin and destination
-meanRes <- meanResiduals(CImodel, ~ orig + dest)
+meanRes <- meanResiduals(CImodel, ~ orig:dest)
 meanRes
 summary(meanRes)
 
 ## non-aggregated residuals
-res1 <- meanResiduals(CImodel, ~ educ + orig + dest)
+res1 <- meanResiduals(CImodel, ~ educ:orig:dest)
 res2 <- residuals(CImodel, type = "pearson")
 all.equal(res1$residuals[,,], res2[,,])
 }

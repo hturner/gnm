@@ -20,11 +20,9 @@ supplied as input.
 \author{ David Firth }
 \seealso{ \code{\link{Diag}}}
 \examples{
-if (require(gtools)) {
-    row <- gl(4, 4, 16)
-    col <- gl(4, 1, 16)
-    symm4by4 <- Symm(row, col)
-    matrix(symm4by4, 4, 4)
-} else cat("Symm requires the gtools package to be installed\n")
+row <- gl(4, 4, 16)
+col <- gl(4, 1, 16)
+symm4by4 <- Symm(row, col)
+matrix(symm4by4, 4, 4)
 }
 \keyword{ models }

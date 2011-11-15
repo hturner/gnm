@@ -74,7 +74,8 @@ gnmFit <-
                 tmpOffset <- rowSums(naToZero(tmpOffset))
                 tmpOffset <- offset + alpha[eliminate] + tmpOffset
                 ## assume either elim all specified or all not specified
-                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin], z,
+                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin, drop = FALSE],
+                                                       z,
                                                        weights = weights,
                                                        etastart = etastart,
                                                        offset = tmpOffset,

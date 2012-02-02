@@ -36,6 +36,10 @@ gnmFit <-
         alpha <- 0
     }
     non.elim <- seq.int(nelim + 1, length(start))
+    extra <- setdiff(modelTools$constrain, constrain)
+    ind <- order(c(constrain, extra))
+    constrain <- c(constrain, extra)[ind]
+    constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
     isConstrained <- is.element(seq(nTheta), constrain)
     XWX <- NULL
     repeat {
@@ -88,7 +92,8 @@ gnmFit <-
                 theta[unspecifiedLin] <- tmpTheta
                 if (initElim) alpha <- unname(attr(tmpTheta, "eliminated"))
                 if (sum(is.na(theta[isLinear])) > length(constrain)) {
-                    extra <- setdiff(which(is.na(theta[isLinear])), constrain)
+                    ## any NA will be linear here
+                    extra <- setdiff(which(is.na(theta)), constrain)
                     isConstrained[extra] <- TRUE
                     ind <- order(c(constrain, extra))
                     constrain <- c(constrain, extra)[ind]
@@ -332,6 +337,7 @@ gnmFit <-
     }
     theta[constrain] <- NA
     X <- modelTools$localDesignFunction(theta, varPredictors)
+    X <- X[, !isConstrained, drop = FALSE]
     if (nelim) {
         ## sweeps needed to get the rank right
         subtracted <- quick.rowsum(X, eliminate, elim)/grp.size

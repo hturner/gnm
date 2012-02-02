@@ -18,26 +18,27 @@
     for (i in blockID) {
         b <- block == i
         if (all(common[b])) {
-            designList <- lapply(unitLabels[b],
-                                 function(x) class.ind(gnmData[[x]]))
-
-            ## get labels for all levels
-            allLevels <- lapply(designList, colnames)
+            ## get full set of levels
+            allLevels <- lapply(unitLabels[b],
+                                function(x) levels(eval(parse(text = x),
+                                                        gnmData)))
             labels <- unique(unlist(allLevels))
-            nLevels <- length(labels)
-
-            ## expand design matrices if necessary
             if (!all(mapply(identical, allLevels, list(labels)))) {
                 labels <- sort(labels)
-                M <- matrix(0, nrow = nrow(designList[[1]]), ncol = nLevels,
-                            dimnames = list(NULL, labels))
-                designList <- lapply(designList, function(design, M) {
-                    M[,colnames(design)] <- design
-                    M}, M)
             }
+            nLevels <- length(labels)
+
+            ## create design matrices
+            termTools[b] <- lapply(unitLabels[b],
+                                   function(x) {
+                                       class.ind(factor(eval(parse(text = x),
+                                                             gnmData),
+                                                        levels = labels))
+                                   })
+
+            ## create labels
             i <- which(b)
             nm <- paste(prefixLabels[i], labels, sep = "")
-            termTools[b] <- designList
             factorAssign[b] <- lapply(i, function(x, nLevels, nm)
                                       structure(rep(x, nLevels), names = nm),
                                       nLevels, nm)
@@ -102,6 +103,9 @@
     }
     colnames(X) <- parLabels
     X <- X[, uniq, drop = FALSE]
+
+    ## check for zero columns
+    constrain <- which(colSums(X) == 0)
 
     theta <- rep(NA, nTheta)
     for (i in blockID) {
@@ -236,7 +240,7 @@
         }
     }
 
-    toolList <- list(start = theta, varPredictors = varPredictors,
+    toolList <- list(start = theta, constrain = constrain, varPredictors = varPredictors,
                      predictor = predictor, localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign[uniq]
     toolList

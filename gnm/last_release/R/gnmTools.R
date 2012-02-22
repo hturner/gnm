@@ -20,8 +20,8 @@
         if (all(common[b])) {
             ## get full set of levels
             allLevels <- lapply(unitLabels[b],
-                                function(x) levels(eval(parse(text = x),
-                                                        gnmData)))
+                                function(x) levels(factor(eval(parse(text = x),
+                                                               gnmData))))
             labels <- unique(unlist(allLevels))
             if (!all(mapply(identical, allLevels, list(labels)))) {
                 labels <- sort(labels)

@@ -369,7 +369,10 @@ gnmFit <-
     else
         fit$converged <- TRUE
 
-    if (x) fit$x <- structure(X, assign = modelTools$termAssign)
+    if (x) {
+        X <- modelTools$localDesignFunction(theta, varPredictors)
+        fit$x <- structure(X, assign = modelTools$termAssign)
+    }
     if (termPredictors) {
         theta[is.na(theta)] <- 0
         varPredictors <- modelTools$varPredictors(theta)

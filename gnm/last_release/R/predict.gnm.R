@@ -85,7 +85,7 @@ predict.gnm <- function (object, newdata = NULL,
                        assign <- split(seq(ncol(X)), attr(M, "assign"))
                        X <- sweep(X, 2, colMeans(M))
                    }
-                   se.fit <- matrix(, nr = nrow(X), nc = length(terms))
+                   se.fit <- matrix(, nrow = nrow(X), ncol = length(terms))
                    s <- 0
                    for (i in match(terms, colnames(pred))) {
                        s <- s + 1

@@ -1,7 +1,8 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -65,7 +66,7 @@ Initialising
 Initial Deviance = 14.86554
 Running start-up iterations
 Start-up iteration 1. Deviance = 0.2026326
-Start-up iteration 2. Deviance = 0.0663733
+Start-up iteration 2. Deviance = 0.06637329
 Running main iterations
 Iteration 1. Deviance = 0.01595068
 Iteration 2. Deviance = 0.00479133
@@ -76,3 +77,6 @@ Coefficients:
     Asym     xmid     scal 
 2.345168 1.483077 1.041450 
 > 
+> proc.time()
+   user  system elapsed 
+  3.612   0.072   3.680 

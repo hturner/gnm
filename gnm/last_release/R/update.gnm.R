@@ -7,6 +7,7 @@ update.gnm <- function (object, formula., ..., evaluate = TRUE)
     if (!missing(formula.)) {
         ## update.formula reorders nonlin terms as lin (main effects)
         ## therefore use substitute to keep order
+        formula. <- as.formula(formula.)
         rhs <- formula.[[length(formula.)]]
         rhs <- do.call(substitute,
                        list(rhs, env = list("." = object$formula[[3]])))
@@ -15,7 +16,7 @@ update.gnm <- function (object, formula., ..., evaluate = TRUE)
             lhs <- do.call(substitute,
                            list(lhs, env = list("." = object$formula[[2]])))
             call$formula <- call("~", lhs, rhs)
-        } else call$formula <- call("~", rhs)
+        } else call$formula <- call("~", object$formula[[2]], rhs)
     }
     if (length(extras)) {
         existing <- !is.na(match(names(extras), names(call)))

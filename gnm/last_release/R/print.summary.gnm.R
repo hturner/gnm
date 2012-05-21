@@ -10,7 +10,7 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
         names(x$deviance.resid) <- c("Min", "1Q", "Median", "3Q",
             "Max")
     }
-    print.default(x$deviance.resid, digits = digits, na = "", print.gap = 2)
+    print.default(x$deviance.resid, digits = digits, na.print = "", print.gap = 2)
 
     tidy.zeros <- function(vec)
         ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
@@ -57,7 +57,7 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
         if (p > 1) {
             cat("\nCorrelation of Coefficients:\n")
             if (is.logical(symbolic.cor) && symbolic.cor) {
-                print(symnum(correl, abbr.col = NULL))
+                print(symnum(correl, abbr.colnames = NULL))
             }
             else {
                 correl <- format(round(correl, 2), nsmall = 2, digits = digits)

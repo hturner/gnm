@@ -35,10 +35,10 @@ models.
 \author{
 Heather Turner and David Firth
 
-Maintainer: Heather Turner <h.turner@warwick.ac.uk>
+Maintainer: Heather Turner <ht@heatherturner.net>
 }
 \references{
-  http://www.warwick.ac.uk/go/heatherturner/gnm
+  http://www.warwick.ac.uk/go/gnm
 }
 \keyword{ package }
 \keyword{ models }

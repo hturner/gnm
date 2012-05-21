@@ -1,3 +1,41 @@
+Changes in gnm 1.0-2
+====================
+
+Improvements
+------------
+
+    o	factors specified as homogenous in nonlin functions can now be 
+    	specified as interactions of factors.
+
+Bug fixes
+---------
+
+    o	fixed bug so that variables handled correctly in nonlinTerms.
+    o	corrected rank calculation for constrained models.
+    o	removed calls to Internal
+
+
+Changes in gnm 1.0-1
+====================
+
+New Features
+------------
+
+    o	added meanResiduals() function
+    o	'check' argument added to getContrasts.
+
+Improvements
+------------
+
+    o	added example SVD calculation to wheat.Rd; also in vignette.
+
+Bug fixes
+---------
+
+    o	added update.gnm() so that nonlinear terms were no ordered as linear, 
+    	first order terms.
+
+
 Changes in gnm 1.0-0
 ====================
 

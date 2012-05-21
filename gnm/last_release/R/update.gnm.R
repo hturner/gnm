@@ -1,12 +1,21 @@
-update.gnm <- function (object, formula., ..., evaluate = TRUE) 
+update.gnm <- function (object, formula., ..., evaluate = TRUE)
 {
     call <- object$call
-    if (is.null(call)) 
+    if (is.null(call))
         stop("need an object with call component")
     extras <- match.call(expand.dots = FALSE)$...
     if (!missing(formula.)) {
-      call$formula <- .Internal(update.formula(formula(object),
-                                               as.formula(formula.)))
+        ## update.formula reorders nonlin terms as lin (main effects)
+        ## therefore use substitute to keep order
+        rhs <- formula.[[length(formula.)]]
+        rhs <- do.call(substitute,
+                       list(rhs, env = list("." = object$formula[[3]])))
+        if (length(formula.) == 3) {
+            lhs <- formula.[[2]]
+            lhs <- do.call(substitute,
+                           list(lhs, env = list("." = object$formula[[2]])))
+            call$formula <- call("~", lhs, rhs)
+        } else call$formula <- call("~", rhs)
     }
     if (length(extras)) {
         existing <- !is.na(match(names(extras), names(call)))
@@ -16,8 +25,8 @@ update.gnm <- function (object, formula., ..., evaluate = TRUE)
             call <- as.call(call)
         }
     }
-    if (evaluate) 
+    if (evaluate)
         eval(call, parent.frame())
     else call
 }
-  
+

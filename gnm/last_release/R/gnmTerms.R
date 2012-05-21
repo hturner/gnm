@@ -1,8 +1,10 @@
 gnmTerms <- function(formula, eliminate = NULL, data = NULL)
 {
     if (!is.null(eliminate)){
-        eliminate <- substitute( . ~ . - e - 1, list(e = eliminate))
-        formula <- as.formula(.Internal(update.formula(formula, eliminate)))
+        formula <- as.formula(substitute(a ~ b - e - 1,
+                                         list(a = formula[[2]],
+                                              b = formula[[3]],
+                                              e = eliminate)))
     }
     fullTerms <- terms(formula, specials = "instances", simplify = TRUE,
                        keep.order = TRUE, data = data)

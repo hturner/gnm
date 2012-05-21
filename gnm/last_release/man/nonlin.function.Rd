@@ -34,7 +34,8 @@
   \item{common}{ an optional numeric index of \code{predictors} with
     duplicated indices identifying single factor predictors for which
     homologous effects are to be estimated. }
-  \item{call}{ an optional call to be used as a prefix for parameter labels. }
+  \item{call}{ an optional call to be used as a prefix for parameter
+    labels, specified as an R expression. }
   \item{match}{ (if \code{call} is non-\code{NULL}) a numeric index
     of \code{predictors} specifying which arguments of \code{call} the
     predictors match to - zero indicating no match. If \code{NULL},

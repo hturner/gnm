@@ -139,16 +139,17 @@
         os.by.level <- os.by.level - subtracted %*% naToZero(full.theta)
     }
     else full.theta <- numeric(0)
-    if (coefonly) return(structure(full.theta, eliminated = c(os.by.level)))
-    aic.model <- aic(y, sum(weights > 0), mu, weights, dev) + 2 * rank
     if (ordTRUE) {
         reorder <- order(ord)
         y <- y[reorder]
         mu <- mu[reorder]
         eta <- eta[reorder]
         weights <- weights[reorder]
-        offset <- offset[reorder]
     }
+    mu.eta <- linkder(eta)
+    w <- weights * (mu.eta)^2/variance(mu)
+    if (coefonly) return(structure(full.theta, eliminated = c(os.by.level)))
+    aic.model <- aic(y, sum(weights > 0), mu, weights, dev) + 2 * rank
     list(coefficients = structure(full.theta, eliminated = c(os.by.level)),
          residuals = (y - mu) / linkder(eta),
          fitted.values = mu,

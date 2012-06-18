@@ -204,8 +204,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             fit$constrain <- constrain
             fit$constrainTo <- constrainTo
             if (x) fit$x <- X
-            if (is.null(fit$offset))
-                fit$offset <- rep.int(0, length(coef(fit)))
             if (termPredictors) {
                 modelTools <- gnmTools(modelTerms, modelData)
                 varPredictors <- modelTools$varPredictors(naToZero(coef(fit)))
@@ -267,7 +265,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
     if (missing(data))
         data <- environment(formula)
-
     fit <- c(list(call = call, formula = formula,
                   terms = modelTerms, data = data, eliminate = eliminate,
                   ofInterest = ofInterest,
@@ -275,6 +272,23 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                   xlevels = .getXlevels(modelTerms, modelData),
                   offset = offset, tolerance = tolerance, iterStart = iterStart,
                   iterMax = iterMax), fit)
+
+    if (!missing(eliminate) && ordTRUE) {
+        reorder <- order(ord)
+        fit <- within(fit, {
+            y <- y[reorder]
+            fitted.values <- fitted.values[reorder]
+            predictors <- predictors[reorder]
+            residuals <- residuals[reorder]
+            weights <- weights[reorder]
+            prior.weights <- prior.weights[reorder]
+            eliminate <- eliminate[reorder]
+            offset <- offset[reorder]
+        })
+        modelData <- modelData[reorder,]
+        y <- y[reorder]
+        if (x) fit$x <- fit$x[reorder,]
+    }
 
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",
              "weights", "y", "offset")

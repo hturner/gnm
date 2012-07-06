@@ -1,28 +1,32 @@
 \name{pickCoef}
 \alias{pickCoef}
-\title{ Get Indices For Selected Model Coefficients  }
+\title{ Get Indices or Values of Selected Model Coefficients  }
 \description{
-  Get the indices for a subset of non-eliminated coefficients selected
-  via a Tk dialog or by regular expression matching.
+  Get the indices or values of a subset of non-eliminated coefficients selected
+  via a Tk dialog or by pattern matching.
 }
 \usage{
-pickCoef(object, regexpr = NULL, ...)
+pickCoef(object, pattern = NULL, value = FALSE, ...)
 }
 \arguments{
   \item{object}{ a model object. }
-  \item{regexpr}{ character string containing a regular expression. If
+  \item{pattern}{ character string containing a regular expression or
+    (with \code{fixed = TRUE}) a pattern to be matched exactly. If
     missing, a Tk dialog will open for coefficient selection.  }
-  \item{\dots}{ arguments to pass on to relimp:::pickFrom. }
+  \item{value}{ if \code{FALSE}, a named vector of indices, otherwise
+    the value of the selected coefficients. }
+  \item{\dots}{ arguments to pass on to \link[relimp]{pickFrom} if
+    \code{pattern} is missing, otherwise \code{grep}. In particular, \code{fixed
+    = TRUE} specifies that \code{pattern} is a string to be matched as is.}
 }
 \value{
-  A named vector of indices, or \code{NULL}.
+  If \code{value = FALSE} (the default), a named vector of indices,
+  otherwise the values of the selected coefficients. If no coefficients
+  are selected the returned value will be \code{NULL}.
 }
 \author{ Heather Turner }
-\note{
-  Regular expression matching is performed using \code{grep} with
-  default settings.
-}
-\seealso{ \code{\link{regexp}}, \code{\link{grep}}, \code{\link{ofInterest}}}
+\seealso{ \code{\link{regexp}}, \code{\link{grep}},
+  \code{\link[relimp]{pickFrom}}, \code{\link{ofInterest}}}
 \examples{
 set.seed(1)
 
@@ -41,5 +45,8 @@ summary(unidiff)
 
 ## get contrasts of these coefficients
 getContrasts(unidiff, ofInterest(unidiff))
+
+### Use the fixed argument of grep to obtain constituent multipliers
+
 }
 \keyword{ models }

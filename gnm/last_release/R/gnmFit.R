@@ -46,8 +46,10 @@ gnmFit <-
             suppressWarnings(glm.fit.e(X[, isLinear, drop = FALSE], y,
                                        family = family,
                                        intercept = FALSE,
-                                       eliminate = eliminate,
-                                       coefonly = TRUE))
+                                       eliminate = if (nelim) eliminate
+                                       else NULL,
+                                       coefonly = TRUE,
+                                       control = glm.control(maxit = 1)))
 
         extraLin <- which(isLinear & is.na(tmpTheta))
     } else extraLin <- numeric()
@@ -89,18 +91,18 @@ gnmFit <-
                 tmpOffset <- modelTools$predictor(varPredictors, term = TRUE)
                 tmpOffset <- rowSums(naToZero(tmpOffset))
                 tmpOffset <- offset + alpha[eliminate] + tmpOffset
-                ## assume either elim all specified or all not specified
-                tmpTheta <- suppressWarnings(glm.fit.e(X[, unspecifiedLin, drop = FALSE],
-                                                       z,
-                                                       weights = weights,
-                                                       etastart = etastart,
-                                                       offset = tmpOffset,
-                                                       family = family,
-                                                       intercept = FALSE,
-                                                       eliminate =
-                                                       if (initElim) eliminate
-                                                       else NULL,
-                                                       coefonly = TRUE))
+                ## starting values for elim ignored here
+                tmpTheta <- suppressWarnings({
+                    glm.fit.e(X[, unspecifiedLin, drop = FALSE],
+                              z,
+                              weights = weights,
+                              etastart = etastart,
+                              offset = tmpOffset,
+                              family = family,
+                              intercept = FALSE,
+                              eliminate = if (nelim) eliminate else NULL,
+                              coefonly = TRUE)})
+                ## if no starting values for elim, use result of above
                 if (initElim) alpha <- unname(attr(tmpTheta, "eliminated"))
                 theta[unspecifiedLin] <- naToZero(tmpTheta)
             }

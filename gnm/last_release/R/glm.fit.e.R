@@ -122,7 +122,6 @@
                 "\n")
         if (abs(dev - devold)/(0.1 + abs(dev)) < control$epsilon) {
             conv <- TRUE
-            coef <- start
             break
         }
         devold <- dev

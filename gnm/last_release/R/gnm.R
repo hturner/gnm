@@ -138,9 +138,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         "No parameters were specified to constrain",
                                         return.indices = TRUE))
         if (is.character(constrain)) {
-            if (length(constrain) == 1)
-                constrain <- match(grep(constrain, coefNames), seq_len(nParam), 0)
-            else
+            if (length(constrain) == 1){
+                constrain <- match(constrain, coefNames, 0)
+                if (constrain == 0)
+                    constrain <- match(grep(constrain, coefNames),
+                                       seq_len(nParam),  0)
+            } else
                 constrain <- match(constrain, coefNames, 0)
         }
         ## dropped logical option
@@ -203,7 +206,9 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             names(fit)[match("linear.predictors", names(fit))] <- "predictors"
             fit$constrain <- constrain
             fit$constrainTo <- constrainTo
-            if (x) fit$x <- X
+            if (x) {
+                fit$x <- X
+            }
             if (termPredictors) {
                 modelTools <- gnmTools(modelTerms, modelData)
                 varPredictors <- modelTools$varPredictors(naToZero(coef(fit)))
@@ -287,7 +292,11 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         })
         modelData <- modelData[reorder,]
         y <- y[reorder]
-        if (x) fit$x <- fit$x[reorder,]
+        if (x) {
+            asgn <- attr(fit$x, "assign")
+            fit$x <- fit$x[reorder,]
+            attr(fit$x, "assign") <- asgn
+        }
     }
 
     asY <- c("predictors", "fitted.values", "residuals", "prior.weights",

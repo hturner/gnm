@@ -1,12 +1,21 @@
 hatvalues.gnm <- function(model, ...) {
-    X <- model.matrix(model)
+    X <- as(model.matrix(model), "sparseMatrix")
+    var <- unclass(vcov(model, with.eliminate = TRUE))
     eliminate <- model$eliminate
-    var <- vcov(model)
     scale <- model$weights/attr(var, "dispersion")
-    hat <- diag(X %*% tcrossprod(var, X)) * scale
-    if (!is.null(eliminate))
+    ## is svd any more reliable?
+    #E <- eigen(var)
+    #XtR <- X %*% t(t(E$vectors) * sqrt(E$values))
+    #hat <- rowSums(XtR^2) * scale
+    ## could scale X first if it helped:
+    hat <- rowSums((X %*% var) * X) * scale
+    if (!is.null(eliminate)) {
+        ## no covElim!
+        if (length(model$constrain))
+            X <- X[, -model$constrain, drop = FALSE]
         hat <- hat + (2 * rowSums(X * attr(var, "covElim")[eliminate,]) +
-        attr(var, "varElim")[eliminate]) * scale
+                      attr(var, "varElim")[eliminate]) * scale
+    }
     hat <- naresid(model$na.action, hat)
     hat[is.na(hat)] <- 0
     hat[hat > 1 - 100 * .Machine$double.eps] <- 1

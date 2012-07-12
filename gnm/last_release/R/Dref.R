@@ -3,6 +3,10 @@ Dref <- function(..., delta = ~ 1){
     n <- length(preds)
     preds <- c(delta = rep(list(delta), n), preds)
     common <- c(1:n, rep(n + 1, n))
+    extra <- setdiff(names(match.call()[-1]), c("", "delta"))
+    if (length(extra))
+        stop(paste(c("invalid argument passed to Dref:",
+                     extra), collapse = " "))
     nf <- match(c("delta"), names(match.call()[-1]), 0)
     if ("formula" %in% names(match.call()[-1]))
         stop("formula argument of old plug-in has been renamed ",

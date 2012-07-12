@@ -152,7 +152,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                              collapse = " + "), sep = "")
         if (length(offsetLabels[[i]]))
             predictor[i] <- paste(c(unlist(predictor[i]),
-                                 paste(".(`", offsetLabels[[i]], "`)",
+                                 paste("`", offsetLabels[[i]], "`",
                                        sep = "")),
                                collapse = " + ")
         else
@@ -186,8 +186,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
     else
         prefix <- paste(c(call[[1]]))
 
-    predictor <- term(unlist(predictor), sapply(variables, function(x){
-        deparse(call(".", as.name(deparse(x))))}))
+    predictor <- term(unlist(predictor), sapply(variables, deparse))
 
     list(prefix = prefix,
          matchID = unlist(matchID),

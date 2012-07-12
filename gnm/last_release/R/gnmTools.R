@@ -19,6 +19,11 @@
         b <- block == i
         if (all(common[b])) {
             ## get full set of levels
+            allVars <- all.vars(reformulate(unitLabels[b]))
+            facs <- sapply(allVars, function(x) {
+                is.factor(eval(parse(text = x), gnmData))})
+            if (!all(facs)) stop(paste(c("The following should be factors:",
+                                         allVars[!facs]), collapse = " "))
             allLevels <- lapply(unitLabels[b],
                                 function(x) levels(factor(eval(parse(text = x),
                                                                gnmData))))
@@ -164,17 +169,6 @@
     gnmData <- lapply(gnmData[, !names(gnmData) %in% varLabels, drop = FALSE],
                       drop)
     e <- sumExpression(attr(modelTerms, "predictor"))
-    ## remove bquotes: .() -- if works, should not put in in first place!
-    my.unquote <- function(e) {
-        if (length(e) <= 1L)
-            e
-        else if (e[[1L]] == as.name("."))
-            e[[2L]]
-        else if (is.pairlist(e))
-            as.pairlist(lapply(e, my.unquote))
-        else as.call(lapply(e, my.unquote))
-    }
-    e <- my.unquote(e)
     varDerivs <- lapply(varLabels, deriv, expr = e)
 
 

@@ -138,13 +138,12 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                         "No parameters were specified to constrain",
                                         return.indices = TRUE))
         if (is.character(constrain)) {
-            if (length(constrain) == 1){
-                constrain <- match(constrain, coefNames, 0)
-                if (constrain == 0)
-                    constrain <- match(grep(constrain, coefNames),
+            res <- match(constrain, coefNames, 0)
+            if (res == 0 && length(constrain) == 1){
+                constrain <- match(grep(constrain, coefNames),
                                        seq_len(nParam),  0)
-            } else
-                constrain <- match(constrain, coefNames, 0)
+            }
+            else constrain <- res
         }
         ## dropped logical option
         if (!all(constrain %in% seq_len(nParam)))

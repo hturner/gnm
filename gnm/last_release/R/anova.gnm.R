@@ -15,7 +15,7 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
                              test = test))
 
     x <- model.matrix(object)
-    varlist <- labels(object)
+    varlist <- attr(terms(object), "term.labels")
     varseq <- attr(x, "assign")
     pars <- setdiff(unique(varseq), c(0, varseq[object$constrain]))
 
@@ -39,11 +39,12 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
                                family = object$family)
             }
             else {
-                fit <- update(object, constrain = c(origConstrain,
-                                      which(varseq >= i)),
-                              constrainTo = c(origConstrainTo,
-                                      rep(0, sum(varseq >= i))),
-                              verbose = FALSE)
+                f <- update.formula(formula(object),
+                                    paste(". ~ . -",
+                                          paste(varlist[i:nvars],
+                                                collapse = " - ")))
+                f <- update.formula(formula(object), f)
+                fit <- update(object, formula = f, verbose = FALSE)
             }
             resdev <- c(resdev, fit$deviance)
             resdf <- c(resdf, fit$df.residual)
@@ -51,11 +52,11 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
         resdf <- c(resdf, object$df.residual)
         resdev <- c(resdev, object$deviance)
         table <- data.frame(c(NA, -diff(resdf)), c(NA, pmax(0, -diff(resdev))),
-        resdf, resdev)
+                            resdf, resdev)
     }
     else
         table <- data.frame(NA, NA, object$df.residual, object$deviance)
-    dimnames(table) <- list(c("NULL", varlist),
+    dimnames(table) <- list(c("NULL", labels(object)),
                             c("Df", "Deviance", "Resid. Df", "Resid. Dev"))
     title <- paste("Analysis of Deviance Table", "\n\nModel: ",
                    object$family$family, ", link: ", object$family$link,

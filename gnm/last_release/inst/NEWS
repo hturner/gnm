@@ -1,3 +1,29 @@
+Changes in gnm 1.0-3
+====================
+
+Improvements
+------------
+
+    o	pickCoef() extended to allow fixed pattern matching and to optionally
+    	return actual coefficients rather than their indices.
+    o	gnm() now looks for exact match in coefficient names when a single 
+    	character string is passed to the 'constrain' argument before treating 
+	as regular expression.
+    o	hatvalues.gnm() has been reimplemented to work more efficiently for large
+    	model matrices.
+    o	"nonlin" terms defined for homogeneous factors will now accept factors
+    	specified as an interaction (using ':').
+
+Bug fixes
+---------
+
+    o	results now returned in original order for models fitted with 'eliminate'
+    	argument.
+    o	bug introduced into residSVD reverted so that now correctly aggregates 
+    	working residuals.
+    o	anova.gnm() now works when model is a single "nonlin" term.
+
+
 Changes in gnm 1.0-2
 ====================
 

@@ -13,7 +13,7 @@ residSVD <- function(model, fac1, fac2, d = 1) {
     weights <- if (!is.null(model$weights)) as.vector(model$weights) else 1
     X <- data.frame(rw = as.vector(model$residuals) * weights, w = weights)
     X <- lapply(X, tapply, Data, sum, simplify = TRUE)
-    X <- X$rw/as.vector(X$w)
+    X <- X$rw/X$w
     X <- svd(naToZero(X), d, d)
     uPart <- sqrt(X$d[seq(d)]) * t(X$u)
     vPart <- sqrt(X$d[seq(d)]) * t(X$v)

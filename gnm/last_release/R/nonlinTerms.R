@@ -186,7 +186,8 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
     else
         prefix <- paste(c(call[[1]]))
 
-    predictor <- term(unlist(predictor), sapply(variables, deparse))
+    predictor <- term(unlist(predictor), sapply(variables, function(x) {
+        paste("`", deparse(x), "`", sep = "")}))
 
     list(prefix = prefix,
          matchID = unlist(matchID),

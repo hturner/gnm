@@ -3,11 +3,6 @@ hatvalues.gnm <- function(model, ...) {
     var <- unclass(vcov(model, with.eliminate = TRUE))
     eliminate <- model$eliminate
     scale <- model$weights/attr(var, "dispersion")
-    ## is svd any more reliable?
-    #E <- eigen(var)
-    #XtR <- X %*% t(t(E$vectors) * sqrt(E$values))
-    #hat <- rowSums(XtR^2) * scale
-    ## could scale X first if it helped:
     hat <- rowSums((X %*% var) * X) * scale
     if (!is.null(eliminate)) {
         ## no covElim!

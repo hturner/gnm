@@ -59,10 +59,17 @@ meanRes <- meanResiduals(CImodel, ~ orig:dest)
 meanRes
 summary(meanRes)
 
+\dontrun{
+## requires vcdExtra package
+## display mean residuals for origin and destination
+library(vcdExtra)
+mosaic(CImodel, ~orig+dest)
+}
+
 ## non-aggregated residuals
 res1 <- meanResiduals(CImodel, ~ educ:orig:dest)
 res2 <- residuals(CImodel, type = "pearson")
-all.equal(res1$residuals[,,], res2[,,])
+all.equal(as.numeric(res1), as.numeric(res2))
 }
 
 \keyword{ models }

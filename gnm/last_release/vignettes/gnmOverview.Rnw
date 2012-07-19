@@ -4,6 +4,7 @@
 
 \documentclass[a4paper]{article}
 
+\usepackage[english]{babel} % to avoid et~al with texi2pdf
 \usepackage{Sweave}
 %\usepackage{alltt} % now replaced by environments Sinput, Soutput, Scode
 \usepackage{amsmath}

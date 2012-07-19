@@ -1,5 +1,5 @@
 
-R version 2.15.0 (2012-03-30)
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -17,6 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(gnm)
+Loading Tcl/Tk interface ... done
 > set.seed(1)
 > 
 > time <- c(21, 18, 33, 17, 35, 23, 43)
@@ -45,4 +46,4 @@ Type 'q()' to quit R.
 > 
 > proc.time()
    user  system elapsed 
-  1.564   0.048   1.606 
+  4.092   0.040   4.157 

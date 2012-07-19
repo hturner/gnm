@@ -1,7 +1,8 @@
 
-R version 2.11.0 beta (2010-04-12 r51702)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -16,6 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(gnm)
+Loading Tcl/Tk interface ... done
 > set.seed(1)
 > data(backPain)
 > 
@@ -43,3 +45,6 @@ Done
 > print(oneDimensional$df)
 [1] 493
 > 
+> proc.time()
+   user  system elapsed 
+  1.664   0.032   1.695 

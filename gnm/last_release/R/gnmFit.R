@@ -142,7 +142,8 @@ gnmFit <-
             mu <- family$linkinv(eta)
             dev[1] <- sum(family$dev.resids(y, mu, weights))
             if (trace)
-                prattle("Initial Deviance = ", dev[1], "\n", sep = "")
+                prattle("Initial Deviance = ",
+                        format(dev[1], nsmall = 6), "\n", sep = "")
             for (iter in seq(length = iterStart * any(unspecifiedNonlin))) {
                 if (verbose) {
                     if (iter == 1)
@@ -191,7 +192,7 @@ gnmFit <-
                 dev[1] <- sum(family$dev.resids(y, mu, weights))
                 if (trace)
                     prattle("Start-up iteration ", iter, ". Deviance = ",
-                            dev[1], "\n", sep = "")
+                            format(dev[1], nsmall = 6), "\n", sep = "")
                 else if (verbose)
                     prattle(".")
                 if (status == "bad.param")
@@ -211,7 +212,7 @@ gnmFit <-
             mu <- family$linkinv(eta)
             dev[1] <- sum(family$dev.resids(y, mu, weights))
             if (trace)
-                prattle("Initial Deviance = ", dev, "\n", sep = "")
+                prattle("Initial Deviance = ", format(dev[1], nsmall = 6), "\n", sep = "")
         }
         if (status == "not.converged") {
             X <-  modelTools$localDesignFunction(theta, varPredictors)
@@ -249,6 +250,10 @@ gnmFit <-
                 ZWZ[1,1] <- sum(z * z)
                 diagInfo <- diag(ZWZ)
                 ## only check for non-eliminated coefficients
+                if (any(!is.finite(diagInfo))) {
+                    status <- "fail"
+                    break
+                }
                 if (all(diagInfo < 1e-20) ||
                     all(abs(score) <
                         tolerance * sqrt(tolerance + diagInfo[-1]))) {
@@ -297,7 +302,8 @@ gnmFit <-
                 }
                 if (status == "no.deviance") break
                 if (trace){
-                    prattle("Iteration ", iter, ". Deviance = ", dev[1],
+                    prattle("Iteration ", iter, ". Deviance = ",
+                            format(dev[1], nsmall = 6),
                             "\n", sep = "")
                 }
                 else if (verbose)

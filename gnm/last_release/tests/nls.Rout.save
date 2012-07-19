@@ -1,5 +1,5 @@
 
-R version 2.15.0 (2012-03-30)
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -17,6 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(gnm)
+Loading Tcl/Tk interface ... done
 > set.seed(1)
 > DNase1 <- subset(DNase, Run == 1)
 > 
@@ -25,7 +26,7 @@ Type 'q()' to quit R.
 +                                                        Inv(1))))),
 +                    start = c(NA, 0, 1), data = DNase1, trace = TRUE)
 Initialising
-Initial Deviance = 15.30101
+Initial Deviance = 15.301005
 Running start-up iterations
 Start-up iteration 1. Deviance = 0.7139315
 Start-up iteration 2. Deviance = 0.7139315
@@ -47,4 +48,4 @@ Mult(1, Inv(Exp(1 + Mult(offset(-log(conc)), Inv(.))) + Const(1))).
 > 
 > proc.time()
    user  system elapsed 
-  1.352   0.040   1.385 
+  1.508   0.024   1.532 

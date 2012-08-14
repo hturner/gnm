@@ -9,7 +9,7 @@
   needed any more. 
 }
 \usage{
-Nonlin()
+Nonlin(functionCall)
 getModelFrame()
 qrSolve(A, b, rank = NULL, ...)
 }
@@ -26,4 +26,4 @@ qrSolve(A, b, rank = NULL, ...)
   more robust.
 }
 \seealso{\code{\link{.Defunct}}}
-\keyword{documentation}
+\keyword{internal}

@@ -1,8 +1,8 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+R Under development (unstable) (2012-09-06 r60592) -- "Unsuffered Consequences"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -38,8 +38,13 @@ Done
 > 
 > ###  Fit an association model with homogeneous row-column effects
 > set.seed(4)
-> rc2 <- gnm(Freq ~ r + c + Diag(r,c) + instances(MultHomog(r, c), 2),
-+            family = poisson, data = friend, start = runif(154))
+> ### Set diagonal elements to NA (rather than fitting exactly)
+> dat <- as.data.frame(friend)
+> id <- with(dat, r == c)
+> dat[id,] <- NA
+> rc2 <- gnm(Freq ~ r + c + instances(MultHomog(r, c), 2),
++            family = poisson, data = dat, iterStart = 0)
+Initialising
 Running main iterations..................
 Done
 > 
@@ -50,4 +55,4 @@ Done
 > 
 > proc.time()
    user  system elapsed 
-  5.800   0.128   5.949 
+  2.332   0.036   2.368 

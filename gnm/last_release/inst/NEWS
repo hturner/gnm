@@ -1,3 +1,14 @@
+Changes in gnm 1.0-4
+====================
+
+Bug fixes
+---------
+
+    o	restarting mechanism now reinitialises correctly.
+    o	removed call to external C function that is no longer available.
+    o	gnm() now works with 'eliminate' argument when remaining linear part of 
+        predictor only involves one parameter.
+
 Changes in gnm 1.0-3
 ====================
 

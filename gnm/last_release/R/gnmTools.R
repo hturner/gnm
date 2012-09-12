@@ -55,7 +55,7 @@
                                       keep.order = TRUE), data = gnmData)
             tmpAssign <- attr(tmp, "assign")
             if (intercept) {
-                tmp <- tmp[,-1]
+                tmp <- tmp[,-1, drop = FALSE]
                 tmpAssign <- tmpAssign[-1]
             }
             tmpAssign <- which(b)[tmpAssign + !tmpAssign[1]]

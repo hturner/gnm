@@ -66,7 +66,8 @@ yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ -1 + Dref(origin, destination),
                      constrain = "delta1", family = binomial,
                      data = voting)
-confint(classMobility, trace = TRUE)
+## profile diagonal effects
+confint(classMobility, parm = 3:7, trace = TRUE)
 
 \dontrun{
 ### Profiling takes much longer here, but example more interesting!

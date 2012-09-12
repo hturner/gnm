@@ -13,8 +13,12 @@ data(friend)
 
 ###  Fit an association model with homogeneous row-column effects
 set.seed(4)
-rc2 <- gnm(Freq ~ r + c + Diag(r,c) + instances(MultHomog(r, c), 2),
-           family = poisson, data = friend, start = runif(154))
+### Set diagonal elements to NA (rather than fitting exactly)
+dat <- as.data.frame(friend)
+id <- with(dat, r == c)
+dat[id,] <- NA
+rc2 <- gnm(Freq ~ r + c + instances(MultHomog(r, c), 2),
+           family = poisson, data = dat, iterStart = 0)
 
 print(rc2$deviance, digits=10)
 print(rc2$df)

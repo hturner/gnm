@@ -59,10 +59,22 @@ rc1 <- gnm(Freq ~ r + c + Diag(r,c) + MultHomog(r, c),
            family = poisson, data = friend)
 rc1
 
+\dontrun{
 ###  Extend to two-component interaction
 rc2 <- update(rc1, . ~ . + MultHomog(r, c, inst = 2),
               etastart = rc1$predictors)
 rc2
+}
+
+### For factors with a large number of levels, save time by
+### setting diagonal elements to NA rather than fitting exactly;
+### skipping start-up iterations may also save time
+dat <- as.data.frame(friend)
+id <- with(dat, r == c)
+dat[id,] <- NA
+rc2 <- gnm(Freq ~ r + c + instances(MultHomog(r, c), 2),
+           family = poisson, data = dat, iterStart = 0)
+
 
 }
 \keyword{ models }

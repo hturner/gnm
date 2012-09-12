@@ -94,18 +94,27 @@
 \author{ Heather Turner }
 \seealso{ \code{\link{gnm}}, \code{\link{summary}}}
 \examples{
-##  Following on from example(gnm)
-data(cautres)
+### First example from ?Dref
 set.seed(1)
+data(voting)
 
-##  Fit model as before
-doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion +
-                     Mult(Exp(election), religion:vote) +
-                     Mult(Exp(election), class:vote), family = poisson,
-                     data = cautres)
+## reconstruct counts voting Labour/non-Labour
+count <- with(voting, percentage/100 * total)
+yvar <- cbind(count, voting$total - count)
+     
+## fit diagonal reference model with constant weights
+classMobility <- gnm(yvar ~ -1 + Dref(origin, destination), 
+                     family = binomial, data = voting)
 
-## Summarize results
-summary(doubleUnidiff)
+## summarize results - note diagonal weights are over-parameterised
+summary(classMobility)
+
+## refit setting first weight to zero (as DrefWeights() does)
+classMobility <- gnm(yvar ~ -1 + Dref(origin, destination), 
+                     family = binomial, data = voting,
+                     constrain = "delta1")
+summary(classMobility)
+
 }
 \keyword{ models }
 \keyword{ regression }

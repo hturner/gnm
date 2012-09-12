@@ -28,10 +28,12 @@ rc1 <- gnm(Freq ~ r + c + Diag(r,c) + MultHomog(r, c),
            family = poisson, data = friend)
 rc1
 
+\dontrun{
 ###  Extend to two-component interaction
 rc2 <- update(rc1, . ~ . + MultHomog(r, c, inst = 2),
               etastart = rc1$predictors)
 rc2
+}
 
 }
 \keyword{datasets}

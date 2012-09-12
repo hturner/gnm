@@ -22,20 +22,12 @@ gnmFit <-
     names(y) <- NULL
     eps <- 100*.Machine$double.eps
     attempt <- 1
-    dev <- numeric(2)
     if (verbose)
         width <- as.numeric(options("width"))
     nTheta <- length(modelTools$start)
     nelim <- nlevels(eliminate)
-    if (nelim)  {
-        elim <- seq.int(nelim)
-        alpha <- start[elim]
-    }
-    else {
-        eliminate <- 1
-        alpha <- 0
-    }
     non.elim <- seq.int(nelim + 1, length(start))
+
     ## add constraints specified by modelTools and glm
     tmpTheta <- as.double(rep(NA, nTheta))
     varPredictors <- modelTools$varPredictors(tmpTheta)
@@ -59,10 +51,18 @@ gnmFit <-
     constrain <- c(constrain, extra)[ind]
     constrainTo <- c(constrainTo, numeric(length(extra)))[ind]
     isConstrained <- is.element(seq(nTheta), constrain)
-    XWX <- NULL
     repeat {
         status <- "not.converged"
         unspecifiedNonlin <- FALSE
+        dev <- numeric(2)
+        if (nelim)  {
+            elim <- seq.int(nelim)
+            alpha <- start[elim]
+        }
+        else {
+            eliminate <- 1
+            alpha <- 0
+        }
         if (any(is.na(start))) {
             if (verbose == TRUE)
                 prattle("Initialising", "\n", sep = "")
@@ -114,7 +114,7 @@ gnmFit <-
                 tmpOffset <- rowSums(naToZero(tmpOffset))
                 tmpOffset  <- offset + alpha[eliminate] + tmpOffset
                 if (any(isLinear) && isTRUE(all.equal(unname(etastart), tmpOffset))) {
-                    etastart <- start <- mustart <- NULL
+                    etastart <- mustart <- NULL
                     eval(family$initialize)
                     etastart <- family$linkfun(mustart)
                 }
@@ -134,7 +134,6 @@ gnmFit <-
                                                   method = c("L-BFGS-B"),
                                                   control = list(maxit = iterStart),
                                                   lower = -10, upper = 10)$par
-                iterStart <- 0
             }
             varPredictors <- modelTools$varPredictors(theta)
             tmpOffset <- offset + alpha[eliminate]
@@ -144,7 +143,8 @@ gnmFit <-
             if (trace)
                 prattle("Initial Deviance = ",
                         format(dev[1], nsmall = 6), "\n", sep = "")
-            for (iter in seq(length = iterStart * any(unspecifiedNonlin))) {
+            niter <- iterStart * (any(unspecifiedNonlin) && is.null(etastart))
+            for (iter in seq(length = niter)) {
                 if (verbose) {
                     if (iter == 1)
                         prattle("Running start-up iterations", "\n"[trace],
@@ -155,12 +155,12 @@ gnmFit <-
                 for (i in rep.int(seq(nTheta)[unspecifiedNonlin], 2)) {
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
-                    w <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu
                     Xi <- modelTools$localDesignFunction(theta,
                                                          varPredictors, i)
-                    score <- crossprod((abs(y - mu) >= eps) * (y - mu)/dmu,
-                                       w * Xi)
-                    gradient <- crossprod(w, Xi^2)
+                    wXi <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu * Xi
+                    score <- sum((abs(y - mu) >= eps) * (y - mu)/dmu * wXi)
+                    gradient <- sum(wXi * Xi)
+                    otheta <- theta[i]
                     theta[i] <- as.vector(theta[i] + score/gradient)
                     if (!is.finite(theta[i])) {
                         status <- "bad.param"
@@ -169,6 +169,13 @@ gnmFit <-
                     varPredictors <- modelTools$varPredictors(theta)
                     eta <- tmpOffset + modelTools$predictor(varPredictors)
                     mu <- family$linkinv(eta)
+                    ## poor man's step-halving
+                    #if (sum(family$dev.resids(y, mu, weights)) > dev[1]){
+                    #    theta[i] <- otheta
+                    #    varPredictors <- modelTools$varPredictors(theta)
+                    #    eta <- tmpOffset + modelTools$predictor(varPredictors)
+                    #    mu <- family$linkinv(eta)
+                    #}
                 }
                 if (status == "not.converged" && any(isLinear)) {
                     if (iter == 1) {
@@ -266,8 +273,9 @@ gnmFit <-
                 if (nelim){
                     elimXscales <- grp.sum(w * w, grp.end)
                     elimXscales <- sqrt(elimXscales * ridge)
-                    Umat[,1] <- quick.rowsum(w * z, eliminate, elim)
-                    Umat[,-1] <- quick.rowsum(w * X, eliminate, elim)
+                    Umat[,1] <- rowsum.default(w * z, eliminate, reorder = FALSE)
+                    Umat[,-1] <- rowsum.default(w * X, eliminate,
+                                                reorder = FALSE)
                     Umat <- Umat/(elimXscales %o% Zscales)
                     ZWZ <- ZWZ/(Zscales %o% Zscales)
                     diag(ZWZ) <- ridge
@@ -344,6 +352,8 @@ gnmFit <-
                 return()
             else if (verbose)
                 message("Restarting")
+            X <- modelTools$localDesignFunction(theta, varPredictors)
+            ridge <- ridge - 1
         }
     }
     theta[constrain] <- NA
@@ -351,7 +361,7 @@ gnmFit <-
     X <- X[, !isConstrained, drop = FALSE]
     if (nelim) {
         ## sweeps needed to get the rank right
-        subtracted <- quick.rowsum(X, eliminate, elim)/grp.size
+        subtracted <- rowsum.default(X, eliminate, reorder = FALSE)/grp.size
         if (modelTools$termAssign[1] == 0) subtracted[,1] <- 0
         theRank <- rankMatrix(X - subtracted[eliminate,]) + nelim
         names(alpha) <- paste("(eliminate)", elim, sep = "")

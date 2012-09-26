@@ -21,6 +21,7 @@ gnmFit <-
 {
     names(y) <- NULL
     eps <- 100*.Machine$double.eps
+    ridge <- 1 + ridge
     attempt <- 1
     if (verbose)
         width <- as.numeric(options("width"))
@@ -152,16 +153,20 @@ gnmFit <-
                     if ((iter + 25)%%width == (width - 1))
                         cat("\n")
                 }
-                for (i in rep.int(seq(nTheta)[unspecifiedNonlin], 2)) {
+                #if (dev[1] > 1/tolerance) {
+                #  browser()
+                #  status <- "bad.param"
+                #  break
+                #}
+                for (i in rep.int(seq(nTheta)[unspecifiedNonlin], 1)) {
                     dmu <- family$mu.eta(eta)
                     vmu <- family$variance(mu)
                     Xi <- modelTools$localDesignFunction(theta,
                                                          varPredictors, i)
                     wXi <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu * Xi
-                    score <- sum((abs(y - mu) >= eps) * (y - mu)/dmu * wXi)
-                    gradient <- sum(wXi * Xi)
+                    step <- sum((abs(y - mu) >= eps) * (y - mu)/dmu * wXi)/sum(wXi * Xi)
                     otheta <- theta[i]
-                    theta[i] <- as.vector(theta[i] + score/gradient)
+                    theta[i] <- as.vector(otheta + step)
                     if (!is.finite(theta[i])) {
                         status <- "bad.param"
                         break
@@ -169,13 +174,22 @@ gnmFit <-
                     varPredictors <- modelTools$varPredictors(theta)
                     eta <- tmpOffset + modelTools$predictor(varPredictors)
                     mu <- family$linkinv(eta)
+                    if (!is.finite(sum(family$dev.resids(y, mu, weights)))) {
+                      status <- "bad.param"
+                      break
+                    }
                     ## poor man's step-halving
-                    #if (sum(family$dev.resids(y, mu, weights)) > dev[1]){
-                    #    theta[i] <- otheta
-                    #    varPredictors <- modelTools$varPredictors(theta)
-                    #    eta <- tmpOffset + modelTools$predictor(varPredictors)
-                    #    mu <- family$linkinv(eta)
-                    #}
+                    j <- 1
+                    while ((sum(family$dev.resids(y, mu, weights)) > dev[1]) & j < 3){# |
+                      #score < tolerance){
+                        if (j == 2) theta[i] <- otheta
+                        else theta[i] <- otheta + step/4
+                        varPredictors <- modelTools$varPredictors(theta) 
+                        eta <- tmpOffset + modelTools$predictor(varPredictors)
+                        mu <- family$linkinv(eta)
+                        j <- j + 1
+                    }
+                    dev[1] <- sum(family$dev.resids(y, mu, weights))
                 }
                 if (status == "not.converged" && any(isLinear)) {
                     if (iter == 1) {
@@ -235,8 +249,7 @@ gnmFit <-
                 grp.size <- tabulate(eliminate)
                 grp.end <- cumsum(grp.size)
             }
-            tmpAlpha <- 0
-            ridge <- 1 + ridge
+            tmpAlpha <- 0  
             for (iter in seq(length.out = iterMax + 1)) {
                 if (verbose) {
                     if (iter == 1)
@@ -301,12 +314,12 @@ gnmFit <-
                         modelTools$predictor(varPredictors)
                     mu <- family$linkinv(eta)
                     dev[1] <- sum(family$dev.resids(y, mu, weights))
-                    if (!is.finite(dev[1])) {
-                        status <- "no.deviance"
-                        break
-                    }
                     scale <- scale*2
                     j <- j + 1
+                }
+                if (!is.finite(dev[1])) {
+                  status <- "no.deviance"
+                  break
                 }
                 if (status == "no.deviance") break
                 if (trace){
@@ -331,7 +344,7 @@ gnmFit <-
         else {
             if (any(!is.finite(eta)))
                  status <- "eta.not.finite"
-             if (any(!is.finite(w)))
+             if (exists("w") && any(!is.finite(w)))
                  status <- "w.not.finite"
              if (any(is.infinite(X)))
                  status <- "X.not.finite"
@@ -348,12 +361,11 @@ gnmFit <-
                                  "Local design matrix has infinite elements",
                                no.deviance = "Deviance is not finite"))
             attempt <- attempt + 1
-            if (attempt > 5 || (any(is.na(start)) && !any(unspecifiedNonlin)))
+            if (attempt > 1 || (any(is.na(start)) && !any(unspecifiedNonlin)))
                 return()
             else if (verbose)
                 message("Restarting")
             X <- modelTools$localDesignFunction(theta, varPredictors)
-            ridge <- ridge - 1
         }
     }
     theta[constrain] <- NA

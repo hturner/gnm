@@ -1,3 +1,26 @@
+Changes in gnm 1.0-5
+====================
+
+Improvements
+------------
+
+    o	eliminated coefficients now returned as named vector.
+    o	step-quartering introduced to start-up iterations to avoid increasing 
+    	deviance.
+
+Changes in behaviour
+--------------------
+
+    o	gnm() no longer restarts if algorithm fails - better to provide 
+    	improved starting values in this case. 
+
+Bug fixes
+---------
+
+    o	fixed bug in the way 'etastart' is used to initialise the linear 
+    	parameters when 'eliminate' is used as well. 
+
+
 Changes in gnm 1.0-4
 ====================
 

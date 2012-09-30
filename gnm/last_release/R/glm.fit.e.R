@@ -147,7 +147,8 @@
     w <- weights * (mu.eta)^2/variance(mu)
     if (coefonly) return(structure(full.theta, eliminated = c(os.by.level)))
     aic.model <- aic(y, sum(weights > 0), mu, weights, dev) + 2 * rank
-    list(coefficients = structure(full.theta, eliminated = c(os.by.level)),
+    eliminated <- structure(c(os.by.level), names = levels(eliminate))
+    list(coefficients = structure(full.theta, eliminated = eliminated),
          residuals = (y - mu) / linkder(eta),
          fitted.values = mu,
          rank = rank,

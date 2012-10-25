@@ -1,3 +1,11 @@
+Changes in gnm 1.0-6
+====================
+
+Bug fixes
+---------
+
+    o	added catch for when deviance becomes NaN
+
 Changes in gnm 1.0-5
 ====================
 

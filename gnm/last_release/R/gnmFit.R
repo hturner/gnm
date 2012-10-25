@@ -213,6 +213,10 @@ gnmFit <-
                 mu <- family$linkinv(eta)
             }
             dev[1] <- sum(family$dev.resids(y, mu, weights))
+            if (!is.finite(dev[1])) {
+                status <- "bad.param"
+                break
+            }
             if (trace)
                 prattle("Start-up iteration ", iter, ". Deviance = ",
                         format(dev[1], nsmall = 6), "\n", sep = "")
@@ -301,7 +305,7 @@ gnmFit <-
             }
             dev[2] <- dev[1]
             j <- scale <- 1
-            while (dev[1] >= dev[2] && j < 11) {
+            while (!is.nan(dev[1]) && dev[1] >= dev[2] && j < 11) {
                 if (nelim) tmpAlpha <- alpha + alphaChange/scale
                 tmpTheta <- replace(theta, notConstrained,
                                     theta[notConstrained] + thetaChange/scale)

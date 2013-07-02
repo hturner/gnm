@@ -26,7 +26,7 @@ expandCategorical <- function(data, catvar, sep = ".", countvar = "count",
     else {
         n <- nrow(data)
         id <- gl(n, ncat)
-        newData <- data[id, -match(catvar, names(data))]
+        newData <- data[id, -match(catvar, names(data)), drop = FALSE]
         newData[[levels(interaction(catvar, sep = sep))]] <-
             gl(ncat, 1, n * ncat, labels = levels(cat), ordered = as.ordered)
         newData[[countvar]] <- as.vector(t(class.ind(cat)))

@@ -1,8 +1,7 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+R Under development (unstable) (2013-09-11 r63910) -- "Unsuffered Consequences"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -17,9 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(gnm)
-Loading Tcl/Tk interface ... done
 > set.seed(1)
-> data(voting)
 > 
 > count <- with(voting, percentage/100 * total)
 > yvar <- cbind(count, voting$total - count)
@@ -52,4 +49,4 @@ Done
 > 
 > proc.time()
    user  system elapsed 
-  5.152   0.128   5.301 
+  4.296   0.064   4.363 

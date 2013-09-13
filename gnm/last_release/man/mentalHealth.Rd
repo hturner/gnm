@@ -7,7 +7,7 @@
   Classifying variables are child's mental impairment (\code{MHS}) and
   parents' socioeconomic status (\code{SES}).
 }
-\usage{data(mentalHealth)}
+\usage{mentalHealth}
 \format{
   A data frame with 24 observations on the following 3 variables.
   \describe{
@@ -29,7 +29,6 @@ T. A. C. (1978), \emph{Mental Health in the Metropolis: The Midtown
 }
 \examples{
 set.seed(1)
-data(mentalHealth)
 
 ##  Goodman Row-Column association model fits well (deviance 3.57, df 8)
 mentalHealth$MHS <- C(mentalHealth$MHS, treatment)

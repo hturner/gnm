@@ -7,7 +7,7 @@
   social class (\code{orig}), son's social class (\code{dest}) and son's 
   education level (\code{educ}).
 }
-\usage{data(yaish)}
+\usage{yaish}
 \format{
 A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
 \code{orig} (levels \code{1:7}) and \code{dest} (levels \code{1:7}).
@@ -23,8 +23,6 @@ A table of counts, with classifying factors \code{educ} (levels \code{1:5}),
 }
 \examples{
 set.seed(1)
-
-data(yaish)
 
 ## Fit the "UNIDIFF" mobility model across education levels, leaving out
 ## the uninformative subtable for dest == 7:

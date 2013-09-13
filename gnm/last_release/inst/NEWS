@@ -1,3 +1,14 @@
+Changes in gnm 1.0-7
+====================
+
+Improvements
+-------------
+
+    o	now use lazy data loading
+    o	improvements to vignette (with thanks to Michael Friendly).
+
+
+
 Changes in gnm 1.0-6
 ====================
 

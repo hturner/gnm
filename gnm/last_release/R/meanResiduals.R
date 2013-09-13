@@ -37,10 +37,12 @@ meanResiduals <- function(object, by = NULL, standardized = TRUE,
     if (standardized) res <- res * sqrt(agg.wts)
     ## now compute degrees of freedom
     Xreduced <- rowsum(model.matrix(object), fac, na.rm = TRUE)
+    ## suppressWarnings in rankMatrix re coercion to dense matrix
     if (as.table){
         res <- structure(as.table(res), call = object$call,
                          by = paste(names(by), collapse = ":"),
-                         df = nlevels(fac) - rankMatrix(Xreduced),
+                         df = nlevels(fac) -
+                         suppressWarnings(rankMatrix(Xreduced)),
                          standardized = standardized,
                          weights = as.table(agg.wts))
         class(res) <- c("meanResiduals", "table")
@@ -48,7 +50,8 @@ meanResiduals <- function(object, by = NULL, standardized = TRUE,
     else {
         res <- structure(c(res), call = object$call,
                          by = paste(names(by), collapse = ":"),
-                         df = nlevels(fac) - rankMatrix(Xreduced),
+                         df = nlevels(fac) -
+                         suppressWarnings(rankMatrix(Xreduced)),
                          standardized = standardized,
                          weights = c(agg.wts))
         class(res) <- c("meanResiduals", "numeric")

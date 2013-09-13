@@ -96,7 +96,6 @@
 \examples{
 ### First example from ?Dref
 set.seed(1)
-data(voting)
 
 ## reconstruct counts voting Labour/non-Labour
 count <- with(voting, percentage/100 * total)

@@ -31,7 +31,6 @@ instances(term, instances = 1)
 ##
 ## Fitting two instances of a multiplicative interaction (i.e. a
 ## two-component interaction)
-data(wheat)
 yield.scaled <- wheat$yield * sqrt(3/1000)
 treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
                           wheat$N, sep = ""))

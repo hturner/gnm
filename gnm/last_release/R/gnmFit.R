@@ -362,14 +362,16 @@ gnmFit <-
     theta[constrain] <- NA
     X <- modelTools$localDesignFunction(theta, varPredictors)
     X <- X[, notConstrained, drop = FALSE]
+    ## suppress warnings in rankMatrix re coercion to dense matrix
     if (nelim) {
     ## sweeps needed to get the rank right
         subtracted <- rowsum.default(X, eliminate, reorder = FALSE)/grp.size
         if (modelTools$termAssign[1] == 0) subtracted[,1] <- 0
-        theRank <- rankMatrix(X - subtracted[eliminate,]) + nelim
+        theRank <- suppressWarnings(rankMatrix(X - subtracted[eliminate,])) +
+            nelim
         names(alpha) <- paste("(eliminate)", elim, sep = "")
     }
-    else theRank <- rankMatrix(X)
+    else theRank <- suppressWarnings(rankMatrix(X))
     modelAIC <- suppressWarnings(family$aic(y, rep.int(1, nobs),
                                             mu, weights, dev[1])
                                  + 2 * theRank)

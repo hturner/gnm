@@ -48,7 +48,6 @@ the rows.
 \seealso{ \code{\link{gnm}}, \code{\link{getContrasts}},
   \code{\link{checkEstimable}}, \code{\link{ofInterest}}} 
 \examples{
-data(yaish)
 set.seed(1)
 
 ## Fit the "UNIDIFF" mobility model across education levels

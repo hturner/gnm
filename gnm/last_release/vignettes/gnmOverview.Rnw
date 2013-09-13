@@ -18,6 +18,7 @@
 \usepackage[round,authoryear]{natbib}
 \usepackage[left=2cm,top=2.5cm,nohead]{geometry}
 \usepackage{hyperref}
+\usepackage{array} % for paragraph columns in tables
 %\usepackage{moreverb}
 
 \setkeys{Gin}{width=0.6\textwidth}
@@ -188,7 +189,6 @@ As an example, consider fitting the `log-multiplicative layer effects' models
 described in \citet{Xie92}.  The data are 7 by 7 versions of social mobility
 tables from \citet{Erik82}:
 <<EriksonData>>=
-data(erikson)
 ### Collapse to 7 by 7 table as in Erikson et al. (1982)
 erikson <- as.data.frame(erikson)
 lvl <- levels(erikson$origin)
@@ -200,7 +200,6 @@ erikson <- xtabs(Freq ~ origin + destination + country, data = erikson)
 From sociological theory --- for which see \citet{Erik82} or \citet{Xie92} ---
 the log-linear interaction between origin and destination is assumed to have
 a particular structure:
-\newpage
 \begin{Sinput}
 > levelMatrix <- matrix(c(2, 3, 4, 6, 5, 6, 6,
 +                         3, 3, 4, 6, 4, 5, 6,
@@ -212,7 +211,6 @@ a particular structure:
 \end{Sinput}
 The models of table 3 of \citet{Xie92} can now be fitted as follows:
 \begin{Sinput}
-> ### Fit the levels models given in Table 3 of Xie (1992)
 > ## Null association between origin and destination
 > nullModel <- gnm(Freq ~ country:origin + country:destination,
 +                  family = poisson, data = erikson, verbose = FALSE)
@@ -222,14 +220,12 @@ The models of table 3 of \citet{Xie92} can now be fitted as follows:
 +                      Topo(origin, destination, spec = levelMatrix),
 +                      verbose = FALSE)
 >
-> ## Interaction specified by levelMatrix, different multiplier for
-> ## each country
+> ## Interaction specified by levelMatrix, different multiplier for each country
 > multTopo <- update(nullModel, ~ . +
 +                    Mult(Exp(country), Topo(origin, destination, spec = levelMatrix)),
 +                    verbose = FALSE)
 >
-> ## Interaction specified by levelMatrix, different effects for
-> ## each country
+> ## Interaction specified by levelMatrix, different effects for each country
 > separateTopo <- update(nullModel, ~ . +
 +                        country:Topo(origin, destination, spec = levelMatrix),
 +                        verbose = FALSE)
@@ -266,7 +262,7 @@ functions made available as standard in \R's \Rfunction{quasi} family.  The
 \Rfunction{wedderburn} family provides it.  As an example, Wedderburn's
 analysis of data on leaf blotch on barley can be reproduced as follows:
 <<wedderburn>>=
-data(barley)  ##  data from Wedderburn (1974), see ?barley
+##  data from Wedderburn (1974), see ?barley
 logitModel <- glm(y ~ site + variety, family = wedderburn, data = barley)
 fit <- fitted(logitModel)
 print(sum((barley$y - fit)^2 / (fit * (1-fit))^2))
@@ -813,8 +809,7 @@ predictors from the first model can be used to find starting values for the
 parameters of the second model:
 \begin{Scode}
 model1 <- gnm(mu ~ R + C + Mult(R, C))
-model2 <- gnm(mu ~ R + C + instances(Mult(R, C), 2),
-              etastart = model1$predictors)
+model2 <- gnm(mu ~ R + C + instances(Mult(R, C), 2), etastart = model1$predictors)
 \end{Scode}
 %$
 Using \Rfunction{etastart} avoids the one-parameter-at-a-time starting
@@ -835,7 +830,6 @@ coefficients (determined by the randomly chosen starting values for the iterativ
 To illustrate this point, consider the following application of \Rfunction{gnm},
 discussed later in Section \ref{sec:RCmodels}:
 <<RC_homogeneous_model_1>>=
-data(occupationalStatus)
 set.seed(1)
 RChomog1 <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                MultHomog(origin, destination), family = poisson,
@@ -876,18 +870,47 @@ parameters will be set to zero.
 
 In the case above, constraining one level of the homogeneous multiplicative
 factor is sufficient to make the parameters of the nonlinear term
-identifiable, and hence all parameters in the model identifiable. For example,
-setting the last level of the homogeneous multiplicative factor to zero,
-<<RC_homogeneous_constrained_model>>=
-multCoef <- coef(RChomog1)[pickCoef(RChomog1, "Mult")]
+identifiable, and hence all parameters in the model
+identifiable. Figure~\ref{fig:Tk} illustrates how the coefficient to be constrained
+may be specified via a \emph{Tk} dialog, an approach which can be helpful in
+interactive R sessions.
+
+% here illustrate TclTk dialog, but explain other methods better for reproducibility
+\begin{figure}[tp]
+    \centering
+    \begin{tabular}[!h]{m{0.6\linewidth}m{0.4\linewidth}}
+        \scalebox{0.9}{\includegraphics{screenshot1.png}} &
+        When \Rfunction{gnm} is called with  \Rcode{constrain = "[?]"},
+          a \emph{Tk} dialog is shown listing the coefficients in the model.\\
+        \scalebox{0.9}{\includegraphics{screenshot2.png}} &
+        Scroll through the coefficients and click to select
+          a single coefficient to constrain. To select multiple coefficients,
+          hold down the \texttt{Ctrl} key whilst clicking. The \texttt{Add}
+          button will become active when coefficient(s) have been selected.\\
+        \scalebox{0.9}{\includegraphics{screenshot3.png}} &
+        Click the \texttt{Add} button to add the selected coefficients
+          to the list of coefficients to be constrained. To remove coefficients
+          from the list, select the coefficients in the right pane and click
+          \texttt{Remove}. Click \texttt{OK} when you have finalised the list.\\
+    \end{tabular}
+    \caption{Selecting coefficients to constrain with the \emph{Tk} dialog.}
+    \label{fig:Tk}
+\end{figure}
+
+However for reproducible code, it is best to specify the constrained
+coefficients directly. For example, the following code specifies that the last
+level of the homogeneous multiplicative factor should be constrained to zero,
+<<RC_homogeneous_constrained_model1>>=
 set.seed(1)
-RChomogConstrained1 <- update(RChomog1, constrain = length(coef(RChomog1)),
-                              start = c(rep(NA, 23), multCoef - multCoef[8]))
+RChomogConstrained1 <- update(RChomog1, constrain = length(coef(RChomog1)))
+@
+Since all the parameters are now constrained, re-fitting the model will give the
+same results, regardless of the random seed set beforehand:
+<<RC_homogeneous_constrained_model2>>=
 set.seed(2)
 RChomogConstrained2 <- update(RChomogConstrained1)
 identical(coef(RChomogConstrained1), coef(RChomogConstrained2))
 @
-gives the same results regardless of the random seed set beforehand.
 
 It is not usually so straightforward to constrain all the parameters in a
 generalized nonlinear model. However use of \Rfunarg{constrain} in conjunction
@@ -903,9 +926,7 @@ are estimable.
 When a model contains the additive effect of a factor which has a large
 number of levels, the iterative algorithm by which maximum likelihood estimates
 are computed can usually
-be accelerated by use of the \Rfunarg{eliminate} argument to \Rfunction{gnm}.
-
-A factor passed to \Rfunarg{eliminate} specifies the first term in the
+be accelerated by use of the \Rfunarg{eliminate} argument to \Rfunction{gnm}. A factor passed to \Rfunarg{eliminate} specifies the first term in the
 model, replacing any intercept term. So, for example
 \begin{Scode}
 gnm(mu ~ A + B + Mult(A, B), eliminate = strata1:strata2)
@@ -1096,7 +1117,6 @@ given parameter. As an example, consider the following model, described later in
 Section \ref{sec:Unidiff}:
 
 \begin{Scode}
-data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest + Mult(Exp(educ), orig:dest),
                constrain = "[.]educ1", family = poisson, data = yaish,
                subset = (dest != 7))
@@ -1108,7 +1128,7 @@ linear. We can plot the profile traces as follows:
 
 \begin{figure}[!tbph]
 \begin{center}
-\includegraphics{fig-profilePlot.pdf}
+\scalebox{1.1}{\includegraphics{fig-profilePlot.pdf}}
 \end{center}
 \caption{Profile traces for the multipliers of the orig:dest association}
 \label{fig:profilePlot}
@@ -1130,8 +1150,8 @@ original estimate:
  [8] 0.1053072 0.1053072 0.1053072
 \end{Soutput}
 
-When the deviance is assymmetric, \Rmethod{profile.gnm} uses different
-stepsizes to accommodate the skew:
+When the deviance is asymmetric, \Rmethod{profile.gnm} uses different
+step sizes to accommodate the skew:
 \begin{Sinput}
 > diff(prof[[4]]$par.vals[, "Mult(Exp(.), orig:dest).educ4"])
 \end{Sinput}
@@ -1217,7 +1237,6 @@ described in \citet{CatcMorg97}.
 Consider the following model, which is described later in Section
 \ref{sec:Unidiff}:
 <<Double_UNIDIFF_model>>=
-data(cautres)
 doubleUnidiff <- gnm(Freq ~ election:vote + election:class:religion
                      + Mult(Exp(election), religion:vote) +
                      Mult(Exp(election), class:vote), family = poisson,
@@ -1337,7 +1356,6 @@ via the \Rfunarg{scaleRef} and \Rfunarg{scaleWeights} arguments of
 As an example, consider the following model, described in Section~\ref{sec:RCmodels}:
 @
 <<RCmodel>>=
-data(mentalHealth)
 mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
 mentalHealth$SES <- C(mentalHealth$SES, treatment)
 RC1model <- gnm(count ~ SES + MHS + Mult(SES, MHS),
@@ -1399,8 +1417,14 @@ provides a direct estimate of the parameters of such an interaction, by
 performing an appropriately weighted singular value decomposition on the
 working residuals.
 
-As an illustration, consider the biplot model described in
-Section~\ref{sec:biplot} below.  We can proceed by fitting a smaller model,
+As an illustration, consider the barley data from \citet{Wedd74}. These data
+have the following two-way structure:
+<<two-way>>=
+xtabs(y ~ site + variety, barley)
+@
+In Section~\ref{sec:biplot} a biplot model is proposed for these data, which
+comprises a two-component interaction between the cross-classifying factors. In
+order to fit this model, we can proceed by fitting a smaller model,
 then use \Rfunction{residSVD} to obtain starting values for the parameters
 in the bilinear term:
 @
@@ -1423,13 +1447,14 @@ the number of multiplicative parameters is in the hundreds).
 
 The \Rfunction{residSVD} result in this instance
 provides a crude approximation to the MLE
-of the enlarged model, as can be seen in \ref{fig:residSVDplot}:
+of the enlarged model, as can be seen in Figure \ref{fig:residSVDplot}:
 
 @
 <<residSVDplot, fig = TRUE, include = FALSE, echo = FALSE>>=
 plot(coef(biplotModel), biplotStart,
      main = "Comparison of residSVD and MLE for a 2-dimensional
- biplot model")
+ biplot model", ylim = c(-2, 2), xlim = c(-4, 4))
+abline(a = 0, b = 1, lty = 2)
 @ %def
 
 \begin{figure}[!tbph]
@@ -1510,7 +1535,6 @@ in the model, so we begin by setting the contrasts attribute of these
 factors to \Rcode{treatment}:
 <<Set_contrasts_attribute>>=
 set.seed(1)
-data(mentalHealth)
 mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
 mentalHealth$SES <- C(mentalHealth$SES, treatment)
 @
@@ -1586,7 +1610,6 @@ diagonal. Equivalently we can account for the diagonal effects by a separate
 \Rfunction{Diag} term:
 @
 <<Homogeneous_effects>>=
-data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                MultHomog(origin, destination), family = poisson,
                data = occupationalStatus)
@@ -1597,7 +1620,6 @@ To determine whether it would be better to allow for heterogeneous effects on
 the association of the fathers' occupational status and the sons' occupational
 status, we can compare this model to the RC(1) model for these data:
 <<Heterogeneous_effects>>=
-data(occupationalStatus)
 RCheterog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                Mult(origin, destination), family = poisson,
                data = occupationalStatus)
@@ -1627,7 +1649,6 @@ and those not voting Labour:
 @
 <<Transform_to_counts>>=
 set.seed(1)
-data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
 @ %def
@@ -1820,7 +1841,7 @@ Number of iterations: 15
 The weights have been constrained to sum to one as described in Section
 \ref{sec:Dref function}, so the weights themselves may be estimated as follows:
 \begin{Sinput}
-    > prop.table(exp(coef(A)[6:7]))
+> prop.table(exp(coef(A)[6:7]))
 \end{Sinput}
 \begin{Soutput}
     Dref(MOPLM, FOPLF)delta1 Dref(MOPLM, FOPLF)delta2
@@ -1998,7 +2019,6 @@ the education levels.  We omit the sub-table which corresponds to level 7 of
 @
 <<UNIDIFF_model>>=
 set.seed(1)
-data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest + Mult(Exp(educ), orig:dest),
                ofInterest = "[.]educ", family = poisson,
                data = yaish, subset = (dest != 7))
@@ -2030,7 +2050,6 @@ vote, differ between the most recent election and the other elections:
 @
 <<double_UNIDIFF_model>>=
 set.seed(1)
-data(cautres)
 doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(election), religion:vote) +
                      Mult(Exp(election), class:vote),
@@ -2076,7 +2095,6 @@ create a new treatment factor, so that we can reproduce the analysis of
 @
 <<Scale_yields>>=
 set.seed(1)
-data(wheat)
 yield.scaled <- wheat$yield * sqrt(3/1000)
 treatment <- interaction(wheat$tillage, wheat$summerCrop, wheat$manure,
                          wheat$N, sep = "")
@@ -2113,7 +2131,6 @@ settings:
 @
 <<AMMI_model2>>=
 set.seed(1)
-data(barleyHeights)
 barleyModel <- gnm(height ~ year + genotype + Mult(year, genotype),
                    data = barleyHeights)
 @ %def
@@ -2197,7 +2214,6 @@ implemented as the \Rfunction{wedderburn} family in \Rpackage{gnm} (see also
 Section \ref{sec:glms}):
 @
 <<Biplot_model>>=
-data(barley)
 set.seed(83)
 biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
                    family = wedderburn, data = barley)
@@ -2212,7 +2228,7 @@ in the space spanned by the linearly independent basis vectors
     a_1 = (\alpha_{11}, \alpha_{12}, \ldots \alpha_{19})^T\\
     a_2 = (\alpha_{21}, \alpha_{22}, \ldots \alpha_{29})^T\\
 \end{align*}
-and the variable effects can be similarly represented.
+and the variety effects can be similarly represented.
 
 Thus we can represent the sites and varieties separately as follows
 \begin{Sinput}
@@ -2252,9 +2268,14 @@ The required rotation and scaling can be performed via singular value
 decomposition of the fitted predictors:
 @
 <<Row_and_column_scores>>=
-barleySVD <- svd(matrix(biplotModel$predictors, 10, 9))
-A <- sweep(barleySVD$v, 2, sqrt(barleySVD$d), "*")[, 1:2]
-B <- sweep(barleySVD$u, 2, sqrt(barleySVD$d), "*")[, 1:2]
+barleyMatrix <- xtabs(biplotModel$predictors ~ site + variety,
+                      data = barley)
+barleySVD <- svd(barleyMatrix)
+A <- sweep(barleySVD$u, 2, sqrt(barleySVD$d), "*")[, 1:2]
+B <- sweep(barleySVD$v, 2, sqrt(barleySVD$d), "*")[, 1:2]
+rownames(A) <- levels(barley$site)
+rownames(B) <- levels(barley$variety)
+colnames(A) <- colnames(B) <- paste("Component", 1:2)
 A
 B
 @ %def
@@ -2262,10 +2283,13 @@ These matrices are essentially the same as in \citet{Gabr98}. From these the
 biplot can be produced, for sites $A \ldots I$ and varieties $1 \dots 9, X$:
 @
 <<Biplot1, fig = TRUE, include = FALSE>>=
+barleyCol <- c("red", "blue")
 plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)),
+     col = rep(barleyCol, c(nlevels(barley$site), nlevels(barley$variety))),
      xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data",
      xlab = "Component 1", ylab = "Component 2")
-text(c(-3.5, -3.5), c(3.9, 3.6), c("sites: A-I","varieties: 1-9, X"), adj = 0)
+text(c(-3.5, -3.5), c(3.9, 3.6), c("sites: A-I","varieties: 1-9, X"),
+     col = barleyCol, adj = 0)
 @ %def
 \begin{figure}[!tbph]
     \begin{center}
@@ -2284,9 +2308,11 @@ the ``h-axis'' and the varieties group about two lines roughly parallel to the
 @
 <<Biplot2, fig = TRUE, include = FALSE>>=
 plot(rbind(A, B), pch = c(levels(barley$site), levels(barley$variety)),
+     col = rep(barleyCol, c(nlevels(barley$site), nlevels(barley$variety))),
      xlim = c(-4, 4), ylim = c(-4, 4), main = "Biplot for barley data",
      xlab = "Component 1", ylab = "Component 2")
-text(c(-3.5, -3.5), c(3.9, 3.6), c("sites: A-I","varieties: 1-9, X"), adj = 0)
+text(c(-3.5, -3.5), c(3.9, 3.6), c("sites: A-I","varieties: 1-9, X"),
+     col = barleyCol, adj = 0)
 abline(a = 0, b = tan(pi/3))
 abline(a = 0, b = -tan(pi/6))
 abline(a = 2.6, b = tan(pi/3), lty = 2)
@@ -2367,7 +2393,7 @@ framework, we must re-express the data as category counts $Y_i = (Y_{i1},
 for the counts $Y_{ic}$, the joint distribution of $Y_i$ is Multinomial$(N_i,
 p_{i1}, \ldots, p_{iK})$ conditional on the total count for each individual
 $N_i$. The expected counts are then $\mu_{ic} = N_ip_{ic}$ and the parameters of
-the sterotype model can be estimated through fitting the following model
+the stereotype model can be estimated through fitting the following model
 \begin{align*}
 \log \mu_{ic} &= \log(N_i) + \log(p_{ic}) \\
 &= \alpha_i + \beta_{0c} + \gamma_c\sum_r \boldsymbol{\beta}_{r}\boldsymbol{x}_{ir} \\
@@ -2378,7 +2404,7 @@ denominators are reproduced exactly, as required.
 The \Rpackage{gnm} package includes the utility function
 \Rfunction{expandCategorical} to re-express the categorical response as category
 counts. By default, individuals with common values across all covariates are
-grouped together, to avoid redundacy.
+grouped together, to avoid redundancy.
 
 For example, the \Robject{backPain} data set from \citet{Ande84} describes the
 progress of patients with back pain. The data set consists of an ordered factor
@@ -2387,7 +2413,6 @@ re-express the data as follows:
 @
 <<Re-express_data>>=
 set.seed(1)
-data(backPain)
 subset(backPain, x1 == 1 & x2 == 1 & x3 == 1)
 backPainLong <- expandCategorical(backPain, "pain")
 head(backPainLong)
@@ -2403,7 +2428,7 @@ specifying the \Robject{id} factor through \Rfunarg{eliminate} so that the 12
 \Robject{id} effects are estimated more efficiently and are excluded from
 printed model summaries by default. This model is one
 dimensional since it involves only one function of $\mathbf{x} = (x1, x2,
-x3)$. We can compare this model to one with category-specific coefficents of the
+x3)$. We can compare this model to one with category-specific coefficients of the
 $x$ variables, as may be used for a qualitative categorical response:
 @
 <<Qualitative_model>>=

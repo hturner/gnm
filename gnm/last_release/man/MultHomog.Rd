@@ -52,7 +52,6 @@ MultHomog(..., inst = NULL)
   \code{\link{nonlin.function}}, \code{\link{Mult}}}
 \examples{
 set.seed(1)
-data(friend)
 
 ###  Fit an association model with homogeneous row-column effects
 rc1 <- gnm(Freq ~ r + c + Diag(r,c) + MultHomog(r, c),

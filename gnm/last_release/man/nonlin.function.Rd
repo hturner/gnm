@@ -93,7 +93,6 @@ Pur.wt.2
 ## Residual df:         10
 
 ### The definition of MultHomog
-data(occupationalStatus)
 MultHomog <- function(..., inst = NULL){
     dots <- match.call(expand.dots = FALSE)[["..."]]
     list(predictors = dots,

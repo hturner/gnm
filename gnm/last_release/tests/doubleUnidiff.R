@@ -1,6 +1,5 @@
 library(gnm)
 set.seed(1)
-data(cautres)
 
 doubleUnidiff <- gnm(Freq ~ election*vote + election*class*religion +
                      Mult(Exp(election), religion:vote) +

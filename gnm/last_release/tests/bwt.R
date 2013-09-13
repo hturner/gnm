@@ -1,5 +1,4 @@
 library(MASS)
-data(birthwt)
 example(birthwt)
 library(nnet)
 bwt.mu <- multinom(low ~ ., data = bwt)

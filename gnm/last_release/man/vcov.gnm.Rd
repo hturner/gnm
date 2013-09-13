@@ -68,7 +68,6 @@ in R: An overview of the gnm package.  At \url{http://cran.r-project.org}}
 \seealso{ \code{\link{getContrasts}}, \code{\link{se}} }
 \examples{
 set.seed(1)
-data(yaish)
 ## Fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(educ), orig:dest), family = poisson,

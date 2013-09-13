@@ -60,7 +60,6 @@
   \code{\link[MASS]{profile.glm}}}
 \examples{
 ### Example in which profiling doesn't take too long
-data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ -1 + Dref(origin, destination),
@@ -71,7 +70,6 @@ confint(classMobility, parm = 3:7, trace = TRUE)
 
 \dontrun{
 ### Profiling takes much longer here, but example more interesting!
-data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(educ), orig:dest), 
                ofInterest = "[.]educ", constrain = "[.]educ1",

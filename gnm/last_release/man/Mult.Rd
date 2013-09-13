@@ -69,7 +69,7 @@ set.seed(1)
 
 ## Using 'Mult' with 'Exp' to constrain the first constituent multiplier
 ##  to be non-negative
-data(yaish)
+
 ## Fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(educ), orig:dest),
@@ -79,8 +79,7 @@ unidiff <- gnm(Freq ~ educ*orig + educ*dest +
 ## (this example can take quite a while to run)
 ##
 ## Fitting two instances of a multiplicative interaction (i.e. a
-## two-component interaction)
-data(wheat)
+## two-component interaction))
 yield.scaled <- wheat$yield * sqrt(3/1000)
 treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
                           wheat$N, sep = ""))

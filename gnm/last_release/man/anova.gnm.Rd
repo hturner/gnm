@@ -51,7 +51,6 @@
 \seealso{ \code{\link{gnm}}, \code{\link{anova}}}
 \examples{
 set.seed(1)
-data(occupationalStatus)
 
 ##  Fit a uniform association model separating diagonal effects
 Rscore <- scale(as.numeric(row(occupationalStatus)), scale = FALSE)

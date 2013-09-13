@@ -6,7 +6,7 @@
   A 4-way contingency table of vote by class by religion
   in four French elections
 }
-\usage{data(cautres)}
+\usage{cautres}
 \format{
     A table of counts, with classifying factors \code{vote} (levels
     \code{1:2}), \code{class} (levels \code{1:6}) and \code{religion}
@@ -21,7 +21,6 @@ Britain and France.  \emph{La Lettre de la Maison Francaise} \bold{8}.
 }
 \examples{
 set.seed(1)
-data(cautres)
 
 ##  Fit a "double UNIDIFF" model with the religion-vote and class-vote
 ##  interactions both modulated by nonnegative election-specific multipliers

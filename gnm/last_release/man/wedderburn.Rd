@@ -36,7 +36,7 @@ wedderburn(link = "logit")
 \seealso{ \code{\link{glm}}, \code{\link{gnm}}, \code{\link{family}} }
 \examples{
 set.seed(1)
-data(barley)  ##  data from Wedderburn (1974), see ?barley
+###  Use data from Wedderburn (1974), see ?barley
 
 ###  Fit Wedderburn's logit model with variance proportional to the
 ###  square of mu(1-mu)

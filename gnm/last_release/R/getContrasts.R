@@ -13,7 +13,7 @@ getContrasts <- function(model, set = NULL,
     if (!length(of.interest)) of.interest <- seq(l)
     coefNames <- names(coefs)
     if (is.null(set))
-        set <- unlist(relimp::pickFrom(coefNames[of.interest], 1, ...))
+        set <- unlist(pickFrom(coefNames[of.interest], 1, ...))
     setLength <- length(set)
     if (setLength == 0) stop(
             "No non-empty parameter set specified")

@@ -1,6 +1,5 @@
 library(gnm)
 set.seed(1)
-data(wheat)
 
 yield.scaled <- wheat$yield * sqrt(3/1000)
 treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,

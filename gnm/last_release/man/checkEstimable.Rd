@@ -34,7 +34,6 @@ checkEstimable(model, combMatrix = diag(length(coef(model))),
   redundancy. \emph{Biometrika}, \bold{84}, 187--196.
   }
 \examples{
-data(yaish)
 set.seed(1)
 
 ## Fit the "UNIDIFF" mobility model across education levels

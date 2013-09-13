@@ -1,6 +1,5 @@
 library(gnm)
 set.seed(1)
-data(backPain)
 
 library(nnet)
 .incidence <- class.ind(backPain$pain)

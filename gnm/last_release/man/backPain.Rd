@@ -7,7 +7,7 @@
   variables were recorded at presentation and progress was categorised
   three weeks after treatment.
 }
-\usage{data(backPain)}
+\usage{backPain}
 \format{
   A data frame with 101 observations on the following 4 variables.
   \describe{
@@ -29,7 +29,6 @@
 }
 \examples{
 set.seed(1)
-data(backPain)
 summary(backPain)
 
 ### Re-express as count data

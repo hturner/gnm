@@ -1,6 +1,5 @@
 library(gnm)
 set.seed(1)
-data(occupationalStatus)
 
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                MultHomog(origin, destination), family = poisson,
@@ -9,7 +8,6 @@ RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
 print(RChomog$deviance, digits=10)
 print(RChomog$df)
 
-data(friend)
 
 ###  Fit an association model with homogeneous row-column effects
 set.seed(4)

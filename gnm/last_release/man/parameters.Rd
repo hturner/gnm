@@ -22,7 +22,6 @@ parameters(object)
 \author{ Heather Turner }
 \seealso{ \code{\link{coefficients}}, \code{\link{gnm}} }
 \examples{
-data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                MultHomog(origin, destination), family = poisson,
                data = occupationalStatus, ofInterest = "MultHomog",

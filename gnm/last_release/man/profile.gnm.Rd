@@ -97,7 +97,6 @@
 set.seed(1)
 
 ### Example in which deviance is near quadratic
-data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ -1 + Dref(origin, destination),
@@ -113,7 +112,6 @@ cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 \dontrun{
 ### These examples take longer to run
 ### Another near quadratic example
-data(occupationalStatus)
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +
                MultHomog(origin, destination),
                ofInterest = "MultHomog", constrain = "MultHomog.*1",
@@ -126,7 +124,6 @@ coefData <- se(RChomog)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ## Another near quadratic example, with more complex constraints
-data(voting)
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
 classMobility <- gnm(yvar ~ -1 + Dref(origin, destination), 
@@ -143,7 +140,6 @@ coefData <- se(classMobility)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ### An example showing asymptotic deviance
-data(yaish)
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(educ), orig:dest),
                ofInterest = "[.]educ", constrain = "[.]educ1",
@@ -162,7 +158,6 @@ coefData <- se(unidiff)
 cbind(coefData[1] - 1.96 * coefData[2], coefData[1] + 1.96 * coefData[2])
 
 ### A far from quadratic example, also with eliminated parameters
-data(backPain)
 backPainLong <- expandCategorical(backPain, "pain")
 
 oneDimensional <- gnm(count ~ pain + Mult(pain, x1 + x2 + x3),

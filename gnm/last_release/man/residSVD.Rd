@@ -33,7 +33,7 @@ residSVD(model, fac1, fac2, d = 1)
 \seealso{ \code{\link{gnm}}, \code{\link{Mult}}} 
 \examples{
 set.seed(1)
-data(mentalHealth)
+
 ##  Goodman RC1  association model fits well (deviance 3.57, df 8)
 mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
 mentalHealth$SES <- C(mentalHealth$SES, treatment)

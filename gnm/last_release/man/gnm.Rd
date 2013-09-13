@@ -294,7 +294,6 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
 \examples{
 ###  Analysis of a 4-way contingency table
 set.seed(1)
-data(cautres)
 print(cautres)
 
 ##  Fit a "double UNIDIFF" model with the religion-vote and class-vote

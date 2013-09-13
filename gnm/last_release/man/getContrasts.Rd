@@ -91,7 +91,6 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
   \examples{
 ### Unscaled contrasts ###
 set.seed(1)
-data(yaish)
 
 ## Fit the "UNIDIFF" mobility model across education levels -- see ?yaish
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
@@ -108,7 +107,6 @@ plot(unidiffContrasts,
 
 ### Scaled contrasts (elliptical contrasts) ###
 set.seed(1)
-data(mentalHealth)
 
 ##  Goodman Row-Column association model fits well (deviance 3.57, df 8)
 mentalHealth$MHS <- C(mentalHealth$MHS, treatment)

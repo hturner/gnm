@@ -74,7 +74,7 @@ Dref(..., delta = ~ 1)
 ### (Results differ slightly - possible transcription error in
 ### published data?)
 set.seed(1)
-data(voting)
+
 ## reconstruct counts voting Labour/non-Labour
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)

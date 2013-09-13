@@ -6,7 +6,7 @@
   Incidence of \emph{R. secalis} on the leaves of ten varieties of barley grown
   at nine sites.
 }
-\usage{data(barley)}
+\usage{barley}
 \format{
   A data frame with 90 observations on the following 3 variables.
   \describe{
@@ -34,7 +34,6 @@ and the Gauss-Newton method.  \emph{Biometrika} \bold{61}, 439--47.
 
 }
 \examples{
-data(barley)
 set.seed(1)
 
 ###  Fit Wedderburn's logit model with variance proportional to [mu(1-mu)]^2

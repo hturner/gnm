@@ -6,7 +6,7 @@
   Intergenerational class mobility among the male populations of England
   and Wales; France, and Sweden.
 }
-\usage{data(erikson)}
+\usage{erikson}
 \format{
     A table of counts, with classifying factors \code{origin} (father's
     class; levels \code{I}, \code{II}, \code{III}, \code{IVa},
@@ -29,7 +29,6 @@
 }
 \examples{
 set.seed(1)
-data(erikson)
 
 ### Collapse to 7 by 7 table as in Erikson (1982)
 

@@ -1,6 +1,5 @@
 library(gnm)
 set.seed(1)
-data(voting)
 
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)

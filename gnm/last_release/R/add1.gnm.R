@@ -11,7 +11,7 @@ add1.gnm <- function (object, scope, scale = 0,
         Fs[df < .Machine$double.eps] <- NA
         P <- Fs
         nnas <- !is.na(Fs)
-        P[nnas] <- stats:::safe_pf(Fs[nnas], df[nnas], rdf - df[nnas],
+        P[nnas] <- pf(Fs[nnas], df[nnas], rdf - df[nnas],
             lower.tail = FALSE)
         list(Fs = Fs, P = P)
     }
@@ -109,7 +109,7 @@ add1.gnm <- function (object, scope, scale = 0,
         else "scaled dev."
         aod[, LRT] <- dev
         nas <- !is.na(dev)
-        dev[nas] <- stats:::safe_pchisq(dev[nas], aod$Df[nas], lower.tail = FALSE)
+        dev[nas] <- pchisq(dev[nas], aod$Df[nas], lower.tail = FALSE)
         aod[, "Pr(Chi)"] <- dev
     }
     else if (test == "F") {

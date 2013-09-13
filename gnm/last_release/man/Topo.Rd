@@ -30,7 +30,6 @@ Topo(..., spec = NULL)
 \seealso{ \code{\link{Symm}} and \code{\link{Diag}} for special cases }
 \examples{
 set.seed(1)
-data(erikson)
 
 ### Collapse to 7 by 7 table as in Erikson (1982)
 

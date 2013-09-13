@@ -62,7 +62,6 @@ NULL, terms = NULL, na.action = na.exclude, ...)
 \seealso{ \code{\link{gnm}} }
 \examples{
 set.seed(1)
-data(occupationalStatus)
 
 ##  Fit an association model with homogeneous row-column effects
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +

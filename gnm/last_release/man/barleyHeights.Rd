@@ -5,7 +5,7 @@
 \description{
   Average heights for 15 genotypes of barley recorded over 9 years.
 }
-\usage{data(barleyHeights)}
+\usage{barleyHeights}
 \format{
   A data frame with 135 observations on the following 3 variables.
   \describe{
@@ -23,7 +23,6 @@
   multiplicative interaction model. \emph{J. App. Stat.} \bold{18(3)}, 331--353.
 }
 \examples{
-data(barleyHeights)
 set.seed(1)
 ## Fit AMMI-1 model
 barleyModel <- gnm(height ~ year + genotype + Mult(year, genotype),

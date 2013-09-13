@@ -29,7 +29,6 @@ asGnm(object, ...)
 \seealso{ \code{\link{gnm}}, \code{\link{glm}}, \code{\link{lm}} }
 \examples{
 set.seed(1)
-data(wheat)
 
 ##  Scale yields to reproduce analyses reported in Vargas et al (2001)
 yield.scaled <- wheat$yield * sqrt(3/1000)

@@ -32,7 +32,6 @@ exitInfo(object)
 \author{ Heather Turner }
 \seealso{ \code{\link{gnm}}}
 \examples{
-data(cautres)
 
 ##  Fit a "double UNIDIFF" model with low iterMax for illustration!
 set.seed(1)

@@ -32,7 +32,6 @@ set.seed(1)
 
 ### Extract indices for use with ofInterest
 
-data(yaish)
 ## fit the "UNIDIFF" mobility model across education levels
 unidiff <- gnm(Freq ~ educ*orig + educ*dest +
                Mult(Exp(educ), orig:dest),
@@ -52,7 +51,7 @@ getContrasts(unidiff, ofInterest(unidiff))
 
 ## fit diagonal reference model with constant weights
 set.seed(1)
-data(voting)
+
 ## reconstruct counts voting Labour/non-Labour
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)

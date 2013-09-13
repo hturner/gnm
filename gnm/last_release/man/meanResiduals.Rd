@@ -48,7 +48,7 @@
   \item{ standardized }{ the \code{standardized} argument. }
   \item{ weights }{ the weights corresponding to the mean residuals. }
 }
-\examples{data(yaish)
+\examples{
 ## Fit a conditional independence model, leaving out
 ## the uninformative subtable for dest == 7:
 CImodel <- gnm(Freq ~ educ*orig + educ*dest, family = poisson,

@@ -129,14 +129,14 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
         if (identical(constrain, "[?]"))
             call$constrain <- constrain <-
-                unlist(relimp::pickFrom(coefNames,
-                                        edit.setlabels = FALSE,
-                                        title =
-                                        "Constrain one or more gnm coefficients",
-                                        items.label = "Model coefficients:",
-                                        warningText =
-                                        "No parameters were specified to constrain",
-                                        return.indices = TRUE))
+                unlist(pickFrom(coefNames,
+                                edit.setlabels = FALSE,
+                                title =
+                                "Constrain one or more gnm coefficients",
+                                items.label = "Model coefficients:",
+                                warningText =
+                                "No parameters were specified to constrain",
+                                return.indices = TRUE))
         if (is.character(constrain)) {
             res <- match(constrain, coefNames, 0)
             if (res == 0 && length(constrain) == 1){

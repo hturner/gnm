@@ -8,7 +8,7 @@
   the record of one representative; the first column records the
   representative's registered party allegiance.
 }
-\usage{data(House2001)}
+\usage{House2001}
 \format{
   A data frame with 439 observations on the following 21 variables.
   \describe{
@@ -55,7 +55,6 @@ iterated singular value decomposition.  \emph{Computational Statistics
 \examples{
 \dontrun{
 ## This example takes some time to run!
-data(House2001)
 summary(House2001)
 ## Put the votes in a matrix, and discard members with too many NAs etc:
 House2001m <- as.matrix(House2001[-1])

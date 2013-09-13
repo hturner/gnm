@@ -8,7 +8,7 @@ located in the Yaqui Valley near Ciudad Obregon, Sonora, Mexico --- factorial
 design using 24 treatments in all.  In each of the 10 years the experiment was 
 arranged in a randomized complete block design with three replicates.
 }
-\usage{data(wheat)}
+\usage{wheat}
 \format{
   A data frame with 240 observations on the following 33 variables.
   \describe{
@@ -54,7 +54,6 @@ trials.  \emph{Agronomy Journal} \bold{93}, 949--960.
 }
 \examples{
 set.seed(1)
-data(wheat)
 
 ##  Scale yields to reproduce analyses reported in Vargas et al (2001)
 yield.scaled <- wheat$yield * sqrt(3/1000)

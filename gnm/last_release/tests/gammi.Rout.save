@@ -1,7 +1,6 @@
 
-R Under development (unstable) (2012-09-29 r60838) -- "Unsuffered Consequences"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R Under development (unstable) (2013-09-11 r63910) -- "Unsuffered Consequences"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,9 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(gnm)
-Loading Tcl/Tk interface ... done
 > set.seed(1)
-> data(wheat)
 > 
 > yield.scaled <- wheat$yield * sqrt(3/1000)
 > treatment <- factor(paste(wheat$tillage, wheat$summerCrop, wheat$manure,
@@ -39,4 +36,4 @@ Done
 > 
 > proc.time()
    user  system elapsed 
-  5.084   0.108   5.218 
+  5.832   0.140   6.001 

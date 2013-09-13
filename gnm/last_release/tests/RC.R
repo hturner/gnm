@@ -1,6 +1,5 @@
 library(gnm)
 set.seed(1)
-data(mentalHealth)
 
 mentalHealth$MHS <- C(mentalHealth$MHS, treatment)
 mentalHealth$SES <- C(mentalHealth$SES, treatment)

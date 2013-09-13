@@ -43,7 +43,6 @@ ofInterest(object) <- value
 \seealso{ \code{\link{grep}}, \code{\link{gnm}}, \code{\link{se}},
   \code{\link{getContrasts}},\code{\link{profile.gnm}}, \code{\link{confint.gnm}}}
 \examples{
-data(yaish)
 set.seed(1)
 
 ## Fit the "UNIDIFF" mobility model across education levels

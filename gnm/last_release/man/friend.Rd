@@ -7,7 +7,7 @@
   closest friend. Data taken from wave 10 (year 2000) of the British
   Household Panel Survey.  
 }
-\usage{data(friend)}
+\usage{friend}
 \format{
  A table of counts, with classifying factors \code{r} (respondent's
  occupational category; levels \code{1:31}) and \code{c} (friend's
@@ -21,7 +21,6 @@
 }
 \examples{
 set.seed(1)
-data(friend)
 
 ###  Fit an association model with homogeneous row-column effects
 rc1 <- gnm(Freq ~ r + c + Diag(r,c) + MultHomog(r, c),

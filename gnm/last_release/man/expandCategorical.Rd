@@ -61,7 +61,6 @@ expandCategorical(data, catvar, sep = ".", countvar = "count",
 \examples{
 ### Example from help(multinom, package = "nnet")
 library(MASS)
-data(birthwt)
 example(birthwt)
 library(nnet)
 bwt.mu <- multinom(low ~ ., data = bwt)
@@ -76,7 +75,6 @@ summary(bwt.po) # same deviance; df reflect extra id parameters
 
 ### Example from ?backPain
 set.seed(1)
-data(backPain)
 summary(backPain)
 backPainLong <- expandCategorical(backPain, "pain")
 

@@ -1,3 +1,25 @@
+#  Modification of profile.glm from the MASS package for R.
+#
+#  File MASS/profiles.q copyright (C) 1996 D. M. Bates and W. N. Venables.
+#
+#  port to R by B. D. Ripley copyright (C) 1998
+#
+#  corrections copyright (C) 2000,3,6,7 B. D. Ripley
+#  Copyright (C) 2005, 2006, 2008, 2012 Heather Turner
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
+
 profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
                          maxsteps = 10, stepsize = NULL, trace = FALSE, ...)
 {

@@ -6,6 +6,8 @@ Improvements
 
     o	now use lazy data loading
     o	improvements to vignette (with thanks to Michael Friendly).
+    o	copyright notices added to source files to clarify authorship, with
+    	appropriate credit given to contributors in Rd and DESCRIPTION files.
 
 
 

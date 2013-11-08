@@ -1,3 +1,18 @@
+#  Copyright (C) 2006 David Firth
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
+
 "quick.glm.fit" <-
 ##  A wrapper for glm.fit, which is much faster when a large number
 ##  of parameters can be eliminated, but which typically (if nIter is small)
@@ -29,7 +44,7 @@
         return(suppressWarnings(glm.fit(x, y, weights = weights,
                                         offset = offset,
                                         family = family)$coef))
-##  The rest handles the case of eliminated columns in X
+    ##  The rest handles the case of eliminated columns in X
     xElim <- x[ , seq(eliminate), drop = FALSE]
     if (eliminate < ncol(x))
         xNotElim <- cbind(1, x[ , (eliminate + 1):ncol(x), drop = FALSE])

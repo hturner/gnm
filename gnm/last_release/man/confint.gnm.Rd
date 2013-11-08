@@ -55,7 +55,8 @@
   confidence limits for each parameter. These will be labelled as
   (1-level)/2 and 1 - (1-level)/2 in \% (by default 2.5\% and 97.5\%).
 }
-\author{ Heather Turner }
+\author{ Modification of \code{\link[MASS]{confint.glm}} by W. N. Venables and
+  B. D. Ripley. Adapted for \code{"gnm"} objects by Heather Turner. }
 \seealso{ \code{\link{profile.gnm}}, \code{\link{gnm}},
   \code{\link[MASS]{profile.glm}}}
 \examples{

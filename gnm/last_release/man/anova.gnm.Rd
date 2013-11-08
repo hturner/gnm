@@ -42,7 +42,8 @@
 \value{
   An object of class \code{"anova"} inheriting from class \code{"data.frame"}.
 }
-\author{ Heather Turner }
+\author{ Modification of \code{\link{anova.glm}} by the R Core Team. Adapted
+  for \code{"gnm"} objects by Heather Turner. }
 \section{Warning }{ The comparison between two or more models will only
   be valid if they are fitted to the same dataset. This may be a problem
   if there are missing values and R's default of \code{na.action = na.omit}

@@ -23,7 +23,7 @@ checkEstimable(model, combMatrix = diag(length(coef(model))),
 }
 \value{A logical vector of length equal to the number of parameter combinations
   tested; \code{NA} where a parameter combination is identically zero.}
-\author{ David Firth }
+\author{ David Firth and Heather Turner }
 \seealso{
   \code{\link{gnm}}, 
   \code{\link{se}},

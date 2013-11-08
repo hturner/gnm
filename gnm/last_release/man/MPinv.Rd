@@ -36,7 +36,7 @@ MPinv(mat, tolerance = 100*.Machine$double.eps,
   inverse matrices. \emph{Neural Information Processing} \bold{8},
   25--29
 }
-\author{ David Firth }
+\author{ David Firth and Heather Turner }
 \seealso{\code{\link[MASS]{ginv}}}
 \examples{
 A <- matrix(c(1, 1, 0,

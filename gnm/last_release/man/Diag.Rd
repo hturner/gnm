@@ -24,7 +24,7 @@ if \code{binary = TRUE} is specified, the result is a coarser binary
 variable equal to 1 where all of the input factors are equal and 0 
 otherwise.
 }
-\author{ David Firth }
+\author{ David Firth and Heather Turner}
 \seealso{\code{\link{Symm}}}
 \examples{
 row <- gl(4, 4, 16)

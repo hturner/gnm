@@ -28,7 +28,7 @@ Exp(expression, inst = NULL)
     of the term, given a label for the predictor.}
   \item{ call }{the call to use as a prefix for parameter labels. } 
 }
-\author{ Heather Turner }
+\author{ Heather Turner and David Firth }
 \seealso{ \code{\link{gnm}}, \code{\link{formula}},
   \code{\link{nonlin.function}}}
 \examples{

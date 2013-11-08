@@ -89,7 +89,9 @@
 }
 \references{
   Chambers, J. M. and Hastie, T. J. (1992) \emph{Statistical Models in S} }
-\author{ Heather Turner }
+\author{ Modification of \code{\link[MASS]{profile.glm}} from the MASS
+  package. Originally D. M. Bates and W. N. Venables, ported to R by
+  B. D. Ripley, adapted for \code{"gnm"} objects by Heather Turner. }
 \seealso{ \code{\link{confint.gnm}},  \code{\link{gnm}},
   \code{\link[MASS]{profile.glm}}, \code{\link{ofInterest}}
 }

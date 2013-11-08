@@ -73,7 +73,8 @@
   typically in a balanced \code{aov} situation, the plot uses factor
   level combinations instead of the leverages for the x-axis.
 }
-\author{ Heather Turner (adaptation of \code{plot.lm}, as of R 2.2.1) }
+\author{ Modification of \code{\link{plot.lm}} by the R Core Team. Adapted
+  for \code{"gnm"} objects by Heather Turner. }
 \seealso{ \code{\link{gnm}}, \code{\link{plot.lm}} }
 \examples{
 set.seed(1)

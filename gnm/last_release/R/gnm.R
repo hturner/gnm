@@ -1,3 +1,22 @@
+#  Designed to take similar arguments to glm from the stats package from R;
+#  some of the code to handle the arguments is copied/modified from glm.
+#
+#  Copyright (C) 1995-2005 The R Core Team
+#  Copyright (C) 2005-2010, 2012, 2013 Heather Turner and David Firth
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
+
 gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                 constrain = numeric(0), #index of non-eliminated parameters
                 constrainTo = numeric(length(constrain)), family = gaussian,

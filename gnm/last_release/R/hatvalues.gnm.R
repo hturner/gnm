@@ -23,8 +23,9 @@ hatvalues.gnm <- function(model, ...) {
         ## no covElim!
         if (length(model$constrain))
             X <- X[, -model$constrain, drop = FALSE]
-        hat <- hat + (2 * rowSums(X * attr(var, "covElim")[eliminate,]) +
-                      attr(var, "varElim")[eliminate]) * scale
+        hat <- hat +
+            (2 * rowSums(X * attr(var, "covElim")[eliminate, , drop = FALSE]) +
+                 attr(var, "varElim")[eliminate]) * scale
     }
     hat <- naresid(model$na.action, hat)
     hat[is.na(hat)] <- 0

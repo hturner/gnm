@@ -382,8 +382,8 @@ gnmFit <-
     ## sweeps needed to get the rank right
         subtracted <- rowsum.default(X, eliminate, reorder = FALSE)/grp.size
         if (modelTools$termAssign[1] == 0) subtracted[,1] <- 0
-        theRank <- suppressWarnings(rankMatrix(X - subtracted[eliminate,])) +
-            nelim
+        theRank <- suppressWarnings(
+            rankMatrix(X - subtracted[eliminate, , drop = FALSE])) + nelim
         names(alpha) <- paste("(eliminate)", elim, sep = "")
     }
     else theRank <- suppressWarnings(rankMatrix(X))

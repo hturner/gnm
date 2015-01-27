@@ -153,7 +153,7 @@ profile.gnm <- function (fitted, which = ofInterest(fitted), alpha = 0.05,
         }
         prof[[par]] <- structure(data.frame(prof[[par]][!is.na(par.vals[,1])]),
                                  names = "z")
-        prof[[par]]$par.vals <- par.vals[!is.na(par.vals[,1]),]
+        prof[[par]]$par.vals <- par.vals[!is.na(par.vals[,1]), , drop = FALSE]
         attr(prof[[par]], "asymptote") <- asymptote
     }
     val <- structure(prof, original.fit = fitted, summary = summ)

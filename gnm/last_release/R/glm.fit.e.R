@@ -60,7 +60,7 @@ glm.fit.e <- function(
         y <- as.numeric(y[ord])
         weights <- weights[ord]
         offset <- offset[ord]
-        if (non.elim) x <- x[ord,]
+        if (non.elim) x <- x[ord, , drop = FALSE]
         eliminate <- eliminate[ord]
     }
     size <- tabulate(eliminate)
@@ -87,7 +87,7 @@ glm.fit.e <- function(
     if (non.elim) {
         ## sweeps needed to get the rank right
         subtracted <- rowsum.default(x, eliminate, reorder = FALSE)/size
-        x <- x - subtracted[eliminate,]
+        x <- x - subtracted[eliminate, , drop = FALSE]
         ## initial fit to drop aliased columns
         model <- lm.wfit(x, z, w, offset = os.vec)
         full.theta <- model$coefficients

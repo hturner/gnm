@@ -49,7 +49,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         xtf <- xtfrm(modelData$`(eliminate)`)
         ord <- order(xtf)
         if (ordTRUE <- !identical(ord, xtf)) {
-            modelData <- modelData[ord,]
+            modelData <- modelData[ord, , drop = FALSE]
             eliminate <- modelData$`(eliminate)`
         }
         nElim <- nlevels(eliminate)
@@ -308,11 +308,11 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             eliminate <- eliminate[reorder]
             offset <- offset[reorder]
         })
-        modelData <- modelData[reorder,]
+        modelData <- modelData[reorder, , drop = FALSE]
         y <- y[reorder]
         if (x) {
             asgn <- attr(fit$x, "assign")
-            fit$x <- fit$x[reorder,]
+            fit$x <- fit$x[reorder, , drop = FALSE]
             attr(fit$x, "assign") <- asgn
         }
     }
@@ -324,7 +324,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         attr <- attributes(data)
         if (!missing(subset)) {
             ind <- as.numeric(names(y))
-            lev <- do.call("expand.grid", attr$dimnames)[ind,]
+            lev <- do.call("expand.grid", attr$dimnames)[ind,, drop = FALSE]
             attr$dimnames <- apply(lev, 2, unique)
             attr$dim <- unname(sapply(attr$dimnames, length))
         }

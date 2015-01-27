@@ -1,4 +1,4 @@
-#  Copyright (C) 2005, 2008, 2010, 2012 Heather Turner
+#  Copyright (C) 2005, 2008, 2010, 2012, 2014 Heather Turner
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -45,15 +45,19 @@ predict.gnm <- function (object, newdata = NULL,
     else {
         modelTerms <- delete.response(terms(object))
         modelData <- model.frame(modelTerms, newdata, na.action = na.action,
-                                 xlev = object$xlevels)
+                                  xlev = object$xlevels)
+        ## temporary fix; add new data to original data to get levels right
+        modelData2 <- rbind(model.frame(object)[, colnames(modelData)],
+                            modelData)
         if (length(offID <- attr(modelTerms, "offset")))
             offset <- eval(attr(modelTerms, "variables")[[offID + 1]],
                            newdata)
         else
             offset <- eval(object$call$offset, newdata)
-        modelTools <- gnmTools(modelTerms, modelData)
+        modelTools <- gnmTools(modelTerms, modelData2)
         varPredictors <- modelTools$varPredictors(parameters(object))
         pred <- modelTools$predictor(varPredictors, term = type == "terms")
+        pred <- pred[-(1:length(object$y))]
         names(pred) <- rownames(modelData)
         if (!is.null(offset))  pred <- offset + pred
         switch(type, response = {pred <- family(object)$linkinv(pred)},
@@ -66,30 +70,31 @@ predict.gnm <- function (object, newdata = NULL,
             pred <- napredict(na.act, pred)
     }
     if (se.fit) {
-        V <- vcov(object, dispersion = dispersion)
+        V <- vcov(object, dispersion = dispersion, with.eliminate = TRUE)
         residual.scale <- as.vector(sqrt(attr(V, "dispersion")))
         if (missing(newdata))
             X <- model.matrix(object)
         else
             X <- modelTools$localDesignFunction(parameters(object),
                                                 varPredictors)
-        e <- object$eliminate
+        covElim <- attr(V, "covElim")[object$eliminate, , drop = FALSE]
         switch(type,
                link = {
-                   if (is.null(e))
+                   if (is.null(object$eliminate))
                        se.fit <- sqrt(diag(X %*% tcrossprod(V, X)))
-                   else se.fit <- sqrt(diag(X %*% tcrossprod(V, X)) +
-                                       2 * rowSums(X * attr(V, "covElim")[e,]) +
-                                       attr(var, "varElim")[e])},
+                   else se.fit <-
+                       sqrt(diag(X %*% tcrossprod(V, X)) +
+                                2 * rowSums(X * covElim) +
+                                    attr(V, "varElim")[object$eliminate])},
                response = {
                    eta <- na.omit(c(family(object)$linkfun(pred)))
                    d <- family(object)$mu.eta(eta)
-                   dX <- d * X
-                   if (is.null(e))
-                       se.fit <- sqrt(diag(dX %*% tcrossprod(V, dX)))
-                   else se.fit <- sqrt(diag(dX %*% tcrossprod(V, dX)) +
-                                       2*rowSums(dX * attr(V, "covElim")[e,]) +
-                                       d * attr(var, "varElim")[e])},
+                   if (is.null(object$eliminate))
+                       se.fit <- sqrt(diag(X %*% tcrossprod(V, X)))
+                   else se.fit <- sqrt(diag(X %*% tcrossprod(V, X)) +
+                                       2*rowSums(X * covElim) +
+                                       attr(V, "varElim")[object$eliminate])
+                   se.fit <- d * se.fit},
                terms = {
                    if (missing(newdata)) {
                        assign <- split(seq(ncol(X)), attr(X, "assign"))

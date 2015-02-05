@@ -9,6 +9,12 @@ Improvements
     o	copyright notices added to source files to clarify authorship, with
     	appropriate credit given to contributors in Rd and DESCRIPTION files.
 
+Bug fixes
+---------
+
+    o	expandCategorical now works when there are no covariates in the data
+    o	better handling of single-column model matrices
+    o	predict.gnm now handles eliminated factor correctly
 
 
 Changes in gnm 1.0-6

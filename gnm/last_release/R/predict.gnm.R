@@ -46,18 +46,14 @@ predict.gnm <- function (object, newdata = NULL,
         modelTerms <- delete.response(terms(object))
         modelData <- model.frame(modelTerms, newdata, na.action = na.action,
                                   xlev = object$xlevels)
-        ## temporary fix; add new data to original data to get levels right
-        modelData2 <- rbind(model.frame(object)[, colnames(modelData)],
-                            modelData)
         if (length(offID <- attr(modelTerms, "offset")))
             offset <- eval(attr(modelTerms, "variables")[[offID + 1]],
                            newdata)
         else
             offset <- eval(object$call$offset, newdata)
-        modelTools <- gnmTools(modelTerms, modelData2)
+        modelTools <- gnmTools(modelTerms, modelData)
         varPredictors <- modelTools$varPredictors(parameters(object))
         pred <- modelTools$predictor(varPredictors, term = type == "terms")
-        pred <- pred[-(1:length(object$y))]
         names(pred) <- rownames(modelData)
         if (!is.null(offset))  pred <- offset + pred
         switch(type, response = {pred <- family(object)$linkinv(pred)},

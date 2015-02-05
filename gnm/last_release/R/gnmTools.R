@@ -40,8 +40,8 @@
             if (!all(facs)) stop(paste(c("The following should be factors:",
                                          allVars[!facs]), collapse = " "))
             allLevels <- lapply(unitLabels[b],
-                                function(x) levels(factor(eval(parse(text = x),
-                                                               gnmData))))
+                                function(x) levels(eval(parse(text = x),
+                                                               gnmData)))
             labels <- unique(unlist(allLevels))
             if (!all(mapply(identical, allLevels, list(labels)))) {
                 labels <- sort(labels)

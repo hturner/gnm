@@ -20,9 +20,13 @@ predict.gnm <- function (object, newdata = NULL,
     type <- match.arg(type)
     if (type == "terms") {
         hasintercept <- attr(object$terms, "intercept") > 0L
-        if (is.null(terms))
-            terms <- c("(eliminate)"[!is.null(object$eliminate)],
-                       attr(object$terms, "term.labels"))
+        ## do not include eliminate term - cannot check estimability without
+        ## creating full matrix, defeating point of eliminate
+        if (is.null(terms)) {
+            terms <- attr(object$terms, "term.labels")
+        } else {
+            terms <- setdiff(terms, "(eliminate)")
+        }
     }
     if (missing(newdata)) {
         pred <- switch(type, link = object$predictors,
@@ -65,13 +69,13 @@ predict.gnm <- function (object, newdata = NULL,
         modelTools <- gnmTools(modelTerms, modelData)
         varPredictors <- modelTools$varPredictors(parameters(object))
         pred <- modelTools$predictor(varPredictors, term = type == "terms")
-        names(pred) <- rownames(modelData)
+        if (type == "terms") {
+            rownames(pred) <- rownames(modelData)
+        } else names(pred) <- rownames(modelData)
         if (!is.null(offset))  pred <- offset + pred
         if (!is.null(object$eliminate)) {
             prede <- attr(coef(object), "eliminate")
-            switch(type, terms = {pred <-
-                cbind(`(eliminate)` = prede[modelData$`(eliminate)`], pred)},
-                   pred <- prede[modelData$`(eliminate)`] + pred)
+            if (type != "terms") pred <- prede[modelData$`(eliminate)`] + pred
         }
         switch(type, response = {pred <- family(object)$linkinv(pred)},
                terms = {if (hasintercept) {
@@ -81,7 +85,7 @@ predict.gnm <- function (object, newdata = NULL,
                             pred <- structure(predc[, terms, drop = FALSE],
                                               constant = const)
                         } else structure(pred[, terms, drop = FALSE],
-                                                 constant = 0)},
+                                         constant = 0)},
                link = )
         if (!is.null(na.act <- attr(modelData, "na.action")))
             pred <- napredict(na.act, pred)
@@ -128,25 +132,25 @@ predict.gnm <- function (object, newdata = NULL,
                    }
                    se.fit <- matrix(, nrow = nrow(X), ncol = length(terms))
                    s <- 0
-                   adj <- hasintercept - !is.null(object$eliminate)
+                   adj <- hasintercept
                    for (i in match(terms, colnames(pred))) {
                        s <- s + 1
-                       if (terms[i] != "(eliminate)") {
-                           t <- assign[[i + adj]]
-                           ## check estimability of term
-                           comb <- rep.int(0, length(coef(object)))
-                           comb[t] <- 1
-                           estimable <- checkEstimable(object, comb)
-                           if (estimable) {
-                               se.fit[, s] <-
-                                   sqrt(diag(X[, t] %*%
-                                                 tcrossprod(V[t, t], X[, t])))
-                           }
-                       } else {
-                           se.fit[, 1] <- sqrt(varElim)
-                       }
+                       t <- assign[[i + adj]]
+                       se.fit[, s] <-
+                           sqrt(diag(X[, t] %*%
+                                         tcrossprod(V[t, t], X[, t])))
+                       ## check estimability of term
+                       Xt <- X
+                       Xt[, -t] <- 0
+                       estimable <- checkEstimable(object, t(Xt))
+                       is.na(se.fit)[estimable %in% c(FALSE, NA), s] <- TRUE
                    }
                })
+        ## check estimability of predictions
+        if (!missing(newdata) && type != "terms"){
+            estimable <- checkEstimable(object, t(X))
+            is.na(se.fit)[estimable %in% c(FALSE, NA)] <- TRUE
+        }
         if (!is.null(na.act)) {
             se.fit <- napredict(na.act, se.fit)
         }

@@ -1,7 +1,7 @@
 #  Modification of summary.glm from the stats package for R.
 #
 #  Copyright (C) 1995-2005 The R Core Team
-#  Copyright (C) 2005, 2006, 2010 Heather Turner
+#  Copyright (C) 2005, 2006, 2010, 2015 Heather Turner
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -27,13 +27,15 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         cov.scaled <- vcov(object, dispersion = dispersion,
                            with.eliminate = with.eliminate)
         ## non-eliminated par only
-        estimable <- checkEstimable(object, ...)
-        estimable[is.na(estimable)] <- FALSE
+        if (nrow(cov.scaled)) {
+            estimable <- checkEstimable(object, ...)
+            estimable[is.na(estimable)] <- FALSE
+        }
         if (is.matrix(cov.scaled))
             sterr <- sqrt(diag(cov.scaled))
         else
             sterr <- diag(cov.scaled)
-        is.na(sterr[!estimable]) <- TRUE
+        if (length(sterr)) is.na(sterr[!estimable]) <- TRUE
         if (with.eliminate){
             ## check estimability of eliminated coefficients
             X <- cbind(1, model.matrix(object)[,!is.na(coef(object))])
@@ -41,7 +43,9 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
                                  function(i) {
                                      quickRank(X[i, , drop = FALSE]) ==
                                          quickRank(X[i, -1, drop = FALSE]) + 1})
-            sterr <- c(ifelse(estimable2, sqrt(attr(cov.scaled, "varElim")), NA), sterr)
+            sterr <- c(ifelse(estimable2,
+                              sqrt(attr(cov.scaled, "varElim")), NA),
+                       sterr)
         }
         tvalue <- coefs/sterr
         dn <- c("Estimate", "Std. Error")

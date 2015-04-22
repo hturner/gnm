@@ -1,7 +1,7 @@
 Package: gnm
 Title: Generalized Nonlinear Models
-Version: 1.0-7
-Date: 2013-11-09
+Version: 1.0-8
+Date: 2015-04-21
 Authors@R: c(person("Heather", "Turner", role = c("aut", "cre"),
                     email = "ht@heatherturner.net"),
              person("David", "Firth", role = "aut"),

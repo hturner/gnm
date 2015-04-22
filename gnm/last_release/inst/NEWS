@@ -1,20 +1,36 @@
-Changes in gnm 1.0-7
+Changes in gnm 1.0-8
 ====================
 
 Improvements
 -------------
 
-    o	now use lazy data loading
+    o	now use lazy data loading.
     o	improvements to vignette (with thanks to Michael Friendly).
     o	copyright notices added to source files to clarify authorship, with
     	appropriate credit given to contributors in Rd and DESCRIPTION files.
 
+Changes in behaviour
+--------------------
+
+    o   predict.gnm now includes eliminate term in predictions on new data.
+
 Bug fixes
 ---------
 
-    o	expandCategorical now works when there are no covariates in the data
-    o	better handling of single-column model matrices
-    o	predict.gnm now handles eliminated factor correctly
+    o	expandCategorical now works when there are no covariates in the data.
+    o	better handling of single-column model matrices.
+    o	predict.gnm now works with se.fit = TRUE for models with eliminated 
+        terms; correctly handles new data without all levels of homogeneous 
+	factors present, and respects contrasts settings.
+    o	environment of formula preserved when using instances.
+
+Changes in gnm 1.0-7
+====================
+
+Bug fixes
+---------
+
+    o	corrected use of anova.glmlist in anova.gnm.
 
 
 Changes in gnm 1.0-6
@@ -23,7 +39,7 @@ Changes in gnm 1.0-6
 Bug fixes
 ---------
 
-    o	added catch for when deviance becomes NaN
+    o	added catch for when deviance becomes NaN.
 
 Changes in gnm 1.0-5
 ====================

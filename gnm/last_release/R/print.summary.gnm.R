@@ -1,7 +1,7 @@
 #  Modification of print.summary.glm from the stats package for R.
 #
 #  Copyright (C) 1995-2006 The R Core Team
-#  Copyright (C) 2006, 2008, 2009 Heather Turner
+#  Copyright (C) 2006, 2008, 2009, 2015 Heather Turner
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,19 +23,20 @@ print.summary.gnm <- function (x, digits = max(3, getOption("digits") - 3),
     cat("\nCall:\n", deparse(x$call), "\n", sep = "", fill = TRUE)
 
     cat("Deviance Residuals: \n")
-    if (x$df.residual > 5) {
+    if (length(x$deviance.resid) > 5) {
         x$deviance.resid <- quantile(x$deviance.resid, na.rm = TRUE)
         names(x$deviance.resid) <- c("Min", "1Q", "Median", "3Q",
             "Max")
     }
-    print.default(x$deviance.resid, digits = digits, na.print = "", print.gap = 2)
+    print.default(x$deviance.resid, digits = digits, na.print = "",
+                  print.gap = 2)
 
     tidy.zeros <- function(vec)
         ifelse(abs(vec) < 100 * .Machine$double.eps, 0, vec)
     coefs <- tidy.zeros(coef(x))
-    if (!is.null(ofInterest(x)))
+    if (length(ofInterest(x)) > 0)
         coefs <- coefs[ofInterest(x), , drop = FALSE]
-    non.elim <- nrow(coefs)
+    non.elim <- length(coefs)
     elim <- length(x$eliminated)
 
     if (non.elim | elim) {

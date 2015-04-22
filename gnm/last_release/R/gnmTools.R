@@ -34,11 +34,11 @@
         b <- block == i
         if (all(common[b])) {
             ## get full set of levels
-            allVars <- all.vars(reformulate(unitLabels[b]))
-            facs <- sapply(allVars, function(x) {
+            facs <- sapply(unitLabels[b], function(x) {
                 is.factor(eval(parse(text = x), gnmData))})
-            if (!all(facs)) stop(paste(c("The following should be factors:",
-                                         allVars[!facs]), collapse = " "))
+            if (!all(facs))
+                stop(paste(c("The following should be factors:",
+                             unitLabels[b][!facs]), collapse = "\n"))
             allLevels <- lapply(unitLabels[b],
                                 function(x) levels(eval(parse(text = x),
                                                                gnmData)))

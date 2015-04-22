@@ -38,6 +38,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         response <- variables[attr(fullTerms, "response")][1][[1]]
         fullTerms <- terms(reformulate(c(termLabels, offsetLabels), response),
                            keep.order = TRUE, data = data)
+        environment(fullTerms) <- environment(formula)
     }
 
     termLabels <- c("1"[attr(fullTerms, "intercept")],
@@ -177,5 +178,6 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                start = start,
                predictor = predictor,
                class = c("gnmTerms", "terms", "formula")))
+    environment(fullTerms) <- environment(formula)
     fullTerms
 }

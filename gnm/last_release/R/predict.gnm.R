@@ -47,14 +47,18 @@ predict.gnm <- function (object, newdata = NULL,
             attributes(pred) <- object$table.attr
     } else {
         modelTerms <- delete.response(terms(object))
-        ## evaluate eliminate in environment of formula
         if (is.null(object$eliminate)){
             modelData <- model.frame(modelTerms, newdata, na.action = na.action,
                                      xlev = object$xlevels)
         } else {
+            ## eliminate is evaluated in data/environment of formula
+            ## => need to substitute here
             modelData <-
-                model.frame(modelTerms, newdata, eliminate = eval(eliminate),
-                            na.action = na.action, xlev = object$xlevels)
+                eval(substitute(
+                    model.frame(modelTerms, newdata,
+                                eliminate = eliminate,
+                                na.action = na.action, xlev = object$xlevels),
+                    list(eliminate = object$call$eliminate)))
         }
         ## use same contrasts as in original model
         contr <- lapply(model.frame(object)[names(modelData)],

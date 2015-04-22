@@ -15,11 +15,13 @@
 
 gnmTerms <- function(formula, eliminate = NULL, data = NULL)
 {
+    env <- environment(formula)
     if (!is.null(eliminate)){
         formula <- as.formula(substitute(a ~ b - e - 1,
                                          list(a = formula[[2]],
                                               b = formula[[3]],
                                               e = eliminate)))
+        environment(formula) <- env
     }
     fullTerms <- terms(formula, specials = "instances", simplify = TRUE,
                        keep.order = TRUE, data = data)
@@ -38,7 +40,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         response <- variables[attr(fullTerms, "response")][1][[1]]
         fullTerms <- terms(reformulate(c(termLabels, offsetLabels), response),
                            keep.order = TRUE, data = data)
-        environment(fullTerms) <- environment(formula)
+        environment(fullTerms) <- env
     }
 
     termLabels <- c("1"[attr(fullTerms, "intercept")],
@@ -178,6 +180,5 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                start = start,
                predictor = predictor,
                class = c("gnmTerms", "terms", "formula")))
-    environment(fullTerms) <- environment(formula)
     fullTerms
 }

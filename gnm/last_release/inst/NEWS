@@ -1,3 +1,11 @@
+Changes in gnm 1.0-9
+====================
+
+Bug fixes
+---------
+
+    o	environment of formula preserved when using eliminate.
+
 Changes in gnm 1.0-8
 ====================
 

@@ -73,8 +73,9 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         cov.scaled <- matrix(, 0, 0)
     }
     df.f <- nrow(coef.table)
-    non.elim <- seq(object$coef) + nlevels(object$eliminate)*with.eliminate
-    elim <- seq(length.out = nlevels(object$eliminate)*with.eliminate)
+    non.elim <- seq_along(object$coef) +
+        nlevels(object$eliminate) * with.eliminate
+    elim <- seq(length.out = nlevels(object$eliminate) * with.eliminate)
     ans <- c(object[c("call", "ofInterest", "family", "deviance", "aic",
                       "df.residual", "iter")],
              list(deviance.resid = residuals(object, type = "deviance"),

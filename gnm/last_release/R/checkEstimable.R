@@ -1,4 +1,4 @@
-#  Copyright (C) 2005, 2006, 2008, 2010 David Firth and Heather Turner
+#  Copyright (C) 2005, 2006, 2008, 2010, 2015 David Firth and Heather Turner
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,8 +23,10 @@ checkEstimable <- function(model,
     combMatrix <- as.matrix(combMatrix)
     if (nrow(combMatrix) != l) stop(
           "dimensions of combMatrix do not match coef(model)")
+    ## remove constrained coefficients
     X <- model.matrix(model)[, !is.na(coefs), drop = FALSE]
-    combMatrix <- scale(combMatrix[!is.na(coefs), ], center = FALSE)
+    combMatrix <- scale(combMatrix[!is.na(coefs), , drop = FALSE],
+                        center = FALSE)
     resultNA <- apply(combMatrix, 2, function(col) any(is.na(col)))
     result <- logical(ncol(combMatrix))
     is.na(result) <- resultNA

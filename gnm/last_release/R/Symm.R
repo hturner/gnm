@@ -13,14 +13,16 @@
 #  A copy of the GNU General Public License is available at
 #  http://www.r-project.org/Licenses/
 
-Symm <- function(...){
+Symm <- function(..., separator = ":"){
+    if (!(is.character(separator) && nchar(separator) > 0)) stop(
+		 "separator must be a non-empty character string") 
     dots <- list(...)
     if (any(diff(sapply(dots, length)) != 0)) stop(
                 "arguments to symm() must all have same length")
     dots <- lapply(dots, as.factor)
     facMatrix <- sapply(dots, as.character)
     f <- function(row){
-        string <- paste(sort(row), collapse = "")
+        string <- paste(sort(row), collapse = separator)
         if (any(is.na(row))) is.na(string) <- TRUE
         string
     }

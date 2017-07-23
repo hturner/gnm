@@ -27,9 +27,9 @@ otherwise.
 \author{ David Firth and Heather Turner}
 \seealso{\code{\link{Symm}}}
 \examples{
-row <- gl(4, 4, 16)
-col <- gl(4, 1, 16)
-diag4by4 <- Diag(row, col)
-matrix(Diag(row, col, binary = TRUE), 4, 4)
+rowfac <- gl(4, 4, 16)
+colfac <- gl(4, 1, 16)
+diag4by4 <- Diag(rowfac, colfac)
+matrix(Diag(rowfac, colfac, binary = TRUE), 4, 4)
 }
 \keyword{ models }

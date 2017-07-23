@@ -7,10 +7,11 @@
   quasi-symmetry.
 }
 \usage{
-Symm(...)
+Symm(..., separator = ":")
 }
 \arguments{
   \item{\dots}{ one or more factors. }
+  \item{separator}{ a character string of length 1 or more, to be used in naming the levels of the resulting interaction factor. }
 }
 \value{
 A factor whose levels index the symmetric interaction of all factors 
@@ -20,9 +21,9 @@ supplied as input.
 \author{ David Firth and Heather Turner }
 \seealso{ \code{\link{Diag}}}
 \examples{
-row <- gl(4, 4, 16)
-col <- gl(4, 1, 16)
-symm4by4 <- Symm(row, col)
+rowfac <- gl(4, 4, 16)
+colfac <- gl(4, 1, 16)
+symm4by4 <- Symm(rowfac, colfac)
 matrix(symm4by4, 4, 4)
 }
 \keyword{ models }

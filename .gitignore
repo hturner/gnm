@@ -5,3 +5,8 @@
 src/*.o
 src/*.so
 src/*.dll
+vignettes/gnmOverview-*\.pdf
+vignettes/*.bbl
+vignettes/*.log
+vignettes/*.tex
+vignettes/*.toc

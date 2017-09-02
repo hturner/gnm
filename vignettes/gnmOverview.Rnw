@@ -2865,6 +2865,6 @@ We list here, for easy reference, all of the user-level functions in the
 
 \newpage
 \bibliography{gnm}
-\bibliographystyle{chicago}
+\bibliographystyle{jss}
 
 \end{document}

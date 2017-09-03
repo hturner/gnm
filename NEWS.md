@@ -1,5 +1,11 @@
-Changes in gnm 1.0-9
+Changes in gnm 1.1-0
 ====================
+
+Improvements
+------------
+
+ * C routines now registered to avoid accidental clashes with other packages
+   - use of `R_forceSymbols` routine requires R >= 3.0.0.
 
 Bug fixes
 ---------

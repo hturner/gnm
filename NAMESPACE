@@ -1,4 +1,4 @@
-useDynLib(gnm)
+useDynLib(gnm, .registration = TRUE, .fixes = "C_")
 export(asGnm, checkEstimable, Const, Diag,
        Dref, DrefWeights, exitInfo, Exp, expandCategorical, getContrasts,
        getModelFrame, gnm, instances, Inv, #Log, Logit,

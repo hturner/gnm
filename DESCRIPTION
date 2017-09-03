@@ -1,7 +1,6 @@
 Package: gnm
 Title: Generalized Nonlinear Models
-Version: 1.0-9
-Date: 2015-04-22
+Version: 1.1-0
 Authors@R: c(person("Heather", "Turner", role = c("aut", "cre"),
                     email = "ht@heatherturner.net"),
              person("David", "Firth", role = "aut"),
@@ -12,7 +11,7 @@ Authors@R: c(person("Heather", "Turner", role = c("aut", "cre"),
 Description: Functions to specify and fit generalized nonlinear models, including models with multiplicative interaction terms such as the UNIDIFF model from sociology and the AMMI model from crop science, and many others.  Over-parameterized representations of models are used throughout; functions are provided for inference on estimable parameter combinations, as well as standard methods for diagnostics etc.
 URL: http://go.warwick.ac.uk/gnm
 License: GPL-2 | GPL-3
-Depends: R (>= 2.3.0)
+Depends: R (>= 3.0.0)
 Imports: MASS, stats, graphics, Matrix, nnet, qvcalc (>= 0.8-3), relimp
 Suggests: vcdExtra
 LazyData: yes

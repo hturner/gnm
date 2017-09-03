@@ -160,10 +160,9 @@
 
     varPredictors <- function(theta) {
         for (i in seqFactor) {
-            prodList[[i]] <- .Call("submatprod", baseMatrix,
+            prodList[[i]] <- .Call(C_submatprod, baseMatrix,
                                    theta[thetaID[[i]]],
-                                   first[a[i]], nr, nc[i],
-                                   PACKAGE = "gnm", NAOK = TRUE)
+                                   first[a[i]], nr, nc[i])
         }
         prodList
     }
@@ -219,8 +218,8 @@
                 if (type[fi]) {
                     v <- attr(eval(varDerivs[[fi]], c(varPredictors, gnmData)),
                               "gradient")
-                    .Call("subprod", X, baseMatrix, as.double(v),
-                          first[i1], last[i2], nr, PACKAGE = "gnm")
+                    .Call(C_subprod, X, baseMatrix, as.double(v),
+                          first[i1], last[i2], nr)
                 }
             }
             if(!is.null(ind)) X[, a, drop = FALSE]
@@ -230,10 +229,10 @@
             if (is.null(ind)){
                 v <- attr(eval(specialVarDerivs, c(varPredictors, gnmData)),
                           "gradient")
-                .Call("newsubprod", baseMatrix, as.double(v), X,
+                .Call(C_newsubprod, baseMatrix, as.double(v), X,
                       first[a[tmpID]], first[vID], firstX[a[tmpID]],
                       as.integer(length(nCommon)), lt[tmpID], lastX[z[tmpID]],
-                      nr, nCommon, max(nCommon), PACKAGE = "gnm")
+                      nr, nCommon, max(nCommon))
             }
             else {
                 i1 <- convID[ind]
@@ -242,9 +241,8 @@
                 for(j in fi)
                     v[[j]] <- attr(eval(varDerivs[[j]], c(varPredictors, gnmData)),
                                    "gradient")
-                .Call("onecol", baseMatrix, as.double(unlist(v[fi])),
-                      first[i1], lt[fi[1]], nr, as.integer(length(fi)),
-                      PACKAGE = "gnm")
+                .Call(C_onecol, baseMatrix, as.double(unlist(v[fi])),
+                      first[i1], lt[fi[1]], nr, as.integer(length(fi)))
             }
         }
     }

@@ -18,6 +18,7 @@
 
 # include <Rinternals.h> /* for length */
 # include <R_ext/Applic.h> /* for dgemm */
+# include <R_ext/Rdynload.h> /* for registering routines */
 
 /* copied from src/main/array.c */
 static void matprod(double *x, int nrx, int ncx,
@@ -78,22 +79,6 @@ SEXP subprod(SEXP X, SEXP M, SEXP v, SEXP a, SEXP z, SEXP nv) {
     dX[i] = dM[i] * dv[j];
     i++;
   }
-  return(X);
-}
-
-/* put results of nonlin localDesignFunction in X */
-
-SEXP nonlin(SEXP X, SEXP a, SEXP z, SEXP expr, SEXP rho) {
-  R_len_t i = INTEGER(a)[0], i1 = 0, last = INTEGER(z)[0];
-  SEXP ans;
-  double *dX, *dans;
-  dX = REAL(X);
-  PROTECT(ans = coerceVector(eval(expr, rho), REALSXP));
-  dans = REAL(ans);
-  for ( ; i <= last;) {
-    dX[i++] = dans[i1++];
-  }
-  UNPROTECT(1);
   return(X);
 }
 
@@ -158,4 +143,27 @@ SEXP onecol(SEXP M, SEXP V, SEXP a, SEXP lt, SEXP nr, SEXP nc) {
   }
   UNPROTECT(1);
   return(col);
+}
+
+/* register routines */
+
+static const R_CallMethodDef callMethods[] = {
+    {"submatprod", (DL_FUNC) &submatprod, 5},
+    {"subprod", (DL_FUNC) &subprod, 6},
+    {"newsubprod", (DL_FUNC) &newsubprod, 12},
+    {"onecol", (DL_FUNC) &onecol, 6},
+    NULL
+};
+
+void R_init_gnm(DllInfo *info)
+{
+    /* Register the C and .Call routines.
+     No .C(), .Fortran() or .External() routines,
+     so pass those arrays as NULL.
+     */
+    R_registerRoutines(info,
+                       NULL, callMethods,
+                       NULL, NULL);
+    R_useDynamicSymbols(info, FALSE);
+    R_forceSymbols(info, TRUE);
 }

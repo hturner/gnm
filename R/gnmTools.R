@@ -1,4 +1,4 @@
-#  Copyright (C) 2005-2012 Heather Turner and David Firth
+#  Copyright (C) 2005-2017 Heather Turner and David Firth
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

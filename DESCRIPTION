@@ -12,6 +12,7 @@ Description: Functions to specify and fit generalized nonlinear models, includin
 URL: http://go.warwick.ac.uk/gnm
 License: GPL-2 | GPL-3
 Depends: R (>= 3.0.0)
-Imports: MASS, stats, graphics, Matrix, nnet, qvcalc (>= 0.8-3), relimp
+Imports: graphics, grDevices, MASS, Matrix, methods, nnet, qvcalc (>= 0.8-3), 
+  relimp, stats, utils
 Suggests: vcdExtra
 LazyData: yes

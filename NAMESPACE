@@ -8,11 +8,30 @@ export(asGnm, checkEstimable, Const, Diag,
        residSVD, se,
        Symm, termPredictors, Topo, wedderburn)
 
-import(MASS, stats, Matrix) # classes
-importFrom(graphics, plot)  # in plot.gnm; plot.profile.gnm
+importFrom(grDevices, as.graphicsAnnot, dev.interactive,
+           devAskNewPage, extendrange) # in plot.gnm
+importFrom(graphics, abline, axis, frame, legend, lines, mtext, panel.smooth, 
+           par, plot, points, strheight, text, 
+           title)  # in plot.gnm; plot.profile.gnm
+importFrom(methods, as) # in hatvalues.gnm
 importFrom(nnet, class.ind) # in gnmTools, expandCategorical
 importFrom(qvcalc, qvcalc) # in getContrasts
 importFrom(relimp, pickFrom) # in getContrasts
+importFrom(MASS, addterm, boxcox, dropterm, logtrans)
+importFrom(Matrix, rankMatrix, rowSums)
+importFrom(stats, .getXlevels, add.scope, add1, alias, anova, approx, 
+           as.formula, C, coef, confint, cooks.distance, delete.response,
+           deriv, deviance, df.residual, dfbeta, dfbetas, drop.scope, drop1, 
+           dummy.coef, effects, extractAIC, family, fitted.values, fitted, 
+           formula, gaussian, glm.control, glm.fit, hatvalues, influence,
+           is.empty.model, lm.wfit, make.link, model.extract, model.frame, 
+           model.matrix, model.offset, model.response, model.weights, na.action,
+           na.exclude, na.omit, na.pass, napredict, naresid, optim, pchisq, pf,
+           pnorm, poisson, predict, printCoefmat, profile, proj, pt, qnorm,
+           qqnorm, quantile, reformulate, residuals, rstandard, rstudent, runif, 
+           sd, spline, stat.anova, symnum, terms, terms.formula, update.formula,
+           update, variable.names, vcov, weights)
+importFrom(utils, flush.console) # in prattle, confint.gnm
 
 S3method(add1, gnm)
 S3method(addterm, gnm)

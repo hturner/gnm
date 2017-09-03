@@ -1,4 +1,4 @@
-#  Copyright (C) 2005, 2006, 2008, 2010, 2013 David Firth and Heather Turner
+#  Copyright (C) 2005-2017 David Firth and Heather Turner
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ getContrasts <- function(model, set = NULL,
                           stop("Specified ", refName, " is not an opton.")))
     }
     setCoefs <- coefs[coefNames %in% set]
-    contr <- setCoefs - ref %*% setCoefs
+    contr <- setCoefs - as.vector(ref %*% setCoefs)
     grad <- diag(rep(1, setLength))
     grad <- grad - ref
     rownames(grad) <- set
@@ -75,7 +75,7 @@ getContrasts <- function(model, set = NULL,
                    unit = rep.int(1, setLength),
                    setLength = rep.int(1/setLength, setLength),
                    stop("Specified scaleWeights is not an opton."))
-        d <- setCoefs - scaleRef %*% setCoefs
+        d <- setCoefs - as.vector(scaleRef %*% setCoefs)
         vd <- scaleWeights * d
         vdd <- sqrt(drop(vd %*% d))
         contr <- contr/vdd

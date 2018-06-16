@@ -20,7 +20,7 @@
   default it is obtained from \code{object}. }
   \item{correlation}{ logical: if \code{TRUE}, the correlation matrix of
     the estimated parameters is returned. }
-  \item{digits}{ the number of siginificant digits to use when
+  \item{digits}{ the number of significant digits to use when
     printing. }
   \item{symbolic.cor}{ logical: if \code{TRUE}, the correlations are
     printed in a symbolic form rather than numbers (see

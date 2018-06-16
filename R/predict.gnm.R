@@ -63,7 +63,7 @@ predict.gnm <- function (object, newdata = NULL,
         ## use same contrasts as in original model
         contr <- lapply(model.frame(object)[names(modelData)],
                         attr, "contrasts")
-        for (i in which(!sapply(contr, is.null))){
+        for (i in which(!vapply(contr, is.null, TRUE))){
             modelData[[i]] <- C(modelData[[i]], contr[[i]])
         }
         if (length(offID <- attr(modelTerms, "offset"))){

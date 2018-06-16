@@ -14,8 +14,8 @@
 #  http://www.r-project.org/Licenses/
 
 getData <- function() {
-    nFrame <- match(TRUE, sapply(sys.calls(), function(x) {
-        identical(x[[1]], as.name("gnmTerms"))}))
+    nFrame <- match(TRUE, vapply(sys.calls(), function(x) {
+        identical(x[[1]], as.name("gnmTerms"))}, TRUE))
     get("data", sys.frame(nFrame))
 }
 

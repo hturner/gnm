@@ -26,7 +26,8 @@ meanResiduals <- function(object, by = NULL, standardized = TRUE,
                       list(formula = by, data = object$data,
                            subset = object$call$subset,
                            na.action = na.pass, drop.unused.levels = TRUE))
-        ## following loop needed due to bug in model.frame.default (fixed for R 2.12)
+        ## following loop needed due to bug in model.frame.default
+        ## (fixed for R 2.12)
         for(nm in names(by)) {
             f <- by[[nm]]
             if(is.factor(f) && length(unique(f[!is.na(f)])) < length(levels(f)))
@@ -35,7 +36,7 @@ meanResiduals <- function(object, by = NULL, standardized = TRUE,
         if (!is.null(object$na.action))
             by <- by[-object$na.action,]
     }
-    if (!all(sapply(by, is.factor)))
+    if (!all(vapply(by, is.factor, TRUE)))
         warning("Coercing variables specified by `by' to factors")
     fac <- factor(interaction(by)) # drop unused levels
     if (length(fac) != length(object$y))
@@ -47,7 +48,8 @@ meanResiduals <- function(object, by = NULL, standardized = TRUE,
     w  <- as.numeric(object$prior.weights *
                      object$family$mu.eta(predict(object, type = "link"))^2/
                      object$family$variance(object$fitted))
-    agg.wts <- tapply(w, by, sum) #unlike rowsum, keeps all levels of interaction
+    #unlike rowsum, following keeps all levels of interaction
+    agg.wts <- tapply(w, by, sum) 
     res <- tapply(r * w, by, sum)/agg.wts
     if (standardized) res <- res * sqrt(agg.wts)
     ## now compute degrees of freedom

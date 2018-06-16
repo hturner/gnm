@@ -1,7 +1,7 @@
 \name{ofInterest}
 \alias{ofInterest}
 \alias{ofInterest<-}
-\title{ Coefficents of Interest in a Generalized Nonlinear Model }
+\title{ Coefficients of Interest in a Generalized Nonlinear Model }
 \description{
   Retrieve or set the \code{"ofInterest"} component of a \code{"gnm"}
   (generalized nonlinear model) object.

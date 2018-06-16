@@ -22,7 +22,8 @@ gnmFit <-
               weights = rep.int(1, length(y)),
               offset = rep.int(0, length(y)),
               nobs = length(y),
-              start = rep.int(NA, length(modelTools$start) + nlevels(eliminate)),
+              start = rep.int(NA, 
+                              length(modelTools$start) + nlevels(eliminate)),
               etastart = NULL,
               mustart = NULL,
               tolerance = 1e-6,
@@ -52,7 +53,8 @@ gnmFit <-
     unspecified <- unname(is.na(tmpTheta))
     if (any(isLinear & unspecified)) {
         tmpTheta[isLinear & unspecified] <-
-            suppressWarnings(glm.fit.e(X[, isLinear & unspecified, drop = FALSE],
+            suppressWarnings(glm.fit.e(X[, isLinear & unspecified, 
+                                         drop = FALSE],
                                        y,
                                        family = family,
                                        intercept = FALSE,
@@ -130,7 +132,8 @@ gnmFit <-
             tmpOffset <- modelTools$predictor(varPredictors, term = TRUE)
             tmpOffset <- rowSums(naToZero(tmpOffset))
             tmpOffset  <- offset + alpha[eliminate] + tmpOffset
-            if (any(isLinear) && isTRUE(all.equal(unname(etastart), tmpOffset))) {
+            if (any(isLinear) && 
+                isTRUE(all.equal(unname(etastart), tmpOffset))) {
                 etastart <- mustart <- NULL
                 eval(family$initialize)
                 etastart <- family$linkfun(mustart)
@@ -179,7 +182,8 @@ gnmFit <-
                 Xi <- modelTools$localDesignFunction(theta,
                                                      varPredictors, i)
                 wXi <- weights * (abs(dmu) >= eps) * dmu * dmu/vmu * Xi
-                step <- sum((abs(y - mu) >= eps) * (y - mu)/dmu * wXi)/sum(wXi * Xi)
+                step <- sum((abs(y - mu) >= eps) * 
+                                (y - mu)/dmu * wXi)/sum(wXi * Xi)
                 otheta <- theta[i]
                 theta[i] <- as.vector(otheta + step)
                 if (!is.finite(theta[i])) {
@@ -252,7 +256,8 @@ gnmFit <-
         mu <- family$linkinv(eta)
         dev[1] <- sum(family$dev.resids(y, mu, weights))
         if (trace)
-            prattle("Initial Deviance = ", format(dev[1], nsmall = 6), "\n", sep = "")
+            prattle("Initial Deviance = ", format(dev[1], nsmall = 6), "\n",
+                    sep = "")
     }
     if (status == "not.converged") {
         X <-  modelTools$localDesignFunction(theta, varPredictors)

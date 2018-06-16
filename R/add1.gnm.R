@@ -90,8 +90,9 @@ add1.gnm <- function (object, scope, scale = 0,
                    eliminate = object$eliminate)
     dfs[1L] <- z$rank
     dev[1L] <- z$deviance
-    sTerms <- sapply(strsplit(Terms, ":", fixed = TRUE), function(x) paste(sort(x),
-        collapse = ":"))
+    sTerms <- vapply(strsplit(Terms, ":", fixed = TRUE),
+                     function(x) paste(sort(x),
+                                       collapse = ":"), character(1))
     for (tt in scope) {
         stt <- paste(sort(strsplit(tt, ":")[[1L]]), collapse = ":")
         usex <- match(asgn, match(stt, sTerms), 0L) > 0L
@@ -115,8 +116,9 @@ add1.gnm <- function (object, scope, scale = 0,
     aic <- aic + (extractAIC(object, k = k)[2L] - aic[1L])
     dfs <- dfs - dfs[1L]
     dfs[1L] <- NA
-    aod <- data.frame(Df = dfs, Deviance = dev, AIC = aic, row.names = names(dfs),
-        check.names = FALSE)
+    aod <- data.frame(Df = dfs, Deviance = dev, AIC = aic, 
+                      row.names = names(dfs),
+                      check.names = FALSE)
     if (all(is.na(aic)))
         aod <- aod[, -3]
     test <- match.arg(test)
@@ -134,11 +136,12 @@ add1.gnm <- function (object, scope, scale = 0,
     else if (test == "F") {
         if (fam == "binomial" || fam == "poisson")
             warning(gettextf("F test assumes quasi%s family",
-                fam), domain = NA)
+                             fam), domain = NA)
         rdf <- object$df.residual
         aod[, c("F value", "Pr(F)")] <- Fstat(aod, rdf)
     }
-    head <- c("Single term additions", "\nModel:", deparse(as.vector(formula(object))),
+    head <- c("Single term additions", "\nModel:", 
+              deparse(as.vector(formula(object))),
         if (scale > 0) paste("\nscale: ", format(scale), "\n"))
     class(aod) <- c("anova", "data.frame")
     attr(aod, "heading") <- head

@@ -107,7 +107,8 @@ drop1.gnm <- function (object, scope, scale = 0, test = c("none", "Chisq",
         P[nas] <- pf(Fs[nas], dfs[nas], rdf, lower.tail = FALSE)
         aod[, c("F value", "Pr(F)")] <- list(Fs, P)
     }
-    head <- c("Single term deletions", "\nModel:", deparse(as.vector(formula(object))),
+    head <- c("Single term deletions", "\nModel:", 
+              deparse(as.vector(formula(object))),
         if (!is.null(scale) && scale > 0) paste("\nscale: ",
             format(scale), "\n"))
     class(aod) <- c("anova", "data.frame")

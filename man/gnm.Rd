@@ -3,7 +3,7 @@
 \title{ Fitting Generalized Nonlinear Models }
 \description{
   \code{gnm} fits generalised nonlinear models using an
-  over-parameterised representation. Nonlinear terms are specified by
+  over-parameterized representation. Nonlinear terms are specified by
   calls to functions of class \code{"nonlin"}.
 }
 \usage{

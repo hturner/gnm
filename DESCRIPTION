@@ -1,18 +1,23 @@
 Package: gnm
 Title: Generalized Nonlinear Models
 Version: 1.1-0
-Authors@R: c(person("Heather", "Turner", role = c("aut", "cre"),
-                    email = "ht@heatherturner.net"),
-             person("David", "Firth", role = "aut"),
+Authors@R: c(person("Heather", "Turner", 
+                    email = "ht@heatherturner.net", role = c("aut", "cre"),
+                    comment = c(ORCID = "0000-0002-1256-3375")),
+             person("David", "Firth", role = "aut", 
+                    comment = c(ORCID = "0000-0003-0302-2312")),
              person("Brian", "Ripley", role = "ctb"),
-	     person("Bill", "Venables", role = "ctb"),
-	     person(c("Douglas", "M."), "Bates", role = "ctb"),
-	     person("Martin", "Maechler", role = "ctb"))
+	         person("Bill", "Venables", role = "ctb"),
+	         person(c("Douglas", "M."), "Bates", role = "ctb"),
+	         person("Martin", "Maechler", role = "ctb",
+	                comment = c(ORCID = "0000-0002-8685-9910")))
 Description: Functions to specify and fit generalized nonlinear models, including models with multiplicative interaction terms such as the UNIDIFF model from sociology and the AMMI model from crop science, and many others.  Over-parameterized representations of models are used throughout; functions are provided for inference on estimable parameter combinations, as well as standard methods for diagnostics etc.
-URL: http://go.warwick.ac.uk/gnm
+URL: https://github.com/hturner/gnm
+BugReports: https://github.com/hturner/gnm/issues
 License: GPL-2 | GPL-3
 Depends: R (>= 3.0.0)
 Imports: graphics, grDevices, MASS, Matrix, methods, nnet, qvcalc (>= 0.8-3), 
   relimp, stats, utils
 Suggests: vcdExtra
 LazyData: yes
+Language: en-GB

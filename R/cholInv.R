@@ -42,13 +42,13 @@ cholInv <- function (mat,
     n <- nrow(mat)
     elim <- 1:n %in% eliminate
     diag.indices <- (n * (0:(n - 1)) + 1:n)
-    T <- mat[diag.indices[eliminate]]
-    if (any(T == 0))
+    Tmat <- mat[diag.indices[eliminate]]
+    if (any(Tmat == 0))
       stop("an eliminated submatrix must have all diagonal entries non-zero.")
     W <- mat[!elim, !elim, drop = FALSE]
     U <- mat[elim, !elim, drop = FALSE]
-    Ti <- 1/T
-    k <- length(T)
+    Ti <- 1/Tmat
+    k <- length(Tmat)
     Ti.U <- Ti * U
     V.Ti <- t(Ti.U)
     Qmat <- W - crossprod(Ti.U, U)

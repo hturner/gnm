@@ -14,8 +14,8 @@
 #  http://www.r-project.org/Licenses/
 
 unlistOneLevel <- function(theList){
-     result <- vector(length = sum(sapply(theList,
-                      function(x) if(is.list(x)) length(x) else 1)),
+     result <- vector(length = sum(vapply(theList,
+                      function(x) if(is.list(x)) length(x) else 1, 1)),
                       mode = "list")
      count <- 0
      for (i in seq(theList)){

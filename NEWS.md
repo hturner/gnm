@@ -4,8 +4,11 @@ Changes in gnm 1.1-0
 Improvements
 ------------
 
- * C routines now registered to avoid accidental clashes with other packages
+ * C routines now registered to avoid accidental clashes with other packages.
    - use of `R_forceSymbols` routine requires R >= 3.0.0.
+ * use jss.bst vs chicago.bst in vignette.
+ * update imports to include recommended packages.
+ * avoid warnings regarding recycling a length 1 array.
 
 Bug fixes
 ---------

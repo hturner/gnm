@@ -22,7 +22,8 @@ pprod <- function(...) {
         tryProduct <- try(factorList[[1]] * do.call("Recall", factorList[-1]),
                           silent = TRUE)
         if (inherits(tryProduct, "try-error"))
-            stop("multiplication not implemented for types of argument supplied")
+            stop("multiplication not implemented for types of ",
+                 "argument supplied")
         else tryProduct
     }
 }

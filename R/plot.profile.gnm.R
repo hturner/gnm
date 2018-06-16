@@ -20,7 +20,7 @@
 
 plot.profile.gnm <- function (x, nseg, ...)
 {
-    nulls <- sapply(x, is.null)
+    nulls <- vapply(x, is.null, TRUE)
     if (all(nulls))
         return(NULL)
     x <- x[!nulls]

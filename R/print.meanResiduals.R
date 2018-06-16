@@ -13,7 +13,8 @@
 #  A copy of the GNU General Public License is available at
 #  http://www.r-project.org/Licenses/
 
-print.meanResiduals <- function (x, digits = max(3, getOption("digits") - 3), ...) {
+print.meanResiduals <- function (x, digits = max(3, getOption("digits") - 3),
+                                 ...) {
     cat("\nModel call:\n", deparse(attr(x, "call"),
                                    width.cutoff = options()$width),
         "\n", sep = "", fill = TRUE)

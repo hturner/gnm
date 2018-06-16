@@ -34,8 +34,8 @@
         b <- block == i
         if (all(common[b])) {
             ## get full set of levels
-            facs <- sapply(unitLabels[b], function(x) {
-                is.factor(eval(parse(text = x), gnmData))})
+            facs <- vapply(unitLabels[b], function(x) {
+                is.factor(eval(parse(text = x), gnmData))}, TRUE)
             if (!all(facs))
                 stop(paste(c("The following should be factors:",
                              unitLabels[b][!facs]), collapse = "\n"))
@@ -80,7 +80,7 @@
             nm <- paste(prefixLabels[tmpAssign], colnames(tmp)[!prefixOnly],
                         sep = "")
             names(tmpAssign) <- nm
-            termTools[b] <- lapply(split(1:ncol(tmp), tmpAssign),
+            termTools[b] <- lapply(split(seq_len(ncol(tmp)), tmpAssign),
                                    function(i, M) M[, i , drop = FALSE], tmp)
             factorAssign[b] <- split(tmpAssign, tmpAssign)
             adj <- adj + length(tmpAssign)
@@ -171,7 +171,8 @@
         if (term) {
             es <- lapply(attr(modelTerms, "predictor"), function(x) {
                 do.call("bquote", list(x, gnmData))})
-            tp <- matrix(sapply(es, eval, c(varPredictors, gnmData)), nr)
+            tp <- vapply(es, eval, double(nr),
+                         c(varPredictors, gnmData))
             colnames(tp) <- c("(Intercept)"[attr(modelTerms, "intercept")],
                               attr(modelTerms, "term.labels"))
             tp
@@ -239,7 +240,8 @@
                 fi <- unique(factorAssign[commonAssign == commonAssign[i1]])
                 v <- list()
                 for(j in fi)
-                    v[[j]] <- attr(eval(varDerivs[[j]], c(varPredictors, gnmData)),
+                    v[[j]] <- attr(eval(varDerivs[[j]], 
+                                        c(varPredictors, gnmData)),
                                    "gradient")
                 .Call(C_onecol, baseMatrix, as.double(unlist(v[fi])),
                       first[i1], lt[fi[1]], nr, as.integer(length(fi)))
@@ -247,8 +249,9 @@
         }
     }
 
-    toolList <- list(start = theta, constrain = constrain, varPredictors = varPredictors,
-                     predictor = predictor, localDesignFunction = localDesignFunction)
+    toolList <- list(start = theta, constrain = constrain, 
+                     varPredictors = varPredictors, predictor = predictor,
+                     localDesignFunction = localDesignFunction)
     if (x) toolList$termAssign <- termAssign[uniq]
     toolList
 }

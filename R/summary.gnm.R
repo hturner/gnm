@@ -39,10 +39,11 @@ summary.gnm <- function (object, dispersion = NULL, correlation = FALSE,
         if (with.eliminate){
             ## check estimability of eliminated coefficients
             X <- cbind(1, model.matrix(object)[,!is.na(coef(object))])
-            estimable2 <- sapply(split(1:nrow(X), object$eliminate),
+            estimable2 <- vapply(split(seq_len(nrow(X)), object$eliminate),
                                  function(i) {
                                      quickRank(X[i, , drop = FALSE]) ==
-                                         quickRank(X[i, -1, drop = FALSE]) + 1})
+                                         quickRank(X[i, -1, drop = FALSE]) + 1},
+                                 TRUE)
             sterr <- c(ifelse(estimable2,
                               sqrt(attr(cov.scaled, "varElim")), NA),
                        sterr)

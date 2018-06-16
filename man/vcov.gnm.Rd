@@ -52,7 +52,7 @@
     parameters.} 
 }
 \references{ Turner, H and Firth, D (2005). Generalized nonlinear models
-in R: An overview of the gnm package.  At \url{http://cran.r-project.org}}
+in R: An overview of the gnm package.  At \url{https://cran.r-project.org}}
 \author{ David Firth }
 \note{ The \code{gnm} class includes generalized linear models, and it
   should be noted that the

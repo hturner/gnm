@@ -17,7 +17,7 @@ Diag <- function(..., binary = FALSE){
     dots <- list(...)
     dots <- lapply(dots, as.factor)
     Levels <- sort(unique(unlist(lapply(dots, levels))))
-    facMatrix <- sapply(dots, as.character)
+    facMatrix <- vapply(dots, as.character, character(length(dots[[1]])))
     f <- function(row){
         if (all(is.na(row))) return(NA)
         if (all(!is.na(row)) && all(row == row[1])) return(row[1])

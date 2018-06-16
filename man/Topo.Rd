@@ -19,7 +19,7 @@ Topo(..., spec = NULL)
   \code{spec}, using the given factors as index variables.
 }
 \references{
-  Erikson, R., GoldThorpe, J. H. and Portocarero, L. (1982) Social
+  Erikson, R., Goldthorpe, J. H. and Portocarero, L. (1982) Social
   Fluidity in Industrial Nations: England, France and
   Sweden. \emph{Brit. J. Sociol.} \bold{33(1)}, 1-34.
 

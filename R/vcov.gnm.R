@@ -40,7 +40,7 @@ vcov.gnm <-  function(object, dispersion = NULL, with.eliminate = FALSE, ...){
                           dimnames = list(colnames(X), colnames(X)))
     if (!length(ind)) {
         if (nelim && with.eliminate) {
-            Ti <- 1/sapply(split(w, eliminate), sum)
+            Ti <- 1/vapply(split(w, eliminate), sum, 1)
             attr(cov.unscaled, "varElim") <- dispersion * Ti
         }
         return(structure(cov.unscaled, dispersion = dispersion,
@@ -57,7 +57,7 @@ vcov.gnm <-  function(object, dispersion = NULL, with.eliminate = FALSE, ...){
                                             rank = object$rank)
         } else {
             ## try without ridge and generalized inverse of Q
-            Ti <- 1/sapply(split(w, eliminate), sum)
+            Ti <- 1/vapply(split(w, eliminate), sum, 1)
             U <- rowsum(sqrt(w) * W.X, eliminate)
             W <- crossprod(W.X)
             Ti.U <- Ti * U

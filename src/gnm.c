@@ -152,7 +152,7 @@ static const R_CallMethodDef callMethods[] = {
     {"subprod", (DL_FUNC) &subprod, 6},
     {"newsubprod", (DL_FUNC) &newsubprod, 12},
     {"onecol", (DL_FUNC) &onecol, 6},
-    NULL
+    {NULL}
 };
 
 void R_init_gnm(DllInfo *info)

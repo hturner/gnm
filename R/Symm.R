@@ -17,10 +17,10 @@ Symm <- function(..., separator = ":"){
     if (!(is.character(separator) && nchar(separator) > 0)) stop(
 		 "separator must be a non-empty character string") 
     dots <- list(...)
-    if (any(diff(sapply(dots, length)) != 0)) stop(
-                "arguments to symm() must all have same length")
+    if (any(diff(vapply(dots, length, 1)) != 0)) stop(
+                "arguments to Symm() must all have same length")
     dots <- lapply(dots, as.factor)
-    facMatrix <- sapply(dots, as.character)
+    facMatrix <- vapply(dots, as.character, character(length(dots[[1]])))
     f <- function(row){
         string <- paste(sort(row), collapse = separator)
         if (any(is.na(row))) is.na(string) <- TRUE

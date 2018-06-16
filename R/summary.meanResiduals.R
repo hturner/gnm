@@ -14,7 +14,9 @@
 #  http://www.r-project.org/Licenses/
 
 # this should always be a summary based on single grouping factor
-summary.meanResiduals <- function (object, digits = max(3, getOption("digits") - 3), ...) {
+summary.meanResiduals <- function (object, 
+                                   digits = max(3, getOption("digits") - 3),
+                                   ...) {
     cat("\nModel call:\n", deparse(attr(object, "call"),
                                    width.cutoff = options()$width),
         "\n", sep = "", fill = TRUE)

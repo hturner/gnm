@@ -2,7 +2,7 @@ library(gnm)
 set.seed(1)
 
 time <- c(21, 18, 33, 17, 35, 23, 43)
-age <- unlist(sapply(time, seq, from = min(time)))
+age <- unlist(lapply(time, seq, from = min(time)))
 lowerMax <- min(age) - 1 #16
 upperMin <- max(age) + 1 #44
 leftSlope <- c(0.1, 0.2)

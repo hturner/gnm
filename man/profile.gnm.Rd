@@ -67,7 +67,7 @@
   \deqn{z_{(1 - \alpha)/2} * s_{\hat{\theta}}}{
     z_{(1 - alpha)/2} * s_theta.hat}
   where \eqn{s_{\hat{\theta}}}{s_theta.hat} is the standard error of
-  \eqn{\hat{\theta}}{theta.hat}. Strong assymetry is detected and
+  \eqn{\hat{\theta}}{theta.hat}. Strong asymmetry is detected and
   the stepsize is adjusted accordingly, to try to ensure that the range
   determined by \code{alpha} is adequately covered. \code{profile.gnm}
   will also attempt to detect if the deviance is asymptotic such that

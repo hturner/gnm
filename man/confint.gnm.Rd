@@ -37,7 +37,7 @@
   for more details.
 
   If a \code{"profile.gnm"} object is passed directly to \code{confint},
-  parametrs specified by \code{parm} must be a subset of the profiled
+  parameters specified by \code{parm} must be a subset of the profiled
   parameters.
   
   For unidentified parameters a confidence interval cannot be calculated
@@ -55,10 +55,10 @@
   confidence limits for each parameter. These will be labelled as
   (1-level)/2 and 1 - (1-level)/2 in \% (by default 2.5\% and 97.5\%).
 }
-\author{ Modification of \code{\link[MASS]{confint.glm}} by W. N. Venables and
+\author{ Modification of \code{MASS:::confint.glm} by W. N. Venables and
   B. D. Ripley. Adapted for \code{"gnm"} objects by Heather Turner. }
 \seealso{ \code{\link{profile.gnm}}, \code{\link{gnm}},
-  \code{\link[MASS]{profile.glm}}}
+  \code{\link{confint.glm}}, \code{\link{profile.glm}}}
 \examples{
 ### Example in which profiling doesn't take too long
 count <- with(voting, percentage/100 * total)

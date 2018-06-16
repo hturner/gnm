@@ -23,23 +23,28 @@ anova.gnm <- function (object, ..., dispersion = NULL, test = NULL)
         rep(FALSE, length(dotargs))
     else (names(dotargs) != "")
     if (any(named))
-        warning("the following arguments to 'anova.gnm' are invalid and dropped: ",
+        warning("the following arguments to 'anova.gnm' ",
+                "are invalid and dropped: ",
                 paste(deparse(dotargs[named]), collapse = ", "))
     dotargs <- dotargs[!named]
-    is.gnm <- unlist(lapply(dotargs, function(x) inherits(x, c("gnm", "glm"))))
+    is.gnm <- unlist(lapply(dotargs, function(x) 
+        inherits(x, c("gnm", "glm"))))
     dotargs <- dotargs[is.gnm]
     if (length(dotargs) > 0)
-        return(anova(structure(c(list(object), dotargs), class="glmlist"),
+        return(anova(structure(c(list(object), dotargs), 
+                               class="glmlist"),
                      dispersion = dispersion, test = test))
 
     x <- model.matrix(object)
     varlist <- attr(terms(object), "term.labels")
     varseq <- attr(x, "assign")
-    pars <- setdiff(unique(varseq), c(0, varseq[object$constrain]))
+    pars <- setdiff(unique(varseq), 
+                    c(0, varseq[object$constrain]))
 
     nvars <- length(varlist)
 
-    nonlinear <- match(TRUE, attr(terms(object), "type") != "Linear")
+    nonlinear <- match(TRUE, 
+                       attr(terms(object), "type") != "Linear")
 
     if (is.na(nonlinear))
         nonlinear <- nvars + 1

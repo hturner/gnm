@@ -147,7 +147,8 @@ plot.gnm <- function (x, which = c(1:3, 5),
     if (show[3]) {
         sqrtabsr <- sqrt(abs(rs))
         ylim <- c(0, max(sqrtabsr, na.rm = TRUE))
-        yl <- as.expression(substitute(sqrt(abs(YL)), list(YL = as.name(ylab23))))
+        yl <- as.expression(substitute(sqrt(abs(YL)), 
+                                       list(YL = as.name(ylab23))))
         yhn0 <- if (is.null(w)) yh else yh[w != 0]
         plot(yhn0, sqrtabsr, xlab = l.fit, ylab = yl, main = main,
             ylim = ylim, type = "n", ...)
@@ -192,7 +193,7 @@ plot.gnm <- function (x, which = c(1:3, 5),
                 ## using a "robust" method {not requiring dummy.coef}:
                 effM <- mf
                 for(j in seq_len(ncol(mf)))
-                    effM[, j] <- sapply(split(yh, mf[, j]), mean)[mf[, j]]
+                    effM[, j] <- vapply(split(yh, mf[, j]), mean, 1)[mf[, j]]
                 ord <- do.call(order, effM)
                 dm <- data.matrix(mf)[ord, , drop = FALSE]
                 ## #{levels} for each of the factors:
@@ -208,7 +209,8 @@ plot.gnm <- function (x, which = c(1:3, 5),
                      main = main, xlab = "Factor Level Combinations",
                      ylab = ylab5, type = "n", ...)
                 axis(1, at = ff[1]*(1:nlev[1] - 1/2) - 1/2,
-                     labels= x$xlevels[[1]][order(sapply(split(yh,mf[,1]), mean))])
+                     labels= x$xlevels[[1]][order(vapply(split(yh,mf[,1]), 
+                                                         mean, 1))])
                 mtext(paste(facvars[1],":"), side = 1, line = 0.25, adj=-.05)
                 abline(v = ff[1]*(0:nlev[1]) - 1/2, col="gray", lty="F4")
                 panel(facval, rs, ...)

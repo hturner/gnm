@@ -1112,7 +1112,7 @@ that are estimable!
 Similarly, \Rmethod{profile.gnm} and \Rmethod{confint.gnm} are only applicable
 to estimable parameters. The deviance function of a generalized nonlinear model
 can sometimes be far from quadratic and \Rmethod{profile.gnm} attempts to detect
-assymetry or asymptotic behaviour in order to return a sufficient profile for a
+asymmetry or asymptotic behaviour in order to return a sufficient profile for a
 given parameter. As an example, consider the following model, described later in
 Section \ref{sec:Unidiff}:
 
@@ -1135,7 +1135,7 @@ linear. We can plot the profile traces as follows:
 \end{figure}
 
 From these plots we can see that the deviance is approximately quadratic
-in \Robject{Mult(Exp(.), orig:dest).educ2}, assymetric in
+in \Robject{Mult(Exp(.), orig:dest).educ2}, asymmetric in
 \Robject{Mult(Exp(.), orig:dest).educ3} and \Robject{Mult(Exp(.),
   orig:dest).educ4} and asymptotic in \Robject{Mult(Exp(.), orig:dest).educ5}.
 When the deviance is approximately quadratic in a given parameter,
@@ -2154,7 +2154,7 @@ computed as follows:
 gamma[[2]][,1] + (gamma[[2]][,2]) %o% c(-1.96, 1.96)
 delta[[2]][,1] + (delta[[2]][,2]) %o% c(-1.96, 1.96)
 @ %def
-which broadly agree with Table 8 of Chadouef and Denis (1991), allowing for the
+which broadly agree with Table 8 of Chadoeuf and Denis (1991), allowing for the
 change in sign.
 
 On the basis of such confidence intervals we can investigate simplifications of

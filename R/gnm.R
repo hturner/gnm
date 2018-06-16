@@ -66,7 +66,13 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     }
 
     nobs <- nrow(modelData)
-    y <- model.response(modelData, "numeric")
+    y <- model.response(modelData, "any")
+    if (length(dim(y)) == 1L) {
+        nm <- rownames(y)
+        dim(y) <- NULL
+        if (!is.null(nm)) 
+            names(y) <- nm
+    }
     if (is.null(y))
         y <- rep(0, nobs)
 
@@ -326,7 +332,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
             ind <- as.numeric(names(y))
             lev <- do.call("expand.grid", attr$dimnames)[ind,, drop = FALSE]
             attr$dimnames <- apply(lev, 2, unique)
-            attr$dim <- unname(sapply(attr$dimnames, length))
+            attr$dim <- unname(vapply(attr$dimnames, length, 1))
         }
         fit$table.attr <- attr
     }

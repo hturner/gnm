@@ -14,6 +14,7 @@ Bug fixes
 ---------
 
  * environment of formula preserved when using eliminate.
+ * allow factor response in binomial models.
 
 Changes in gnm 1.0-8
 ====================

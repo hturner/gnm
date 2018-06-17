@@ -510,7 +510,6 @@ arguments must be specified in all cases:
     \Rfunction{deriv} should be used in the expression, e.g. \Rfunction{+}
     rather than \Rfunction{sum}.
 \end{description}
-Intercepts are added by default to predictors that are specified by formulae.
 If predictors are named, these names are used as a prefix for parameter labels
 or as the parameter label itself in the single-parameter case.
 

@@ -96,7 +96,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         stop("`family' not recognized")
     }
 
-    if (family$family == "binomial") {
+    if (family$family %in% c("binomial", "quasibinomial")) {
         if (is.factor(y) && NCOL(y) == 1)
             y <- y != levels(y)[1]
         else if (NCOL(y) == 2) {

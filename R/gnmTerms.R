@@ -39,7 +39,8 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         variables <- as.character(attr(fullTerms, "variables"))[-1]
         offsetLabels <- variables[attr(fullTerms, "offset")]
         response <- variables[attr(fullTerms, "response")][1][[1]]
-        fullTerms <- terms(reformulate(c(termLabels, offsetLabels), response),
+        new <- reformulate(c(termLabels, offsetLabels), ".")
+        fullTerms <- terms(update.formula(formula, new),
                            keep.order = TRUE, data = data)
         environment(fullTerms) <- env
     }

@@ -23,6 +23,11 @@ operates on k-level factors to produce a new factor having k+1 levels;
 if \code{binary = TRUE} is specified, the result is a coarser binary 
 variable equal to 1 where all of the input factors are equal and 0 
 otherwise.
+
+If the original levels are identical the levels of the factor created 
+in the \code{binary = FALSE} case will be in the same order, with 
+\code{"."} added as the first level. Otherwise the levels of the new 
+factor will be \code{"."} followed by the sorted combined levels.
 }
 \author{ David Firth and Heather Turner}
 \seealso{\code{\link{Symm}}}

@@ -40,7 +40,7 @@ ofInterest(object) <- value
   Regular expression matching is performed using \code{grep} with
   default settings.
 }
-\seealso{ \code{\link{grep}}, \code{\link{gnm}}, \code{\link{se}},
+\seealso{ \code{\link{grep}}, \code{\link{gnm}}, \code{\link{se.gnm}},
   \code{\link{getContrasts}},\code{\link{profile.gnm}}, \code{\link{confint.gnm}}}
 \examples{
 set.seed(1)

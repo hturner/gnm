@@ -26,7 +26,7 @@ checkEstimable(model, combMatrix = diag(length(coef(model))),
 \author{ David Firth and Heather Turner }
 \seealso{
   \code{\link{gnm}}, 
-  \code{\link{se}},
+  \code{\link{se.gnm}},
   \code{\link{getContrasts}}
 }
 \references{

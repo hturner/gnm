@@ -65,7 +65,7 @@ in R: An overview of the gnm package.  At \url{https://cran.r-project.org}}
   \code{constrain} argument to \code{gnm} or by a convention to handle
   linear aliasing). 
 }
-\seealso{ \code{\link{getContrasts}}, \code{\link{se}} }
+\seealso{ \code{\link{getContrasts}}, \code{\link{se.gnm}} }
 \examples{
 set.seed(1)
 ## Fit the "UNIDIFF" mobility model across education levels

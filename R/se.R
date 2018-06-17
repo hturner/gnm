@@ -14,27 +14,34 @@
 #  http://www.r-project.org/Licenses/
 
 ## now only computes se for non-eliminated parameters
-se <- function(model, estimate = NULL, checkEstimability = TRUE,
-               Vcov = NULL, dispersion = NULL, ...){
-    if (!inherits(model, "gnm")) stop("model is not of class \"gnm\"")
+se <- function(object, ...) {
+    UseMethod("se", object)
+}
+
+se.default <- function(object, ...){
+    stop("No se method defined for this class of object")
+}
+
+se.gnm <- function(object, estimate = NULL, checkEstimability = TRUE,
+                   Vcov = NULL, dispersion = NULL, ...){
     if (!is.null(Vcov) && !is.null(dispersion)){
         Vcov <- Vcov * dispersion
     } else {
-        Vcov <- vcov(model, dispersion = dispersion, use.eliminate = FALSE)
+        Vcov <- vcov(object, dispersion = dispersion, use.eliminate = FALSE)
     }
     if (!length(Vcov)) return("Model has no non-eliminated parameters")
-    coefs <- coef(model)
+    coefs <- coef(object)
     coefNames <- names(coefs)
-    eliminate <- model$eliminate
+    eliminate <- object$eliminate
     nelim <- nlevels(eliminate)
     l <- length(coefs)
     if (identical(estimate, "[?]"))
-        estimate <- pickCoef(model,
+        estimate <- pickCoef(object,
                              title = paste("Estimate standard errors",
                              "for one or more gnm coefficients"))
     if (is.null(estimate)){
-        if (!is.null(model$ofInterest)) estimate <- ofInterest(model)
-        else estimate <- seq(model$coefficients)
+        if (!is.null(object$ofInterest)) estimate <- ofInterest(object)
+        else estimate <- seq(object$coefficients)
     }
     if (is.character(estimate))
         estimate <- match(estimate, coefNames, 0)
@@ -63,7 +70,7 @@ se <- function(model, estimate = NULL, checkEstimability = TRUE,
     }
     estimable <- rep(TRUE, ncol(coefMatrix))
     if (checkEstimability) {
-        estimable <- checkEstimable(model, coefMatrix, ...)
+        estimable <- checkEstimable(object, coefMatrix, ...)
         if (any(!na.omit(estimable)))
             message("Std. Error is NA where estimate is fixed or ", 
                     "unidentified")

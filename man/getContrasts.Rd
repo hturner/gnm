@@ -77,7 +77,7 @@ getContrasts(model, set = NULL,  ref = "first", scaleRef = "mean",
   \code{qv} --- see \code{\link[qvcalc]{qvcalc}}.
 }
 \author{ David Firth and Heather Turner }
-\seealso{ \code{\link{gnm}}, \code{\link{se}},
+\seealso{ \code{\link{gnm}}, \code{\link{se.gnm}},
   \code{\link{checkEstimable}}, \code{\link[qvcalc]{qvcalc}},
   \code{\link{ofInterest}}}
 \references{

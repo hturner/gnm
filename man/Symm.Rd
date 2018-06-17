@@ -17,7 +17,6 @@ Symm(..., separator = ":")
 A factor whose levels index the symmetric interaction of all factors 
 supplied as input.
 }
-\note{\code{Symm} relies on the gtools package from CRAN}
 \author{ David Firth and Heather Turner }
 \seealso{ \code{\link{Diag}}}
 \examples{

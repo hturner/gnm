@@ -33,6 +33,7 @@ importFrom(stats, .getXlevels, add.scope, add1, alias, anova, approx,
            update, variable.names, vcov, weights)
 importFrom(utils, flush.console) # in prattle, confint.gnm
 
+export(se)
 S3method(add1, gnm)
 S3method(addterm, gnm)
 S3method(alias, gnm)
@@ -73,6 +74,7 @@ S3method(proj, gnm)
 S3method(residuals, gnm)
 S3method(rstandard, gnm)
 S3method(rstudent, gnm)
+S3method(se, gnm)
 S3method(summary, gnm)
 S3method(summary, meanResiduals)
 S3method(termPredictors, default)

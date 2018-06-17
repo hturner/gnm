@@ -35,8 +35,6 @@ confint.profile.gnm <- function (object, parm = names(object),
             sp <- spline(x = pro[, "par.vals"][, pm], y = pro[,
                 1])
         else sp <- spline(x = pro[, "par.vals"], y = pro[, 1])
-        print(pro[, "par.vals"][, pm])
-        print(pro[,1])
         est <- approx(sp$y, sp$x, xout = cutoff)$y
         ci[pm, ] <- ifelse(is.na(est) & attr(pro, "asymptote"),
                            c(-Inf, Inf), est)

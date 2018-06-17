@@ -104,8 +104,8 @@ getContrasts <- function(model, set = NULL,
                     call. = FALSE)
             return(NULL)
         }
-        cat("Note: the following contrasts are unestimable:\n")
-        print(names(iden)[iden %in% FALSE])
+        message("Note: the following contrasts are unestimable:")
+        messageVector(names(iden)[iden %in% FALSE])
     }
     not.unestimable <- iden | is.na(iden)
 

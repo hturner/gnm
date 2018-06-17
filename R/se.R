@@ -65,7 +65,8 @@ se <- function(model, estimate = NULL, checkEstimability = TRUE,
     if (checkEstimability) {
         estimable <- checkEstimable(model, coefMatrix, ...)
         if (any(!na.omit(estimable)))
-            cat("Std. Error is NA where estimate is fixed or unidentified\n")
+            message("Std. Error is NA where estimate is fixed or ", 
+                    "unidentified")
     }
     if (is.matrix(var))
         sterr <- sqrt(diag(var))

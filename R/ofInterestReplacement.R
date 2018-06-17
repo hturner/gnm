@@ -16,11 +16,11 @@
 "ofInterest<-" <- function(object, value = NULL) {
     coefNames <- names(coef(object))
     if (!is.null(value)) {
-        if (!any(value %in% seq(coefNames)))
-            stop("One or more replacement value is invalid.")
+        if (!all(value %in% seq(coefNames)))
+            stop("One or more replacement values is invalid.")
         names(value) <- coefNames[value]
     }
     object$ofInterest <- value
-    print(value)
+    messageVector(names(value))
     object
 }

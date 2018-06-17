@@ -93,7 +93,6 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     if (is.function(family))
         family <- family()
     if (is.null(family$family)) {
-        print(family)
         stop("`family' not recognized")
     }
 

@@ -252,6 +252,6 @@
     toolList <- list(start = theta, constrain = constrain, 
                      varPredictors = varPredictors, predictor = predictor,
                      localDesignFunction = localDesignFunction)
-    if (x) toolList$termAssign <- termAssign[uniq]
+    toolList$termAssign <- termAssign[uniq]
     toolList
 }

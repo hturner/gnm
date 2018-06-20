@@ -1,6 +1,12 @@
 Changes in gnm 1.1-0
 ====================
 
+Changes in behaviour
+--------------------
+
+ * generalize `Diag` and `Symm` to work with factors with levels that are not in alphabetical order. Factor levels are now only sorted by `Diag` if the input factors have different sets of levels.
+ * make `se()` generic to allow methods to be added (e.g. as in **logmult** package).
+
 Improvements
 ------------
 
@@ -9,12 +15,16 @@ Improvements
  * use jss.bst vs chicago.bst in vignette.
  * update imports to include recommended packages.
  * avoid warnings regarding recycling a length 1 array.
+ * avoid using `print` or `cat` outside print methods, so print output always optional (e.g. by setting `verbose` argument or using `suppressMessages`).
 
 Bug fixes
 ---------
 
- * environment of formula preserved when using eliminate.
- * allow factor response in binomial models.
+ * environment of formula preserved when using `gnm()` with `eliminate` argument.
+ * allow factor response in binomial gnms.
+ * allow matrix response in quasibinomial gnms.
+ * make `x = FALSE` also work when using `gnm()` with `eliminate` argument.
+ * allow response in formula to be specified as an expression (e.g. `D/E`) when formula uses `instances`.
 
 Changes in gnm 1.0-8
 ====================

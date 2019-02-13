@@ -1,3 +1,11 @@
+Changes in gnm 1.1-0.9999
+=========================
+
+Bug fixes
+---------
+
+ * `confint.profile.gnm()` now works for a single parameter  ![(#10)](https://github.com/hturner/gnm/issues/10)
+ 
 Changes in gnm 1.1-0
 ====================
 

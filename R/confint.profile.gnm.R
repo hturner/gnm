@@ -27,8 +27,8 @@ confint.profile.gnm <- function (object, parm = names(object),
     pct <- paste(round(100 * a, 1), "%")
     ci <- array(NA, dim = c(length(parm), 2), dimnames = list(parm, pct))
     cutoff <- qnorm(a)
-    std.err <- attr(object, "summary")$coefficients[, "Std. Error"]
-    parm <- parm[!is.na(std.err)[parm]]
+    std.err <- attr(object, "summary")$coefficients[parm, "Std. Error"]
+    parm <- parm[!is.na(std.err)]
     for (pm in parm) {
         pro <- object[[pm]]
         if (is.matrix(pro[, "par.vals"]))

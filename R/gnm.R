@@ -209,12 +209,21 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
 
         if (onlyLin) {
             if (any(is.na(start))) start <- NULL
-            fit <- glm.fit.e(X, y, weights = weights, start = start,
-                             etastart = etastart, mustart = mustart,
-                             offset = offset, family = family,
-                             control = glm.control(tolerance, iterMax, trace),
+            if (method == "nbFit"){
+                fit <- nbFit("glm.fit.e", family = family, offset = offset,
                              intercept = attr(modelTerms, "intercept"),
+                             control = glm.control(tolerance, iterMax, trace),
+                             X, y, weights = weights, start = start,
+                             etastart = etastart, mustart = mustart,
                              eliminate = eliminate)
+            } else {
+                fit <- glm.fit.e(X, y, weights = weights, start = start,
+                                 etastart = etastart, mustart = mustart,
+                                 offset = offset, family = family,
+                                 control = glm.control(tolerance, iterMax, trace),
+                                 intercept = attr(modelTerms, "intercept"),
+                                 eliminate = eliminate)
+            }
             if (sum(is.na(coef(fit))) > length(constrain)) {
                 extra <- setdiff(which(is.na(coef(fit))), constrain)
                 ind <- order(c(constrain, extra))
@@ -341,6 +350,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
     if (model)
         fit$model <- modelData
     class(fit) <- c("gnm", "glm", "lm")
+    if (method == "nbFit") class(fit) <- c("nb", "negbin", class(fit))
     attr(fit, ".Environment") <- environment(gnm)
     fit
 }

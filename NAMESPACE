@@ -17,7 +17,7 @@ importFrom(methods, as) # in hatvalues.gnm
 importFrom(nnet, class.ind) # in gnmTools, expandCategorical
 importFrom(qvcalc, qvcalc) # in getContrasts
 importFrom(relimp, pickFrom) # in getContrasts
-importFrom(MASS, addterm, boxcox, dropterm, logtrans)
+importFrom(MASS, addterm, boxcox, dropterm, logtrans, theta.ml)
 importFrom(Matrix, rankMatrix, rowSums)
 importFrom(stats, .getXlevels, add.scope, add1, alias, anova, approx, 
            as.formula, C, coef, confint, cooks.distance, delete.response,
@@ -77,6 +77,7 @@ S3method(rstudent, gnm)
 S3method(se, gnm)
 S3method(summary, gnm)
 S3method(summary, meanResiduals)
+S3method(summary, nb)
 S3method(termPredictors, default)
 S3method(termPredictors, gnm)
 S3method(update, gnm)

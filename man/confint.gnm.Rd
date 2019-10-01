@@ -16,7 +16,7 @@
   \item{object}{ an object of class \code{"gnm"} or \code{"profile.gnm"}}
   \item{parm}{ (optional) either a numeric vector of indices or a
     character vector of names, specifying the parameters for which
-    confidence intervals are to be estimated. If \code{parm} is missing,
+    confidence intervals are to be estimated. If \code{parm} is \code{NULL},
     confidence intervals are found for all parameters.} 
   \item{level}{ the confidence level required. }
   \item{trace}{ a logical value indicating whether profiling should be
@@ -29,7 +29,7 @@
 
   For \code{"gnm"} objects, \code{profile.gnm} is first called to
   profile the deviance over each parameter specified by \code{parm}, or
-  over all parameters in the model if \code{parm} is missing.
+  over all parameters in the model if \code{parm} is \code{NULL}.
 
   The method for \code{"profile.gnm"} objects is then called, which
   interpolates the deviance profiles to estimate the limits of the

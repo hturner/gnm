@@ -19,7 +19,7 @@
     numeric vector of indices or \code{"[?]"} to select from a Tk
     dialog. In the second case coefficients given as a vector or the
     rows of a matrix, such that \code{NROW(estimate)} is equal to 
-    \code{length(coef(object))}. If missing, standard errors are returned
+    \code{length(coef(object))}. If \code{NULL}, standard errors are returned
     for all (non-eliminated) parameters in the model.}
   \item{checkEstimability}{ logical: should the estimability of
     all specified combinations be checked?}

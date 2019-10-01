@@ -14,7 +14,7 @@
   \item{fitted}{ an object of class \code{"gnm"}. }
   \item{which}{ (optional) either a numeric vector of indices or a
     character vector of names, specifying the parameters over which the
-    deviance is to be profiled. If missing, the deviance is profiled
+    deviance is to be profiled. If \code{NULL}, the deviance is profiled
     over all parameters. }  
   \item{alpha}{ the significance level of the z statistic, indicating
     the range that the profile must cover (see details). }
@@ -23,7 +23,7 @@
   \item{stepsize}{ (optional) a numeric vector of length two, specifying
     the size of steps to take when profiling down and up respectively,
     or a single number specifying the step size in both directions. If
-    missing, the step sizes will be determined automatically. }
+    \code{NULL}, the step sizes will be determined automatically. }
   \item{trace}{ logical, indicating whether profiling should be
     traced. } 
   \item{\dots}{ further arguments. }

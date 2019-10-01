@@ -22,7 +22,7 @@ gnm(formula, eliminate = NULL, ofInterest = NULL, constrain = numeric(0),
     improve computational efficiency. See details. }
   \item{ofInterest}{ optional coefficients of interest, specified by a
     regular expression, a numeric vector of indices, a character vector of
-    names, or "[?]" to select from a Tk dialog. If missing, it is
+    names, or "[?]" to select from a Tk dialog. If \code{NULL}, it is
     assumed that all non-\code{eliminate}d coefficients are of interest. }
   \item{constrain}{ (non-eliminated) coefficients to constrain, specified
     by a regular expression, a numeric vector of indices, a logical vector, a

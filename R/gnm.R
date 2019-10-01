@@ -42,8 +42,8 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                            drop.unused.levels = TRUE))
     modelData <- eval(modelData, parent.frame())
 
-    if (!missing(eliminate)) {
-        eliminate <- modelData$`(eliminate)`
+    eliminate <- modelData$`(eliminate)`
+    if (!is.null(eliminate)) {
         if (!is.factor(eliminate))
             stop("'eliminate' must be a factor")
         xtf <- xtfrm(modelData$`(eliminate)`)
@@ -106,7 +106,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         }
     }
 
-    if (is.empty.model(modelTerms) && missing(eliminate)) {
+    if (is.empty.model(modelTerms) && is.null(eliminate)) {
         if (method == "coefNames") return(numeric(0))
         else if (method == "model.matrix")
             return(model.matrix(modelTerms, data = modelData))
@@ -176,7 +176,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         if (is.null(start))
             start <- rep.int(NA, nElim + nParam)
         else if (length(start) != nElim + nParam) {
-            if (!missing(eliminate) && length(start) == nParam)
+            if (!is.null(eliminate) && length(start) == nParam)
                 start <- c(rep.int(NA, nElim), start)
             else
                 stop("length(start) must either equal the no. of parameters\n",
@@ -270,7 +270,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         return()
     }
 
-    if (is.null(ofInterest) && !missing(eliminate))
+    if (is.null(ofInterest) && !is.null(eliminate))
         ofInterest <- seq_len(nParam)
     if (identical(ofInterest, "[?]"))
         call$ofInterest <- ofInterest <-
@@ -291,7 +291,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
         names(ofInterest) <- coefNames[ofInterest]
     }
 
-    if (missing(data))
+    if (is.null(data))
         data <- environment(formula)
     fit <- c(list(call = call, formula = formula,
                   terms = modelTerms, data = data, eliminate = eliminate,
@@ -301,7 +301,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                   offset = offset, tolerance = tolerance, iterStart = iterStart,
                   iterMax = iterMax), fit)
 
-    if (!missing(eliminate) && ordTRUE) {
+    if (!is.null(eliminate) && ordTRUE) {
         reorder <- order(ord)
         fit <- within(fit, {
             y <- y[reorder]

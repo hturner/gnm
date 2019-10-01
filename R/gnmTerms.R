@@ -81,7 +81,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     inst[patch] <- 1
 
     nonsense <- tapply(inst, term, FUN = function(x)
-                   {!is.na(x) && !identical(as.integer(x), seq(x))})
+                   {!all(is.na(x)) && !identical(as.integer(x), seq(x))})
     if (any(nonsense))
         stop("Specified instances of ",
              paste(names(nonsense)[nonsense], ")"),

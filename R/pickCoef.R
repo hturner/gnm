@@ -17,7 +17,7 @@ pickCoef <- function(object, pattern = NULL, value = FALSE, ...){
     coefs <- names(coef(object))
     if (is.null(coefs))
         stop("Coefficient names cannot be extracted from 'object'")
-    if (missing(pattern)) {
+    if (is.null(pattern)) {
         default <- list(setlabels = "Selected coefficients",
                         title = "Select coefficients of interest",
                         items.label = "Model coefficients:",

@@ -28,7 +28,7 @@ predict.gnm <- function (object, newdata = NULL,
             terms <- setdiff(terms, "(eliminate)")
         }
     }
-    if (missing(newdata)) {
+    if (is.null(newdata)) {
         pred <- switch(type, link = object$predictors,
                        response = object$fitted.values,
                        terms = {pred <- termPredictors(object)
@@ -97,7 +97,7 @@ predict.gnm <- function (object, newdata = NULL,
     if (se.fit) {
         V <- vcov(object, dispersion = dispersion, with.eliminate = TRUE)
         residual.scale <- as.vector(sqrt(attr(V, "dispersion")))
-        if (missing(newdata)) {
+        if (is.null(newdata)) {
             X <- model.matrix(object)
             elim <- object$eliminate
         } else {
@@ -123,14 +123,14 @@ predict.gnm <- function (object, newdata = NULL,
                                        2*rowSums(X * covElim) + varElim)
                    se.fit <- d * se.fit},
                terms = {
-                   if (missing(newdata)) {
+                   if (is.null(newdata)) {
                        assign <- split(seq(ncol(X)), attr(X, "assign"))
                    } else {
                        M <- model.matrix(object)
                        assign <- split(seq(ncol(X)), attr(M, "assign"))
                    }
                    if (hasintercept) {
-                       if (missing(newdata)) {
+                       if (is.null(newdata)) {
                            X <- sweep(X, 2, colMeans(X))
                        } else X <- sweep(X, 2, colMeans(M))
                    }
@@ -151,7 +151,7 @@ predict.gnm <- function (object, newdata = NULL,
                    }
                })
         ## check estimability of predictions
-        if (!missing(newdata) && type != "terms"){
+        if (!is.null(newdata) && type != "terms"){
             estimable <- checkEstimable(object, t(X))
             is.na(se.fit)[estimable %in% c(FALSE, NA)] <- TRUE
         }

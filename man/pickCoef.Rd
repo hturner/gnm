@@ -12,7 +12,7 @@ pickCoef(object, pattern = NULL, value = FALSE, ...)
   \item{object}{ a model object. }
   \item{pattern}{ character string containing a regular expression or
     (with \code{fixed = TRUE}) a pattern to be matched exactly. If
-    missing, a Tk dialog will open for coefficient selection.  }
+    \code{NULL}, a Tk dialog will open for coefficient selection.  }
   \item{value}{ if \code{FALSE}, a named vector of indices, otherwise
     the value of the selected coefficients. }
   \item{\dots}{ arguments to pass on to \link[relimp]{pickFrom} if

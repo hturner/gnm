@@ -16,8 +16,8 @@
 residSVD <- function(model, fac1, fac2, d = 1) {
     if (!is.null(model$call$data)) {
         Data <- as.data.frame(eval(model$call$data, parent.frame()))
-        fac1 <- eval(match.call()$fac1, Data)
-        fac2 <- eval(match.call()$fac2, Data)
+        fac1 <- eval(match.call()$fac1, Data, parent.frame())
+        fac2 <- eval(match.call()$fac2, Data, parent.frame())
     }
     if (!inherits(model, "glm") && class(model) != "lm") stop(
                                         "model not of class lm, glm or gnm")

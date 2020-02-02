@@ -35,8 +35,10 @@ update.gnm <- function (object, formula., ..., evaluate = TRUE)
                            list(lhs, env = list("." = object$formula[[2]])))
             call$formula <- call("~", lhs, rhs)
         } else call$formula <- call("~", object$formula[[2]], rhs)
-        call$formula <- formula(terms.formula(call$formula, simplify = TRUE,
-                                              keep.order = TRUE))
+        f <- formula(terms.formula(call$formula, simplify = TRUE,
+                                   keep.order = TRUE))
+        environment(f) <- environment(formula.)
+        call$formula <- f
     }
     if (length(extras)) {
         existing <- !is.na(match(names(extras), names(call)))

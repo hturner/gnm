@@ -37,5 +37,5 @@ devtools::install_github("hturner/gnm")
 ## Code of conduct
 
 Please note that this project is released with a 
-[Contributor Code of Conduct](CONDUCT.md). By participating in this project you 
+[Contributor Code of Conduct](https://github.com/hturner/gnm/blob/master/CONDUCT.md). By participating in this project you 
 agree to abide by its terms.

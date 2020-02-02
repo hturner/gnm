@@ -58,7 +58,7 @@ getContrasts <- function(model, set = NULL,
                           "mean"= rep.int(1/setLength, setLength),
                           stop("Specified ", refName, " is not an opton.")))
     }
-    setCoefs <- coefs[coefNames %in% set]
+    setCoefs <- coefs[set]
     contr <- setCoefs - as.vector(ref %*% setCoefs)
     grad <- diag(rep(1, setLength))
     grad <- grad - ref

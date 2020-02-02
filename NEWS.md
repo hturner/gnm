@@ -6,6 +6,7 @@ Bug fixes
 
  * `confint.profile.gnm()` now works for a single parameter  ![(#10)](https://github.com/hturner/gnm/issues/10)
   * `gnm()` now works when `eliminate` is specified as `NULL` ![(#14)](https://github.com/hturner/gnm/issues/14)
+  * allow `set` argument of `getContrasts()` to be numeric, as documented
  
 Changes in gnm 1.1-0
 ====================

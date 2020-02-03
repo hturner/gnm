@@ -1,18 +1,14 @@
 ## Comments
 
-Addresses current notes on CRAN:
-
-- adds imports for functions in recommended packages
-- registered C routines
-- avoid warning re recycling length 1 array
-- avoid BibTeX errors by switching to jss.bst
-
-Plus various minor bug fixes.
+This is a minor update: 
+  * update tests to avoid failures due to minor discrepancies 
+  * fix the URI in the README
+  * fix minor bugs
 
 ## Test environments
 
 * Local
- - Windows 8, R 3.5.0
+ - Ubuntu 18.04.2, R 3.6.2
  
 * Via R-hub 
  - Mac OS 10.11 El Capitan, R-release (experimental)

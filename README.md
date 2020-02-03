@@ -18,7 +18,7 @@ combinations, as well as standard methods for diagnostics etc.
 
 ## Installation
 
-You can install **gnm** from github with:
+You can install **gnm** from GitHub with:
 
 ``` r
 # install.packages("devtools")

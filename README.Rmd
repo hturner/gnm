@@ -27,7 +27,7 @@ diagnostics etc.
 
 ## Installation
 
-You can install **gnm** from github with:
+You can install **gnm** from GitHub with:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")

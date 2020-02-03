@@ -1,12 +1,13 @@
-Changes in gnm 1.1-0.9999
-=========================
+Changes in gnm 1.1-1
+====================
 
 Bug fixes
 ---------
 
  * `confint.profile.gnm()` now works for a single parameter  ![(#10)](https://github.com/hturner/gnm/issues/10)
-  * `gnm()` now works when `eliminate` is specified as `NULL` ![(#14)](https://github.com/hturner/gnm/issues/14)
-  * allow `set` argument of `getContrasts()` to be numeric, as documented
+ * `gnm()` now works when `eliminate` is specified as `NULL` ![(#14)](https://github.com/hturner/gnm/issues/14)
+ * allow `set` argument of `getContrasts()` to be numeric, as documented
+ * convert old tests to unit tests.
  
 Changes in gnm 1.1-0
 ====================
@@ -372,7 +373,7 @@ Bug fixes
    non-convergence.
 
  * `gnm` now works correctly when a model is specified with nonlinear terms 
-   inbetween linear terms.
+   in between linear terms.
 
 
 Changes in gnm 0.9-1
@@ -476,7 +477,7 @@ Changes in Behaviour
    arguments to `model.frame`, unlike `model.matrix.lm`
 
  * `getContrasts` now results in a list only when the `sets` argument itself
-   is a list;  otherwise (ie, normally) the result is a single object 
+   is a list;  otherwise (i.e., normally) the result is a single object 
    (rather than a list of objects) of class `qv`
 
 Bug fixes
@@ -619,7 +620,7 @@ New Features
  * added the `method` argument to `MPinv`, to allow the method of 
    calculation to be specified.  Permitted values are `"svd"` to
    compute the pseudo-inverse by singular value decomposition, 
-   and `"chol"` to use the Cholseky decomposition instead.  The latter
+   and `"chol"` to use the Cholesky decomposition instead.  The latter
    is valid only for symmetric matrices, but is usually faster
    and more accurate.
 
@@ -756,7 +757,7 @@ Changes in Behaviour
    evaluates to a factor - this reverts the extension of 0.7-2.	
 
  * when using `gnm` with `constrain = "pick"`, the name(s) of the chosen 
-   parameter(s) will replace `"pick"` in the reurned model call.
+   parameter(s) will replace `"pick"` in the returned model call.
 
  * `getContrasts` now uses first level of a factor as the reference level
    (by default).

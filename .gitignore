@@ -12,3 +12,4 @@ vignettes/*.bbl
 vignettes/*.log
 vignettes/*.tex
 vignettes/*.toc
+^revdep$

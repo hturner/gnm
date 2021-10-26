@@ -1,3 +1,11 @@
+Changes in gnm 1.1-1.9999
+====================
+
+Bug fixes
+---------
+
+* `Symm()` now works for > 2 factors, fixes #16.
+
 Changes in gnm 1.1-1
 ====================
 

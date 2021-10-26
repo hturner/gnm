@@ -25,15 +25,11 @@ Symm <- function(..., separator = ":"){
                     TRUE)
     if (!all(check)) stop("factors must have the same levels")
     facMatrix <- vapply(dots, unclass, numeric(length(dots[[1]])))
-    f <- function(row){
-        string <- paste(Levels[sort(row)], collapse = separator)
-        if (any(is.na(row))) is.na(string) <- TRUE
-        string
+    f <- function(dat){
+        do.call("paste", c(lapply(dat, function(x) Levels[x]), sep = separator))
     }
-    n <- length(Levels)
-    seqn <- seq_len(n)
-    factor(apply(facMatrix, 1, f),
-           paste(Levels[rep(seqn, rev(seqn))],
-                 Levels[unlist(lapply(seqn, function(x) seq(x, n)))],
-                 sep = separator))
+    val <- as.data.frame(t(apply(facMatrix, 1, sort)))
+    ind <- unique(val)
+    ind <- ind[do.call(order, ind),]
+    factor(f(val), f(ind))
 }

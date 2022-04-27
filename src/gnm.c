@@ -16,9 +16,15 @@
 
 /* vector * matrix */
 
+#ifndef USE_FC_LEN_T
+# define USE_FC_LEN_T
+#endif
 # include <Rinternals.h> /* for length */
 # include <R_ext/Applic.h> /* for dgemm */
 # include <R_ext/Rdynload.h> /* for registering routines */
+#ifndef FCONE
+# define FCONE
+#endif
 
 /* copied from src/main/array.c */
 static void matprod(double *x, int nrx, int ncx,
@@ -48,7 +54,7 @@ static void matprod(double *x, int nrx, int ncx,
 		}
 	} else
 	    F77_CALL(dgemm)(transa, transb, &nrx, &ncy, &ncx, &one,
-			    x, &nrx, y, &nry, &zero, z, &nrx);
+			    x, &nrx, y, &nry, &zero, z, &nrx FCONE FCONE);
     } else /* zero-extent operations should return zeroes */
 	for(i = 0; i < nrx*ncy; i++) z[i] = 0;
 }

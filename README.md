@@ -4,10 +4,7 @@
 # gnm
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/gnm)](https://cran.r-project.org/package=gnm)
-[![Travis-CI Build
-Status](https://travis-ci.org/hturner/gnm.svg?branch=master)](https://travis-ci.org/hturner/gnm)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/hturner/gnm?branch=master&svg=true)](https://ci.appveyor.com/project/hturner/gnm)
+[![R-CMD-check](https://github.com/hturner/gnm/workflows/R-CMD-check/badge.svg)](https://github.com/hturner/gnm/actions)
 
 Functions to specify and fit generalized nonlinear models, including
 models with multiplicative interaction terms such as the UNIDIFF model

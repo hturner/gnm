@@ -1,10 +1,11 @@
-Changes in gnm 1.1-1.9999
+Changes in gnm 1.1-2
 ====================
 
 Bug fixes
 ---------
 
 * `Symm()` now works for > 2 factors, fixes #16.
+* Character strings passed from C to Fortran now handled correctly, fixes #17.
 
 Changes in gnm 1.1-1
 ====================

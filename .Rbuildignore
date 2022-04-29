@@ -21,4 +21,6 @@
 ^CONDUCT\.md$
 ^cran-comments\.md$
 ^revdep$
+^tools-revdep$
 ^\.github$
+^CRAN-SUBMISSION$

@@ -5,14 +5,13 @@
   This function uses the first \code{d} components of the singular value
   decomposition in order to approximate a vector of model residuals by a
   sum of \code{d} multiplicative terms, with the multiplicative
-  structure determined by two specified factors.  It applies to models
-  of class \code{lm}, \code{glm} or \code{gnm}.
+  structure determined by two specified factors.
 }
 \usage{
 residSVD(model, fac1, fac2, d = 1)
 }
 \arguments{
-  \item{model}{ an object of class \code{gnm}, \code{glm} or \code{lm} }
+  \item{model}{ a model object with \code{\link{na.action}}, \code{\link{residuals}}, and \code{\link{weights} methods, e.g. objects inheriting from class \code{"lm"} }
   \item{fac1}{ a factor }
   \item{fac2}{ a factor }
   \item{d}{ integer, the number of multiplicative terms to use in the approximation }

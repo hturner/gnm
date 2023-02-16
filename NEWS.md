@@ -3,6 +3,8 @@ Changes in gnm 1.1-3
 
 * Use QR decomposition vs initial GLM iteration to identify inestimable linear 
 parameters, fixes #21.
+* Remove class check in `residSVD()`, so it can be applied to model objects 
+that do not inherit from class `"lm"`.
 
 Changes in gnm 1.1-2
 ====================

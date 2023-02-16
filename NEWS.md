@@ -1,3 +1,9 @@
+Changes in gnm 1.1-3
+====================
+
+* Use QR decomposition vs initial GLM iteration to identify inestimable linear 
+parameters, fixes #21.
+
 Changes in gnm 1.1-2
 ====================
 

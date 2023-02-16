@@ -3,7 +3,7 @@
 
 # gnm
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/gnm)](https://cran.r-project.org/package=gnm)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/gnm)](https://cran.r-project.org/package=gnm)
 [![R-CMD-check](https://github.com/hturner/gnm/workflows/R-CMD-check/badge.svg)](https://github.com/hturner/gnm/actions)
 
 Functions to specify and fit generalized nonlinear models, including

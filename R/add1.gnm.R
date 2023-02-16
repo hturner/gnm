@@ -2,7 +2,7 @@
 #
 #  Copyright (C) 1994-8 W. N. Venables and B. D. Ripley
 #  Copyright (C) 1998-2005 The R Core Team
-#  Copyright (C) 2005, 2010 Heather Turner
+#  Copyright (C) 2005, 2010, 2023 Heather Turner
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -87,6 +87,8 @@ add1.gnm <- function (object, scope, scale = 0,
         ousex[1L] <- TRUE
     X <- x[, ousex, drop = FALSE]
     z <- glm.fit.e(X, y, wt, offset = offset, family = object$family,
+                   control = glm.control(object$tolerance, object$iterMax, 
+                                         object$trace),
                    eliminate = object$eliminate)
     dfs[1L] <- z$rank
     dev[1L] <- z$deviance
@@ -98,6 +100,8 @@ add1.gnm <- function (object, scope, scale = 0,
         usex <- match(asgn, match(stt, sTerms), 0L) > 0L
         X <- x[, usex | ousex, drop = FALSE]
         z <- glm.fit.e(X, y, wt, offset = offset, family = object$family,
+                       control = glm.control(object$tolerance, object$iterMax, 
+                                             object$trace),
                        eliminate = object$eliminate)
         dfs[tt] <- z$rank
         dev[tt] <- z$deviance

@@ -15,11 +15,11 @@
   }
 }
 \source{
-  Aastveit, A. H. \& Martens, H. (1986). ANOVA interactions interpreted
+  Aastveit, A. H. and Martens, H. (1986). ANOVA interactions interpreted
   by partial least squares regression. \emph{Biometrics}, \bold{42}, 829--844.
 }
 \references{
-  Chadoeuf, J \& Denis, J B (1991). Asymptotic variances for the
+  Chadoeuf, J and Denis, J B (1991). Asymptotic variances for the
   multiplicative interaction model. \emph{J. App. Stat.} \bold{18(3)}, 331--353.
 }
 \examples{

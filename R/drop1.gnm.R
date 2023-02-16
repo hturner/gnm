@@ -2,7 +2,7 @@
 #
 #  Copyright (C) 1994-8 W. N. Venables and B. D. Ripley
 #  Copyright (C) 1998-2005 The R Core Team
-#  Copyright (C) 2005, 2010, 2013 Heather Turner
+#  Copyright (C) 2005, 2010, 2013, 2023 Heather Turner
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -54,7 +54,10 @@ drop1.gnm <- function (object, scope, scale = 0, test = c("none", "Chisq",
         ii <- seq_along(asgn)[asgn == ndrop[i]]
         jj <- setdiff(seq(ncol(x)), ii)
         z <- glm.fit.e(x[, jj, drop = FALSE], y, wt, offset = object$offset,
-            family = object$family, eliminate = object$eliminate)
+                       family = object$family, 
+                       control = glm.control(object$tolerance, object$iterMax, 
+                                             object$trace),
+                       eliminate = object$eliminate)
         dfs[i] <- z$rank
         dev[i] <- z$deviance
     }

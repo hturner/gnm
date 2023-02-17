@@ -49,7 +49,14 @@ gnmFit <-
     varPredictors <- modelTools$varPredictors(tmpTheta)
     X <- modelTools$localDesignFunction(tmpTheta, varPredictors)
     isLinear <- unname(!is.na(colSums(X)))
-    QR <- qr(X[, isLinear])
+    Xlinear <- X[, isLinear, drop = FALSE]
+    if (nelim){
+        ## sweeps needed to get the rank right
+        size <- tabulate(eliminate)
+        subtracted <- rowsum.default(Xlinear, eliminate, reorder = FALSE)/size
+        Xlinear <- Xlinear - subtracted[eliminate, , drop = FALSE]
+    }
+    QR <- qr(Xlinear)
     if (QR$rank < sum(isLinear)) {
         extraLin <- which(isLinear)[QR$pivot[-seq_len(QR$rank)]]
     } else extraLin <- numeric()

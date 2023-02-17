@@ -18,6 +18,6 @@ License: GPL-2 | GPL-3
 Depends: R (>= 3.0.0)
 Imports: graphics, grDevices, MASS, Matrix, methods, nnet, qvcalc (>= 0.8-3), 
   relimp, stats, utils
-Suggests: testthat, vcdExtra
+Suggests: logmult, testthat, vcdExtra
 LazyData: yes
 Language: en-GB

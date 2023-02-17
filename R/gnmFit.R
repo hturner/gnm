@@ -116,7 +116,7 @@ gnmFit <-
                           intercept = FALSE,
                           eliminate = if (nelim) eliminate else NULL,
                           coefonly = TRUE,
-                          ridge = ridge)})
+                          ridge = ridge - 1)})
             ## if no starting values for elim, use result of above
             if (initElim) alpha <- unname(attr(tmpTheta, "eliminated"))
             theta[unspecifiedLin] <- naToZero(tmpTheta)

@@ -2,12 +2,13 @@
 
 test_that("gnmFit handles extra linear constraints with eliminate", {
     if (requireNamespace("logmult")){
-        data(ocg1973)
+        data(ocg1973, package = "logmult")
         
         tab <- array(ocg1973, dim=c(nrow(ocg1973), ncol(ocg1973), 2))
         
         # model contains extra linear constraints
-        model <- hmskewL(tab[5:1, 5:1,], weighting="uniform", start=NA)
+        HMSkew <- logmult::HMSkew
+        model <- logmult::hmskewL(tab[5:1, 5:1,], weighting="uniform", start=NA)
         ass <- model$assoc
         
         # First score for Farmers is slightly different from original article
@@ -57,7 +58,7 @@ test_that("gnmFit handles computationally singular initial linear fit ", {
                 .Names = c("M", "W", "T")))
         
         # requires use of ridge in glm.fit.e 
-        model2 <- hmskewL(tab2, start=NA)
+        model2 <- logmult::hmskewL(tab2, start=NA)
         
         expect_equal(round(c(model2$assoc$phi), 2), c(0.18, 0.04, 0.18, 0.04))
         expect_equal(round(c(model2$assoc$row), 2),

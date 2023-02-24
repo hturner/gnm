@@ -13,3 +13,4 @@ vignettes/*.log
 vignettes/*.tex
 vignettes/*.toc
 ^revdep$
+**/.DS_Store

@@ -50,7 +50,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
     variables <- predvars <- as.list(attr(fullTerms, "variables"))[-1]
 
     specials <- which(vapply(variables, function(x) {
-        length(x) > 1 && inherits(match.fun(x[[1]]), "nonlin")
+        length(x) > 1 && inherits(get(x[[1]], envir = env), "nonlin")
     }, TRUE))
     if (!length(specials)) {
         n <- length(termLabels)
@@ -109,7 +109,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
         args <- eval(nonlinCall,
                             as.data.frame(data), environment(formula))
         args <- c(args, nonlin.function = deparse(nonlinCall[[1]]),
-                  list(data = data))
+                  list(data = data, envir = environment(formula)))
         tmp <- do.call("nonlinTerms", args)
         unitLabels[[j]] <- tmp$unitLabels
         if (!identical(tmp$prefix, "#")) {

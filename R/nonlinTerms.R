@@ -16,7 +16,8 @@
 nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                      common = seq(predictors), call = NULL,
                      match = numeric(length(predictors)),
-                     start = NULL, nonlin.function = NULL, data = NULL) {
+                     start = NULL, nonlin.function = NULL, data = NULL,
+                     envir = NULL) {
 
     shadow <- predictor <- predvars <- vars <- unitLabels <- hashLabels <-
         offsetLabels <- varLabels <- blockList <- matchID <-
@@ -68,7 +69,10 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
             vars[[i]] <- predvars[[i]] <-
                 as.list(attr(nonlinTerms, "variables"))[-1]
             specials <- vapply(vars[[i]], function(x) {
-                length(x) > 1 && inherits(match.fun(x[[1]]), "nonlin")}, TRUE)
+                length(x) > 1 && 
+                    inherits(get(as.character(x[[1]]), envir = envir), 
+                             "nonlin")}, 
+                TRUE)
             const <- attr(nonlinTerms, "specials")$Const
             if (length(const)) {
                 unitLabels[[i]] <- unitLabels[[i]][!unitLabels[[i]] %in%
@@ -101,7 +105,9 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
             for (j in seq(n)) {
                 if (nonlinear[j]) {
                     tmp <- do.call("Recall",
-                                   eval(parse(text = unitLabels[[i]][[j]])))
+                                   c(eval(parse(text = unitLabels[[i]][[j]]),
+                                        envir = envir),
+                                     envir = envir))
                     if (match[i]) {
                         if (any(tmp$matchID > 0)) {
                             shadow[[i]][[j]] <- tmp$prefix

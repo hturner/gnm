@@ -124,7 +124,6 @@ etc
 exitInfo
 expandCategorical
 extractAIC
-fac
 getContrasts
 getModelFrame
 glm
@@ -138,7 +137,6 @@ ic
 ij
 ik
 il
-indep
 ir
 iterMax
 iterStart
@@ -155,7 +153,6 @@ mExposure
 maleOver
 mentalHealth
 mfrow
-mult
 multTopo
 multinom
 mustart

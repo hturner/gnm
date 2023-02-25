@@ -17,12 +17,8 @@ test_that("RChomog model as expected for occupationalStatus data", {
 # Chan, T.W. and Goldthorpe, J.H. (2004)  
 # European Sociological Review, 20, 383–401.
 
-# set seed to compare to saved values (not all identifiable)
-suppressWarnings(RNGversion("3.0.0")) 
-set.seed(1)
-
 ###  Fit an association model with homogeneous row-column effects
-set.seed(4)
+
 ### Set diagonal elements to NA (rather than fitting exactly)
 dat <- as.data.frame(friend)
 id <- with(dat, r == c)
@@ -32,6 +28,8 @@ rc2 <- gnm(Freq ~ r + c + instances(MultHomog(r, c), 2),
 
 test_that("RChomog2 model as expected for friend data", {
     # association models not reported in original paper
-    expect_known_value(rc2,
-                       file = test_path("outputs/RChomog2.rds"))
+    pearson_chi_sq <- sum(na.omit(c(residuals(rc2, type = "pearson")))^2)
+    expect_equal(round(deviance(rc2), 2), 1006.91)
+    expect_equal(round(pearson_chi_sq, 2), 967.21)
+    expect_equal(df.residual(rc2), 810)
 })

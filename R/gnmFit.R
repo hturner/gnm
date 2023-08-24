@@ -15,7 +15,7 @@
 
 gnmFit <-
     function (modelTools, y,
-              constrain = numeric(0), # index of non-elimindated parameters
+              constrain = numeric(0), # index of non-eliminated parameters
               constrainTo = numeric(length(constrain)),
               eliminate = NULL, # now a factor
               family = poisson(),
@@ -44,12 +44,14 @@ gnmFit <-
     nelim <- nlevels(eliminate)
     non.elim <- seq.int(nelim + 1, length(start))
 
-    ## add constraints specified by modelTools and inestimable linear parameters
+    ## add constraints for inestimable linear parameters
     tmpTheta <- rep.int(NA_real_, nTheta)
+    tmpTheta[constrain] <- constrainTo
     varPredictors <- modelTools$varPredictors(tmpTheta)
     X <- modelTools$localDesignFunction(tmpTheta, varPredictors)
     isLinear <- unname(!is.na(colSums(X)))
-    Xlinear <- X[, isLinear, drop = FALSE]
+    unspecifiedLin <- isLinear & unname(is.na(tmpTheta))
+    Xlinear <- X[, unspecifiedLin, drop = FALSE]
     if (nelim){
         ## sweeps needed to get the rank right
         size <- tabulate(eliminate)
@@ -57,10 +59,10 @@ gnmFit <-
         Xlinear <- Xlinear - subtracted[eliminate, , drop = FALSE]
     }
     QR <- qr(Xlinear)
-    if (QR$rank < sum(isLinear)) {
-        extraLin <- which(isLinear)[QR$pivot[-seq_len(QR$rank)]]
+    if (QR$rank < sum(unspecifiedLin)) {
+        extraLin <- which(unspecifiedLin)[QR$pivot[-seq_len(QR$rank)]]
     } else extraLin <- numeric()
-    extra <- setdiff(c(modelTools$constrain, extraLin), constrain)
+    extra <- setdiff(extraLin, constrain)
     ind <- order(c(constrain, extra))
     constrain <- c(constrain, extra)[ind]
     constrainTo <- c(constrainTo, numeric(length(extra)))[ind]

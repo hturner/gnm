@@ -123,10 +123,7 @@
     }
     colnames(X) <- parLabels
     X <- X[, uniq, drop = FALSE]
-
-    ## check for zero columns
-    constrain <- which(colSums(X) == 0)
-
+    
     theta <- rep(NA, nTheta)
     for (i in blockID) {
         b <- block == i
@@ -249,7 +246,7 @@
         }
     }
 
-    toolList <- list(start = theta, constrain = constrain, 
+    toolList <- list(start = theta,
                      varPredictors = varPredictors, predictor = predictor,
                      localDesignFunction = localDesignFunction)
     toolList$termAssign <- termAssign[uniq]

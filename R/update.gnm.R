@@ -49,7 +49,7 @@ update.gnm <- function (object, formula., ..., evaluate = TRUE)
         }
     }
     if (evaluate)
-        eval(call, parent.frame())
+        eval(call, as.list(parent.frame()), environment(formula(object)))
     else call
 }
 

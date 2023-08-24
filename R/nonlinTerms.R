@@ -68,11 +68,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
                                          attr(nonlinTerms, "term.labels")))
             vars[[i]] <- predvars[[i]] <-
                 as.list(attr(nonlinTerms, "variables"))[-1]
-            specials <- vapply(vars[[i]], function(x) {
-                length(x) > 1 && 
-                    inherits(get(as.character(x[[1]]), envir = envir), 
-                             "nonlin")}, 
-                TRUE)
+            specials <- vapply(vars[[i]], isSpecial, envir = envir, TRUE)
             const <- attr(nonlinTerms, "specials")$Const
             if (length(const)) {
                 unitLabels[[i]] <- unitLabels[[i]][!unitLabels[[i]] %in%
@@ -200,7 +196,7 @@ nonlinTerms <- function(predictors, variables = NULL, term = NULL,
         sep <- character(length(call))
         sep[names(call) != ""] <- " = "
         call <- paste(names(call), sep, call, sep = "")
-        prefix <- paste(fn, "(", paste(call, collapse = ", "), ")",
+        prefix <- paste(deparse(fn), "(", paste(call, collapse = ", "), ")",
                         sep = "")
 
     }

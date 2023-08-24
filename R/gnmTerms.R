@@ -35,7 +35,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                         attr(fullTerms, "term.labels"))
         instLabels <- as.list(attr(fullTerms, "variables"))[inst + 1]
         termLabels[termLabels %in% instLabels] <- 
-            vapply(instLabels, eval, character(1))
+            vapply(instLabels, eval, envir = env, character(1))
         variables <- as.character(attr(fullTerms, "variables"))[-1]
         offsetLabels <- variables[attr(fullTerms, "offset")]
         response <- variables[attr(fullTerms, "response")][1][[1]]
@@ -49,9 +49,7 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                     attr(fullTerms, "term.labels"))
     variables <- predvars <- as.list(attr(fullTerms, "variables"))[-1]
 
-    specials <- which(vapply(variables, function(x) {
-        length(x) > 1 && inherits(get(x[[1]], envir = env), "nonlin")
-    }, TRUE))
+    specials <- which(vapply(variables, isSpecial, envir = env, TRUE))
     if (!length(specials)) {
         n <- length(termLabels)
         attributes(fullTerms) <-
@@ -106,8 +104,8 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
 
     for (j in which(nonlinear)) {
         nonlinCall <- parse(text = unitLabels[[j]])[[1]]
-        args <- eval(nonlinCall,
-                            as.data.frame(data), environment(formula))
+        args <- eval(nonlinCall, c(data, as.list(getNamespace("gnm"))), 
+                     environment(formula))
         args <- c(args, nonlin.function = deparse(nonlinCall[[1]]),
                   list(data = data, envir = environment(formula)))
         tmp <- do.call("nonlinTerms", args)
@@ -183,4 +181,15 @@ gnmTerms <- function(formula, eliminate = NULL, data = NULL)
                predictor = predictor,
                class = c("gnmTerms", "terms", "formula")))
     fullTerms
+}
+
+isSpecial <- function(x, envir){
+    if (length(x) == 1) return(FALSE)
+    # look for function in gnm first, then in environment of formula
+    fn <- try(match.fun(eval(x[[1]])), silent = TRUE)
+    if (inherits(fn, "try-error")){
+        # will error here if can't find function
+        fn <- match.fun(eval(x[[1]], envir = envir))
+    }
+    inherits(fn, "nonlin")
 }

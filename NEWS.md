@@ -5,6 +5,7 @@ Changes in gnm 1.1-3
 parameters, fixes #21.
 * Remove class check in `residSVD()`, so it can be applied to model objects 
 that do not inherit from class `"lm"`.
+* Improved handling of `"nonlin"` functions in formula: prioritise functions in gnm over other packages; handle namespacing with `::`. 
 
 Changes in gnm 1.1-2
 ====================

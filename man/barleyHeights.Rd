@@ -34,7 +34,7 @@ gamma <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]y"),
 delta <- getContrasts(barleyModel, pickCoef(barleyModel, "[.]g"),
                       ref = "mean", scaleWeights = "unit")
 
-## Corresponding CI's similar to Chadoeuf & Denis (1991) Table 8
+## Corresponding CI's similar to Chadoeuf and Denis (1991) Table 8
 ## (allowing for change in sign)
 gamma[[2]][,1] + (gamma[[2]][,2]) \%o\% c(-1.96, 1.96)
 delta[[2]][,1] + (delta[[2]][,2]) \%o\% c(-1.96, 1.96)

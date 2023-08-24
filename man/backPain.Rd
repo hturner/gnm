@@ -51,7 +51,7 @@ threeDimensional <- update(noRelationship, ~ . + pain:(x1 + x2 + x3))
 ## constrain scale of category-specific multipliers
 oneDimensional <- update(noRelationship,
                          ~ . + Mult(pain, offset(x1) + x2 + x3))
-## obtain identifiable contrasts & id possibly indistinguishable slopes
+## obtain identifiable contrasts; id possibly indistinguishable slopes
 getContrasts(oneDimensional, pickCoef(oneDimensional, "[.]pain"))
 
 \dontrun{

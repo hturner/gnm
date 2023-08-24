@@ -7,8 +7,8 @@ current CRAN checks (escaped LaTeX specials).
 
 Test environments
 
-* (Local) macOS 13.2.1, R 4.2.2
-* (Win-builder) Windows Server 2022, R-devel (2023-02-23 r83894 ucrt)
+* (Local) macOS 13.5, R 4.3,1
+* (Win-builder) Windows Server 2022, R-devel (2023-08-23 r85001 ucrt)
  
 No errors, warnings or notes.
  

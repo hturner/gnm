@@ -1,5 +1,3 @@
-context("model spec [Symm]")
-
 tol <- 1e-4
 
 test_that("confint works within function call", {
@@ -8,6 +6,5 @@ test_that("confint works within function call", {
         fit <- gnm(Freq ~ vote, family = poisson, data = d)
         confint(fit)
     }
-    expect_known_value(f(as.data.frame(cautres)),
-                       file = test_path("outputs/confint.rds"))
+    expect_snapshot_value(f(as.data.frame(cautres)), style = "json2")
 })

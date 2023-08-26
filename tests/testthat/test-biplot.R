@@ -1,5 +1,3 @@
-context("datasets [barley]")
-
 # set seed to fix sign in gnm
 suppressWarnings(RNGversion("3.0.0")) 
 set.seed(1)
@@ -9,8 +7,8 @@ set.seed(1)
 test_that("biplot model as expected for barley data", {
     biplotModel <- gnm(y ~ -1 + instances(Mult(site, variety), 2),
                        family = wedderburn, data = barley, verbose = FALSE)
-    expect_known_value(biplotModel,
-                       file = test_path("outputs/biplotModel.rds"))
+    expect_snapshot_value(biplotModel, style = "serialize",
+                          ignore_formula_env = TRUE)
     # rotate and scale fitted predictors
     barleyMatrix <- xtabs(biplotModel$predictors ~ site + variety,
                           data = barley)
@@ -23,17 +21,20 @@ test_that("biplot model as expected for barley data", {
     # compare vs matrices in Gabriel (1998): 
     # allow for sign change in gnm and in SVD on different systems
     # 3rd element in fit is 1.425 vs 1.42 in paper
-    expect_equivalent(round(abs(A), 2), 
-                      matrix(abs(c(-4.19, -2.76, -1.43, -1.85, -1.27, 
-                                   -1.16, -1.02, -0.65, 0.15, 
-                                   -0.39, -0.34, -0.05, 0.33, 0.16, 
-                                   0.4, 0.73, 1.46, 2.13)), nrow = 9))
-    expect_equivalent(round(abs(B), 2), 
-                      matrix(abs(c(2.07, 3.06, 2.96, 1.81, 1.56,
-                                   1.89, 1.18, 0.85, 0.97, 0.60,
-                                   -0.97, -0.51, -0.33, -0.50, -0.08, 
-                                   1.08, 0.41, 1.15, 1.27, 1.40)), nrow = 10))
-    expect_equivalent(sign(tcrossprod(A, B)), sign(unclass(barleyMatrix)))
+    expect_equal(round(abs(A), 2), 
+                 matrix(abs(c(-4.19, -2.76, -1.43, -1.85, -1.27, 
+                              -1.16, -1.02, -0.65, 0.15, 
+                              -0.39, -0.34, -0.05, 0.33, 0.16, 
+                              0.4, 0.73, 1.46, 2.13)), nrow = 9),
+                 ignore_attr = TRUE)
+    expect_equal(round(abs(B), 2), 
+                 matrix(abs(c(2.07, 3.06, 2.96, 1.81, 1.56,
+                              1.89, 1.18, 0.85, 0.97, 0.60,
+                              -0.97, -0.51, -0.33, -0.50, -0.08, 
+                              1.08, 0.41, 1.15, 1.27, 1.40)), nrow = 10),
+                 ignore_attr = TRUE)
+    expect_equal(sign(tcrossprod(A, B)), sign(unclass(barleyMatrix)),
+                 ignore_attr = TRUE)
     # chi-square statistic approx equal to that reported
     expect_equal(round(sum(residuals(biplotModel, type = "pearson")^2)), 54)
     expect_equal(df.residual(biplotModel), 56)

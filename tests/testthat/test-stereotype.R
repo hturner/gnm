@@ -1,5 +1,3 @@
-context("datasets [backPain]")
-
 tol <- 1e-4
 
 backPainLong <- expandCategorical(backPain, "pain")
@@ -17,5 +15,6 @@ test_that("sterotype model as expected for backPain data", {
     expect_equal(round(sum(stereotype$y * log(stereotype$fitted/size)), 2),
                  -151.55)
     # number of parameters
-    expect_equivalent(stereotype$rank - nlevels(stereotype$eliminate), 12)
+    expect_equal(stereotype$rank - nlevels(stereotype$eliminate), 12,
+                 ignore_attr = TRUE)
 })

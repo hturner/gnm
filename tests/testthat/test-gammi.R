@@ -1,5 +1,3 @@
-context("datasets [wheat]")
-
 tol <- 1e-4
 
 # Vargas, M et al (2001). Interpreting treatment by environment interaction in 
@@ -26,12 +24,12 @@ test_that("bilinear model as expected for wheat data", {
     # check vs AMMI analysis of the T × E, end of Table 1
     txe <- anova(mainEffects, bilinear1, bilinear2, bilinear3)
     # year x treatment
-    expect_equal(deviance(mainEffects), 279520, tol = tol)
+    expect_equal(deviance(mainEffects), 279520, tolerance = tol)
     expect_equal(df.residual(mainEffects), 207)
     # diff for bilinear models
-    expect_equal(txe$Deviance, c(NA, 151130, 39112, 36781), tol = tol)
+    expect_equal(txe$Deviance, c(NA, 151130, 39112, 36781), tolerance = tol)
     expect_equal(txe$Df, c(NA, 31, 29, 27))
     # "Deviations"
-    expect_equal(deviance(bilinear3), 52497, tol = tol)
+    expect_equal(deviance(bilinear3), 52497, tolerance = tol)
     expect_equal(df.residual(bilinear3), 120)
 })

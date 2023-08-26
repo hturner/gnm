@@ -1,5 +1,3 @@
-context("datasets [mentalHealth]")
-
 # set seed to fix sign of coef
 suppressWarnings(RNGversion("3.0.0")) 
 set.seed(1)

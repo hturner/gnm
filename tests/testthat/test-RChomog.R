@@ -1,5 +1,3 @@
-context("implementation [multHomog]")
-
 # Goodman, L. A. (1979) J. Am. Stat. Assoc., 74 (367), 537–552.
 
 RChomog <- gnm(Freq ~ origin + destination + Diag(origin, destination) +

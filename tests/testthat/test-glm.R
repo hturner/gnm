@@ -31,7 +31,8 @@ test_that("gnmFit handles linear fit provided optimal starting values", {
     fitgnm <- gnm(formula = form, family = Gamma(link = "identity"), 
                   data = data.frame(dat), start=coeffs, trace=TRUE)
 
-    expect_equivalent(coeffs, fitgnm$coefficients)
+    expect_equal(coeffs, fitgnm$coefficients, ignore_attr = TRUE)
     # glm always does an extra iteration, even from previously converged fit
-    expect_equivalent(coef(fitglm), coef(fitgnm), tolerance = 1e-6)
+    expect_equal(coef(fitglm), coef(fitgnm), tolerance = 1e-6,
+                 ignore_attr = TRUE)
 })

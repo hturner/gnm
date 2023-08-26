@@ -1,5 +1,3 @@
-context("datasets [voting]")
-
 count <- with(voting, percentage/100 * total)
 yvar <- cbind(count, voting$total - count)
 
@@ -21,12 +19,12 @@ test_that("standard Dref model as expected for voting data", {
     expect_equal(round(deviance(classMobility), 2), 21.22)
     expect_equal(df.residual(classMobility), 19)
     p <- DrefWeights(classMobility)$origin["weight"]
-    expect_equivalent(round(p, 2), 0.44)
+    expect_equal(round(p, 2), 0.44, ignore_attr = TRUE)
 })
 
 test_that("modified Dref model as expected for voting data", {
     expect_equal(round(deviance(socialMobility), 2), 18.97)
     expect_equal(df.residual(socialMobility), 17)
     p <- DrefWeights(socialMobility)$origin[, "weight"]
-    expect_equivalent(round(p, 2), c(0.40, 0.60, 0.39))
+    expect_equal(round(p, 2), c(0.40, 0.60, 0.39), ignore_attr = TRUE)
 })

@@ -1,5 +1,3 @@
-context("model spec [Symm]")
-
 tol <- 1e-4
 
 test_that("Symm works with >2 factors", {

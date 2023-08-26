@@ -1,5 +1,3 @@
-context("implementation [Logistic]")
-
 tol <- 1e-5
 
 DNase1 <- subset(DNase, Run == 1)
@@ -33,7 +31,10 @@ mod_logistic <- gnm(density ~ -1 + Logistic(log(conc)),
                     data = DNase1, verbose = FALSE)
 
 test_that("logistic with gnm equivalent to nls", {
-    expect_equivalent(unclass(coef(mod_basic)), coef(mod_nls), tol = tol)
-    expect_equivalent(unclass(coef(mod_logistic)), coef(mod_nls), tol = tol)
-    expect_equivalent(coef(mod_basic), coef(mod_logistic), tol = tol)
+    expect_equal(unclass(coef(mod_basic)), coef(mod_nls), tolerance = tol,
+                 ignore_attr = TRUE)
+    expect_equal(unclass(coef(mod_logistic)), coef(mod_nls), tolerance = tol,
+                 ignore_attr = TRUE)
+    expect_equal(coef(mod_basic), coef(mod_logistic), tolerance = tol,
+                 ignore_attr = TRUE)
 })

@@ -12,12 +12,14 @@ test_that("gnmFit handles extra linear constraints with eliminate", {
         ass <- model$assoc
         
         # First score for Farmers is slightly different from original article
-        expect_equivalent(round(ass$row[,,1] * sqrt(ass$phi[1,1]), d=2)[5:1,],
-                          matrix(c(-0.08, -0.2, -0.23, -0.11, 0.61,
-                                   0.34,  0.3, -0.13, -0.51, 0), 5, 2))
-        expect_equivalent(round(ass$row[,,1] * sqrt(ass$phi[2,1]), d=2)[5:1,],
-                          matrix(c(-0.08, -0.2, -0.23, -0.11, 0.61,
-                                   0.34,  0.3, -0.13, -0.51, 0), 5, 2))
+        expect_equal(round(ass$row[,,1] * sqrt(ass$phi[1,1]), d=2)[5:1,],
+                     matrix(c(-0.08, -0.2, -0.23, -0.11, 0.61,
+                              0.34,  0.3, -0.13, -0.51, 0), 5, 2),
+                     ignore_attr = TRUE)
+        expect_equal(round(ass$row[,,1] * sqrt(ass$phi[2,1]), d=2)[5:1,],
+                     matrix(c(-0.08, -0.2, -0.23, -0.11, 0.61,
+                              0.34,  0.3, -0.13, -0.51, 0), 5, 2),
+                     ignore_attr = TRUE)
 
     }
 })

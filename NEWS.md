@@ -1,3 +1,8 @@
+Changes in gnm 1.1-4
+====================
+
+* Minor fix to test to accommodate old R release.
+
 Changes in gnm 1.1-3
 ====================
 

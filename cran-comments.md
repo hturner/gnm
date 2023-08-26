@@ -1,16 +1,16 @@
 ## Comments
 
-This update fixes the warning given by citation("gnm") and the NOTE in the 
-current CRAN checks (escaped LaTeX specials).
+This is a resubmission to fix a broken test on R-oldrelease.
 
 ## R CMD check results
 
 Test environments
 
-* (Local) macOS 13.5, R 4.3,1
+* (Local) macOS 13.5, R 4.2.1
+* (Local) macOS 13.5, R 4.3.1
 * (Win-builder) Windows Server 2022, R-devel (2023-08-23 r85001 ucrt)
  
-No errors, warnings or notes.
+Only note about days since last update.
  
 ## Reverse dependencies
 

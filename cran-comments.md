@@ -1,16 +1,15 @@
 ## Comments
 
-This is a resubmission to fix a broken test on R-oldrelease.
+This is a minor update to correct included header (R_ext/BLAS.h).
 
 ## R CMD check results
 
 Test environments
 
-* (Local) macOS 13.5, R 4.2.1
 * (Local) macOS 13.5, R 4.3.1
-* (Win-builder) Windows Server 2022, R-devel (2023-08-23 r85001 ucrt)
+* (Win-builder) Windows Server 2022, R-devel (2023-09-15 r85153 ucrt)
  
-Only note about days since last update.
+No notes.
  
 ## Reverse dependencies
 

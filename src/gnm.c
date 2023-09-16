@@ -20,7 +20,7 @@
 # define USE_FC_LEN_T
 #endif
 # include <Rinternals.h> /* for length */
-# include <R_ext/Applic.h> /* for dgemm */
+# include <R_ext/BLAS.h> /* for dgemm */
 # include <R_ext/Rdynload.h> /* for registering routines */
 #ifndef FCONE
 # define FCONE

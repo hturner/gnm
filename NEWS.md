@@ -1,3 +1,8 @@
+Changes in gnm 1.1-5
+====================
+
+* Correct path to BLAS header file.
+
 Changes in gnm 1.1-4
 ====================
 

@@ -1,6 +1,6 @@
 Package: gnm
 Title: Generalized Nonlinear Models
-Version: 1.1-4
+Version: 1.1-5
 Authors@R: c(
     person("Heather", "Turner", , "ht@heatherturner.net", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1256-3375")),

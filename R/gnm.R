@@ -163,7 +163,7 @@ gnm <- function(formula, eliminate = NULL, ofInterest = NULL,
                                 return.indices = TRUE))
         if (is.character(constrain)) {
             res <- match(constrain, coefNames, 0)
-            if (res == 0 && length(constrain) == 1){
+            if (identical(res, 0) && length(constrain) == 1){
                 constrain <- match(grep(constrain, coefNames),
                                        seq_len(nParam),  0)
             }
